@@ -4,6 +4,7 @@
 
 ### Manually added
 qasm_output/*
+.idea/*
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
