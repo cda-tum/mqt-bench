@@ -1,5 +1,5 @@
-import ghz
-import qft
+from benchmarks import ghz, qft
+
 
 def create_circuit(n: int, include_measurements: bool = True):
     qc = ghz.create_circuit(n, include_measurements=False)
