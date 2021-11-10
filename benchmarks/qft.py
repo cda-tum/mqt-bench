@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit.library import QFT
 
 from utils import measure

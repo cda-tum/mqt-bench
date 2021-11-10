@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from utils import measure
 
 def create_circuit(n: int, include_measurements: bool = True):
