@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,jupyternotebooks
 
+### Manually added
+qasm_output/*
+
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
