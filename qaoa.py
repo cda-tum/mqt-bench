@@ -1,21 +1,22 @@
 # Code from qiskit-optimization demo
-import networkx as nx
+
 from qiskit import Aer
 from qiskit.utils import QuantumInstance
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit.algorithms import QAOA
-from qiskit_optimization.applications import Maxcut
+
+from utils import get_examplary_max_cut_qp
+
 
 def create_circuit(n: int, include_measurements: bool = True):
-    graph = nx.random_regular_graph(d=2, n=n, seed=111)
-    maxcut = Maxcut(graph)
-    qp = maxcut.to_quadratic_program()
+    qp = get_examplary_max_cut_qp(n)
     qins = QuantumInstance(backend=Aer.get_backend('qasm_simulator'), shots=1024, seed_simulator=123)
 
     # Define QAOA solver
     qaoa = QAOA(reps=1, quantum_instance=qins)
     meo = MinimumEigenOptimizer(min_eigen_solver=qaoa)
-    result = meo.solve(qp)
+    qaoa_result = meo.solve(qp)
+    print(qaoa_result)
 
 
     qc = qaoa.get_optimal_circuit()
