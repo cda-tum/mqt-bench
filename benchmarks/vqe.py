@@ -16,7 +16,6 @@ def create_circuit(n: int, include_measurements: bool = True):
     vqe = VQE(ansatz, optimizer=SLSQP(), quantum_instance=sim)
     vqe_optimizer = MinimumEigenOptimizer(vqe)
     vqe_result = vqe_optimizer.solve(qp)
-    print(vqe_result)
     qc = vqe.get_optimal_circuit()
 
     if (include_measurements): qc.measure_all()
