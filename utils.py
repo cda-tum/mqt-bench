@@ -12,7 +12,7 @@ def measure(qc: QuantumCircuit, q: QuantumRegister, c: ClassicalRegister):
 
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, c_map: CouplingMap = None):
-    t_qc = transpile(qc, basis_gates=['u1', 'cx', 'rx'], optimization_level=opt_level, coupling_map=c_map)
+    t_qc = transpile(qc, basis_gates=['id', 'rz', 'sx', 'x', 'cx', 'reset'], optimization_level=opt_level, coupling_map=c_map)
     return t_qc
 
 
