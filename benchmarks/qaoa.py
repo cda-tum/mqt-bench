@@ -16,7 +16,6 @@ def create_circuit(n: int, include_measurements: bool = True):
     qaoa = QAOA(reps=1, quantum_instance=qins)
     meo = MinimumEigenOptimizer(min_eigen_solver=qaoa)
     qaoa_result = meo.solve(qp)
-    print(qaoa_result)
 
 
     qc = qaoa.get_optimal_circuit()
