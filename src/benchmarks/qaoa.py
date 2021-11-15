@@ -5,10 +5,10 @@ from qiskit.utils import QuantumInstance
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit.algorithms import QAOA
 
-from utils import get_examplary_max_cut_qp
+from src.utils import get_examplary_max_cut_qp
 
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     qp = get_examplary_max_cut_qp(n)
     qins = QuantumInstance(backend=Aer.get_backend('qasm_simulator'), shots=1024, seed_simulator=123)
 
@@ -20,6 +20,6 @@ def create_circuit(n: int, include_measurements: bool = True):
 
     qc = qaoa.get_optimal_circuit()
     qc.name="QAOA"
-    if (include_measurements): qc.measure_all()
+    qc.measure_all()
 
     return qc

@@ -6,9 +6,9 @@ import networkx as nx
 from qiskit_optimization.applications import Maxcut
 
 
-def measure(qc: QuantumCircuit, q: QuantumRegister, c: ClassicalRegister):
-    for i in reversed(range(q.size)):
-        qc.measure(q[i], c[i])
+# def measure(qc: QuantumCircuit, q: QuantumRegister, c: ClassicalRegister):
+#     for i in reversed(range(q.size)):
+#         qc.measure(q[i], c[i])
 
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, c_map: CouplingMap = None):

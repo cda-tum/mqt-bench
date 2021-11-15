@@ -1,12 +1,14 @@
 ## Code from http://localhost:8888/notebooks/Downloads/qiskit-application-modules-demo-sessions/qiskit-finance/Introduction%20to%20Qiskit%20Finance.ipynb
 
-from utils import get_examplary_max_cut_qp
+from src.utils import get_examplary_max_cut_qp
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit.circuit.library import RealAmplitudes
+from qiskit import Aer
 
-def create_circuit(n: int, include_measurements: bool = True):
+
+def create_circuit(n: int):
     qp = get_examplary_max_cut_qp(n)
 
     sim = Aer.get_backend("qasm_simulator")
@@ -18,7 +20,7 @@ def create_circuit(n: int, include_measurements: bool = True):
     vqe_result = vqe_optimizer.solve(qp)
     qc = vqe.get_optimal_circuit()
 
-    if (include_measurements): qc.measure_all()
+    qc.measure_all()
     qc.name="VQE"
 
     return qc
@@ -29,7 +31,6 @@ def create_circuit(n: int, include_measurements: bool = True):
 
 ## Code from https://qiskit.org/textbook/ch-applications/vqe-molecules.html
 
-from qiskit import Aer
 
 # molecule = Molecule(geometry=[['H', [0., 0., 0.]],
 #                               ['H', [0., 0., 0.735]]],

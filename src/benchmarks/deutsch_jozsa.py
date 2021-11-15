@@ -63,9 +63,10 @@ def dj_algorithm(oracle, n):
 
     return dj_circuit
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     oracle_gate = dj_oracle('balanced', n)
-    dj_circuit = dj_algorithm(oracle_gate, n)
-    dj_circuit.name = "dj"
+    qc = dj_algorithm(oracle_gate, n)
+    qc.name = "dj"
+    qc.measure_all()
 
-    return dj_circuit
+    return qc

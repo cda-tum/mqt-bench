@@ -30,7 +30,7 @@ from qiskit.algorithms.linear_solvers.numpy_linear_solver import NumPyLinearSolv
 from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import TridiagonalToeplitz
 from qiskit.algorithms.linear_solvers.hhl import HHL
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
 
     a = 1
     b = -1 / 3
@@ -38,11 +38,12 @@ def create_circuit(n: int, include_measurements: bool = True):
     #matrix = diags([b, a, b], [-1, 0, 1], shape=(2 ** nb, 2 ** nb)).toarray()
     vector = np.array([1] + [0] * (2 ** n - 1))
 
-    #naive_hhl_solution = HHL().solve(matrix, vector)
+    #qc = HHL().solve(matrix, vector).state
     tridi_matrix = TridiagonalToeplitz(n, a, b)
-    tridi_solution = HHL().solve(tridi_matrix, vector)
-    tridi_solution.state.name = "HHL"
+    qc = HHL().solve(tridi_matrix, vector).state
+    qc.measure_all()
+    qc.name = "HHL"
 
     #return naive_hhl_solution.state
-    return tridi_solution.state
+    return qc
 

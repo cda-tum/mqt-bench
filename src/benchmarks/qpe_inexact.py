@@ -4,10 +4,9 @@ from fractions import Fraction
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import QFT
-from utils import measure
 
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     q = QuantumRegister(n, 'q')
     psi = QuantumRegister(1, 'psi')
     c = ClassicalRegister(n + 1, 'c')
@@ -34,8 +33,6 @@ def create_circuit(n: int, include_measurements: bool = True):
             qc.cp(angle * np.pi, psi, q[i])
 
     qc.compose(QFT(num_qubits=n, inverse=True), inplace=True, qubits=list(range(n)))
-
-    if include_measurements:
-        measure(qc, q, c)
+    qc.measure_all()
 
     return qc
