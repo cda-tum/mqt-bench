@@ -41,6 +41,7 @@ def create_circuit(num_uncertainty_qubits: int):
 
     iae = IterativeAmplitudeEstimation(epsilon, alpha=alpha)
     qc = iae.construct_circuit(problem)
+    qc.measure_all()
     qc.name = "iae"
 
     return qc

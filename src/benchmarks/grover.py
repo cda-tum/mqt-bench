@@ -1,9 +1,8 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
 from qiskit.circuit.library import GroverOperator
 from qiskit.qasm import pi
-from utils import measure
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     from qiskit.algorithms import Grover
 
     q = QuantumRegister(n, 'q')
@@ -24,8 +23,7 @@ def create_circuit(n: int, include_measurements: bool = True):
     qc.compose(state_preparation, inplace=True)
 
     qc.compose(operator.power(iterations), inplace=True)
-    if include_measurements:
-        measure(qc, q, c)
+    qc.measure_all()
 
     return qc
 

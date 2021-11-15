@@ -30,7 +30,7 @@ class BernoulliQ(QuantumCircuit):
         q_k.ry(2 * k * self._theta_p, 0)
         return q_k
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     p = 0.2
     A = BernoulliA(p)
     Q = BernoulliQ(p)
@@ -47,4 +47,6 @@ def create_circuit(n: int, include_measurements: bool = True):
     )
     qc = ae.construct_circuit(estimation_problem=problem)
     qc.name="ae"
+
+    qc.measure_all()
     return qc

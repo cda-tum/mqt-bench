@@ -1,9 +1,8 @@
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
-from utils import measure
 
 
-def create_circuit(n: int, include_measurements: bool = True):
+def create_circuit(n: int):
     q = QuantumRegister(n, 'q')
     c = ClassicalRegister(n, 'c')
     qc = QuantumCircuit(q, c, name="w_state")
@@ -19,8 +18,6 @@ def create_circuit(n: int, include_measurements: bool = True):
         f_gate(qc, q, n - l, n - l - 1, n, l)
     for l in reversed(range(1, n)):
         qc.cx(l - 1, l)
-
-    if include_measurements:
-        measure(qc, q, c)
+    qc.measure_all()
 
     return qc
