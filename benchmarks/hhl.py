@@ -41,6 +41,7 @@ def create_circuit(n: int, include_measurements: bool = True):
     #naive_hhl_solution = HHL().solve(matrix, vector)
     tridi_matrix = TridiagonalToeplitz(n, a, b)
     tridi_solution = HHL().solve(tridi_matrix, vector)
+    tridi_solution.state.name = "HHL"
 
     #return naive_hhl_solution.state
     return tridi_solution.state
