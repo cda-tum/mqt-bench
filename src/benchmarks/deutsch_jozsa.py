@@ -64,9 +64,10 @@ def dj_algorithm(oracle, n):
     return dj_circuit
 
 def create_circuit(n: int):
+
+    n = n-1 # because of ancilla qubit
     oracle_gate = dj_oracle('balanced', n)
     qc = dj_algorithm(oracle_gate, n)
     qc.name = "dj"
-    qc.measure_all()
 
     return qc

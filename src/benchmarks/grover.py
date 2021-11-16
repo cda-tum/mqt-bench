@@ -5,6 +5,7 @@ from qiskit.qasm import pi
 def create_circuit(n: int):
     from qiskit.algorithms import Grover
 
+    n = n - 1 #magic number due to the ancilla qubit
     q = QuantumRegister(n, 'q')
     flag = AncillaRegister(1, 'flag')
     c = ClassicalRegister(n)
