@@ -11,8 +11,8 @@ from qiskit_optimization.applications import Maxcut
 #         qc.measure(q[i], c[i])
 
 
-def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, c_map: CouplingMap = None):
-    t_qc = transpile(qc, basis_gates=['id', 'rz', 'sx', 'x', 'cx', 'reset'], optimization_level=opt_level, coupling_map=c_map)
+def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
+    t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
     return t_qc
 
 
