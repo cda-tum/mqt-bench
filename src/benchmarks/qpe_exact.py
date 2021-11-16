@@ -7,6 +7,7 @@ from qiskit.circuit.library import QFT
 
 
 def create_circuit(n: int):
+    n = n-1 # because of ancilla qubit
     q = QuantumRegister(n, 'q')
     psi = QuantumRegister(1, 'psi')
     c = ClassicalRegister(n + 1, 'c')
