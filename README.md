@@ -16,6 +16,8 @@ So far the following benchmarks are implemented:
 - Shor's Algorithm
 - QAOA
 - VQE
+- Deutsch Jozsa
+- HHL
 - Quantum Fourier Transformation
 - Quantum Fourier Transformation Entangled
 - Quantum Phase Estimation Exact
