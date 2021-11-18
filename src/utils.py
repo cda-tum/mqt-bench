@@ -2,14 +2,10 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRe
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
 from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
-import networkx as nx
 from qiskit_optimization.applications import Maxcut
+from qiskit.visualization import plot_histogram
 
-
-# def measure(qc: QuantumCircuit, q: QuantumRegister, c: ClassicalRegister):
-#     for i in reversed(range(q.size)):
-#         qc.measure(q[i], c[i])
-
+import networkx as nx
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
@@ -34,3 +30,10 @@ def get_examplary_max_cut_qp(n_qubits: int):
     graph = nx.random_regular_graph(d=2, n=n_qubits, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
+
+
+def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
+    result = simulator.run(qc, shots=1024).result()
+    counts = result.get_counts()
+    plot = plot_histogram(counts, figsize=(15, 5), title=filename)
+    plot.savefig("hist_output/" + filename + '.png', bbox_inches="tight")
