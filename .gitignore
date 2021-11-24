@@ -5,6 +5,7 @@
 ### Manually added
 qasm_output/*
 hist_output/*
+qpy_output/*
 .idea/*
 
 ### JupyterNotebooks ###
