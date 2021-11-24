@@ -4,6 +4,7 @@ from qiskit.transpiler import CouplingMap
 from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
 from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
+from qiskit.circuit import qpy_serialization
 
 import networkx as nx
 
@@ -25,6 +26,11 @@ def save_as_qasm(qc: QuantumCircuit, n_qubits: int, mapped: bool = False):
         f.write(qc.qasm())
     f.close()
 
+def serialize_qc(qc: QuantumCircuit, n_qubits: int):
+    filename = qc.name
+    with open("qpy_output/" + filename + "_" + str(n_qubits) + '.qpy', 'wb') as f:
+        qpy_serialization.dump(qc, f)
+    f.close()
 
 def get_examplary_max_cut_qp(n_qubits: int):
     graph = nx.random_regular_graph(d=2, n=n_qubits, seed=111)
@@ -37,3 +43,4 @@ def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
     counts = result.get_counts()
     plot = plot_histogram(counts, figsize=(15, 5), title=filename)
     plot.savefig("hist_output/" + filename + '.png', bbox_inches="tight")
+
