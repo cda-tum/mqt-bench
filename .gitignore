@@ -3,9 +3,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,jupyternotebooks
 
 ### Manually added
-qasm_output/*
-hist_output/*
-qpy_output/*
+qasm_output/*.qasm
+hist_output/*.png
+qpy_output/*.qpy
 .idea/*
 
 ### JupyterNotebooks ###
