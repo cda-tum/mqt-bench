@@ -1,14 +1,13 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
 from qiskit.circuit.library import GroverOperator
 from qiskit.qasm import pi
+from qiskit.algorithms import Grover
 
 def create_circuit(n: int):
-    from qiskit.algorithms import Grover
 
     n = n - 1 #magic number due to the ancilla qubit
     q = QuantumRegister(n, 'q')
     flag = AncillaRegister(1, 'flag')
-    c = ClassicalRegister(n)
 
     state_preparation = QuantumCircuit(q, flag)
     state_preparation.h(q)
@@ -20,7 +19,7 @@ def create_circuit(n: int):
     operator = GroverOperator(oracle)
     iterations = Grover.optimal_num_iterations(1, n)
 
-    qc = QuantumCircuit(q, flag, c, name='grover')
+    qc = QuantumCircuit(q, flag, name='grover')
     qc.compose(state_preparation, inplace=True)
 
     qc.compose(operator.power(iterations), inplace=True)
