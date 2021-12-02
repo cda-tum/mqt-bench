@@ -1,10 +1,11 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
+from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
 from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
 from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
+from datetime import date
 
 import networkx as nx
 
@@ -17,12 +18,20 @@ def get_IBM_cmap(quantum_computer: IBMQBackend):
     return quantum_computer.configuration().coupling_map
 
 
-def save_as_qasm(qc: QuantumCircuit, n_qubits: int, mapped: bool = False):
+def save_as_qasm(qc: QuantumCircuit, n_qubits: int, gate_set: list, mapped: bool = False, c_map: list = [], arch_name: str = ""):
     filename = qc.name + "_transpiled_"
     if mapped: filename += "mapped_"
     if n_qubits is not None: filename += str(n_qubits)
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
+        f.write("## Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
+        f.write("# Qiskit version: \n" + str(__qiskit_version__) + "\n")
+        f.write("# Used Gate Set: " + str(gate_set) + "\n")
+        if mapped:
+            f.write("# Coupling List: " + str(c_map) + "\n")
+            if arch_name:
+                f.write("# Compiled for architecture: " + arch_name + "\n")
+        f.write("\n")
         f.write(qc.qasm())
     f.close()
 
