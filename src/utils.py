@@ -42,5 +42,11 @@ def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
     result = simulator.run(qc, shots=1024).result()
     counts = result.get_counts()
     plot = plot_histogram(counts, figsize=(15, 5), title=filename)
-    plot.savefig("hist_output/" + filename + '.png', bbox_inches="tight")
+    plot.savefig("hist_output/" + filename + '_hist' + '.png', bbox_inches="tight")
+
+
+def save_circ(qc: QuantumCircuit, filename: str):
+    circ_plot = qc.decompose().draw(output="mpl", filename="hist_output/" + filename + '_circ' + '.png')
+
+
 
