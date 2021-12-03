@@ -55,8 +55,6 @@ def create_circuit(num_uncertainty_qubits:int = 5):
     result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
 
-    iae.construct_circuit(3).draw()
-
     qc = iae.construct_circuit(1)
     qc.name = "pricing_call"
 
