@@ -34,7 +34,6 @@ def create_circuit(n: int):
             qc.cp(angle * np.pi, psi, q[i])
 
     qc.compose(QFT(num_qubits=n, inverse=True), inplace=True, qubits=list(range(n)))
-
     qc.measure_all()
 
     return qc
