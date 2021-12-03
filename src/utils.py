@@ -5,9 +5,12 @@ from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
 from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
+from qiskit.algorithms import EstimationProblem
+
 from datetime import date
 
 import networkx as nx
+import numpy as np
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
@@ -57,5 +60,42 @@ def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
 def save_circ(qc: QuantumCircuit, filename: str):
     circ_plot = qc.decompose().draw(output="mpl", filename="hist_output/" + filename + '_circ' + '.png')
 
+class BernoulliA(QuantumCircuit):
+    """A circuit representing the Bernoulli A operator."""
+
+    def __init__(self, probability):
+        super().__init__(1)  # circuit on 1 qubit
+
+        theta_p = 2 * np.arcsin(np.sqrt(probability))
+        self.ry(theta_p, 0)
 
 
+class BernoulliQ(QuantumCircuit):
+    """A circuit representing the Bernoulli Q operator."""
+
+    def __init__(self, probability):
+        super().__init__(1)  # circuit on 1 qubit
+
+        self._theta_p = 2 * np.arcsin(np.sqrt(probability))
+        self.ry(2 * self._theta_p, 0)
+
+    def power(self, k):
+        # implement the efficient power of Q
+        q_k = QuantumCircuit(1)
+        q_k.ry(2 * k * self._theta_p, 0)
+        return q_k
+
+
+def get_estimation_problem():
+    p = 0.2
+
+    A = BernoulliA(p)
+    Q = BernoulliQ(p)
+
+    problem = EstimationProblem(
+        state_preparation=A,  # A operator
+        grover_operator=Q,  # Q operator
+        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
+    )
+
+    return problem
