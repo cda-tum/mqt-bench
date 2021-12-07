@@ -58,7 +58,7 @@ def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
 
 
 def save_circ(qc: QuantumCircuit, filename: str):
-    circ_plot = qc.decompose().draw(output="mpl", filename="hist_output/" + filename + '_circ' + '.png')
+    circ_plot = qc.draw(output="mpl", filename="hist_output/" + filename + '_circ' + '.png')
 
 class BernoulliA(QuantumCircuit):
     """A circuit representing the Bernoulli A operator."""
