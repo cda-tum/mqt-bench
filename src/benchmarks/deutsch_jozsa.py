@@ -3,9 +3,9 @@
 from qiskit import QuantumCircuit
 import numpy as np
 
+# checked
+
 def dj_oracle(case, n):
-    # We need to make a QuantumCircuit object to return
-    # This circuit has n+1 qubits: the size of the input,
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
 
@@ -63,10 +63,14 @@ def dj_algorithm(oracle, n):
 
     return dj_circuit
 
-def create_circuit(n: int):
+def create_circuit(n: int, balanced:bool = True):
 
+    if balanced:
+        oracle_mode = 'balanced'
+    else:
+        oracle_mode = 'constant'
     n = n-1 # because of ancilla qubit
-    oracle_gate = dj_oracle('balanced', n)
+    oracle_gate = dj_oracle(oracle_mode, n)
     qc = dj_algorithm(oracle_gate, n)
     qc.name = "dj"
 
