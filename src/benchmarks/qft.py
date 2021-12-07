@@ -2,6 +2,8 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.circuit.library import QFT
 
 
+# checked
+
 def create_circuit(n: int):
     q = QuantumRegister(n, 'q')
     c = ClassicalRegister(n, 'c')

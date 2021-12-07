@@ -4,6 +4,7 @@ from qiskit.algorithms import AmplitudeEstimation
 
 from src import utils
 
+# checked
 
 def create_circuit(num_qubits: int):
     ae = AmplitudeEstimation(
@@ -13,5 +14,6 @@ def create_circuit(num_qubits: int):
 
     qc = ae.construct_circuit(problem)
     qc.name = "canonical_ae"
+    qc.measure_all()
 
     return qc
