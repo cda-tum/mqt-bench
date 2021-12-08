@@ -44,8 +44,8 @@ def serialize_qc(qc: QuantumCircuit, n_qubits: int):
         qpy_serialization.dump(qc, f)
     f.close()
 
-def get_examplary_max_cut_qp(n_qubits: int):
-    graph = nx.random_regular_graph(d=2, n=n_qubits, seed=111)
+def get_examplary_max_cut_qp(n_qubits: int, degree:int = 2):
+    graph = nx.random_regular_graph(d=degree, n=n_qubits, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
 
