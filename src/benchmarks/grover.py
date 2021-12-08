@@ -1,11 +1,13 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
+from qiskit import QuantumCircuit, QuantumRegister, AncillaRegister
 from qiskit.circuit.library import GroverOperator
 from qiskit.qasm import pi
 from qiskit.algorithms import Grover
 
+# checked
+
 def create_circuit(n: int):
 
-    n = n - 1 #magic number due to the ancilla qubit
+    n = n - 1    # magic number due to the ancilla qubit
     q = QuantumRegister(n, 'q')
     flag = AncillaRegister(1, 'flag')
 
