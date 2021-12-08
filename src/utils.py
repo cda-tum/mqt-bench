@@ -99,3 +99,40 @@ def get_estimation_problem():
     )
 
     return problem
+
+
+def get_rigetti_c_map():
+    c_map_rigetti = []
+    for j in range(4):
+        for i in range(0, 7):
+            elem = [i + j * 10, i + 1 + j * 10]
+            c_map_rigetti.append(elem)
+            if i == 6:
+                c_map_rigetti.append([0 + j * 10, 7 + j * 10])
+
+    return c_map_rigetti
+
+
+def get_google_c_map():
+    c_map_google = []
+    for j in range(8):
+        for i in range(6):
+            if j % 2 == 0:
+                if i != 0:
+                    elem = [i + 6 * j, i + 6 * j + 5]
+                    c_map_google.append(elem)
+
+                if i != 6:
+                    elem = [i + 6 * j, i + 6 * j + 6]
+                    c_map_google.append(elem)
+
+            else:
+                if i != 0:
+                    elem = [i + 6 * j, i + 6 * j + 6]
+                    c_map_google.append(elem)
+
+                if i != 6:
+                    elem = [i + 6 * j, i + 6 * j + 7]
+                    c_map_google.append(elem)
+
+    return c_map_google
