@@ -38,9 +38,8 @@ def save_as_qasm(qc: QuantumCircuit, n_qubits: int, gate_set: list, mapped: bool
         f.write(qc.qasm())
     f.close()
 
-def serialize_qc(qc: QuantumCircuit, n_qubits: int):
-    filename = qc.name
-    with open("qpy_output/" + filename + "_" + str(n_qubits) + '.qpy', 'wb') as f:
+def serialize_qc(qc: QuantumCircuit, n_qubits: int, filename:str):
+    with open("qpy_output/" + filename + '.qpy', 'wb') as f:
         qpy_serialization.dump(qc, f)
     f.close()
 
@@ -58,7 +57,7 @@ def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
 
 
 def save_circ(qc: QuantumCircuit, filename: str):
-    circ_plot = qc.draw(output="mpl", filename="hist_output/" + filename + '_circ' + '.png')
+    circ_plot = qc.draw(output="mpl", filename="hist_output/" + filename + '.png')
 
 class BernoulliA(QuantumCircuit):
     """A circuit representing the Bernoulli A operator."""
