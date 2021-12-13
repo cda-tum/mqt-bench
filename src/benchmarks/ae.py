@@ -13,7 +13,7 @@ def create_circuit(num_qubits: int):
     problem = utils.get_estimation_problem()
 
     qc = ae.construct_circuit(problem)
-    qc.name = "canonical_ae"
+    qc.name = "ae"
     qc.measure_all()
 
     return qc
