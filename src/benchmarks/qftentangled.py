@@ -13,6 +13,6 @@ def create_circuit(n: int):
     qc.compose(QFT(num_qubits=n), inplace=True)
 
     qc.measure_all()
-    qc.name = "qft_entangled"
+    qc.name = "qftentangled"
 
     return qc

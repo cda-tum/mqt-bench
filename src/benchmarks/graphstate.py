@@ -7,7 +7,7 @@ import networkx as nx
 
 def create_circuit(num_qubits:int, degree:int = 2):
     q = QuantumRegister(num_qubits, 'q')
-    qc = QuantumCircuit(q, name="graph_state")
+    qc = QuantumCircuit(q, name="graphstate")
 
     G = nx.random_regular_graph(degree, num_qubits)
     A = nx.convert_matrix.to_numpy_array(G)

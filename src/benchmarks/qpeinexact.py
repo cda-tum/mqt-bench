@@ -13,7 +13,7 @@ def create_circuit(n: int):
     q = QuantumRegister(n, 'q')
     psi = QuantumRegister(1, 'psi')
     c = ClassicalRegister(n, 'c')
-    qc = QuantumCircuit(q, psi, c, name="qpe_inexact")
+    qc = QuantumCircuit(q, psi, c, name="qpeinexact")
 
     # get random n+1-bit string as target phase
     theta = 0
