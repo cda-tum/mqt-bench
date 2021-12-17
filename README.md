@@ -18,6 +18,7 @@ So far the following benchmarks are implemented:
 - VQE
 - Deutsch Jozsa
 - HHL
+- Quantum Walk
 - Quantum Fourier Transformation
 - Quantum Fourier Transformation Entangled
 - Quantum Phase Estimation Exact
