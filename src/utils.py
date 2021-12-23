@@ -25,14 +25,14 @@ def save_as_qasm(qc: QuantumCircuit, n_qubits: int, filename: str, gate_set: lis
                  mapped: bool = False, c_map: list = [], arch_name: str = ""):
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
-        f.write("## Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
-        f.write("# Qiskit version: \n" + str(__qiskit_version__) + "\n")
-        f.write("# Used Gate Set: " + str(gate_set) + "\n")
-        f.write("# Optimization Level: " + str(opt_level) + "\n")
+        f.write("// Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
+        f.write("// Qiskit version: \n" + str(__qiskit_version__) + "\n")
+        f.write("// Used Gate Set: " + str(gate_set) + "\n")
+        f.write("// Optimization Level: " + str(opt_level) + "\n")
         if mapped:
-            f.write("# Coupling List: " + str(c_map) + "\n")
+            f.write("// Coupling List: " + str(c_map) + "\n")
             if arch_name:
-                f.write("# Compiled for architecture: " + arch_name + "\n")
+                f.write("// Compiled for architecture: " + arch_name + "\n")
         f.write("\n")
         f.write(qc.qasm())
     f.close()
