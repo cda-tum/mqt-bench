@@ -1,23 +1,15 @@
 ## Code from https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
 
 import numpy as np
-import operator
-import matplotlib.pyplot as plt
-import math
 
 from qiskit import BasicAer
-from qiskit.quantum_info import Pauli
-from qiskit.aqua import QuantumInstance, aqua_globals
-from qiskit.aqua.algorithms import NumPyMinimumEigensolver, VQE
-from qiskit.circuit.library import TwoLocal
-from qiskit.aqua.components.optimizers import SPSA
-from qiskit.aqua.operators import WeightedPauliOperator
-
-from qiskit.optimization import QuadraticProgram
-from qiskit.optimization.algorithms import MinimumEigenOptimizer
+from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.algorithms import VQE
+from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.algorithms import MinimumEigenOptimizer
+import matplotlib.pyplot as plt
 
 
-# Get the data
 class Initializer():
     def __init__(self, n):
         self.n = n
@@ -39,13 +31,14 @@ class Initializer():
 
 
 class QuantumOptimizer:
-
     def __init__(self, instance, n, K):
+
         self.instance = instance
         self.n = n
         self.K = K
 
     def binary_representation(self, x_sol=0):
+
         instance = self.instance
         n = self.n
         K = self.K
@@ -76,7 +69,7 @@ class QuantumOptimizer:
                     count = ii
 
                 if jj // (n - 1) != ii and jj % (n - 1) == count:
-                    v[ii][jj] = 1.
+                    v[ii][jj] = 1.0
 
         vn = np.sum(v[1:], axis=0)
 
@@ -84,8 +77,11 @@ class QuantumOptimizer:
         Q = A * (np.kron(Id_n, Im_n_1) + np.dot(v.T, v))
 
         # g defines the contribution from the individual variables
-        g = w - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T) - \
-            2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
+        g = (
+            w
+            - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T)
+            - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
+        )
 
         # c is the constant offset
         c = 2 * A * (n - 1) + 2 * A * (K ** 2)
@@ -93,16 +89,20 @@ class QuantumOptimizer:
         try:
             max(x_sol)
             # Evaluates the cost distance from a binary representation of a path
-            fun = lambda x: np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c
+            fun = (
+                lambda x: np.dot(np.around(x), np.dot(Q, np.around(x)))
+                + np.dot(g, np.around(x))
+                + c
+            )
             cost = fun(x_sol)
         except:
             cost = 0
 
         return Q, g, c, cost
 
-    def construct_problem(self, Q, g, c, n) -> QuadraticProgram:
+    def construct_problem(self, Q, g, c) -> QuadraticProgram:
         qp = QuadraticProgram()
-        for i in range(n * (n - 1)):
+        for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
         qp.objective.quadratic = Q
         qp.objective.linear = g
@@ -110,19 +110,45 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp):
-        aqua_globals.random_seed = 10598
-        quantum_instance = QuantumInstance(BasicAer.get_backend('qasm_simulator'),
-                                           seed_simulator=aqua_globals.random_seed,
-                                           seed_transpiler=aqua_globals.random_seed)
+        algorithm_globals.random_seed = 10598
+        quantum_instance = QuantumInstance(
+            BasicAer.get_backend("qasm_simulator"),
+            seed_simulator=algorithm_globals.random_seed,
+            seed_transpiler=algorithm_globals.random_seed,
+        )
 
         vqe = VQE(quantum_instance=quantum_instance)
         optimizer = MinimumEigenOptimizer(min_eigen_solver=vqe)
         result = optimizer.solve(qp)
         # compute cost of the obtained result
         _, _, _, level = self.binary_representation(x_sol=result.x)
-        qc = vqe.get_optimal_circuit()
-        return result.x, level, qc
+        return result.x, level, vqe
 
+def visualize_solution(xc, yc, x, C, n, K, title_str):
+    plt.figure()
+    plt.scatter(xc, yc, s=200)
+    for i in range(len(xc)):
+        plt.annotate(i, (xc[i] + 0.15, yc[i]), size=16, color="r")
+    plt.plot(xc[0], yc[0], "r*", ms=20)
+
+    plt.grid()
+
+    for ii in range(0, n ** 2):
+
+        if x[ii] > 0:
+            ix = ii // n
+            iy = ii % n
+            plt.arrow(
+                xc[ix],
+                yc[ix],
+                xc[iy] - xc[ix],
+                yc[iy] - yc[ix],
+                length_includes_head=True,
+                head_width=0.25,
+            )
+
+    plt.title(title_str + " cost = " + str(int(C * 100) / 100.0))
+    plt.show()
 
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     # Initialize the problem by defining the parameters
@@ -131,13 +157,26 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     # Initialize the problem by randomly generating the instance
     initializer = Initializer(n)
     xc, yc, instance = initializer.generate_instance()
-    # Instantiate the quantum optimizer class with parameters:
+
     quantum_optimizer = QuantumOptimizer(instance, n, K)
-
     Q, g, c, binary_cost = quantum_optimizer.binary_representation()
-
-    qp = quantum_optimizer.construct_problem(Q, g, c, n)
-    quantum_solution, quantum_cost, qc = quantum_optimizer.solve_problem(qp)
-
+    qp = quantum_optimizer.construct_problem(Q, g, c)
+    # Instantiate the quantum optimizer class with parameters:
+    quantum_solution, quantum_cost, vqe = quantum_optimizer.solve_problem(qp)
+    qc = vqe.get_optimal_circuit()
     qc.name = "vehicle_routing"
-    return qc
+
+    ## Visualization of the result
+
+    # Put the solution in a way that is compatible with the classical variables
+    x_quantum = np.zeros(n ** 2)
+    kk = 0
+    for ii in range(n ** 2):
+        if ii // n != ii % n:
+            x_quantum[ii] = quantum_solution[kk]
+            kk += 1
+
+    # visualize the solution
+    visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
+
+    return qc, qp
