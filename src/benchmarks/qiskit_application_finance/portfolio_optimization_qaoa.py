@@ -1,15 +1,14 @@
 ## Code from https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
 
 from qiskit import Aer
-from qiskit.circuit.library import TwoLocal
 from qiskit.aqua import QuantumInstance
 from qiskit.finance.applications.ising import portfolio
 from qiskit.optimization.applications.ising.common import sample_most_likely
 from qiskit.finance.data_providers import RandomDataProvider
-from qiskit.aqua.algorithms import VQE, QAOA, NumPyMinimumEigensolver
+from qiskit.aqua.algorithms import QAOA
 from qiskit.aqua.components.optimizers import COBYLA
+
 import numpy as np
-import matplotlib.pyplot as plt
 import datetime
 
 

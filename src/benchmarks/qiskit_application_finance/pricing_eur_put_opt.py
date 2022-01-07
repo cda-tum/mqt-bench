@@ -1,6 +1,5 @@
 ## Code from https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
 
-from qiskit.finance.applications import EuropeanCallExpectedValue
 import numpy as np
 from qiskit import Aer
 from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
@@ -66,12 +65,9 @@ def create_circuit(num_uncertainty_qubits:int = 5):
                                       objective_qubits=[num_uncertainty_qubits],
                                       post_processing=european_put_objective.post_processing)
 
-    result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
-
-
-    iae.construct_circuit(3).draw()
+    #result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
     qc = iae.construct_circuit(1)
     qc.name = "pricing_put"
 
-    return qc
+    return qc, iae
