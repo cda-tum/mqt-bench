@@ -2,7 +2,6 @@
 
 from qiskit.finance.applications import EuropeanCallExpectedValue
 import numpy as np
-from qiskit import Aer
 from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.circuit.library import LogNormalDistribution
 
@@ -50,9 +49,9 @@ def create_circuit(num_uncertainty_qubits:int = 5):
     # construct amplitude estimation
     iae = IterativeAmplitudeEstimation(epsilon=epsilon, alpha=alpha,
                                       state_preparation=european_call,
-                                      objective_qubits=[1],
+                                      objective_qubits=[num_uncertainty_qubits],
                                       post_processing=european_call_objective.post_processing)
-    result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
+    #result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
 
     qc = iae.construct_circuit(1)
