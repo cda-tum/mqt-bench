@@ -48,7 +48,6 @@ def create_circuit(nodes: int):
     # solve quadratic program
     result = vqe_optimizer.solve(qp)
     z = tsp.interpret(x)
-    print('solution:', z)
 
     qc = vqe.get_optimal_circuit()
     qc.name = "tsp"
