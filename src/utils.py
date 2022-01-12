@@ -119,24 +119,16 @@ def get_rigetti_c_map():
 
 def get_google_c_map():
     c_map_google = []
-    for j in range(8):
+    # iterate through each second line of qubits in sycamore architecture
+    for j in range(1, 8, 2):
         for i in range(6):
-            if j % 2 == 0:
-                if i != 0:
-                    elem = [i + 6 * j, i + 6 * j + 5]
-                    c_map_google.append(elem)
+            # connect qubit to upper left und lower left qubits
+            c_map_google.append([i + 6 * j, i + 6 * j + 5])
+            c_map_google.append([i + 6 * j, i + 6 * j - 6])
 
-                if i != 6:
-                    elem = [i + 6 * j, i + 6 * j + 6]
-                    c_map_google.append(elem)
-
-            else:
-                if i != 0:
-                    elem = [i + 6 * j, i + 6 * j + 6]
-                    c_map_google.append(elem)
-
-                if i != 6:
-                    elem = [i + 6 * j, i + 6 * j + 7]
-                    c_map_google.append(elem)
+            # as long as it is not the most right qubit: connect it to upper right and lower right qubit
+            if i != 5:
+                c_map_google.append([i + 6 * j, i + 6 * j - 5])
+                c_map_google.append([i + 6 * j, i + 6 * j + 7])
 
     return c_map_google
