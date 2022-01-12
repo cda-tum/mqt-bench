@@ -1,14 +1,10 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
 
-
-
 def create_circuit(n: int, depth: int = 1, coin_state_preparation: QuantumCircuit = None,
                           ancillary_mode: str = 'noancilla'):
     n = n-1 # because one qubit is needed for the coin
     coin = QuantumRegister(1, 'coin')
     node = QuantumRegister(n, 'node')
-    c_coin = ClassicalRegister(1, 'c_coin')
-    c_node = ClassicalRegister(n, 'c_node')
 
     n_anc = 0
     if ancillary_mode == 'recursion' and n > 3:
@@ -17,7 +13,7 @@ def create_circuit(n: int, depth: int = 1, coin_state_preparation: QuantumCircui
         n_anc = n - 2
 
     if n_anc == 0:
-        qc = QuantumCircuit(node, coin, c_node, c_coin, name='qwalk')
+        qc = QuantumCircuit(node, coin, name='qwalk')
 
         # coin state preparation
         if coin_state_preparation is not None:
@@ -42,7 +38,7 @@ def create_circuit(n: int, depth: int = 1, coin_state_preparation: QuantumCircui
             qc.x(coin)
     else:
         anc = AncillaRegister(n_anc, 'anc')
-        qc = QuantumCircuit(node, coin, anc, c_node, c_coin, name='qwalk')
+        qc = QuantumCircuit(node, coin, anc, name='qwalk')
 
         # coin state preparation
         if coin_state_preparation is not None:
@@ -66,8 +62,6 @@ def create_circuit(n: int, depth: int = 1, coin_state_preparation: QuantumCircui
             qc.x(node[1:])
             qc.x(coin)
 
-    qc.barrier(coin[:] + node[:])
-    qc.measure(coin, c_coin)
-    qc.measure(node, c_node)
+    qc.measure_all()
 
     return qc
