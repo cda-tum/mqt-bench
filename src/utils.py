@@ -107,7 +107,9 @@ def get_rigetti_c_map():
             c_map_rigetti.append(elem)
             if i == 6:
                 c_map_rigetti.append([0 + j * 10, 7 + j * 10])
-
+        if j != 0:
+            c_map_rigetti.append([j * 10 - 8, 5 + j * 10])
+            c_map_rigetti.append([j * 10 - 9, 6 + j * 10])
     return c_map_rigetti
 
 
