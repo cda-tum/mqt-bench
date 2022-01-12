@@ -1,13 +1,13 @@
 ## Code from https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
 
 from qiskit import Aer
-from qiskit.circuit.library import TwoLocal
 from qiskit.aqua import QuantumInstance
 from qiskit.finance.applications.ising import portfolio
 from qiskit.optimization.applications.ising.common import sample_most_likely
 from qiskit.finance.data_providers import RandomDataProvider
-from qiskit.aqua.algorithms import VQE
+from qiskit.aqua.algorithms import QAOA
 from qiskit.aqua.components.optimizers import COBYLA
+
 import numpy as np
 import datetime
 
@@ -49,21 +49,23 @@ def create_circuit(n: int):
             value = portfolio.portfolio_value(x, mu, sigma, q, budget, penalty)
             probability = probabilities[i]
 
-
     backend = Aer.get_backend('statevector_simulator')
     seed = 50
 
     cobyla = COBYLA()
-    cobyla.set_options(maxiter=500)
-    ry = TwoLocal(qubitOp.num_qubits, 'ry', 'cz', reps=3, entanglement='full')
-    vqe = VQE(qubitOp, ry, cobyla)
-    vqe.random_seed = seed
+    cobyla.set_options(maxiter=250)
+    qaoa = QAOA(qubitOp, cobyla, 3)
+
+    qaoa.random_seed = seed
 
     quantum_instance = QuantumInstance(backend=backend, seed_simulator=seed, seed_transpiler=seed)
 
-    result = vqe.run(quantum_instance)
-    qc = vqe.get_optimal_circuit()
-    qc.name="PO_VQE"
+    result = qaoa.run(quantum_instance)
+
+    print_result(result)
+
+    qc = qaoa.get_optimal_circuit()
+    qc.name = "po-qaoa"
     qc.measure_all()
 
     return qc

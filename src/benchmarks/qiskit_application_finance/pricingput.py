@@ -1,9 +1,10 @@
-## Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
+## Code from https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
 
-from qiskit.finance.applications import EuropeanCallExpectedValue
 import numpy as np
+from qiskit import Aer
 from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.circuit.library import LogNormalDistribution
+from qiskit.circuit.library import LinearAmplitudeFunction
 
 def create_circuit(num_uncertainty_qubits:int = 5):
     num_uncertainty_qubits = num_uncertainty_qubits
@@ -28,33 +29,45 @@ def create_circuit(num_uncertainty_qubits:int = 5):
     # composing the uncertainty model and the objective
     uncertainty_model = LogNormalDistribution(num_uncertainty_qubits, mu=mu, sigma=sigma ** 2, bounds=(low, high))
 
-
     # set the strike price (should be within the low and the high value of the uncertainty)
-    strike_price = 1.896
+    strike_price = 2.126
 
     # set the approximation scaling for the payoff function
-    c_approx = 0.25
+    rescaling_factor = 0.25
 
-    european_call_objective = EuropeanCallExpectedValue(num_uncertainty_qubits,
-                                                        strike_price,
-                                                        rescaling_factor=c_approx,
-                                                        bounds=(low, high))
+    # setup piecewise linear objective fcuntion
+    breakpoints = [low, strike_price]
+    slopes = [-1, 0]
+    offsets = [strike_price - low, 0]
+    f_min = 0
+    f_max = strike_price - low
+    european_put_objective = LinearAmplitudeFunction(
+        num_uncertainty_qubits,
+        slopes,
+        offsets,
+        domain=(low, high),
+        image=(f_min, f_max),
+        breakpoints=breakpoints,
+        rescaling_factor=rescaling_factor,
+    )
 
-    # append the uncertainty model to the front
-    european_call = european_call_objective.compose(uncertainty_model, front=True)
+    # construct A operator for QAE for the payoff function by
+    # composing the uncertainty model and the objective
+    european_put = european_put_objective.compose(uncertainty_model, front=True)
+
     # set target precision and confidence level
     epsilon = 0.01
     alpha = 0.05
 
     # construct amplitude estimation
     iae = IterativeAmplitudeEstimation(epsilon=epsilon, alpha=alpha,
-                                      state_preparation=european_call,
+                                      state_preparation=european_put,
                                       objective_qubits=[num_uncertainty_qubits],
-                                      post_processing=european_call_objective.post_processing)
+                                      post_processing=european_put_objective.post_processing)
+
     #result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
-
     qc = iae.construct_circuit(1)
-    qc.name = "pricing_call"
+    qc.name = "pricing-put"
 
     return qc
