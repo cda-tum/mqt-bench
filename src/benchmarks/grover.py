@@ -5,7 +5,7 @@ from qiskit.algorithms import Grover
 
 # checked
 
-def create_circuit(n: int, mcx_mode: str = 'noancilla'):
+def create_circuit(n: int, ancillary_mode: str = 'noancilla'):
     n = n - 1  # magic number due to the flag qubit
     q = QuantumRegister(n, 'q')
     flag = AncillaRegister(1, 'flag')
@@ -17,7 +17,7 @@ def create_circuit(n: int, mcx_mode: str = 'noancilla'):
     oracle = QuantumCircuit(q, flag)
     oracle.mcp(pi, q, flag)
 
-    operator = GroverOperator(oracle, mcx_mode=mcx_mode)
+    operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, n)
 
     num_qubits = operator.num_qubits
