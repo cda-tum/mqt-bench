@@ -114,6 +114,9 @@ def get_rigetti_c_map():
             c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
             c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
+    inversed = [[item[1], item[0]] for item in c_map_rigetti]
+    c_map_rigetti = c_map_rigetti + inversed
+
     return c_map_rigetti
 
 
@@ -130,5 +133,8 @@ def get_google_c_map():
             if i != 5:
                 c_map_google.append([i + 6 * j, i + 6 * j - 5])
                 c_map_google.append([i + 6 * j, i + 6 * j + 7])
+
+    inversed = [[item[1], item[0]] for item in c_map_google]
+    c_map_rigetti = c_map_google + inversed
 
     return c_map_google
