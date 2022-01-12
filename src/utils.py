@@ -27,7 +27,7 @@ def save_as_qasm(qc: QuantumCircuit, n_qubits: int, filename: str, gate_set: lis
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
-        f.write("// Qiskit version: \n" + str(__qiskit_version__) + "\n")
+        f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         f.write("// Used Gate Set: " + str(gate_set) + "\n")
         f.write("// Optimization Level: " + str(opt_level) + "\n")
         if mapped:
