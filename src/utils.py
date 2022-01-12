@@ -12,6 +12,7 @@ from datetime import date
 import networkx as nx
 import numpy as np
 
+
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
     return t_qc
@@ -103,13 +104,16 @@ def get_rigetti_c_map():
     c_map_rigetti = []
     for j in range(4):
         for i in range(0, 7):
-            elem = [i + j * 10, i + 1 + j * 10]
-            c_map_rigetti.append(elem)
+
+            c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+
             if i == 6:
-                c_map_rigetti.append([0 + j * 10, 7 + j * 10])
+                c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+
         if j != 0:
-            c_map_rigetti.append([j * 10 - 8, 5 + j * 10])
-            c_map_rigetti.append([j * 10 - 9, 6 + j * 10])
+            c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
+            c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+
     return c_map_rigetti
 
 
