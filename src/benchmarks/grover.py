@@ -20,7 +20,7 @@ def create_circuit(n: int, ancillary_mode: str = 'noancilla'):
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, n)
 
-    num_qubits = operator.num_qubits
+    num_qubits = operator.num_qubits - 1 #-1 because last qubit is "flag" qubit and already taken care of
 
     # num_qubits may differe now depending on the mcx_mode
 
