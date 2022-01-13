@@ -139,9 +139,24 @@ def get_google_c_map():
                 c_map_google.append([i + 6 * j, i + 6 * j + 7])
 
     inversed = [[item[1], item[0]] for item in c_map_google]
-    c_map_rigetti = c_map_google + inversed
+    c_map_google = c_map_google + inversed
 
     return c_map_google
+
+def handle_algorithm_layer(qc:QuantumCircuit, n:int, save_png:bool, save_hist:bool):
+    filename_algo = qc.name + "_algorithm_" + str(n)
+    if not (os.path.isfile("qpy_output/" + filename_algo + '.qpy')):
+        serialize_qc(qc, n, filename_algo)
+        if save_png: save_circ(qc, filename_algo)
+        if save_hist: sim_and_print_hist(qc, filename_algo)
+        depth = qc.depth()
+    else:
+        print("qpy_output/" + filename_algo + '.qpy' + " already existed")
+        qc = QuantumCircuit.from_qasm_file("qpy_output/" + filename_algo + '.qpy')
+        depth = qc.depth()
+
+    return filename_algo, depth
+
 
 def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
     filename_indep = qc.name + "_t-indep_" + str(n)
