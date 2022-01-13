@@ -11,6 +11,7 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
+import os
 
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
@@ -22,7 +23,7 @@ def get_IBM_cmap(quantum_computer: IBMQBackend):
     return quantum_computer.configuration().coupling_map
 
 
-def save_as_qasm(qc: QuantumCircuit, n_qubits: int, filename: str, gate_set: list, opt_level: int,
+def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list, opt_level: int,
                  mapped: bool = False, c_map: list = [], arch_name: str = ""):
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
@@ -49,7 +50,8 @@ def get_examplary_max_cut_qp(n_qubits: int, degree:int = 2):
     return maxcut.to_quadratic_program()
 
 
-def sim_and_print_hist(qc: QuantumCircuit, simulator, filename: str):
+def sim_and_print_hist(qc: QuantumCircuit, filename: str):
+    simulator = Aer.get_backend('qasm_simulator')
     result = simulator.run(qc, shots=1024).result()
     counts = result.get_counts()
     plot = plot_histogram(counts, figsize=(15, 5), title=filename)
@@ -138,3 +140,29 @@ def get_google_c_map():
     c_map_rigetti = c_map_google + inversed
 
     return c_map_google
+
+def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, opt_level:int, n:int,
+                         save_png:bool, save_hist:bool, file_precheck:bool):
+
+    filename_transpiled = qc.name + "_transpiled_" + gate_set_name + "_opt" + str(opt_level) + "_" + str(n)
+
+    if (not (os.path.isfile("qasm_output/" + filename_transpiled + '.qasm')) and file_precheck):
+        compiled_without_architecure = get_compiled_circuit(qc=qc, opt_level=opt_level, basis_gates=gate_set)
+
+        n_actual = compiled_without_architecure.num_qubits
+
+        filename_transpiled = qc.name + "_transpiled_" + gate_set_name + "_opt" + str(opt_level) + "_" + str(n_actual)
+
+        save_as_qasm(compiled_without_architecure, filename_transpiled, gate_set, opt_level)
+
+        if save_png: save_circ(compiled_without_architecure, filename_transpiled)
+        if save_hist: sim_and_print_hist(compiled_without_architecure, filename_transpiled)
+
+        depth = compiled_without_architecure.depth()
+        return filename_transpiled, depth, n_actual
+
+    else:
+        print("qasm_output/" + filename_transpiled + '.qasm' + " already existed")
+        qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_transpiled + '.qasm')
+        depth = qc.depth()
+        return filename_transpiled, depth, n
