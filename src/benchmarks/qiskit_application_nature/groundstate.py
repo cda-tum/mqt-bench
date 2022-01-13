@@ -13,10 +13,10 @@ from qiskit import Aer
 from qiskit.utils import QuantumInstance
 from qiskit_nature.algorithms import VQEUCCFactory
 from qiskit_nature.algorithms import GroundStateEigensolver
+from qiskit.circuit.library import TwoLocal
+from qiskit.algorithms import VQE
 
-def create_circuit(molecule_choice:int):
-
-
+def create_circuit():
     molecule = Molecule(
         geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]], charge=0, multiplicity=1
     )
@@ -28,15 +28,26 @@ def create_circuit(molecule_choice:int):
     qubit_converter = QubitConverter(JordanWignerMapper())
 
     quantum_instance = QuantumInstance(backend=Aer.get_backend("aer_simulator_statevector"))
-    vqe_solver = VQEUCCFactory(quantum_instance)
+    #vqe_solver = VQEUCCFactory(quantum_instance)
+
+    tl_circuit = TwoLocal(
+        rotation_blocks=["h", "rx"],
+        entanglement_blocks="cz",
+        entanglement="full",
+        reps=2,
+        parameter_prefix="y",
+    )
+
+    another_solver = VQE(
+        ansatz=tl_circuit,
+        quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator_statevector")),
+    )
 
 
-    calc = GroundStateEigensolver(qubit_converter, vqe_solver)
+    calc = GroundStateEigensolver(qubit_converter, another_solver)
     res = calc.solve(es_problem)
 
-    qc = vqe_solver.get_solver(es_problem, qubit_converter).get_optimal_circuit()
+    qc = another_solver.get_optimal_circuit()
     qc.name = "groundstate"
-
-    print(res)
 
     return qc
