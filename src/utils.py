@@ -143,6 +143,23 @@ def get_google_c_map():
 
     return c_map_google
 
+def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
+    filename_indep = qc.name + "_t-indep_" + str(n)
+    if not (os.path.isfile("qpy_output/" + filename_indep + '.qpy')):
+        target_independent = transpile(qc, optimization_level=2)
+        serialize_qc(target_independent, n, filename_indep)
+        if save_png: save_circ(qc, filename_indep)
+        if save_hist: sim_and_print_hist(qc, filename_indep)
+        depth = target_independent.depth()
+
+    else:
+        print("qpy_output/" + filename_indep + '.qpy' + " already existed")
+        qc = QuantumCircuit.from_qasm_file("qpy_output/" + filename_indep + '.qpy')
+        depth = qc.depth()
+
+    return filename_indep, depth
+
+
 def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, opt_level:int, n:int,
                          save_png:bool, save_hist:bool, file_precheck:bool):
 
