@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit import QuantumCircuit, Aer, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
 from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
@@ -168,6 +168,30 @@ def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, 
         qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_transpiled + '.qasm')
         depth = qc.depth()
         return filename_transpiled, depth, n
+
+def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_level:int, n_actual:int,
+                     ibm_smallest_fitting:bool, save_png:bool, save_hist:bool, file_precheck:bool):
+    c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(gate_set_name, ibm_smallest_fitting, n_actual)
+
+    if (c_map_found):
+        filename_mapped = qc.name + "_mapped_" + gate_set_name_mapped + "_opt" + str(opt_level) + "_" + str(n_actual)
+        if (not (os.path.isfile("qasm_output/" + filename_mapped + '.qasm')) and file_precheck):
+
+            compiled_with_architecture = get_compiled_circuit(qc=qc, opt_level=opt_level,
+                                                              basis_gates=gate_set, c_map=c_map)
+            save_as_qasm(compiled_with_architecture, filename_mapped, gate_set,
+                         opt_level, True, c_map, gate_set_name_mapped + "-" + backend_name)
+
+            if save_png: save_circ(compiled_with_architecture, filename_mapped)
+            if save_hist: sim_and_print_hist(compiled_with_architecture, filename_mapped)
+
+            depth = compiled_with_architecture.depth()
+        else:
+            print("qasm_output/" + filename_mapped + '.qasm' + " already existed")
+            qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_mapped + '.qasm')
+            depth = qc.depth()
+        return filename_mapped, depth
+    else: return
 
 def select_c_map(gate_set_name:str, ibm_smallest_fitting:bool, n_actual:int):
     if gate_set_name == "rigetti":
