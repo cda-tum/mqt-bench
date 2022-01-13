@@ -13,6 +13,8 @@ import networkx as nx
 import numpy as np
 import os
 
+from qiskit.test.mock import FakeBogota, FakeCasablanca, FakeGuadalupe, FakeMontreal, FakeManhattan
+
 
 def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: list = ['id', 'rz', 'sx', 'x', 'cx', 'reset'], c_map: CouplingMap = None):
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
@@ -166,3 +168,33 @@ def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, 
         qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_transpiled + '.qasm')
         depth = qc.depth()
         return filename_transpiled, depth, n
+
+def select_c_map(gate_set_name:str, ibm_smallest_fitting:bool, n_actual:int):
+    if gate_set_name == "rigetti":
+        c_map = get_rigetti_c_map()
+        backend_name = "32 qubits"
+        gate_set_name_mapped = gate_set_name
+    elif gate_set_name == "ibm":
+        if ibm_smallest_fitting:
+            if n_actual <= 5:
+                backend = FakeBogota()
+            elif n_actual <= 7:
+                backend = FakeCasablanca()
+            elif n_actual <= 16:
+                backend = FakeGuadalupe()
+            elif n_actual <= 27:
+                backend = FakeMontreal()
+            elif n_actual <= 65:
+                backend = FakeManhattan()
+            gate_set_name_mapped = gate_set_name + "-s"
+        else:
+            backend = FakeManhattan()
+            gate_set_name_mapped = gate_set_name + "-b"
+
+        c_map = backend.configuration().coupling_map
+        backend_name = backend.name()
+    else:
+        raise ValueError("Gate Set Error")
+    c_map_found = (max(max(c_map)) + 1) >=n_actual # +1 because coupling list indices start at 0
+
+    return c_map, backend_name, gate_set_name_mapped, c_map_found
