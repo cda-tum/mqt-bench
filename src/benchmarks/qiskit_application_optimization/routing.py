@@ -177,6 +177,6 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
             kk += 1
 
     # visualize the solution
-    visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
+    #visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
 
     return qc
