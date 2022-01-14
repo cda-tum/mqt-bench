@@ -51,6 +51,7 @@ def create_circuit(molecule:Molecule):
 
     qc = another_solver.get_optimal_circuit()
     qc.name = "excitedstate"
+    qc.measure_all()
 
     #print(qeom_results)
     return qc
