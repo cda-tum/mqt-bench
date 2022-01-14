@@ -145,16 +145,16 @@ def get_google_c_map():
 
 def handle_algorithm_layer(qc:QuantumCircuit, n:int, save_png:bool, save_hist:bool):
     filename_algo = qc.name + "_algorithm_" + str(n)
-    if not (os.path.isfile("qpy_output/" + filename_algo + '.qpy')):
-        serialize_qc(qc, n, filename_algo)
-        if save_png: save_circ(qc, filename_algo)
-        if save_hist: sim_and_print_hist(qc, filename_algo)
-        depth = qc.depth()
-    else:
+    if os.path.isfile("qpy_output/" + filename_algo + '.qpy'):
         path = "qpy_output/" + filename_algo + '.qpy'
         print(path + " already existed")
         with open(path, 'rb') as fd:
             qc = qpy_serialization.load(fd)[0]
+        depth = qc.depth()
+    else:
+        serialize_qc(qc, n, filename_algo)
+        if save_png: save_circ(qc, filename_algo)
+        if save_hist: sim_and_print_hist(qc, filename_algo)
         depth = qc.depth()
 
     return filename_algo, depth
@@ -162,19 +162,19 @@ def handle_algorithm_layer(qc:QuantumCircuit, n:int, save_png:bool, save_hist:bo
 
 def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
     filename_indep = qc.name + "_t-indep_" + str(n)
-    if not (os.path.isfile("qpy_output/" + filename_indep + '.qpy')):
-        target_independent = transpile(qc, optimization_level=2)
-        serialize_qc(target_independent, n, filename_indep)
-        if save_png: save_circ(qc, filename_indep)
-        if save_hist: sim_and_print_hist(qc, filename_indep)
-        depth = target_independent.depth()
-
-    else:
+    if os.path.isfile("qpy_output/" + filename_indep + '.qpy'):
         path = "qpy_output/" + filename_indep + '.qpy'
         print(path + " already existed")
         with open(path, 'rb') as fd:
             qc = qpy_serialization.load(fd)[0]
         depth = qc.depth()
+
+    else:
+        target_independent = transpile(qc, optimization_level=2)
+        serialize_qc(target_independent, n, filename_indep)
+        if save_png: save_circ(qc, filename_indep)
+        if save_hist: sim_and_print_hist(qc, filename_indep)
+        depth = target_independent.depth()
 
     return filename_indep, depth
 
@@ -184,35 +184,35 @@ def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, 
 
     filename_transpiled = qc.name + "_transpiled_" + gate_set_name + "_opt" + str(opt_level) + "_" + str(n)
 
-    if (not (os.path.isfile("qasm_output/" + filename_transpiled + '.qasm')) and file_precheck):
+    if os.path.isfile("qasm_output/" + filename_transpiled + '.qasm') and file_precheck:
+        print("qasm_output/" + filename_transpiled + '.qasm' + " already existed")
+        qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_transpiled + '.qasm')
+        depth = qc.depth()
+        return filename_transpiled, depth, n
+
+    else:
         compiled_without_architecure = get_compiled_circuit(qc=qc, opt_level=opt_level, basis_gates=gate_set)
-
         n_actual = compiled_without_architecure.num_qubits
-
         filename_transpiled = qc.name + "_transpiled_" + gate_set_name + "_opt" + str(opt_level) + "_" + str(n_actual)
-
         save_as_qasm(compiled_without_architecure, filename_transpiled, gate_set, opt_level)
-
         if save_png: save_circ(compiled_without_architecure, filename_transpiled)
         if save_hist: sim_and_print_hist(compiled_without_architecure, filename_transpiled)
 
         depth = compiled_without_architecure.depth()
         return filename_transpiled, depth, n_actual
 
-    else:
-        print("qasm_output/" + filename_transpiled + '.qasm' + " already existed")
-        qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_transpiled + '.qasm')
-        depth = qc.depth()
-        return filename_transpiled, depth, n
-
 def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_level:int, n_actual:int,
                      ibm_smallest_fitting:bool, save_png:bool, save_hist:bool, file_precheck:bool):
+
     c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(gate_set_name, ibm_smallest_fitting, n_actual)
 
     if (c_map_found):
         filename_mapped = qc.name + "_mapped_" + gate_set_name_mapped + "_opt" + str(opt_level) + "_" + str(n_actual)
-        if (not (os.path.isfile("qasm_output/" + filename_mapped + '.qasm')) and file_precheck):
-
+        if os.path.isfile("qasm_output/" + filename_mapped + '.qasm') and file_precheck:
+            print("qasm_output/" + filename_mapped + '.qasm' + " already existed")
+            qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_mapped + '.qasm')
+            depth = qc.depth()
+        else:
             compiled_with_architecture = get_compiled_circuit(qc=qc, opt_level=opt_level,
                                                               basis_gates=gate_set, c_map=c_map)
             save_as_qasm(compiled_with_architecture, filename_mapped, gate_set,
@@ -222,10 +222,6 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_le
             if save_hist: sim_and_print_hist(compiled_with_architecture, filename_mapped)
 
             depth = compiled_with_architecture.depth()
-        else:
-            print("qasm_output/" + filename_mapped + '.qasm' + " already existed")
-            qc = QuantumCircuit.from_qasm_file("qasm_output/" + filename_mapped + '.qasm')
-            depth = qc.depth()
         return filename_mapped, depth
     else: return
 
