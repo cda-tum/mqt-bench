@@ -15,11 +15,8 @@ from qiskit_nature.algorithms import GroundStateEigensolver, QEOM, VQEUCCFactory
 from qiskit.circuit.library import TwoLocal
 from qiskit.algorithms import VQE
 
-def create_circuit(m):
+def create_circuit(molecule:Molecule):
 
-    molecule = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]], charge=0, multiplicity=1
-    )
     driver = ElectronicStructureMoleculeDriver(
         molecule, basis="sto3g", driver_type=ElectronicStructureDriverType.PYSCF
     )
