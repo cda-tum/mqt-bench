@@ -54,7 +54,7 @@ def get_examplary_max_cut_qp(n_qubits: int, degree:int = 2):
 
 def sim_and_print_hist(qc: QuantumCircuit, filename: str):
     simulator = Aer.get_backend('qasm_simulator')
-    result = simulator.run(qc, shots=1024).result()
+    result = simulator.run(qc.decompose(), shots=1024).result()
     counts = result.get_counts()
     plot = plot_histogram(counts, figsize=(15, 5), title=filename)
     plot.savefig("hist_output/" + filename + '_hist' + '.png', bbox_inches="tight")

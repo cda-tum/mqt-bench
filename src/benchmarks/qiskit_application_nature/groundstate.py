@@ -46,5 +46,6 @@ def create_circuit(molecule:Molecule):
 
     qc = another_solver.get_optimal_circuit()
     qc.name = "groundstate"
+    qc.measure_all()
 
     return qc
