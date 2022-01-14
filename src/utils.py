@@ -170,7 +170,7 @@ def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
         depth = qc.depth()
 
     else:
-        target_independent = transpile(qc, optimization_level=2)
+        target_independent = transpile(qc, optimization_level=1)
         serialize_qc(target_independent, n, filename_indep)
         if save_png: save_circ(qc, filename_indep)
         if save_hist: sim_and_print_hist(qc, filename_indep)
