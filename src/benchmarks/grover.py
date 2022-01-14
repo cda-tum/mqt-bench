@@ -15,7 +15,7 @@ def create_circuit(n: int, ancillary_mode: str = 'noancilla'):
     state_preparation.x(flag)
 
     oracle = QuantumCircuit(q, flag)
-    oracle.mcp(pi, q, flag)
+    oracle.mct(q, flag)
 
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, n)
