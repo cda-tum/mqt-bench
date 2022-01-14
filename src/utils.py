@@ -151,8 +151,10 @@ def handle_algorithm_layer(qc:QuantumCircuit, n:int, save_png:bool, save_hist:bo
         if save_hist: sim_and_print_hist(qc, filename_algo)
         depth = qc.depth()
     else:
-        print("qpy_output/" + filename_algo + '.qpy' + " already existed")
-        qc = QuantumCircuit.from_qasm_file("qpy_output/" + filename_algo + '.qpy')
+        path = "qpy_output/" + filename_algo + '.qpy'
+        print(path + " already existed")
+        with open(path, 'rb') as fd:
+            qc = qpy_serialization.load(fd)[0]
         depth = qc.depth()
 
     return filename_algo, depth
@@ -168,8 +170,10 @@ def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
         depth = target_independent.depth()
 
     else:
-        print("qpy_output/" + filename_indep + '.qpy' + " already existed")
-        qc = QuantumCircuit.from_qasm_file("qpy_output/" + filename_indep + '.qpy')
+        path = "qpy_output/" + filename_indep + '.qpy'
+        print(path + " already existed")
+        with open(path, 'rb') as fd:
+            qc = qpy_serialization.load(fd)[0]
         depth = qc.depth()
 
     return filename_indep, depth
