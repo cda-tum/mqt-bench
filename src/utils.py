@@ -223,7 +223,7 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_le
 
             depth = compiled_with_architecture.depth()
         return filename_mapped, depth
-    else: return
+    else: return "", 0
 
 def select_c_map(gate_set_name:str, ibm_smallest_fitting:bool, n_actual:int):
     if gate_set_name == "rigetti":
