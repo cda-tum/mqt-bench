@@ -25,14 +25,16 @@ def get_IBM_cmap(quantum_computer: IBMQBackend):
     return quantum_computer.configuration().coupling_map
 
 
-def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list, opt_level: int,
+def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list=None, opt_level: int=None,
                  mapped: bool = False, c_map: list = [], arch_name: str = ""):
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
         f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
-        f.write("// Used Gate Set: " + str(gate_set) + "\n")
-        f.write("// Optimization Level: " + str(opt_level) + "\n")
+        if gate_set:
+            f.write("// Used Gate Set: " + str(gate_set) + "\n")
+        if opt_level:
+            f.write("// Optimization Level: " + str(opt_level) + "\n")
         if mapped:
             f.write("// Coupling List: " + str(c_map) + "\n")
             if arch_name:
@@ -161,22 +163,41 @@ def handle_algorithm_layer(qc:QuantumCircuit, n:int, save_png:bool, save_hist:bo
 
 
 def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
-    filename_indep = qc.name + "_t-indep_" + str(n)
-    if os.path.isfile("qpy_output/" + filename_indep + '.qpy'):
-        path = "qpy_output/" + filename_indep + '.qpy'
+    # filename_indep = qc.name + "_t-indep_" + str(n)
+    # if os.path.isfile("qpy_output/" + filename_indep + '.qpy'):
+    #     path = "qpy_output/" + filename_indep + '.qpy'
+    #     print(path + " already existed")
+    #     with open(path, 'rb') as fd:
+    #         qc = qpy_serialization.load(fd)[0]
+    #     depth = qc.depth()
+    #
+    # else:
+    #     target_independent = transpile(qc, optimization_level=1)
+    #     serialize_qc(target_independent, n, filename_indep)
+    #     if save_png: save_circ(qc, filename_indep)
+    #     if save_hist: sim_and_print_hist(qc, filename_indep)
+    #     depth = target_independent.depth()
+    #return filename_indep, depth
+
+
+    filename_indep = filename_indep = qc.name + "_t-indep_" + str(n)
+    path = "qasm_output/" + filename_indep + '.qasm'
+    if os.path.isfile(path):
         print(path + " already existed")
-        with open(path, 'rb') as fd:
-            qc = qpy_serialization.load(fd)[0]
+        qc = QuantumCircuit.from_qasm_file(path)
         depth = qc.depth()
+        return filename_indep, depth
 
     else:
         target_independent = transpile(qc, optimization_level=1)
-        serialize_qc(target_independent, n, filename_indep)
-        if save_png: save_circ(qc, filename_indep)
-        if save_hist: sim_and_print_hist(qc, filename_indep)
-        depth = target_independent.depth()
+        save_as_qasm(target_independent, filename_indep)
+        if save_png: save_circ(target_independent, filename_indep)
+        if save_hist: sim_and_print_hist(target_independent, filename_indep)
 
-    return filename_indep, depth
+        depth = target_independent.depth()
+        return filename_indep, depth
+
+
 
 
 def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, opt_level:int, n:int,
