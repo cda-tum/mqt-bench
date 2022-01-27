@@ -106,9 +106,9 @@ def get_estimation_problem():
     return problem
 
 
-def get_rigetti_c_map():
+def get_rigetti_c_map(circles: int = 4):
     c_map_rigetti = []
-    for j in range(4):
+    for j in range(circles):
         for i in range(0, 7):
 
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
