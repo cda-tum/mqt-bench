@@ -20,11 +20,6 @@ def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: li
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
     return t_qc
 
-
-def get_IBM_cmap(quantum_computer: IBMQBackend):
-    return quantum_computer.configuration().coupling_map
-
-
 def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list=None, opt_level: int=None,
                  mapped: bool = False, c_map: list = [], arch_name: str = ""):
 
