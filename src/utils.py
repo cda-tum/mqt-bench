@@ -223,9 +223,9 @@ def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name:str, 
         return filename_transpiled, depth, n_actual
 
 def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_level:int, n_actual:int,
-                     ibm_smallest_fitting:bool, save_png:bool, save_hist:bool, file_precheck:bool):
+                     smallest_fitting_arch:bool, save_png:bool, save_hist:bool, file_precheck:bool):
 
-    c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(gate_set_name, ibm_smallest_fitting, n_actual)
+    c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(gate_set_name, smallest_fitting_arch, n_actual)
 
     if (c_map_found):
         filename_mapped = qc.name + "_mapped_" + gate_set_name_mapped + "_opt" + str(opt_level) + "_" + str(n_actual)
@@ -246,13 +246,32 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_le
         return filename_mapped, depth
     else: return "", 0
 
-def select_c_map(gate_set_name:str, ibm_smallest_fitting:bool, n_actual:int):
+def select_c_map(gate_set_name:str, smallest_fitting_arch:bool, n_actual:int):
     if gate_set_name == "rigetti":
-        c_map = get_rigetti_c_map()
-        backend_name = "32 qubits"
-        gate_set_name_mapped = gate_set_name
+        if smallest_fitting_arch:
+            if n_actual <= 8:
+                c_map = get_rigetti_c_map(1)
+                backend_name = "8 qubits"
+            elif n_actual <= 16:
+                c_map = get_rigetti_c_map(2)
+                backend_name = "Aspen-3: 16 qubits"
+            elif n_actual <= 32:
+                c_map = get_rigetti_c_map(4)
+                backend_name = "Aspen-10: 32 qubits"
+            elif n_actual <= 40:
+                c_map = get_rigetti_c_map(5)
+                backend_name = "Aspen-11: 40 qubits"
+            elif n_actual <= 80:
+                c_map = get_rigetti_c_map(10)
+                backend_name = "80 qubits"
+            gate_set_name_mapped = gate_set_name + "-s"
+        else:
+            c_map = get_rigetti_c_map(10)
+            backend_name = "80 qubits"
+            gate_set_name_mapped = gate_set_name + "-b"
+
     elif gate_set_name == "ibm":
-        if ibm_smallest_fitting:
+        if smallest_fitting_arch:
             if n_actual <= 5:
                 backend = FakeBogota()
             elif n_actual <= 7:
@@ -272,6 +291,6 @@ def select_c_map(gate_set_name:str, ibm_smallest_fitting:bool, n_actual:int):
         backend_name = backend.name()
     else:
         raise ValueError("Gate Set Error")
-    c_map_found = (max(max(c_map)) + 1) >=n_actual # +1 because coupling list indices start at 0
+    c_map_found = (max(max(c_map)) + 1) >= n_actual # +1 because coupling list indices start at 0
 
     return c_map, backend_name, gate_set_name_mapped, c_map_found
