@@ -20,7 +20,7 @@ def get_compiled_circuit(qc: QuantumCircuit, opt_level: int = 2, basis_gates: li
     t_qc = transpile(qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map)
     return t_qc
 
-def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list=None, opt_level: int=None,
+def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list=None, opt_level: int=-1,
                  mapped: bool = False, c_map: list = [], arch_name: str = ""):
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
@@ -28,7 +28,7 @@ def save_as_qasm(qc: QuantumCircuit, filename: str, gate_set: list=None, opt_lev
         f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
-        if opt_level:
+        if opt_level >= 0:
             f.write("// Optimization Level: " + str(opt_level) + "\n")
         if mapped:
             f.write("// Coupling List: " + str(c_map) + "\n")
@@ -244,6 +244,7 @@ def select_c_map(gate_set_name:str, smallest_fitting_arch:bool, n_actual:int):
                 c_map = get_rigetti_c_map(10)
                 backend_name = "80 qubits"
             gate_set_name_mapped = gate_set_name + "-s"
+
         else:
             c_map = get_rigetti_c_map(10)
             backend_name = "80 qubits"
@@ -432,4 +433,7 @@ def get_cmap_imbq_washington():
                         [123, 124],
                         [124, 125],
                         [125, 126]]
+
+    inversed = [[item[1], item[0]] for item in c_map_ibmq_washington]
+    c_map_ibmq_washington = c_map_ibmq_washington + inversed
     return c_map_ibmq_washington
