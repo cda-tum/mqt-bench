@@ -105,7 +105,6 @@ def get_rigetti_c_map(circles: int = 4):
     c_map_rigetti = []
     for j in range(circles):
         for i in range(0, 7):
-
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
             if i == 6:
@@ -226,28 +225,36 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_le
     else: return "", 0
 
 def select_c_map(gate_set_name:str, smallest_fitting_arch:bool, n_actual:int):
+    print(gate_set_name, smallest_fitting_arch, n_actual)
+    c_map_found = False
     if gate_set_name == "rigetti":
         if smallest_fitting_arch:
             if n_actual <= 8:
                 c_map = get_rigetti_c_map(1)
                 backend_name = "8 qubits"
+                c_map_found = True
             elif n_actual <= 16:
                 c_map = get_rigetti_c_map(2)
                 backend_name = "Aspen-3: 16 qubits"
+                c_map_found = True
             elif n_actual <= 32:
                 c_map = get_rigetti_c_map(4)
                 backend_name = "Aspen-10: 32 qubits"
+                c_map_found = True
             elif n_actual <= 40:
                 c_map = get_rigetti_c_map(5)
                 backend_name = "Aspen-11: 40 qubits"
+                c_map_found = True
             elif n_actual <= 80:
                 c_map = get_rigetti_c_map(10)
                 backend_name = "80 qubits"
+                c_map_found = True
             gate_set_name_mapped = gate_set_name + "-s"
 
-        else:
+        elif n_actual <= 80:
             c_map = get_rigetti_c_map(10)
             backend_name = "80 qubits"
+            c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
 
     elif gate_set_name == "ibm":
@@ -256,39 +263,47 @@ def select_c_map(gate_set_name:str, smallest_fitting_arch:bool, n_actual:int):
                 backend = FakeBogota()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
+                c_map_found = True
             elif n_actual <= 7:
                 backend = FakeCasablanca()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
+                c_map_found = True
             elif n_actual <= 16:
                 backend = FakeGuadalupe()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
+                c_map_found = True
             elif n_actual <= 27:
                 backend = FakeMontreal()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
+                c_map_found = True
             elif n_actual <= 65:
                 backend = FakeManhattan()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
+                c_map_found = True
             elif n_actual <= 127:
                 c_map = get_cmap_imbq_washington()
                 backend_name = "Washington"
+                c_map_found = True
             gate_set_name_mapped = gate_set_name + "-s"
 
-        else:
+        elif n_actual <= 127:
             c_map = get_cmap_imbq_washington()
             backend_name = "Washington"
+            c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
 
 
     else:
         raise ValueError("Gate Set Error")
 
-    c_map_found = (max(max(c_map)) + 1) >= n_actual # +1 because coupling list indices start at 0
-
-    return c_map, backend_name, gate_set_name_mapped, c_map_found
+    if c_map_found:
+        return c_map, backend_name, gate_set_name_mapped, c_map_found
+    else:
+        return False, False, False, False
 
 def get_cmap_imbq_washington():
     c_map_ibmq_washington = [[0, 1],
