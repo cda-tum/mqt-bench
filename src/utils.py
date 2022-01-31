@@ -167,7 +167,8 @@ def get_indep_layer(qc: QuantumCircuit, n:int, save_png:bool, save_hist:bool):
         return filename_indep, depth
 
     else:
-        target_independent = transpile(qc, optimization_level=1)
+        openQASM_gates = get_openQASM_gates()
+        target_independent = transpile(qc, basis_gates=openQASM_gates, optimization_level=1) # decompose because otherwise error occur due to custom gates
         save_as_qasm(target_independent, filename_indep)
         if save_png: save_circ(target_independent, filename_indep)
         if save_hist: sim_and_print_hist(target_independent, filename_indep)
@@ -225,7 +226,6 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set:str, gate_set_name:str, opt_le
     else: return "", 0
 
 def select_c_map(gate_set_name:str, smallest_fitting_arch:bool, n_actual:int):
-    print(gate_set_name, smallest_fitting_arch, n_actual)
     c_map_found = False
     if gate_set_name == "rigetti":
         if smallest_fitting_arch:
@@ -452,3 +452,42 @@ def get_cmap_imbq_washington():
     inversed = [[item[1], item[0]] for item in c_map_ibmq_washington]
     c_map_ibmq_washington = c_map_ibmq_washington + inversed
     return c_map_ibmq_washington
+
+def get_openQASM_gates():
+    # according to QASMbench paper
+    gate_list = [
+        "u3",
+        "u2",
+        "u1",
+        "cx",
+        "id",
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "cz",
+        "cy",
+        "swap",
+        "ch",
+        "ccx",
+        "cswap",
+        "crx",
+        "cry",
+        "crz",
+        "cu1",
+        "cu3",
+        "rxx",
+        "rzz",
+        "rccx",
+        "rc3x",
+        "c3x",
+        "c3xsqrtx",
+        "c4x"]
+    return gate_list
