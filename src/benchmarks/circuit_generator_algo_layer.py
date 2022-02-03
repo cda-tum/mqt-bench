@@ -1,47 +1,69 @@
 import importlib
+import ast
 
-def generate_algo_layer_benchmarks():
-    algo_dicts_filename = "algo_dicts.txt"
-    with open(algo_dicts_filename) as file:
-        algo_dicts = file.readline()
+#def generate_algo_layer_benchmarks():
+algo_dicts_filename = "algo_dicts.txt"
+with open(algo_dicts_filename) as file:
+    algo_dicts = ast.literal_eval(file.readline())
 
-    # algo_dicts = []
-    #
-    # qft_dict_1 = {
-    #   "name": "grover",
-    #   "n_max": 20,
-    #   "stepsize": 5,
-    #   "ancillary_mode": "noancilla",
-    # }
-    # qft_dict_2 = {
-    #   "name": "qft",
-    #   "n_max": 10,
-    #   "stepsize": 3,
-    #   "ancillary_mode": None,
-    # }
+print (algo_dicts)
 
-    #algo_dicts.append(qft_dict_1)
-    #algo_dicts.append(qft_dict_2)
+qc_results = []
+for circuit_dict in algo_dicts:
+    #print(circuit_dict["name"])
+    benchmark_name = circuit_dict["name"]
+    if "grover" in benchmark_name:
+        lib = importlib.import_module("grover")
+    elif "qwalk" in benchmark_name:
+        lib = importlib.import_module("qwalk")
+    else:
+        try:
+            print("benchmark_name: ", benchmark_name)
+            lib = importlib.import_module(benchmark_name)
+        except Exception as e:
+            print(e)
+            continue
 
-    qc_results = []
+#################### non scalable benchmarks
 
-    for circuit_dict in algo_dicts:
-        filename = circuit_dict["name"]
-        lib = importlib.import_module(filename)
-        for i in range(3, circuit_dict["n_max"], circuit_dict["stepsize"]):
-            if circuit_dict["ancillary_mode"]:
-                qc = lib.create_circuit(i, ancillary_mode=circuit_dict["ancillary_mode"])
-                qc.name = qc.name + "-" + circuit_dict["ancillary_mode"]
-            else:
-                qc = lib.create_circuit(i)
+        if benchmark_name == "shor":
+            # create_shor_benchmarks()
+            continue
+        elif benchmark_name == "hhl":  # 5 is max number which fits my RAM
+            continue
+        elif benchmark_name == "pricingcall":
+            continue
+        elif benchmark_name == "pricingput":
+            continue
+        elif benchmark_name == "groundstate":
+            continue
+        elif benchmark_name == "excitedstate":
+            continue
+        elif benchmark_name == "tsp":
+            continue
+        elif benchmark_name == "routing":
+            continue
 
-            tmp_result = {
-                "name": qc.name,
-                "n_qubits": i,
-                "quantum_circuit": qc,
-                "ancilla_mode": circuit_dict["ancillary_mode"]
-            }
+#################### non scalable benchmarks end
 
-            qc_results.append(tmp_result)
-    print(qc_results)
-    return qc_results
+    for i in range(3, int(circuit_dict["n_max"]), int(circuit_dict["stepsize"])):
+        if "v-chain" in benchmark_name:
+            qc = lib.create_circuit(i, ancillary_mode="v-chain")
+            qc.name = qc.name + "-" + "ancillary_mode"
+        elif "noancilla" in benchmark_name:
+            qc = lib.create_circuit(i, ancillary_mode="noancilla")
+            qc.name = qc.name + "-" + "noancilla"
+        # First treat all "special" benchmarks with n != num qubits or different constructor parameters
+
+        else:
+            qc = lib.create_circuit(i)
+
+        tmp_result = {
+            "name": qc.name,
+            "n_qubits": i,
+            "quantum_circuit": qc,
+        }
+
+        qc_results.append(tmp_result)
+print(qc_results)
+   # return qc_results
