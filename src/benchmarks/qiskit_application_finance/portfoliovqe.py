@@ -63,7 +63,7 @@ def create_circuit(n: int):
 
     result = vqe.run(quantum_instance)
     qc = vqe.get_optimal_circuit()
-    qc.name="po-vqe"
+    qc.name="portfoliovqe"
     qc.measure_all()
 
     return qc

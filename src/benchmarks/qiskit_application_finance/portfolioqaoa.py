@@ -63,7 +63,7 @@ def create_circuit(n: int):
     result = qaoa.run(quantum_instance)
 
     qc = qaoa.get_optimal_circuit()
-    qc.name = "po-qaoa"
+    qc.name = "portfolioqaoa"
     qc.measure_all()
 
     return qc
