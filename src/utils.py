@@ -1,7 +1,6 @@
 from qiskit import QuantumCircuit, Aer, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
-from qiskit.providers.ibmq.ibmqbackend import IBMQBackend
 from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
