@@ -44,10 +44,8 @@ Currently, qTUMbench supports two mapping schemes:
 
 
 References:
-<details>
-<summary>
-  [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, arXiv:2104.14722, 2021
-</summary>
+<details open>
+<summary> [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, arXiv:2104.14722, 2021 </summary>
 
 ```bibtex
 @misc{cross2021openqasm,
@@ -57,5 +55,7 @@ References:
       eprint={2104.14722},
       archivePrefix={arXiv},
       primaryClass={quant-ph}
-}```
+}
+```
+
 </details>
