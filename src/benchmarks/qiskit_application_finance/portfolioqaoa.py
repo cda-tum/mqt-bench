@@ -59,7 +59,7 @@ def create_circuit(num_qubits: int):
     seed = 50
 
     cobyla = COBYLA()
-    cobyla.set_options(maxiter=250)
+    cobyla.set_options(maxiter=50)
     qaoa = QAOA(qubitOp, cobyla, 3)
 
     qaoa.random_seed = seed
