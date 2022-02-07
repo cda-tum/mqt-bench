@@ -60,7 +60,7 @@ def create_circuit(num_qubits: int):
     seed = 50
 
     cobyla = COBYLA()
-    cobyla.set_options(maxiter=500)
+    cobyla.set_options(maxiter=50)
     ry = TwoLocal(qubitOp.num_qubits, 'ry', 'cz', reps=3, entanglement='full')
     vqe = VQE(qubitOp, ry, cobyla)
     vqe.random_seed = seed
