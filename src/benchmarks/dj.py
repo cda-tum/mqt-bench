@@ -3,7 +3,6 @@
 from qiskit import QuantumCircuit
 import numpy as np
 
-# checked
 
 def dj_oracle(case, n):
     # plus one output qubit
@@ -63,13 +62,20 @@ def dj_algorithm(oracle, n):
 
     return dj_circuit
 
-def create_circuit(n: int, balanced:bool = True):
+
+def create_circuit(n: int, balanced: bool = True):
+    """Returns a quantum circuit implementing the Deutsch-Josza algorithm.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    balanced -- True for a balanced and False for a constant oracle
+    """
 
     if balanced:
         oracle_mode = 'balanced'
     else:
         oracle_mode = 'constant'
-    n = n-1 # because of ancilla qubit
+    n = n - 1  # because of ancilla qubit
     oracle_gate = dj_oracle(oracle_mode, n)
     qc = dj_algorithm(oracle_gate, n)
     qc.name = "dj"

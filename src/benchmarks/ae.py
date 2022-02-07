@@ -4,11 +4,16 @@ from qiskit.algorithms import AmplitudeEstimation
 
 from src import utils
 
-# checked
 
 def create_circuit(num_qubits: int):
+    """Returns a quantum circuit implementing Quantum Amplitude Estimation.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    """
+
     ae = AmplitudeEstimation(
-        num_eval_qubits=num_qubits - 1,  # magic number one because of to be estimated qubit
+        num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
     )
     problem = utils.get_estimation_problem()
 

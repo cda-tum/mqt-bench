@@ -1,13 +1,18 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import QuantumCircuit, QuantumRegister
 
-# checked
 
-def create_circuit(n: int):
-    q = QuantumRegister(n, 'q')
+def create_circuit(num_qubits: int):
+    """Returns a quantum circuit implementing the GHZ state.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    """
+
+    q = QuantumRegister(num_qubits, 'q')
     qc = QuantumCircuit(q, name='ghz')
     qc.h(q[-1])
-    for i in range(1, n):
-        qc.cx(q[n - i], q[n - i - 1])
+    for i in range(1, num_qubits):
+        qc.cx(q[num_qubits - i], q[num_qubits - i - 1])
     qc.measure_all()
 
     return qc

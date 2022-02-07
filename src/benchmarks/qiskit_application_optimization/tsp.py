@@ -13,12 +13,16 @@ from qiskit_optimization.converters import QuadraticProgramToQubo
 import warnings
 
 
-def create_circuit(nodes: int):
+def create_circuit(num_nodes: int):
+    """Returns a quantum circuit solving the Travelling Salesman Problem (TSP).
+
+    Keyword arguments:
+    num_nodes -- number of to be visited nodes
+    """
     # Generating a graph of 3 nodes
-    n = nodes
+    n = num_nodes
     num_qubits = n ** 2
     tsp = Tsp.create_random_instance(n, seed=123)
-    adj_matrix = nx.to_numpy_matrix(tsp.graph)
 
     qp = tsp.to_quadratic_program()
 
@@ -31,7 +35,7 @@ def create_circuit(nodes: int):
     backend = Aer.get_backend("aer_simulator_statevector")
     quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
 
-    spsa = SPSA(maxiter=300)
+    spsa = SPSA(maxiter=100)
     ry = TwoLocal(qubitOp.num_qubits, "ry", "cz", reps=5, entanglement="linear")
     vqe = VQE(ry, optimizer=spsa, quantum_instance=quantum_instance)
 

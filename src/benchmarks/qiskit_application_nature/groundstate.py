@@ -16,16 +16,23 @@ from qiskit_nature.algorithms import GroundStateEigensolver
 from qiskit.circuit.library import TwoLocal
 from qiskit.algorithms import VQE
 
-def create_circuit(molecule:Molecule):
+
+def create_circuit(molecule: Molecule, basis: str = "sto3g"):
+    """Returns a quantum circuit implementing Ground State Estimation.
+
+    Keyword arguments:
+    molecule -- Molecule for which the ground state shall be estimated.
+    """
+
     driver = ElectronicStructureMoleculeDriver(
-        molecule, basis="sto3g", driver_type=ElectronicStructureDriverType.PYSCF
+        molecule, basis=basis, driver_type=ElectronicStructureDriverType.PYSCF
     )
 
     es_problem = ElectronicStructureProblem(driver)
     qubit_converter = QubitConverter(JordanWignerMapper())
 
     quantum_instance = QuantumInstance(backend=Aer.get_backend("aer_simulator_statevector"))
-    #vqe_solver = VQEUCCFactory(quantum_instance)
+    # vqe_solver = VQEUCCFactory(quantum_instance)
 
     tl_circuit = TwoLocal(
         rotation_blocks=["h", "rx"],
@@ -39,7 +46,6 @@ def create_circuit(molecule:Molecule):
         ansatz=tl_circuit,
         quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator_statevector")),
     )
-
 
     calc = GroundStateEigensolver(qubit_converter, another_solver)
     res = calc.solve(es_problem)

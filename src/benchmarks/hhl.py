@@ -1,21 +1,25 @@
-## Code maybe from https://qiskit.org/textbook/ch-applications/hhl_tutorial.html, example looks slightly different though
-
-## checked
+## Code based on https://qiskit.org/textbook/ch-applications/hhl_tutorial.html
 
 import numpy as np
 from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import TridiagonalToeplitz
 from qiskit.algorithms.linear_solvers.hhl import HHL
 
-def create_circuit(n: int):
+
+def create_circuit(num_qubits: int):
+    """Returns a quantum circuit implementing the HHL algorithm for a specific example matrix.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    """
+
     a = 1
     b = -1 / 3
 
-    vector = np.array([1] + [0] * (2 ** n - 1))
-    tridi_matrix = TridiagonalToeplitz(n, a, b)
+    vector = np.array([1] + [0] * (2 ** num_qubits - 1))
+    tridi_matrix = TridiagonalToeplitz(num_qubits, a, b)
     qc = HHL().solve(tridi_matrix, vector).state
 
     qc.name = "HHL"
     qc.measure_all()
 
     return qc
-

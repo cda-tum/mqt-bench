@@ -78,9 +78,9 @@ class QuantumOptimizer:
 
         # g defines the contribution from the individual variables
         g = (
-            w
-            - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T)
-            - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
+                w
+                - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T)
+                - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
         )
 
         # c is the constant offset
@@ -91,8 +91,8 @@ class QuantumOptimizer:
             # Evaluates the cost distance from a binary representation of a path
             fun = (
                 lambda x: np.dot(np.around(x), np.dot(Q, np.around(x)))
-                + np.dot(g, np.around(x))
-                + c
+                          + np.dot(g, np.around(x))
+                          + c
             )
             cost = fun(x_sol)
         except:
@@ -124,6 +124,7 @@ class QuantumOptimizer:
         _, _, _, level = self.binary_representation(x_sol=result.x)
         return result.x, level, vqe
 
+
 def visualize_solution(xc, yc, x, C, n, K, title_str):
     plt.figure()
     plt.scatter(xc, yc, s=200)
@@ -150,7 +151,15 @@ def visualize_solution(xc, yc, x, C, n, K, title_str):
     plt.title(title_str + " cost = " + str(int(C * 100) / 100.0))
     plt.show()
 
+
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
+    """Returns a quantum circuit solving a routing problem.
+
+    Keyword arguments:
+    num_nodes -- number of to be visited nodes
+    num_vehs -- number of used vehicles
+    """
+
     # Initialize the problem by defining the parameters
     n = num_nodes  # number of nodes + depot (n+1)
     K = num_vehs  # number of vehicles
@@ -177,6 +186,6 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
             kk += 1
 
     # visualize the solution
-    #visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
+    # visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
 
     return qc

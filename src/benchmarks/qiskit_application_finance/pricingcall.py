@@ -1,11 +1,18 @@
 ## Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
-from qiskit.finance.applications import EuropeanCallExpectedValue
 import numpy as np
 from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
+from qiskit.finance.applications import EuropeanCallExpectedValue
 from qiskit_finance.circuit.library import LogNormalDistribution
 
-def create_circuit(num_uncertainty_qubits:int = 5):
+
+def create_circuit(num_uncertainty_qubits: int = 5):
+    """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of pricing call options.
+
+    Keyword arguments:
+    num_uncertainty_qubits -- number of qubits to measure uncertainty
+    """
+
     num_uncertainty_qubits = num_uncertainty_qubits
 
     # parameters for considered random distribution
@@ -28,7 +35,6 @@ def create_circuit(num_uncertainty_qubits:int = 5):
     # composing the uncertainty model and the objective
     uncertainty_model = LogNormalDistribution(num_uncertainty_qubits, mu=mu, sigma=sigma ** 2, bounds=(low, high))
 
-
     # set the strike price (should be within the low and the high value of the uncertainty)
     strike_price = 1.896
 
@@ -48,11 +54,10 @@ def create_circuit(num_uncertainty_qubits:int = 5):
 
     # construct amplitude estimation
     iae = IterativeAmplitudeEstimation(epsilon=epsilon, alpha=alpha,
-                                      state_preparation=european_call,
-                                      objective_qubits=[num_uncertainty_qubits],
-                                      post_processing=european_call_objective.post_processing)
-    #result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
-
+                                       state_preparation=european_call,
+                                       objective_qubits=[num_uncertainty_qubits],
+                                       post_processing=european_call_objective.post_processing)
+    # result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
     qc = iae.construct_circuit(1)
     qc.name = "pricing-call"
