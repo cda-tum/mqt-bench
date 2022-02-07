@@ -12,9 +12,15 @@ import numpy as np
 import datetime
 
 
-def create_circuit(n: int):
+def create_circuit(num_qubits: int):
+    """Returns a quantum circuit of VQE applied to a specific portfolio optimization task.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    """
+
     # set number of assets (= number of qubits)
-    num_assets = n
+    num_assets = num_qubits
 
     # Generate expected return and covariance matrix from (random) time-series
     stocks = [("TICKER%s" % i) for i in range(num_assets)]

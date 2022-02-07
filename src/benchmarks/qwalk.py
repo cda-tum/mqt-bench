@@ -1,8 +1,18 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, AncillaRegister
+from qiskit import QuantumCircuit, QuantumRegister, AncillaRegister
 
-def create_circuit(n: int, depth: int = 1, coin_state_preparation: QuantumCircuit = None,
-                          ancillary_mode: str = 'noancilla'):
-    n = n-1 # because one qubit is needed for the coin
+
+def create_circuit(n: int, depth: int = 3, coin_state_preparation: QuantumCircuit = None,
+                   ancillary_mode: str = 'noancilla'):
+    """Returns a quantum circuit implementing the Quantum Walk algorithm.
+
+    Keyword arguments:
+    num_qubits -- number of qubits of the returned quantum circuit
+    depth -- number of quantum steps
+    coin_state_preparation -- optional quantum circuit for state preparation
+    ancillary_mode -- defining the decomposition scheme
+    """
+
+    n = n - 1  # because one qubit is needed for the coin
     coin = QuantumRegister(1, 'coin')
     node = QuantumRegister(n, 'node')
 
