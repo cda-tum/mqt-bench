@@ -61,19 +61,23 @@ Currently, qTUMbench supports two mapping schemes:
 2) Biggest Architecture Mapping: Always use the biggest available hardware architecture
 
 #Structure
-
+- src: Directory for  utils.py file and the source code of the benchmarks
+- benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
+  - Additionally, folders for each qiskit application module and their respective benchmarks are listed
+- qasm_output: Here, the created benchmarks on the target-independent and -dependent layers will be created
+- qpy_output: This is the folder for the created benchmarks on algorithm layer.
 ```
 DAQCBench
-│   README.md
-│   <>.ipynb  
+│ - README.md
+│ - <>.ipynb  
 │
 └───src
-│   │   utils.py
+│   │ - utils.py
 │   │
 │   └───benchmarks
-│       │   ae.py
+│       │ - ae.py
 │       │   ...
-│       │   wstate.py
+│       │ - wstate.py
 │       └─── qiskit_application_finance
 │       │       ...
 │       └─── qiskit_application_ml
@@ -87,12 +91,6 @@ DAQCBench
 │
 └───qpy_output
 ```
-
-- src: Directory for  utils.py file and the source code of the benchmarks
-- benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
-  - Additionally, folders for each qiskit application module and their respective benchmarks are listed
-- qasm_output: Here, the created benchmarks on the target-independent and -dependent layers will be created
-- qpy_output: This is the folder for the created benchmarks on algorithm layer.
 
 #Usage
 To start the creation of all benchmarks, just run the jupyter notebook <>.ipynb file.
