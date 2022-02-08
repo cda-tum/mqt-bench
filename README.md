@@ -11,8 +11,6 @@ on four different abstraction layers:
 3) Target-dependent Native Gates Layer
 4) Target-dependent Mapped Layer
 
-
-
 ![alt text](img/layer_1.png "Title")
 
 This is the algo layer description.
@@ -29,7 +27,7 @@ This is the target-dependent native gates layer description.
 
 This is the target-dependent mapped layer description.
 
-### Benchmark Selection
+## Benchmark Selection
 So far, the following benchmarks are implemented:
 - Amplitude Estimation
 - Iterative Amplitude Estimation
@@ -50,17 +48,17 @@ So far, the following benchmarks are implemented:
 
 Additionally, several quantum application algorithms are available.
 
-### Native Gate-Set Support
+## Native Gate-Set Support
 So far, qTUMbench supports the following native gate-sets:
 1) IBM-Q gate set with ['id', 'rz', 'sx', 'x', 'cx', 'reset']
 2) Rigetti gate set with ['rx','rz','cz']
 
-### Mapping Scheme Support
+## Mapping Scheme Support
 Currently, qTUMbench supports two mapping schemes:
 1) Smallest Fitting Architecture Mapping: Maps quantum circuits to the smallest architecture with a sufficient number of physical qubits
 2) Biggest Architecture Mapping: Always use the biggest available hardware architecture
 
-#Structure
+# Structure
 - src: Directory for  utils.py file and the source code of the benchmarks
 - benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
   - Additionally, folders for each qiskit application module and their respective benchmarks are listed
@@ -92,8 +90,8 @@ DAQCBench
 └───qpy_output
 ```
 
-#Usage
+# Usage
 To start the creation of all benchmarks, just run the jupyter notebook <>.ipynb file.
 
-#References:
+# References:
 [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021 
