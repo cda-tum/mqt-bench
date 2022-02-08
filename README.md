@@ -61,6 +61,7 @@ Currently, qTUMbench supports two mapping schemes:
 2) Biggest Architecture Mapping: Always use the biggest available hardware architecture
 
 #Structure
+
 ```
 DAQCBench
 │   README.md
