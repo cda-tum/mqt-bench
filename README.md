@@ -98,18 +98,4 @@ DAQCBench
 To start the creation of all benchmarks, just run the jupyter notebook <>.ipynb file.
 
 #References:
-<details open>
-<summary> [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, arXiv:2104.14722, 2021 </summary>
-
-```bibtex
-@misc{cross2021openqasm,
-      title={OpenQASM 3: A broader and deeper quantum assembly language}, 
-      author={Andrew W. Cross and Ali Javadi-Abhari and Thomas Alexander and Niel de Beaudrap and Lev S. Bishop and Steven Heidel and Colm A. Ryan and John Smolin and Jay M. Gambetta and Blake R. Johnson},
-      year={2021},
-      eprint={2104.14722},
-      archivePrefix={arXiv},
-      primaryClass={quant-ph}
-}
-```
-
-</details>
+[1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021 
