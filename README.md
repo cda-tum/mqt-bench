@@ -86,6 +86,7 @@ DAQCBench
 │
 └───qpy_output
 ```
+
 - src: Directory for  utils.py file and the source code of the benchmarks
 - benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
   - Additionally, folders for each qiskit application module and their respective benchmarks are listed
