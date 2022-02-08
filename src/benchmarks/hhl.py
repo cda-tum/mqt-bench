@@ -1,4 +1,4 @@
-## Code based on https://qiskit.org/textbook/ch-applications/hhl_tutorial.html
+# Code based on https://qiskit.org/textbook/ch-applications/hhl_tutorial.html
 
 import numpy as np
 from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import TridiagonalToeplitz

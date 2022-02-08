@@ -20,11 +20,11 @@ def create_circuit(num_qubits: int):
 
     qc.x(q[-1])
 
-    for l in range(1, num_qubits):
-        f_gate(qc, q, num_qubits - l, num_qubits - l - 1, num_qubits, l)
+    for m in range(1, num_qubits):
+        f_gate(qc, q, num_qubits - m, num_qubits - m - 1, num_qubits, m)
 
-    for l in reversed(range(1, num_qubits)):
-        qc.cx(l - 1, l)
+    for k in reversed(range(1, num_qubits)):
+        qc.cx(k - 1, k)
 
     qc.measure_all()
 

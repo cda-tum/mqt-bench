@@ -1,4 +1,4 @@
-## Code from https://qiskit.org/documentation/nature/tutorials/04_excited_states_solvers.html
+# Code from https://qiskit.org/documentation/nature/tutorials/04_excited_states_solvers.html
 
 from qiskit_nature.drivers import Molecule
 from qiskit_nature.drivers.second_quantization import (
@@ -33,7 +33,7 @@ def create_circuit(molecule: Molecule, basis: str = "sto3g"):
 
     # This first part sets the ground state solver
     # see more about this part in the ground state calculation tutorial
-    quantum_instance = QuantumInstance(Aer.get_backend("aer_simulator_statevector"))
+    # quantum_instance = QuantumInstance(Aer.get_backend("aer_simulator_statevector"))
     # solver = VQEUCCFactory(quantum_instance)
 
     tl_circuit = TwoLocal(

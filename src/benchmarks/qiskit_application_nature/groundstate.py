@@ -1,4 +1,4 @@
-## Code from https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
+# Code from https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
 
 from qiskit_nature.drivers import Molecule
 from qiskit_nature.drivers.second_quantization import (
@@ -31,7 +31,7 @@ def create_circuit(molecule: Molecule, basis: str = "sto3g"):
     es_problem = ElectronicStructureProblem(driver)
     qubit_converter = QubitConverter(JordanWignerMapper())
 
-    quantum_instance = QuantumInstance(backend=Aer.get_backend("aer_simulator_statevector"))
+    # quantum_instance = QuantumInstance(backend=Aer.get_backend("aer_simulator_statevector"))
     # vqe_solver = VQEUCCFactory(quantum_instance)
 
     tl_circuit = TwoLocal(

@@ -1,4 +1,4 @@
-## Code based on https://github.com/qiskit-community/qiskit-application-modules-demo-sessions/blob/main/qiskit-optimization/qiskit-optimization-demo.ipynb
+# Code based on https://github.com/qiskit-community/qiskit-application-modules-demo-sessions/blob/main/qiskit-optimization/qiskit-optimization-demo.ipynb
 
 from src.utils import get_examplary_max_cut_qp
 from qiskit.algorithms import VQE

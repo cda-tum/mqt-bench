@@ -1,4 +1,4 @@
-## Code from https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+# Code from https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
 
 from qiskit import QuantumCircuit
 import numpy as np

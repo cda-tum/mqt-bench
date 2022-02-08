@@ -1,4 +1,4 @@
-## Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
+# Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
 import numpy as np
 from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
@@ -7,7 +7,8 @@ from qiskit_finance.circuit.library import LogNormalDistribution
 
 
 def create_circuit(num_uncertainty_qubits: int = 5):
-    """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of pricing call options.
+    """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of
+    pricing call options.
 
     Keyword arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
@@ -16,13 +17,13 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     num_uncertainty_qubits = num_uncertainty_qubits
 
     # parameters for considered random distribution
-    S = 2.0  # initial spot price
+    s = 2.0  # initial spot price
     vol = 0.4  # volatility of 40%
     r = 0.05  # annual interest rate of 4%
-    T = 40 / 365  # 40 days to maturity
+    t = 40 / 365  # 40 days to maturity
 
-    mu = ((r - 0.5 * vol ** 2) * T + np.log(S))
-    sigma = vol * np.sqrt(T)
+    mu = ((r - 0.5 * vol ** 2) * t + np.log(s))
+    sigma = vol * np.sqrt(t)
     mean = np.exp(mu + sigma ** 2 / 2)
     variance = (np.exp(sigma ** 2) - 1) * np.exp(2 * mu + sigma ** 2)
     stddev = np.sqrt(variance)

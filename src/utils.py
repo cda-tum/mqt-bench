@@ -142,12 +142,12 @@ def get_estimation_problem():
 
     p = 0.2
 
-    A = BernoulliA(p)
-    Q = BernoulliQ(p)
+    a = BernoulliA(p)
+    q = BernoulliQ(p)
 
     problem = EstimationProblem(
-        state_preparation=A,  # A operator
-        grover_operator=Q,  # Q operator
+        state_preparation=a,  # A operator
+        grover_operator=q,  # Q operator
         objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
     )
 
@@ -222,8 +222,10 @@ def handle_algorithm_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, 
         depth = qc.depth()
     else:
         serialize_qc(qc, filename_algo)
-        if save_png: save_circ(qc, filename_algo)
-        if save_hist: sim_and_print_hist(qc, filename_algo)
+        if save_png:
+            save_circ(qc, filename_algo)
+        if save_hist:
+            sim_and_print_hist(qc, filename_algo)
         depth = qc.depth()
 
     return filename_algo, depth
@@ -252,11 +254,13 @@ def get_indep_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hi
         return filename_indep, depth
 
     else:
-        openQASM_gates = get_openQASM_gates()
-        target_independent = transpile(qc, basis_gates=openQASM_gates, optimization_level=1)
+        openqasm_gates = get_openqasm_gates()
+        target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1)
         save_as_qasm(target_independent, filename_indep)
-        if save_png: save_circ(target_independent, filename_indep)
-        if save_hist: sim_and_print_hist(target_independent, filename_indep)
+        if save_png:
+            save_circ(target_independent, filename_indep)
+        if save_hist:
+            sim_and_print_hist(target_independent, filename_indep)
 
         depth = target_independent.depth()
         return filename_indep, depth
@@ -295,8 +299,10 @@ def get_transpiled_layer(qc: QuantumCircuit, gate_set: list, gate_set_name: str,
         n_actual = compiled_without_architecure.num_qubits
         filename_transpiled = qc.name + "_transpiled_" + gate_set_name + "_opt" + str(opt_level) + "_" + str(n_actual)
         save_as_qasm(compiled_without_architecure, filename_transpiled, gate_set, opt_level)
-        if save_png: save_circ(compiled_without_architecure, filename_transpiled)
-        if save_hist: sim_and_print_hist(compiled_without_architecure, filename_transpiled)
+        if save_png:
+            save_circ(compiled_without_architecure, filename_transpiled)
+        if save_hist:
+            sim_and_print_hist(compiled_without_architecure, filename_transpiled)
 
         depth = compiled_without_architecure.depth()
         return filename_transpiled, depth, n_actual
@@ -325,7 +331,7 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set: str, gate_set_name: str, opt_
     c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(gate_set_name, smallest_fitting_arch,
                                                                           num_qubits)
 
-    if (c_map_found):
+    if c_map_found:
         filename_mapped = qc.name + "_mapped_" + gate_set_name_mapped + "_opt" + str(opt_level) + "_" + str(num_qubits)
         if os.path.isfile("qasm_output/" + filename_mapped + '.qasm') and file_precheck:
             print("qasm_output/" + filename_mapped + '.qasm' + " already existed")
@@ -337,8 +343,10 @@ def get_mapped_layer(qc: QuantumCircuit, gate_set: str, gate_set_name: str, opt_
             save_as_qasm(compiled_with_architecture, filename_mapped, gate_set,
                          opt_level, True, c_map, gate_set_name_mapped + "-" + backend_name)
 
-            if save_png: save_circ(compiled_with_architecture, filename_mapped)
-            if save_hist: sim_and_print_hist(compiled_with_architecture, filename_mapped)
+            if save_png:
+                save_circ(compiled_with_architecture, filename_mapped)
+            if save_hist:
+                sim_and_print_hist(compiled_with_architecture, filename_mapped)
 
             depth = compiled_with_architecture.depth()
         return filename_mapped, depth
@@ -429,7 +437,6 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
             backend_name = "Washington"
             c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
-
 
     else:
         raise ValueError("Gate Set Error")
@@ -590,7 +597,7 @@ def get_cmap_imbq_washington():
     return c_map_ibmq_washington
 
 
-def get_openQASM_gates():
+def get_openqasm_gates():
     """Returns a list of all quantum gates within the openQASM 2.0 specification."""
     # according to QASMbench paper
     gate_list = [
