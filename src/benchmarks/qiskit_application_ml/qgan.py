@@ -1,7 +1,7 @@
-## Code from https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
+# Code from https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
 
 import numpy as np
-from qiskit import QuantumRegister, QuantumCircuit, BasicAer
+from qiskit import BasicAer
 from qiskit.circuit.library import TwoLocal
 from qiskit_finance.circuit.library import UniformDistribution
 
@@ -21,12 +21,12 @@ def create_circuit(num_qubits: int):
     algorithm_globals.random_seed = seed
 
     # Number training data samples
-    N = 100
+    n = 100
 
     # Load data samples from log-normal distribution with mean=1 and standard deviation=1
     mu = 1
     sigma = 1
-    real_data = np.random.lognormal(mean=mu, sigma=sigma, size=N)
+    real_data = np.random.lognormal(mean=mu, sigma=sigma, size=n)
 
     # Set the data resolution
     # Set upper and lower data values as list of k min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
@@ -34,7 +34,6 @@ def create_circuit(num_qubits: int):
     bounds = np.array([0., upper_bound_value])
     # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
     num_qubits = [num_qubits]
-    k = len(num_qubits)
 
     # Set number of training epochs
     # Note: The algorithm's runtime can be shortened by reducing the number of training epochs.
@@ -50,18 +49,11 @@ def create_circuit(num_qubits: int):
         backend=BasicAer.get_backend("statevector_simulator"), seed_transpiler=seed, seed_simulator=seed
     )
 
-    # Set entangler map
-    # entangler_map = [[0, 1]]
-
     # Set an initial state for the generator circuit
     init_dist = UniformDistribution(sum(num_qubits))
 
     # Set the ansatz circuit
     ansatz = TwoLocal(int(np.sum(num_qubits)), "ry", "cz", reps=1)  # entanglement=entangler_map,
-
-    # Set generator's initial parameters - in order to reduce the training time and hence the
-    # total running time for this notebook
-    # init_params = [3.0, 1.0, 0.6, 1.6]
 
     # You can increase the number of training epochs and use random initial parameters.
     init_params = np.random.rand(ansatz.num_parameters_settable) * 2 * np.pi

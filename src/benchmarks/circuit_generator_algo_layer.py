@@ -1,16 +1,16 @@
 import importlib
 import ast
 
-#def generate_algo_layer_benchmarks():
+# def generate_algo_layer_benchmarks():
 algo_dicts_filename = "algo_dicts.txt"
 with open(algo_dicts_filename) as file:
     algo_dicts = ast.literal_eval(file.readline())
 
-print (algo_dicts)
+print(algo_dicts)
 
 qc_results = []
 for circuit_dict in algo_dicts:
-    #print(circuit_dict["name"])
+    # print(circuit_dict["name"])
     benchmark_name = circuit_dict["name"]
     if "grover" in benchmark_name:
         lib = importlib.import_module("grover")
@@ -24,7 +24,7 @@ for circuit_dict in algo_dicts:
             print(e)
             continue
 
-#################### non scalable benchmarks
+        # non scalable benchmarks begin
 
         if benchmark_name == "shor":
             # create_shor_benchmarks()
@@ -44,7 +44,7 @@ for circuit_dict in algo_dicts:
         elif benchmark_name == "routing":
             continue
 
-#################### non scalable benchmarks end
+    # non scalable benchmarks end
 
     for i in range(3, int(circuit_dict["n_max"]), int(circuit_dict["stepsize"])):
         if "v-chain" in benchmark_name:
@@ -66,4 +66,4 @@ for circuit_dict in algo_dicts:
 
         qc_results.append(tmp_result)
 print(qc_results)
-   # return qc_results
+# return qc_results

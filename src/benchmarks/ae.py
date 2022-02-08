@@ -1,4 +1,4 @@
-## Code from https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
+# Code from https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
 
 from qiskit.algorithms import AmplitudeEstimation
 
