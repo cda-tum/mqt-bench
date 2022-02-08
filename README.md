@@ -4,7 +4,7 @@ qTUMbench is a benchmarking suite with cross-layer support. This means, that the
 algorithms are provided for different abstraction layers throught the quantum computing
 software stack.
 
-qTUMbench uses the structure proposed by the openQASM 3.0 consortia [[1]](#[1]) and offers benchmarks
+qTUMbench uses the structure proposed by the openQASM 3.0 consortia [1] and offers benchmarks
 on four different abstraction layers:
 1) Algorithm Layer
 2) Target-independent Layer
