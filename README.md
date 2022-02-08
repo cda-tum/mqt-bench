@@ -11,6 +11,24 @@ on four different abstraction layers:
 3) Target-dependent Native Gates Layer
 4) Target-dependent Mapped Layer
 
+
+
+![alt text](img/layer_1.png "Title")
+
+This is the algo layer description.
+
+![alt text](img/layer_2.png "Title")
+
+This is the target-independent layer description.
+
+![alt text](img/layer_3.png "Title") ![alt text](img/arch.png "Title")
+
+This is the target-dependent native gates layer description.
+
+![alt text](img/layer_4.png "Title")
+
+This is the target-dependent mapped layer description.
+
 ### Benchmark Selection
 So far, the following benchmarks are implemented:
 - Amplitude Estimation
