@@ -12,9 +12,15 @@ def dj_oracle(case, n):
     if case == "balanced":
         # First generate a random number that tells us which CNOTs to
         # wrap in X-gates:
-        b = np.random.randint(1, 2 ** n)
+        rng = np.random.default_rng(12345)
+        b_str=""
+        for _ in range(n):
+            b = np.random.randint(0, 2)
+            b_str = b_str + str(b)
+        #b = rng.integers(low=0, high=2)
+        #b = np.random.randint(1, 2 ** n, dtype=np.int64())
         # Next, format 'b' as a binary string of length 'n', padded with zeros:
-        b_str = format(b, '0' + str(n) + 'b')
+        #b_str = format(b, '0' + str(n) + 'b')
         # Next, we place the first X-gates. Each digit in our binary string
         # corresponds to a qubit, if the digit is 0, we do nothing, if it's 1
         # we apply an X-gate to that qubit:
