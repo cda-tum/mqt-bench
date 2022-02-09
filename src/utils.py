@@ -231,7 +231,7 @@ def handle_algorithm_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, 
     return filename_algo, depth
 
 
-def get_indep_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hist: bool):
+def get_indep_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hist: bool, file_precheck: bool):
     """Handles the creation of the benchmark on the target-independent layer.
 
     Keyword arguments:
@@ -247,7 +247,7 @@ def get_indep_layer(qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hi
 
     filename_indep = qc.name + "_t-indep_" + str(num_qubits)
     path = "qasm_output/" + filename_indep + '.qasm'
-    if os.path.isfile(path):
+    if os.path.isfile(path) and file_precheck:
         print(path + " already existed")
         qc = QuantumCircuit.from_qasm_file(path)
         depth = qc.depth()
