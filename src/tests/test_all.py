@@ -22,9 +22,9 @@ def test_quantumcircuit_indep_layer(benchmark, num_qubits):
         qc = benchmark.create_circuit(num_qubits)
         if benchmark != hhl:
             assert qc.num_qubits == num_qubits
-    filename_indep, depth = utils.get_indep_layer(qc, num_qubits, save_png=True, save_hist=False, file_precheck=False)
+    filename_indep, depth = utils.get_indep_layer(qc, num_qubits, save_png=False, save_hist=False, file_precheck=False)
     assert depth > 0
-    filename_indep, depth = utils.get_indep_layer(qc, num_qubits, save_png=False, save_hist=True, file_precheck=True)
+    filename_indep, depth = utils.get_indep_layer(qc, num_qubits, save_png=False, save_hist=False, file_precheck=True)
     assert depth > 0
 
 @pytest.mark.parametrize("benchmark, num_qubits", [(ae, 8), (ghz, 5), (dj, 5), (graphstate, 8), (grover, 5), (hhl, 2),
@@ -43,18 +43,18 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, num_qubits):
     for (gate_set, gate_set_name) in gate_sets:
         opt_level = 2
         filename_indep, depth_native, n_actual = utils.get_transpiled_layer(qc, gate_set, gate_set_name,
-                                                       opt_level, num_qubits, save_png=True, save_hist=False,
+                                                       opt_level, num_qubits, save_png=False, save_hist=False,
                                                        file_precheck=False)
         assert depth_native > 0
         filename_indep, depth_native, n_actual = utils.get_transpiled_layer(qc, gate_set, gate_set_name,
-                                                       opt_level, num_qubits, save_png=False, save_hist=True,
+                                                       opt_level, num_qubits, save_png=False, save_hist=False,
                                                        file_precheck=True)
         assert depth_native > 0
         filename_mapped, depth_mapped = utils.get_mapped_layer(qc, gate_set, gate_set_name, opt_level, n_actual,
-                         False, save_png=True, save_hist=False, file_precheck=False)
+                         False, save_png=False, save_hist=False, file_precheck=False)
         assert depth_mapped > 0
         filename_mapped, depth_mapped = utils.get_mapped_layer(qc, gate_set, gate_set_name, opt_level, n_actual,
-                         False, save_png=False, save_hist=True, file_precheck=True)
+                         False, save_png=False, save_hist=False, file_precheck=True)
         assert depth_mapped > 0
 
 def test_washington_cmap():
@@ -101,3 +101,7 @@ def test_sim_and_print_hist():
     assert os.path.exists('hist_output/pytest_hist.png')
     if os.path.exists('hist_output/pytest_hist.png'):
         os.remove('hist_output/pytest_hist.png')
+
+def test_dj_constant_oracle():
+    qc = dj.create_circuit(5, False)
+    assert qc.depth() > 0
