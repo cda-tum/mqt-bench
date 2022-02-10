@@ -37,6 +37,7 @@ gates denoted as phase gates of -pi and X gates as shown in the figure above.
 This is the target-dependent native gates layer description.
 
 ![alt text](img/layer_4.png "Title")
+
 Consider again the scenario from the previous figure. The architecture of the IBM-Q Manila device is 
 shown in the hardware architecture figure and it defines between which qubits a two-qubit operation may be performed.
 Since the circuit shown in the previous figure contains CX gates operating between all combination of 
