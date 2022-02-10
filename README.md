@@ -1,3 +1,4 @@
+[![Codecov branch](https://img.shields.io/codecov/c/github/nq8/DAQCBench/master?label=codecov&logo=codecov&style=plastic)](https://codecov.io/gh/nq8/DAQCBench)
 # qTUMbench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 qTUMbench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
