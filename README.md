@@ -13,15 +13,16 @@ on four different abstraction layers:
 
 ![alt text](img/layer_1.png "Title")
 
-Variational quantum algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of applications. 
-A respective circuit is depicted above and shows an example of an ansatz function frequently used for variational 
-quantum eigensolvers, a subclass of VQAs. On this abstraction layer, the circuit is parameterized by the angles 
+Variational quantum algorithms (VQAs) are an emerging class of quantum algorithms with a 
+wide range of applications. A respective circuit is depicted above and shows an example of an 
+ansatz function frequently used for variational quantum eigensolvers, a subclass of VQAs. On 
+this abstraction layer, the circuit is parameterized by the angles 
 &theta;<sub>i</sub> of the six single-qubit gates. This is the Algorithm layer description.
 
 ![alt text](img/layer_2.png "Title")
 
-VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are iteratively updated by a 
-classical optimizer analogous to conventional gradient-based}optimization.
+VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are 
+iteratively updated by a classical optimizer analogous to conventional gradient-based optimization.
 Assuming these parameters have been calculated, they are now propagated and the resulting 
 quantum circuit is shown in above. This is the target-independent layer description.
 
@@ -29,19 +30,19 @@ quantum circuit is shown in above. This is the target-independent layer descript
 
 Different quantum computer realizations support different native gate-sets. 
 In our example, the target device is the IBM-Q Manila device which natively supports 
-R<sub>z</sub>, $\sqrt{X}$, CX, U, and X and is shown in the graph. Consequently, the R<sub>y</sub> 
+R<sub>z</sub>, sqrt(X), CX, U, and X and is shown in the graph. Consequently, the R<sub>y</sub> 
 gates in the previous figure have to be converted using only the native gates. 
-In this case, they are substituted by a sequence of $R_z$ 
-gates denoted as phase gates of $-\pi$ and $X$ gates as shown in \autoref{fig:sub_3}.
+In this case, they are substituted by a sequence of R<sub>z</sub>
+gates denoted as phase gates of -pi and X gates as shown in the figure above.
 This is the target-dependent native gates layer description.
 
 ![alt text](img/layer_4.png "Title")
-Consider again the scenario from \autoref{ex:3}. The architecture of the \mbox{IBM-Q} Manila device is 
-shown in \autoref{fig:ibm_arch} and it defines between which qubits a two-qubit operation may be performed.
-Since the circuit shown in \autoref{fig:sub_3} contains $CX$ gates operating between all combination of 
+Consider again the scenario from the previous figure. The architecture of the IBM-Q Manila device is 
+shown in the hardware architecture figure and it defines between which qubits a two-qubit operation may be performed.
+Since the circuit shown in the previous figure contains CX gates operating between all combination of 
 qubits, there is no mapping directly matching the target architecture's layout. As a consequence, 
 a non-trivial mapping followed by a round of optimization leads to the resulting circuit shown 
-in \autoref{fig:sub_4}. This is also the reason for the different sequence of $CX$ gates compared 
+in the figure above. This is also the reason for the different sequence of CX gates compared 
 to the previous example.
 This is the target-dependent mapped layer description.
 
