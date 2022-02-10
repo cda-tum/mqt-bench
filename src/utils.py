@@ -438,9 +438,6 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
             c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
 
-    else:
-        raise ValueError("Gate Set Error")
-
     if c_map_found:
         return c_map, backend_name, gate_set_name_mapped, c_map_found
     else:
