@@ -31,7 +31,7 @@ def create_circuit(num_nodes: int):
     backend = Aer.get_backend("aer_simulator_statevector")
     quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
 
-    spsa = SPSA(maxiter=100)
+    spsa = SPSA(maxiter=5)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
     vqe = VQE(ry, optimizer=spsa, quantum_instance=quantum_instance)
 
