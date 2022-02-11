@@ -33,7 +33,7 @@ def create_circuit(num_qubits: int):
 
     qubit_op, offset = portfolio.get_operator(mu, sigma, q, budget, penalty)
     backend = Aer.get_backend('statevector_simulator')
-    seed = 50
+    seed = 10
 
     cobyla = COBYLA()
     cobyla.set_options(maxiter=50)

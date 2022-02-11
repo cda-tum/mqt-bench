@@ -15,7 +15,7 @@ class Initializer:
 
     def generate_instance(self):
         n = self.n
-        np.random.seed(1543)
+        np.random.seed(10)
 
         xc = (np.random.rand(n) - 0.5) * 10
         yc = (np.random.rand(n) - 0.5) * 10

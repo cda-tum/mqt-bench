@@ -22,6 +22,7 @@ def create_circuit(num_qubits: int):
     qc = QuantumCircuit(q, psi, c, name="qpeexact")
 
     # get random n-bit string as target phase
+    random.seed(10)
     theta = 0
     while theta == 0:
         theta = random.getrandbits(num_qubits)

@@ -12,7 +12,8 @@ def dj_oracle(case, n):
     if case == "balanced":
         # First generate a random number that tells us which CNOTs to
         # wrap in X-gates:
-        rng = np.random.default_rng(12345)
+        #rng = np.random.default_rng(10)
+        np.random.seed(10)
         b_str=""
         for _ in range(n):
             b = np.random.randint(0, 2)

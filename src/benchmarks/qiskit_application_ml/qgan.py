@@ -16,7 +16,7 @@ def create_circuit(num_qubits: int):
     num_qubits -- number of qubits of the returned quantum circuit
     """
 
-    seed = 71
+    seed = 10
     np.random.seed = seed
     algorithm_globals.random_seed = seed
 

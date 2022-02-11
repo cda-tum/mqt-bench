@@ -18,7 +18,7 @@ def create_circuit(num_nodes: int):
     """
     # Generating a graph of 3 nodes
     n = num_nodes
-    tsp = Tsp.create_random_instance(n, seed=123)
+    tsp = Tsp.create_random_instance(n, seed=10)
 
     qp = tsp.to_quadratic_program()
 
@@ -26,8 +26,8 @@ def create_circuit(num_nodes: int):
     qubo = qp2qubo.convert(qp)
     qubit_op, offset = qubo.to_ising()
 
-    algorithm_globals.random_seed = 123
-    seed = 10598
+    algorithm_globals.random_seed = 10
+    seed = 10
     backend = Aer.get_backend("aer_simulator_statevector")
     quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
 
