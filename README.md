@@ -12,7 +12,8 @@ on four different abstraction layers:
 3) Target-dependent Native Gates Layer
 4) Target-dependent Mapped Layer
 
-![alt text](img/layer_1.png "Title")
+[//]: # (![alt text]&#40;img/layer_1.png "Title"&#41;)
+<img src="img/layer_1.png"  align="left" width="250"/>
 
 Variational quantum algorithms (VQAs) are an emerging class of quantum algorithms with a 
 wide range of applications. A respective circuit is depicted above and shows an example of an 
@@ -20,14 +21,17 @@ ansatz function frequently used for variational quantum eigensolvers, a subclass
 this abstraction layer, the circuit is parameterized by the angles 
 &theta;<sub>i</sub> of the six single-qubit gates. This is the Algorithm layer description.
 
-![alt text](img/layer_2.png "Title")
+[//]: # (![alt text]&#40;img/layer_2.png "Title"&#41;)
+<img src="img/layer_2.png"  align="left" width="250"/>
 
 VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are 
 iteratively updated by a classical optimizer analogous to conventional gradient-based optimization.
 Assuming these parameters have been calculated, they are now propagated and the resulting 
 quantum circuit is shown in above. This is the target-independent layer description.
 
-![alt text](img/layer_3.png "Title") ![alt text](img/arch.png "Title")
+[//]: # (![alt text]&#40;img/layer_3.png "Title"&#41; ![alt text]&#40;img/arch.png "Title"&#41;)
+<img src="img/layer_3.png"  align="left" width="250"/>
+<img src="img/arch.png"  align="right" width="100"/>
 
 Different quantum computer realizations support different native gate-sets. 
 In our example, the target device is the IBM-Q Manila device which natively supports 
@@ -37,7 +41,8 @@ In this case, they are substituted by a sequence of R<sub>z</sub>
 gates denoted as phase gates of -pi and X gates as shown in the figure above.
 This is the target-dependent native gates layer description.
 
-![alt text](img/layer_4.png "Title")
+[//]: # (![alt text]&#40;img/layer_4.png "Title"&#41;)
+<img src="img/layer_4.png"  align="left" width="300"/>
 
 The architecture of the IBM-Q Manila device is shown in the hardware architecture figure and 
 it defines between which qubits a two-qubit operation may be performed.
