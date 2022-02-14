@@ -1,6 +1,11 @@
-name: Lint
+name: Black Linter
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -8,3 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
+        with:
+          options: "--check --diff"
+          version: "21.12b0"
