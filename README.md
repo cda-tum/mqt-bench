@@ -1,11 +1,11 @@
 [![Codecov branch](https://img.shields.io/codecov/c/github/nq8/DAQCBench/master?label=codecov&logo=codecov&style=plastic)](https://codecov.io/gh/nq8/DAQCBench)
-# qTUMbench: Benchmarking Software and Design Automation Tools for Quantum Computing
+# MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
-qTUMbench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
+MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
 algorithms are provided for different abstraction layers throught the quantum computing
 software stack.
 
-qTUMbench uses the structure proposed by the openQASM 3.0 consortia [1] and offers benchmarks
+MQT Bench uses the structure proposed by the openQASM 3.0 consortia [1] and offers benchmarks
 on four different abstraction layers:
 1) Algorithm Layer
 2) Target-independent Layer
@@ -75,12 +75,12 @@ So far, the following benchmarks are implemented:
 Additionally, several quantum application algorithms are available.
 
 ## Native Gate-Set Support
-So far, qTUMbench supports the following native gate-sets:
+So far, MQT Bench supports the following native gate-sets:
 1) IBM-Q gate set with ['id', 'rz', 'sx', 'x', 'cx', 'reset']
 2) Rigetti gate set with ['rx','rz','cz']
 
 ## Mapping Scheme Support
-Currently, qTUMbench supports two mapping schemes:
+Currently, MQT Bench supports two mapping schemes:
 1) Smallest Fitting Architecture Mapping: Maps quantum circuits to the smallest architecture with a sufficient number of physical qubits
 2) Biggest Architecture Mapping: Always use the biggest available hardware architecture
 
