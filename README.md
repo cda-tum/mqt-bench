@@ -36,7 +36,7 @@ quantum circuit is shown in above. This is the target-independent layer descript
 
 Different quantum computer realizations support different native gate-sets. 
 In our example, the target device is the IBM-Q Manila device which natively supports 
-R<sub>z</sub>, sqrt(X), CX, U, and X and is shown in the graph. Consequently, the R<sub>y</sub> 
+R<sub>z</sub>, √X, CX, U, and X and is shown in the graph. Consequently, the R<sub>y</sub> 
 gates in the previous figure have to be converted using only the native gates. 
 In this case, they are substituted by a sequence of R<sub>z</sub>
 gates denoted as phase gates of -pi and X gates as shown in the figure above.
