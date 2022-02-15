@@ -22,10 +22,10 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     r = 0.05  # annual interest rate of 4%
     t = 40 / 365  # 40 days to maturity
 
-    mu = ((r - 0.5 * vol ** 2) * t + np.log(s))
+    mu = (r - 0.5 * vol**2) * t + np.log(s)
     sigma = vol * np.sqrt(t)
-    mean = np.exp(mu + sigma ** 2 / 2)
-    variance = (np.exp(sigma ** 2) - 1) * np.exp(2 * mu + sigma ** 2)
+    mean = np.exp(mu + sigma**2 / 2)
+    variance = (np.exp(sigma**2) - 1) * np.exp(2 * mu + sigma**2)
     stddev = np.sqrt(variance)
 
     # lowest and highest value considered for the spot price; in between, an equidistant discretization is considered.
@@ -34,7 +34,9 @@ def create_circuit(num_uncertainty_qubits: int = 5):
 
     # construct A operator for QAE for the payoff function by
     # composing the uncertainty model and the objective
-    uncertainty_model = LogNormalDistribution(num_uncertainty_qubits, mu=mu, sigma=sigma ** 2, bounds=(low, high))
+    uncertainty_model = LogNormalDistribution(
+        num_uncertainty_qubits, mu=mu, sigma=sigma**2, bounds=(low, high)
+    )
 
     # set the strike price (should be within the low and the high value of the uncertainty)
     strike_price = 1.896
@@ -42,10 +44,12 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     # set the approximation scaling for the payoff function
     c_approx = 0.25
 
-    european_call_objective = EuropeanCallExpectedValue(num_uncertainty_qubits,
-                                                        strike_price,
-                                                        rescaling_factor=c_approx,
-                                                        bounds=(low, high))
+    european_call_objective = EuropeanCallExpectedValue(
+        num_uncertainty_qubits,
+        strike_price,
+        rescaling_factor=c_approx,
+        bounds=(low, high),
+    )
 
     # append the uncertainty model to the front
     european_call = european_call_objective.compose(uncertainty_model, front=True)
@@ -54,10 +58,13 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     alpha = 0.05
 
     # construct amplitude estimation
-    iae = IterativeAmplitudeEstimation(epsilon=epsilon, alpha=alpha,
-                                       state_preparation=european_call,
-                                       objective_qubits=[num_uncertainty_qubits],
-                                       post_processing=european_call_objective.post_processing)
+    iae = IterativeAmplitudeEstimation(
+        epsilon=epsilon,
+        alpha=alpha,
+        state_preparation=european_call,
+        objective_qubits=[num_uncertainty_qubits],
+        post_processing=european_call_objective.post_processing,
+    )
     # result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
     qc = iae.construct_circuit(1)

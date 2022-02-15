@@ -9,7 +9,7 @@ def create_circuit(num_qubits: int):
     num_qubits -- number of qubits of the returned quantum circuit
     """
 
-    q = QuantumRegister(num_qubits, 'q')
+    q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q)
     qc.h(q[-1])
     for i in range(1, num_qubits):
