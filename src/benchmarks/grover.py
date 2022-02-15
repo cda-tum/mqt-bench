@@ -3,7 +3,7 @@ from qiskit.circuit.library import GroverOperator
 from qiskit.algorithms import Grover
 
 
-def create_circuit(num_qubits: int, ancillary_mode: str = 'noancilla'):
+def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
     """Returns a quantum circuit implementing Grover's algorithm.
 
     Keyword arguments:
@@ -12,8 +12,8 @@ def create_circuit(num_qubits: int, ancillary_mode: str = 'noancilla'):
     """
 
     num_qubits = num_qubits - 1  # -1 because of the flag qubit
-    q = QuantumRegister(num_qubits, 'q')
-    flag = AncillaRegister(1, 'flag')
+    q = QuantumRegister(num_qubits, "q")
+    flag = AncillaRegister(1, "flag")
 
     state_preparation = QuantumCircuit(q, flag)
     state_preparation.h(q)
@@ -25,11 +25,13 @@ def create_circuit(num_qubits: int, ancillary_mode: str = 'noancilla'):
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, num_qubits)
 
-    num_qubits = operator.num_qubits - 1  # -1 because last qubit is "flag" qubit and already taken care of
+    num_qubits = (
+        operator.num_qubits - 1
+    )  # -1 because last qubit is "flag" qubit and already taken care of
 
     # num_qubits may differ now depending on the mcx_mode
-    q2 = QuantumRegister(num_qubits, 'q')
-    qc = QuantumCircuit(q2, flag, name='grover')
+    q2 = QuantumRegister(num_qubits, "q")
+    qc = QuantumCircuit(q2, flag, name="grover")
     qc.compose(state_preparation, inplace=True)
 
     qc.compose(operator.power(iterations), inplace=True)

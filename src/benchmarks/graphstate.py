@@ -12,7 +12,7 @@ def create_circuit(num_qubits: int, degree: int = 2):
     degree -- number of edges per node
     """
 
-    q = QuantumRegister(num_qubits, 'q')
+    q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q, name="graphstate")
 
     g = nx.random_regular_graph(degree, num_qubits)

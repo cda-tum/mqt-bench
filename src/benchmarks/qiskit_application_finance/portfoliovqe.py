@@ -22,7 +22,11 @@ def create_circuit(num_qubits: int):
 
     # Generate expected return and covariance matrix from (random) time-series
     stocks = [("TICKER%s" % i) for i in range(num_assets)]
-    data = RandomDataProvider(tickers=stocks, start=datetime.datetime(2016, 1, 1), end=datetime.datetime(2016, 1, 30))
+    data = RandomDataProvider(
+        tickers=stocks,
+        start=datetime.datetime(2016, 1, 1),
+        end=datetime.datetime(2016, 1, 30),
+    )
     data.run()
     mu = data.get_period_return_mean_vector()
     sigma = data.get_period_return_covariance_matrix()
@@ -32,16 +36,18 @@ def create_circuit(num_qubits: int):
     penalty = num_assets  # set parameter to scale the budget penalty term
 
     qubit_op, offset = portfolio.get_operator(mu, sigma, q, budget, penalty)
-    backend = Aer.get_backend('statevector_simulator')
+    backend = Aer.get_backend("statevector_simulator")
     seed = 10
 
     cobyla = COBYLA()
     cobyla.set_options(maxiter=5)
-    ry = TwoLocal(qubit_op.num_qubits, 'ry', 'cz', reps=3, entanglement='full')
+    ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=3, entanglement="full")
     vqe = VQE(qubit_op, ry, cobyla)
     vqe.random_seed = seed
 
-    quantum_instance = QuantumInstance(backend=backend, seed_simulator=seed, seed_transpiler=seed)
+    quantum_instance = QuantumInstance(
+        backend=backend, seed_simulator=seed, seed_transpiler=seed
+    )
 
     result = vqe.run(quantum_instance)
     qc = vqe.get_optimal_circuit()
