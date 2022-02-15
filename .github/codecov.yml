@@ -1,20 +1,14 @@
-codecov:
-  require_ci_to_pass: yes
+ignore:
+  - "qasm_output/*"
+  - "qpy_output/*"
 
 coverage:
-  precision: 2
-  round: down
-  range: "70...100"
-
-parsers:
-  gcov:
-    branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
-
-comment:
-  layout: "reach,diff,flags,files,footer"
-  behavior: default
-  require_changes: no
+  range:     60..90
+  precision: 1
+  status:
+    project:
+      default:
+        threshold: 0.5%
+    patch:
+      default:
+        threshold: 1%
