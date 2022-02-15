@@ -117,7 +117,7 @@ DAQCBench
 ```
 
 # Usage
-To start the creation of all benchmarks, just run the jupyter notebook <>.ipynb file.
+To start the creation of all benchmarks, just run the jupyter notebook ```benchmark_generator.ipynb``` file.
 
 # References:
 [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021 
