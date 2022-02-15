@@ -16,9 +16,9 @@ def create_circuit(num_qubits: int):
     """
 
     num_qubits = num_qubits - 1  # because of ancilla qubit
-    q = QuantumRegister(num_qubits, 'q')
-    psi = QuantumRegister(1, 'psi')
-    c = ClassicalRegister(num_qubits, 'c')
+    q = QuantumRegister(num_qubits, "q")
+    psi = QuantumRegister(1, "psi")
+    c = ClassicalRegister(num_qubits, "c")
     qc = QuantumCircuit(q, psi, c, name="qpeinexact")
 
     # get random n+1-bit string as target phase
@@ -42,7 +42,11 @@ def create_circuit(num_qubits: int):
         if angle != 0:
             qc.cp(angle * np.pi, psi, q[i])
 
-    qc.compose(QFT(num_qubits=num_qubits, inverse=True), inplace=True, qubits=list(range(num_qubits)))
+    qc.compose(
+        QFT(num_qubits=num_qubits, inverse=True),
+        inplace=True,
+        qubits=list(range(num_qubits)),
+    )
     qc.measure(q, c)
 
     return qc

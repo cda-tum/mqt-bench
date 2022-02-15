@@ -30,8 +30,8 @@ def create_circuit(num_qubits: int):
 
     # Set the data resolution
     # Set upper and lower data values as list of k min/max data values [[min_0,max_0],...,[min_k-1,max_k-1]]
-    upper_bound_value = 2 ** num_qubits - 1
-    bounds = np.array([0., upper_bound_value])
+    upper_bound_value = 2**num_qubits - 1
+    bounds = np.array([0.0, upper_bound_value])
     # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
     num_qubits = [num_qubits]
 
@@ -42,18 +42,24 @@ def create_circuit(num_qubits: int):
     batch_size = 10
 
     # Initialize qGAN
-    qgan = QGAN(real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None)
+    qgan = QGAN(
+        real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None
+    )
     qgan.seed = 1
     # Set quantum instance to run the quantum generator
     quantum_instance = QuantumInstance(
-        backend=BasicAer.get_backend("statevector_simulator"), seed_transpiler=seed, seed_simulator=seed
+        backend=BasicAer.get_backend("statevector_simulator"),
+        seed_transpiler=seed,
+        seed_simulator=seed,
     )
 
     # Set an initial state for the generator circuit
     init_dist = UniformDistribution(sum(num_qubits))
 
     # Set the ansatz circuit
-    ansatz = TwoLocal(int(np.sum(num_qubits)), "ry", "cz", reps=1)  # entanglement=entangler_map,
+    ansatz = TwoLocal(
+        int(np.sum(num_qubits)), "ry", "cz", reps=1
+    )  # entanglement=entangler_map,
 
     # You can increase the number of training epochs and use random initial parameters.
     init_params = np.random.rand(ansatz.num_parameters_settable) * 2 * np.pi
@@ -64,7 +70,9 @@ def create_circuit(num_qubits: int):
     # Set quantum generator
     qgan.set_generator(generator_circuit=g_circuit, generator_init_params=init_params)
     # The parameters have an order issue that following is a temp. workaround
-    qgan._generator._free_parameters = sorted(g_circuit.parameters, key=lambda p: p.name)
+    qgan._generator._free_parameters = sorted(
+        g_circuit.parameters, key=lambda p: p.name
+    )
     # Set classical discriminator neural network
     discriminator = NumPyDiscriminator(len(num_qubits))
     qgan.set_discriminator(discriminator)

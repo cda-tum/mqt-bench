@@ -29,7 +29,9 @@ def create_circuit(num_nodes: int):
     algorithm_globals.random_seed = 10
     seed = 10
     backend = Aer.get_backend("aer_simulator_statevector")
-    quantum_instance = QuantumInstance(backend, seed_simulator=seed, seed_transpiler=seed)
+    quantum_instance = QuantumInstance(
+        backend, seed_simulator=seed, seed_transpiler=seed
+    )
 
     spsa = SPSA(maxiter=5)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")

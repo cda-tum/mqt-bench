@@ -10,20 +10,20 @@ def dj_oracle(case, n):
 
     if case == "balanced":
         np.random.seed = 10
-        b_str=""
+        b_str = ""
         for _ in range(n):
             b = np.random.randint(0, 2)
             b_str = b_str + str(b)
 
         for qubit in range(len(b_str)):
-            if b_str[qubit] == '1':
+            if b_str[qubit] == "1":
                 oracle_qc.x(qubit)
 
         for qubit in range(n):
             oracle_qc.cx(qubit, n)
 
         for qubit in range(len(b_str)):
-            if b_str[qubit] == '1':
+            if b_str[qubit] == "1":
                 oracle_qc.x(qubit)
 
     if case == "constant":
@@ -65,9 +65,9 @@ def create_circuit(n: int, balanced: bool = True):
     """
 
     if balanced:
-        oracle_mode = 'balanced'
+        oracle_mode = "balanced"
     else:
-        oracle_mode = 'constant'
+        oracle_mode = "constant"
     n = n - 1  # because of ancilla qubit
     oracle_gate = dj_oracle(oracle_mode, n)
     qc = dj_algorithm(oracle_gate, n)
