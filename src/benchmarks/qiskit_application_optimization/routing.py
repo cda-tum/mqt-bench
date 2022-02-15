@@ -45,8 +45,8 @@ class QuantumOptimizer:
         a = np.max(instance) * 100  # A parameter of cost function
 
         # Determine the weights w
-        instance_vec = instance.reshape(n ** 2)
-        w_list = [instance_vec[x] for x in range(n ** 2) if instance_vec[x] > 0]
+        instance_vec = instance.reshape(n**2)
+        w_list = [instance_vec[x] for x in range(n**2) if instance_vec[x] > 0]
         w = np.zeros(n * (n - 1))
         for ii in range(len(w_list)):
             w[ii] = w_list[ii]
@@ -76,18 +76,22 @@ class QuantumOptimizer:
 
         # g defines the contribution from the individual variables
         g = (
-                w
-                - 2 * a * (np.kron(iv_n_1, iv_n) + vn.T)
-                - 2 * a * k * (np.kron(neg_iv_n_1, iv_n) + v[0].T)
+            w
+            - 2 * a * (np.kron(iv_n_1, iv_n) + vn.T)
+            - 2 * a * k * (np.kron(neg_iv_n_1, iv_n) + v[0].T)
         )
 
         # c is the constant offset
-        c = 2 * a * (n - 1) + 2 * a * (k ** 2)
+        c = 2 * a * (n - 1) + 2 * a * (k**2)
 
         try:
             max(x_sol)
             # Evaluates the cost distance from a binary representation of a path
-            fun = (lambda x: np.dot(np.around(x), np.dot(q, np.around(x))) + np.dot(g, np.around(x)) + c)
+            fun = (
+                lambda x: np.dot(np.around(x), np.dot(q, np.around(x)))
+                + np.dot(g, np.around(x))
+                + c
+            )
             cost = fun(x_sol)
         except:
             cost = 0
@@ -143,9 +147,9 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     qc.name = "routing"
 
     # Put the solution in a way that is compatible with the classical variables
-    x_quantum = np.zeros(n ** 2)
+    x_quantum = np.zeros(n**2)
     kk = 0
-    for ii in range(n ** 2):
+    for ii in range(n**2):
         if ii // n != ii % n:
             x_quantum[ii] = quantum_solution[kk]
             kk += 1
