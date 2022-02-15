@@ -1,14 +1,4 @@
-ignore:
-  - "qasm_output/*"
-  - "qpy_output/*"
-
-coverage:
-  range: 60..90
-  precision: 1
-  status:
-    project:
-      default:
-        threshold: 0.5%
-    patch:
-      default:
-        threshold: 1%
+- name: Codecov
+  # You may pin to the exact commit or the version.
+  # uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
+  uses: codecov/codecov-action@v2.1.0
