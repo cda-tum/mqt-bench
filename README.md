@@ -93,7 +93,7 @@ Currently, MQT Bench supports two mapping schemes:
 ```
 DAQCBench
 │ - README.md
-│ - <>.ipynb  
+│ - benchmark_generator.ipynb  
 │
 └───src
 │   │ - utils.py
