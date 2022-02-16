@@ -210,7 +210,7 @@ def get_rigetti_c_map(circles: int = 4):
                 c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
         for j in range(5):
-            m = 8*j + 5*8
+            m = 8 * j + 5 * 8
             for i in range(0, 7):
                 c_map_rigetti.append([i + m, i + 1 + m])
 
@@ -222,9 +222,8 @@ def get_rigetti_c_map(circles: int = 4):
                 c_map_rigetti.append([m - 7, m + 6])
 
         for n in range(5):
-            c_map_rigetti.append([n*8+3, n*8 + 5*8])
-            c_map_rigetti.append([n*8+4, n*8 + 7 + 5*8])
-
+            c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
+            c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
 
         inversed = [[item[1], item[0]] for item in c_map_rigetti]
         c_map_rigetti = c_map_rigetti + inversed
