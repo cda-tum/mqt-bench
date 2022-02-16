@@ -236,7 +236,10 @@ def test_cmap_selection(
 
 @pytest.mark.parametrize("num_circles", [2, 3, 4, 5, 10])
 def test_rigetti_cmap_generator(num_circles: int):
-    assert len(utils.get_rigetti_c_map(num_circles)) == (10 * (num_circles - 1) + 8) * 2
+    if num_circles != 10:
+        assert len(utils.get_rigetti_c_map(num_circles)) == (10 * (num_circles - 1) + 8) * 2
+    else:
+        assert len(utils.get_rigetti_c_map(num_circles)) == 212
 
 
 def test_get_google_c_map():
