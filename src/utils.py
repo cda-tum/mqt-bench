@@ -181,20 +181,53 @@ def get_rigetti_c_map(circles: int = 4):
     Keyword arguments:
     circles -- number of circles, each one comprises 8 qubits
     """
-    c_map_rigetti = []
-    for j in range(circles):
-        for i in range(0, 7):
-            c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+    if circles != 10:
+        c_map_rigetti = []
+        for j in range(circles):
+            for i in range(0, 7):
+                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-            if i == 6:
-                c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+                if i == 6:
+                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
-        if j != 0:
-            c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-            c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+            if j != 0:
+                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
+                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
-    inversed = [[item[1], item[0]] for item in c_map_rigetti]
-    c_map_rigetti = c_map_rigetti + inversed
+        inversed = [[item[1], item[0]] for item in c_map_rigetti]
+        c_map_rigetti = c_map_rigetti + inversed
+    else:
+        c_map_rigetti = []
+        for j in range(5):
+            for i in range(0, 7):
+                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+
+                if i == 6:
+                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+
+            if j != 0:
+                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
+                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+
+        for j in range(5):
+            m = 8*j + 5*8
+            for i in range(0, 7):
+                c_map_rigetti.append([i + m, i + 1 + m])
+
+                if i == 6:
+                    c_map_rigetti.append([0 + m, 7 + m])
+
+            if j != 0:
+                c_map_rigetti.append([m - 6, m + 5])
+                c_map_rigetti.append([m - 7, m + 6])
+
+        for n in range(5):
+            c_map_rigetti.append([n*8+3, n*8 + 5*8])
+            c_map_rigetti.append([n*8+4, n*8 + 7 + 5*8])
+
+
+        inversed = [[item[1], item[0]] for item in c_map_rigetti]
+        c_map_rigetti = c_map_rigetti + inversed
 
     return c_map_rigetti
 
@@ -478,13 +511,13 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
                 c_map_found = True
             elif num_qubits <= 80:
                 c_map = get_rigetti_c_map(10)
-                backend_name = "80 qubits"
+                backend_name = "Aspen-M-1: 80 qubits"
                 c_map_found = True
             gate_set_name_mapped = gate_set_name + "-s"
 
         elif num_qubits <= 80:
             c_map = get_rigetti_c_map(10)
-            backend_name = "80 qubits"
+            backend_name = "Aspen-M-1: 80 qubits"
             c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
 
