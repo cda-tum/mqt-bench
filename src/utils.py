@@ -410,7 +410,7 @@ def get_transpiled_layer(
 
 def get_mapped_layer(
     qc: QuantumCircuit,
-    gate_set: str,
+    gate_set: list,
     gate_set_name: str,
     opt_level: int,
     num_qubits: int,
