@@ -200,8 +200,8 @@ def get_rigetti_c_map(circles: int = 4):
                 c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
                 c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
-        inversed = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inversed
+        inverted = [[item[1], item[0]] for item in c_map_rigetti]
+        c_map_rigetti = c_map_rigetti + inverted
     else:
         c_map_rigetti = []
         for j in range(5):
@@ -231,8 +231,8 @@ def get_rigetti_c_map(circles: int = 4):
             c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
             c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
 
-        inversed = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inversed
+        inverted = [[item[1], item[0]] for item in c_map_rigetti]
+        c_map_rigetti = c_map_rigetti + inverted
 
     return c_map_rigetti
 
@@ -252,8 +252,8 @@ def get_google_c_map():
                 c_map_google.append([i + 6 * j, i + 6 * j - 5])
                 c_map_google.append([i + 6 * j, i + 6 * j + 7])
 
-    inversed = [[item[1], item[0]] for item in c_map_google]
-    c_map_google = c_map_google + inversed
+    inverted = [[item[1], item[0]] for item in c_map_google]
+    c_map_google = c_map_google + inverted
 
     return c_map_google
 
@@ -277,7 +277,7 @@ def handle_algorithm_layer(
     filename_algo = qc.name + "_algorithm_" + str(num_qubits)
     if os.path.isfile("qpy_output/" + filename_algo + ".qpy"):
         path = "qpy_output/" + filename_algo + ".qpy"
-        print(path + " already existed")
+        print(path + " already exists")
         with open(path, "rb") as fd:
             qc = qpy_serialization.load(fd)[0]
         depth = qc.depth()
@@ -306,6 +306,7 @@ def get_indep_layer(
     num_qubits -- number of qubits
     save_png -- flag indicated whether to save schematic picture of quantum circuit
     save_hist -- flag indicated whether to simulate circuit and save its histogram
+    file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
     filename_indep -- the filename of the created and saved benchmark
@@ -315,7 +316,7 @@ def get_indep_layer(
     filename_indep = qc.name + "_t-indep_" + str(num_qubits)
     path = "qasm_output/" + filename_indep + ".qasm"
     if os.path.isfile(path) and file_precheck:
-        print(path + " already existed")
+        print(path + " already exists")
         qc = QuantumCircuit.from_qasm_file(path)
         depth = qc.depth()
         return filename_indep, depth
@@ -374,7 +375,7 @@ def get_transpiled_layer(
     )
 
     if os.path.isfile("qasm_output/" + filename_transpiled + ".qasm") and file_precheck:
-        print("qasm_output/" + filename_transpiled + ".qasm" + " already existed")
+        print("qasm_output/" + filename_transpiled + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
             "qasm_output/" + filename_transpiled + ".qasm"
         )
@@ -382,10 +383,10 @@ def get_transpiled_layer(
         return filename_transpiled, depth, num_qubits
 
     else:
-        compiled_without_architecure = get_compiled_circuit(
+        compiled_without_architecture = get_compiled_circuit(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
-        n_actual = compiled_without_architecure.num_qubits
+        n_actual = compiled_without_architecture.num_qubits
         filename_transpiled = (
             qc.name
             + "_transpiled_"
@@ -396,14 +397,14 @@ def get_transpiled_layer(
             + str(n_actual)
         )
         save_as_qasm(
-            compiled_without_architecure, filename_transpiled, gate_set, opt_level
+            compiled_without_architecture, filename_transpiled, gate_set, opt_level
         )
         if save_png:
-            save_circ(compiled_without_architecure, filename_transpiled)
+            save_circ(compiled_without_architecture, filename_transpiled)
         if save_hist:
-            sim_and_print_hist(compiled_without_architecure, filename_transpiled)
+            sim_and_print_hist(compiled_without_architecture, filename_transpiled)
 
-        depth = compiled_without_architecure.depth()
+        depth = compiled_without_architecture.depth()
         return filename_transpiled, depth, n_actual
 
 
@@ -451,7 +452,7 @@ def get_mapped_layer(
             + str(num_qubits)
         )
         if os.path.isfile("qasm_output/" + filename_mapped + ".qasm") and file_precheck:
-            print("qasm_output/" + filename_mapped + ".qasm" + " already existed")
+            print("qasm_output/" + filename_mapped + ".qasm" + " already exists")
             qc = QuantumCircuit.from_qasm_file(
                 "qasm_output/" + filename_mapped + ".qasm"
             )
@@ -718,8 +719,8 @@ def get_cmap_imbq_washington():
         [125, 126],
     ]
 
-    inversed = [[item[1], item[0]] for item in c_map_ibmq_washington]
-    c_map_ibmq_washington = c_map_ibmq_washington + inversed
+    inverted = [[item[1], item[0]] for item in c_map_ibmq_washington]
+    c_map_ibmq_washington = c_map_ibmq_washington + inverted
     return c_map_ibmq_washington
 
 
