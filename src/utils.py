@@ -725,14 +725,17 @@ def get_cmap_imbq_washington():
 
 
 def get_openqasm_gates():
-    """Returns a list of all quantum gates within the openQASM 2.0 specification."""
-    # according to QASMbench paper
+    """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
+    # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
     gate_list = [
         "u3",
         "u2",
         "u1",
         "cx",
         "id",
+        "u0",
+        "u",
+        "p",
         "x",
         "y",
         "z",
@@ -744,6 +747,8 @@ def get_openqasm_gates():
         "rx",
         "ry",
         "rz",
+        "sx",
+        "sxdg",
         "cz",
         "cy",
         "swap",
@@ -754,13 +759,16 @@ def get_openqasm_gates():
         "cry",
         "crz",
         "cu1",
+        "cp",
         "cu3",
+        "csx",
+        "cu",
         "rxx",
         "rzz",
         "rccx",
         "rc3x",
         "c3x",
-        "c3xsqrtx",
+        "c3sqrtx",
         "c4x",
     ]
     return gate_list
