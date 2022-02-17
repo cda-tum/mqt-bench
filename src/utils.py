@@ -497,79 +497,80 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
     c_map_found -- indicator whether a suitable coupling map has been found
     """
     c_map_found = False
+    c_map = []
+    backend_name = ""
+    gate_set_name_mapped = ""
+
     if gate_set_name == "rigetti":
+        c_map_found = True
         if smallest_fitting_arch:
             if num_qubits <= 8:
                 c_map = get_rigetti_c_map(1)
                 backend_name = "8 qubits"
-                c_map_found = True
             elif num_qubits <= 16:
                 c_map = get_rigetti_c_map(2)
                 backend_name = "Aspen-3: 16 qubits"
-                c_map_found = True
             elif num_qubits <= 32:
                 c_map = get_rigetti_c_map(4)
                 backend_name = "Aspen-10: 32 qubits"
-                c_map_found = True
             elif num_qubits <= 40:
                 c_map = get_rigetti_c_map(5)
                 backend_name = "Aspen-11: 40 qubits"
-                c_map_found = True
             elif num_qubits <= 80:
                 c_map = get_rigetti_c_map(10)
                 backend_name = "Aspen-M-1: 80 qubits"
-                c_map_found = True
+            else:
+                c_map_found = False
             gate_set_name_mapped = gate_set_name + "-s"
 
         elif num_qubits <= 80:
             c_map = get_rigetti_c_map(10)
             backend_name = "Aspen-M-1: 80 qubits"
-            c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
+        else:
+            c_map_found = False
 
     elif gate_set_name == "ibm":
+        c_map_found = True
         if smallest_fitting_arch:
             if num_qubits <= 5:
                 backend = FakeBogota()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
-                c_map_found = True
             elif num_qubits <= 7:
                 backend = FakeCasablanca()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
-                c_map_found = True
             elif num_qubits <= 16:
                 backend = FakeGuadalupe()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
-                c_map_found = True
             elif num_qubits <= 27:
                 backend = FakeMontreal()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
-                c_map_found = True
             elif num_qubits <= 65:
                 backend = FakeManhattan()
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
-                c_map_found = True
             elif num_qubits <= 127:
                 c_map = get_cmap_imbq_washington()
                 backend_name = "Washington"
-                c_map_found = True
+            else:
+                c_map_found = False
             gate_set_name_mapped = gate_set_name + "-s"
 
         elif num_qubits <= 127:
             c_map = get_cmap_imbq_washington()
             backend_name = "Washington"
-            c_map_found = True
             gate_set_name_mapped = gate_set_name + "-b"
+        else:
+            c_map_found = False
 
     if c_map_found:
         return c_map, backend_name, gate_set_name_mapped, c_map_found
     else:
-        return False, False, False, False
+        return None, "", "", False
 
 
 def get_cmap_imbq_washington():
