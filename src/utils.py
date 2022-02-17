@@ -22,10 +22,10 @@ from qiskit.test.mock import (
 
 
 def get_compiled_circuit(
-        qc: QuantumCircuit,
-        opt_level: int = 2,
-        basis_gates=None,
-        c_map: CouplingMap = None,
+    qc: QuantumCircuit,
+    opt_level: int = 2,
+    basis_gates=None,
+    c_map: CouplingMap = None,
 ):
     """Returns a transpiled quantum circuit according to the given input parameters.
 
@@ -46,13 +46,13 @@ def get_compiled_circuit(
 
 
 def save_as_qasm(
-        qc: QuantumCircuit,
-        filename: str,
-        gate_set: list = None,
-        opt_level: int = -1,
-        mapped: bool = False,
-        c_map=None,
-        arch_name: str = "",
+    qc: QuantumCircuit,
+    filename: str,
+    gate_set: list = None,
+    opt_level: int = -1,
+    mapped: bool = False,
+    c_map=None,
+    arch_name: str = "",
 ):
     """Saves a quantum circuit as a qasm file.
 
