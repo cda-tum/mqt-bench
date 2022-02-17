@@ -198,7 +198,7 @@ def test_washington_cmap():
 
 def test_openqasm_gates():
     openqasm_gates = utils.get_openqasm_gates()
-    assert len(openqasm_gates) == 34
+    assert len(openqasm_gates) == 42
 
 
 @pytest.mark.parametrize(
