@@ -22,10 +22,10 @@ from qiskit.test.mock import (
 
 
 def get_compiled_circuit(
-    qc: QuantumCircuit,
-    opt_level: int = 2,
-    basis_gates: list = ["id", "rz", "sx", "x", "cx", "reset"],
-    c_map: CouplingMap = None,
+        qc: QuantumCircuit,
+        opt_level: int = 2,
+        basis_gates=None,
+        c_map: CouplingMap = None,
 ):
     """Returns a transpiled quantum circuit according to the given input parameters.
 
@@ -36,6 +36,9 @@ def get_compiled_circuit(
     c_map -- to be used coupling map
     """
 
+    if basis_gates is None:
+        basis_gates = ["id", "rz", "sx", "x", "cx", "reset"]
+
     t_qc = transpile(
         qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map
     )
@@ -43,13 +46,13 @@ def get_compiled_circuit(
 
 
 def save_as_qasm(
-    qc: QuantumCircuit,
-    filename: str,
-    gate_set: list = None,
-    opt_level: int = -1,
-    mapped: bool = False,
-    c_map: list = [],
-    arch_name: str = "",
+        qc: QuantumCircuit,
+        filename: str,
+        gate_set: list = None,
+        opt_level: int = -1,
+        mapped: bool = False,
+        c_map=None,
+        arch_name: str = "",
 ):
     """Saves a quantum circuit as a qasm file.
 
@@ -62,6 +65,9 @@ def save_as_qasm(
     c_map -- coupling map of used hardware layout
     arch_name -- name of used hardware layout
     """
+
+    if c_map is None:
+        c_map = []
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
