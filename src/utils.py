@@ -376,7 +376,10 @@ def get_native_gates_layer(
         + str(num_qubits)
     )
 
-    if os.path.isfile("qasm_output/" + filename_nativegates + ".qasm") and file_precheck:
+    if (
+        os.path.isfile("qasm_output/" + filename_nativegates + ".qasm")
+        and file_precheck
+    ):
         print("qasm_output/" + filename_nativegates + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
             "qasm_output/" + filename_nativegates + ".qasm"
