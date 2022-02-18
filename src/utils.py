@@ -272,6 +272,7 @@ def handle_algorithm_layer(
     Return values:
     filename_algo -- the filename of the created and saved benchmark
     depth -- circuit depth of created benchmark
+    num_qubits -- number of qubits of generated circuit
     """
 
     filename_algo = qc.name + "_algorithm_" + str(num_qubits)
@@ -311,6 +312,7 @@ def get_indep_layer(
     Return values:
     filename_indep -- the filename of the created and saved benchmark
     depth -- circuit depth of created benchmark
+    num_qubits -- number of qubits of generated circuit
     """
 
     filename_indep = qc.name + "_t-indep_" + str(num_qubits)
@@ -359,14 +361,14 @@ def get_native_gates_layer(
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
-    filename_transpiled -- the filename of the created and saved benchmark
+    filename_nativegates -- the filename of the created and saved benchmark
     depth -- circuit depth of created benchmark
     num_qubits/n_actual -- number of qubits of created benchmark
     """
 
-    filename_transpiled = (
+    filename_nativegates = (
         qc.name
-        + "_transpiled_"
+        + "_nativegates_"
         + gate_set_name
         + "_opt"
         + str(opt_level)
@@ -374,22 +376,22 @@ def get_native_gates_layer(
         + str(num_qubits)
     )
 
-    if os.path.isfile("qasm_output/" + filename_transpiled + ".qasm") and file_precheck:
-        print("qasm_output/" + filename_transpiled + ".qasm" + " already exists")
+    if os.path.isfile("qasm_output/" + filename_nativegates + ".qasm") and file_precheck:
+        print("qasm_output/" + filename_nativegates + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
-            "qasm_output/" + filename_transpiled + ".qasm"
+            "qasm_output/" + filename_nativegates + ".qasm"
         )
         depth = qc.depth()
-        return filename_transpiled, depth, num_qubits
+        return filename_nativegates, depth, num_qubits
 
     else:
         compiled_without_architecture = get_compiled_circuit(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
         n_actual = compiled_without_architecture.num_qubits
-        filename_transpiled = (
+        filename_nativegates = (
             qc.name
-            + "_transpiled_"
+            + "_nativegates_"
             + gate_set_name
             + "_opt"
             + str(opt_level)
@@ -397,15 +399,15 @@ def get_native_gates_layer(
             + str(n_actual)
         )
         save_as_qasm(
-            compiled_without_architecture, filename_transpiled, gate_set, opt_level
+            compiled_without_architecture, filename_nativegates, gate_set, opt_level
         )
         if save_png:
-            save_circ(compiled_without_architecture, filename_transpiled)
+            save_circ(compiled_without_architecture, filename_nativegates)
         if save_hist:
-            sim_and_print_hist(compiled_without_architecture, filename_transpiled)
+            sim_and_print_hist(compiled_without_architecture, filename_nativegates)
 
         depth = compiled_without_architecture.depth()
-        return filename_transpiled, depth, n_actual
+        return filename_nativegates, depth, n_actual
 
 
 def get_mapped_layer(
@@ -435,6 +437,7 @@ def get_mapped_layer(
     Return values:
     filename_mapped -- the filename of the created and saved benchmark
     depth -- circuit depth of created benchmark
+    num_qubits -- number of qubits of generated circuit
     """
 
     c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(
