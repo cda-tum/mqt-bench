@@ -336,7 +336,7 @@ def get_indep_layer(
         return filename_indep, depth
 
 
-def get_transpiled_layer(
+def get_native_gates_layer(
     qc: QuantumCircuit,
     gate_set: list,
     gate_set_name: str,
