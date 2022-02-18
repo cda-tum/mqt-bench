@@ -1,5 +1,5 @@
 {
-"timeout": 1,
+"timeout": 20,
 "max_depth": 1000000,
 "save_png": false,
 "save_hist": false,
@@ -9,32 +9,32 @@
     "module_path": "src.benchmarks.grover",
     "creation_function_identifier": 1,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 40,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
   {
     "name": "shor",
     "creation_function_identifier": 2,
-    "instances": ["large", "small", "medium"]
+    "instances": ["xsmall", "small", "medium"]
   },
   {
     "name": "hhl",
     "creation_function_identifier": 3,
     "min_index": 1,
-    "max_index": 5
+    "max_index": 6
   },
   {
     "name": "routing",
     "creation_function_identifier": 4,
     "min_nodes": 2,
-    "max_nodes": 5
+    "max_nodes": 7
   },
   {
     "name": "tsp",
     "creation_function_identifier": 5,
     "min_nodes": 2,
-    "max_nodes": 5
+    "max_nodes": 7
   },
   {
     "name": "groundstate",
@@ -50,20 +50,20 @@
     "name": "pricingcall",
     "creation_function_identifier": 8,
     "min_uncertainty": 3,
-    "max_uncertainty": 15
+    "max_uncertainty": 20
   },
   {
     "name": "pricingput",
     "creation_function_identifier": 9,
     "min_uncertainty": 3,
-    "max_uncertainty": 15
+    "max_uncertainty": 20
   },
   {
     "name": "qwalk",
     "module_path": "src.benchmarks.qwalk",
     "creation_function_identifier": 1,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 30,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
@@ -72,7 +72,7 @@
     "module_path": "src.benchmarks.dj",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -80,7 +80,7 @@
     "module_path": "src.benchmarks.ghz",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -88,7 +88,7 @@
     "module_path": "src.benchmarks.graphstate",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -96,7 +96,7 @@
     "module_path": "src.benchmarks.qaoa",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -104,7 +104,7 @@
     "module_path": "src.benchmarks.vqe",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -112,7 +112,7 @@
     "module_path": "src.benchmarks.qftentangled",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -120,7 +120,7 @@
     "module_path": "src.benchmarks.qft",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -128,7 +128,7 @@
     "module_path": "src.benchmarks.qpeexact",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -136,7 +136,7 @@
     "module_path": "src.benchmarks.qpeinexact",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -144,7 +144,7 @@
     "module_path": "src.benchmarks.wstate",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -152,7 +152,7 @@
     "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -160,7 +160,7 @@
     "module_path": "src.benchmarks.qiskit_application_finance.portfoliovqe",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -168,7 +168,7 @@
     "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -176,7 +176,7 @@
     "module_path": "src.benchmarks.ae",
     "creation_function_identifier": 0,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 130,
     "stepsize": 1
   }
 ]
