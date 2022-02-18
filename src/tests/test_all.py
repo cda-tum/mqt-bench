@@ -54,7 +54,7 @@ import os
 )
 def test_quantumcircuit_algo_layer(benchmark, num_qubits):
     qc = benchmark.create_circuit(num_qubits)
-    filename_algo, depth = utils.handle_algorithm_layer(
+    filename_algo, depth, num_qubits = utils.handle_algorithm_layer(
         qc, num_qubits, save_png=False, save_hist=False
     )
     assert depth > 0
@@ -94,11 +94,11 @@ def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    filename_indep, depth = utils.get_indep_layer(
+    filename_indep, depth, num_qubits = utils.get_indep_layer(
         qc, input_value, save_png=False, save_hist=False, file_precheck=False
     )
     assert depth > 0
-    filename_indep, depth = utils.get_indep_layer(
+    filename_indep, depth, num_qubits = utils.get_indep_layer(
         qc, input_value, save_png=False, save_hist=False, file_precheck=True
     )
     assert depth > 0
@@ -165,7 +165,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=True,
         )
         assert depth_native > 0
-        filename_mapped, depth_mapped = utils.get_mapped_layer(
+        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_layer(
             qc,
             gate_set,
             gate_set_name,
@@ -177,7 +177,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=False,
         )
         assert depth_mapped > 0
-        filename_mapped, depth_mapped = utils.get_mapped_layer(
+        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_layer(
             qc,
             gate_set,
             gate_set_name,
