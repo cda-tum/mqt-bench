@@ -143,7 +143,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
     for (gate_set, gate_set_name) in gate_sets:
         opt_level = 1
-        filename_indep, depth_native, n_actual = utils.get_transpiled_layer(
+        filename_indep, depth_native, n_actual = utils.get_native_gates_layer(
             qc,
             gate_set,
             gate_set_name,
@@ -154,7 +154,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=False,
         )
         assert depth_native > 0
-        filename_indep, depth_native, n_actual = utils.get_transpiled_layer(
+        filename_indep, depth_native, n_actual = utils.get_native_gates_layer(
             qc,
             gate_set,
             gate_set_name,
