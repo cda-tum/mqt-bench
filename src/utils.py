@@ -289,7 +289,7 @@ def handle_algorithm_layer(
             sim_and_print_hist(qc, filename_algo)
         depth = qc.depth()
 
-    return filename_algo, depth
+    return filename_algo, depth, num_qubits
 
 
 def get_indep_layer(
@@ -319,7 +319,7 @@ def get_indep_layer(
         print(path + " already exists")
         qc = QuantumCircuit.from_qasm_file(path)
         depth = qc.depth()
-        return filename_indep, depth
+        return filename_indep, depth, num_qubits
 
     else:
         openqasm_gates = get_openqasm_gates()
@@ -333,7 +333,7 @@ def get_indep_layer(
             sim_and_print_hist(target_independent, filename_indep)
 
         depth = target_independent.depth()
-        return filename_indep, depth
+        return filename_indep, depth, qc.num_qubits
 
 
 def get_native_gates_layer(
@@ -477,9 +477,9 @@ def get_mapped_layer(
                 sim_and_print_hist(compiled_with_architecture, filename_mapped)
 
             depth = compiled_with_architecture.depth()
-        return filename_mapped, depth
+        return filename_mapped, depth, num_qubits
     else:
-        return "", 0
+        return "", 0, 0
 
 
 def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: int):
