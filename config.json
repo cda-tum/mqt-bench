@@ -1,82 +1,12 @@
 {
-"timeout": 20,
+"timeout": 10,
 "max_depth": 1000000,
 "save_png": false,
 "save_hist": false,
 "benchmarks": [
   {
-    "name": "grover",
-    "module_path": "src.benchmarks.grover",
-    "creation_function_identifier": 1,
-    "min_qubits": 3,
-    "max_qubits": 40,
-    "stepsize": 1,
-    "ancillary_mode": ["noancilla", "v-chain"]
-  },
-  {
-    "name": "shor",
-    "creation_function_identifier": 2,
-    "instances": ["xsmall", "small", "medium"]
-  },
-  {
-    "name": "hhl",
-    "creation_function_identifier": 3,
-    "min_index": 1,
-    "max_index": 6
-  },
-  {
-    "name": "routing",
-    "creation_function_identifier": 4,
-    "min_nodes": 2,
-    "max_nodes": 7
-  },
-  {
-    "name": "tsp",
-    "creation_function_identifier": 5,
-    "min_nodes": 2,
-    "max_nodes": 7
-  },
-  {
-    "name": "groundstate",
-    "creation_function_identifier": 6,
-    "instances": ["small", "medium"]
-  },
-  {
-    "name": "excitedstate",
-    "creation_function_identifier": 7,
-    "instances": ["small"]
-  },
-  {
-    "name": "pricingcall",
-    "creation_function_identifier": 8,
-    "min_uncertainty": 3,
-    "max_uncertainty": 20
-  },
-  {
-    "name": "pricingput",
-    "creation_function_identifier": 9,
-    "min_uncertainty": 3,
-    "max_uncertainty": 20
-  },
-  {
-    "name": "qwalk",
-    "module_path": "src.benchmarks.qwalk",
-    "creation_function_identifier": 1,
-    "min_qubits": 3,
-    "max_qubits": 30,
-    "stepsize": 1,
-    "ancillary_mode": ["noancilla", "v-chain"]
-  },
-  {
-    "name": "dj",
-    "module_path": "src.benchmarks.dj",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
     "name": "ghz",
+    "include": false,
     "module_path": "src.benchmarks.ghz",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -85,6 +15,7 @@
   },
   {
     "name": "graphstate",
+    "include": false,
     "module_path": "src.benchmarks.graphstate",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -93,14 +24,16 @@
   },
   {
     "name": "qaoa",
+    "include": true ,
     "module_path": "src.benchmarks.qaoa",
     "creation_function_identifier": 0,
-    "min_qubits": 3,
+    "min_qubits": 20,
     "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "vqe",
+    "include": false,
     "module_path": "src.benchmarks.vqe",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -109,6 +42,7 @@
   },
   {
     "name": "qftentangled",
+    "include": false,
     "module_path": "src.benchmarks.qftentangled",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -117,6 +51,7 @@
   },
   {
     "name": "qft",
+    "include": false,
     "module_path": "src.benchmarks.qft",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -125,6 +60,7 @@
   },
   {
     "name": "qpeexact",
+    "include": false,
     "module_path": "src.benchmarks.qpeexact",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -133,6 +69,7 @@
   },
   {
     "name": "qpeinexact",
+    "include": false,
     "module_path": "src.benchmarks.qpeinexact",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -141,6 +78,7 @@
   },
   {
     "name": "wstate",
+    "include": false,
     "module_path": "src.benchmarks.wstate",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -149,6 +87,7 @@
   },
   {
     "name": "portfolioqaoa",
+    "include": false,
     "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -157,6 +96,7 @@
   },
   {
     "name": "portfoliovqe",
+    "include": false,
     "module_path": "src.benchmarks.qiskit_application_finance.portfoliovqe",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -165,6 +105,7 @@
   },
   {
     "name": "qgan",
+    "include": false,
     "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
     "creation_function_identifier": 0,
     "min_qubits": 3,
@@ -173,11 +114,94 @@
   },
   {
     "name": "ae",
+    "include": false,
     "module_path": "src.benchmarks.ae",
     "creation_function_identifier": 0,
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
+  },
+  {
+    "name": "dj",
+    "include": false,
+    "module_path": "src.benchmarks.dj",
+    "creation_function_identifier": 0,
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "grover",
+    "include": false,
+    "module_path": "src.benchmarks.grover",
+    "creation_function_identifier": 1,
+    "min_qubits": 3,
+    "max_qubits": 40,
+    "stepsize": 1,
+    "ancillary_mode": ["noancilla", "v-chain"]
+  },
+  {
+    "name": "hhl",
+    "include": false,
+    "creation_function_identifier": 3,
+    "min_index": 1,
+    "max_index": 6
+  },
+  {
+    "name": "routing",
+    "include": false,
+    "creation_function_identifier": 4,
+    "min_nodes": 2,
+    "max_nodes": 5
+  },
+  {
+    "name": "tsp",
+    "include": false,
+    "creation_function_identifier": 5,
+    "min_nodes": 2,
+    "max_nodes": 7
+  },
+  {
+    "name": "groundstate",
+    "include": false,
+    "creation_function_identifier": 6,
+    "instances": ["small", "medium"]
+  },
+  {
+    "name": "excitedstate",
+    "include": false,
+    "creation_function_identifier": 7,
+    "instances": ["small"]
+  },
+  {
+    "name": "pricingcall",
+    "include": false,
+    "creation_function_identifier": 8,
+    "min_uncertainty": 3,
+    "max_uncertainty": 20
+  },
+  {
+    "name": "pricingput",
+    "include": false,
+    "creation_function_identifier": 9,
+    "min_uncertainty": 3,
+    "max_uncertainty": 20
+  },
+  {
+    "name": "qwalk",
+    "include": false,
+    "module_path": "src.benchmarks.qwalk",
+    "creation_function_identifier": 1,
+    "min_qubits": 3,
+    "max_qubits": 30,
+    "stepsize": 1,
+    "ancillary_mode": ["noancilla", "v-chain"]
+  },
+  {
+    "name": "shor",
+    "include": false,
+    "creation_function_identifier": 2,
+    "instances": ["xsmall", "small", "medium"]
   }
 ]
 }
