@@ -92,7 +92,7 @@ Currently, MQT Bench supports two mapping schemes:
 - qasm_output: Here, the created benchmarks on the target-independent and -dependent layers will be created
 - qpy_output: This is the folder for the created benchmarks on algorithm layer.
 ```
-DAQCBench
+MQT Bench
 │ - README.md
 │ - benchmark_generator.ipynb  
 │
