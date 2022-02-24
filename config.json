@@ -1,21 +1,19 @@
 {
-"timeout": 1,
+"timeout": 10,
 "max_depth": 1000000,
 "save_png": false,
 "save_hist": false,
 "benchmarks": [
   {
     "name": "ae",
-    "include": false,
-    "module_path": "src.benchmarks.ae",
-    "min_qubits": 2,
+    "include": true,
+    "min_qubits": 1,
     "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "dj",
     "include": false,
-    "module_path": "src.benchmarks.dj",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
@@ -28,7 +26,6 @@
   {
     "name": "grover",
     "include": false,
-    "module_path": "src.benchmarks.grover",
     "min_qubits": 3,
     "max_qubits": 50,
     "stepsize": 1,
@@ -43,7 +40,6 @@
   {
     "name": "ghz",
     "include": false,
-    "module_path": "src.benchmarks.ghz",
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -51,7 +47,6 @@
   {
     "name": "graphstate",
     "include": false,
-    "module_path": "src.benchmarks.graphstate",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
@@ -64,7 +59,6 @@
   {
     "name": "portfolioqaoa",
     "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
@@ -72,7 +66,6 @@
   {
     "name": "portfoliovqe",
     "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.portfoliovqe",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
@@ -92,23 +85,20 @@
   {
     "name": "qaoa",
     "include": false ,
-    "module_path": "src.benchmarks.qaoa",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "qft",
-    "include": true,
-    "module_path": "src.benchmarks.qft",
-    "min_qubits": 31,
-    "max_qubits": 32,
+    "include": false,
+    "min_qubits": 2,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "qftentangled",
     "include": false,
-    "module_path": "src.benchmarks.qftentangled",
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -116,7 +106,6 @@
   {
     "name": "qgan",
     "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.qgan",
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -124,7 +113,6 @@
   {
     "name": "qpeexact",
     "include": false,
-    "module_path": "src.benchmarks.qpeexact",
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -132,7 +120,6 @@
   {
     "name": "qpeinexact",
     "include": false,
-    "module_path": "src.benchmarks.qpeinexact",
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -140,7 +127,6 @@
   {
     "name": "qwalk",
     "include": false,
-    "module_path": "src.benchmarks.qwalk",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1,
@@ -160,7 +146,6 @@
   {
     "name": "vqe",
     "include": false,
-    "module_path": "src.benchmarks.vqe",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
@@ -168,7 +153,6 @@
   {
     "name": "wstate",
     "include": false,
-    "module_path": "src.benchmarks.wstate",
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
