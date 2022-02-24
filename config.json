@@ -1,128 +1,13 @@
 {
-"timeout": 60,
+"timeout": 1,
 "max_depth": 1000000,
 "save_png": false,
 "save_hist": false,
 "benchmarks": [
   {
-    "name": "ghz",
-    "include": false,
-    "module_path": "src.benchmarks.ghz",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "graphstate",
-    "include": false,
-    "module_path": "src.benchmarks.graphstate",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qaoa",
-    "include": false ,
-    "module_path": "src.benchmarks.qaoa",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "vqe",
-    "include": false,
-    "module_path": "src.benchmarks.vqe",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qftentangled",
-    "include": true,
-    "module_path": "src.benchmarks.qftentangled",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "shor",
-    "include": false,
-    "creation_function_identifier": 2,
-    "instances": ["xsmall", "small", "medium"]
-  },
-  {
-    "name": "qft",
-    "include": false,
-    "module_path": "src.benchmarks.qft",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qpeexact",
-    "include": false,
-    "module_path": "src.benchmarks.qpeexact",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qpeinexact",
-    "include": false,
-    "module_path": "src.benchmarks.qpeinexact",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "wstate",
-    "include": false,
-    "module_path": "src.benchmarks.wstate",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "portfolioqaoa",
-    "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "portfoliovqe",
-    "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.portfoliovqe",
-    "creation_function_identifier": 0,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qgan",
-    "include": false,
-    "module_path": "src.benchmarks.qiskit_application_finance.qgan",
-    "creation_function_identifier": 0,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
     "name": "ae",
     "include": false,
     "module_path": "src.benchmarks.ae",
-    "creation_function_identifier": 0,
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
@@ -131,16 +16,19 @@
     "name": "dj",
     "include": false,
     "module_path": "src.benchmarks.dj",
-    "creation_function_identifier": 0,
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1
   },
   {
+    "name": "excitedstate",
+    "include": false,
+    "instances": ["small"]
+  },
+  {
     "name": "grover",
     "include": false,
     "module_path": "src.benchmarks.grover",
-    "creation_function_identifier": 1,
     "min_qubits": 3,
     "max_qubits": 50,
     "stepsize": 1,
@@ -149,59 +37,147 @@
   {
     "name": "hhl",
     "include": false,
-    "creation_function_identifier": 3,
     "min_index": 1,
     "max_index": 6
   },
   {
-    "name": "routing",
+    "name": "ghz",
     "include": false,
-    "creation_function_identifier": 4,
-    "min_nodes": 2,
-    "max_nodes": 5
+    "module_path": "src.benchmarks.ghz",
+    "min_qubits": 2,
+    "max_qubits": 130,
+    "stepsize": 1
   },
   {
-    "name": "tsp",
+    "name": "graphstate",
     "include": false,
-    "creation_function_identifier": 5,
-    "min_nodes": 2,
-    "max_nodes": 7
+    "module_path": "src.benchmarks.graphstate",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
   },
   {
     "name": "groundstate",
     "include": false,
-    "creation_function_identifier": 6,
     "instances": ["small", "medium"]
   },
   {
-    "name": "excitedstate",
+    "name": "portfolioqaoa",
     "include": false,
-    "creation_function_identifier": 7,
-    "instances": ["small"]
+    "module_path": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "portfoliovqe",
+    "include": false,
+    "module_path": "src.benchmarks.qiskit_application_finance.portfoliovqe",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
   },
   {
     "name": "pricingcall",
     "include": false,
-    "creation_function_identifier": 8,
     "min_uncertainty": 3,
     "max_uncertainty": 20
   },
   {
     "name": "pricingput",
     "include": false,
-    "creation_function_identifier": 9,
     "min_uncertainty": 3,
     "max_uncertainty": 25
+  },
+  {
+    "name": "qaoa",
+    "include": false ,
+    "module_path": "src.benchmarks.qaoa",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "qft",
+    "include": true,
+    "module_path": "src.benchmarks.qft",
+    "min_qubits": 31,
+    "max_qubits": 32,
+    "stepsize": 1
+  },
+  {
+    "name": "qftentangled",
+    "include": false,
+    "module_path": "src.benchmarks.qftentangled",
+    "min_qubits": 2,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "qgan",
+    "include": false,
+    "module_path": "src.benchmarks.qiskit_application_finance.qgan",
+    "min_qubits": 2,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "qpeexact",
+    "include": false,
+    "module_path": "src.benchmarks.qpeexact",
+    "min_qubits": 2,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "qpeinexact",
+    "include": false,
+    "module_path": "src.benchmarks.qpeinexact",
+    "min_qubits": 2,
+    "max_qubits": 130,
+    "stepsize": 1
   },
   {
     "name": "qwalk",
     "include": false,
     "module_path": "src.benchmarks.qwalk",
-    "creation_function_identifier": 1,
     "min_qubits": 3,
     "max_qubits": 130,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
+  },
+  {
+    "name": "routing",
+    "include": false,
+    "min_nodes": 2,
+    "max_nodes": 5
+  },
+  {
+    "name": "shor",
+    "include": false,
+    "instances": ["xsmall", "small", "medium"]
+  },
+  {
+    "name": "vqe",
+    "include": false,
+    "module_path": "src.benchmarks.vqe",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "wstate",
+    "include": false,
+    "module_path": "src.benchmarks.wstate",
+    "min_qubits": 3,
+    "max_qubits": 130,
+    "stepsize": 1
+  },
+  {
+    "name": "tsp",
+    "include": false,
+    "min_nodes": 2,
+    "max_nodes": 7
   }
 ]
 }
