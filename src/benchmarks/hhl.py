@@ -21,7 +21,7 @@ def create_circuit(num_qubits: int):
     tridi_matrix = TridiagonalToeplitz(num_qubits, a, b)
     qc = HHL().solve(tridi_matrix, vector).state
 
-    qc.name = "HHL"
+    qc.name = "hhl"
     qc.measure_all()
 
     return qc
