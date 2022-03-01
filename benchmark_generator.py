@@ -616,5 +616,6 @@ def create_pricingput_qc(num_uncertainty: int):
             e,
         )
 
+
 if __name__ == "__main__":
     characteristics = create_benchmarks_from_config()
