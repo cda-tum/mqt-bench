@@ -622,5 +622,18 @@ def create_pricingput_qc(num_uncertainty: int):
         )
 
 
+def save_benchmark_hist(characteristics):
+    characteristics = np.array(characteristics)
+    plt.scatter(
+        x=characteristics[:, 2].astype(int), y=characteristics[:, 1].astype(int)
+    )
+    plt.yscale("log")
+    plt.title("Depth and Width of generated Benchmarks")
+    plt.xlabel("# of Qubits")
+    plt.ylabel("Circuit Depth")
+    plt.savefig("benchmark_histogram")
+
+
 if __name__ == "__main__":
     characteristics = create_benchmarks_from_config()
+    save_benchmark_hist(characteristics)
