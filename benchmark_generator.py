@@ -58,7 +58,7 @@ def create_benchmarks_from_config(cfg=None):
     }
 
     for benchmark in cfg["benchmarks"]:
-        print(benchmark["name"])  #
+        print(benchmark["name"])
         characteristics.extend(generate_benchmark(benchmark))
     return characteristics
 
@@ -68,7 +68,7 @@ def benchmark_generation_watcher(func, args):
         pass
 
     def timeout_handler(signum, frame):  # Custom signal handler
-        raise TimeoutException
+        raise TimeoutException("TimeoutException")
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)
@@ -76,9 +76,9 @@ def benchmark_generation_watcher(func, args):
     signal.alarm(timeout)
     try:
         filename, depth, num_qubits = func(*args)
-    except:
-        print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-
+    except Exception as e:
+        # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+        print("Exception: ", e, func, args[1:])
         if func == get_indep_layer:
             qc = args[0]
             num_qubits = args[1]
@@ -115,6 +115,11 @@ def benchmark_generation_watcher(func, args):
             gate_set_name_mapped = args[2]
             opt_level = args[3]
             num_qubits = args[4]
+            smallest_arch = args[5]
+            if smallest_arch:
+                gate_set_name_mapped += "-s"
+            else:
+                gate_set_name_mapped += "-b"
 
             filename_mapped = (
                 qc.name
