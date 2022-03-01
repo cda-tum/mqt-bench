@@ -8,6 +8,7 @@ hist_output/*.png
 qpy_output/*.qpy
 .idea/*
 *.DS_Store
+*png
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
