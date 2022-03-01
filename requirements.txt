@@ -6,5 +6,5 @@ qiskit-machine-learning==0.3.1
 qiskit-nature[pyscf]~=0.3.1
 qiskit-optimization~=0.3.1
 qiskit-aqua~=0.9.5
-networkx~=2.6.3
+networkx~=2.7
 pytest~=7.0.1
