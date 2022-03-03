@@ -295,6 +295,7 @@ def handle_algorithm_layer(
 
 def get_indep_layer(
     qc: QuantumCircuit,
+    opt_level: int,
     num_qubits: int,
     save_png: bool,
     save_hist: bool,
@@ -315,7 +316,7 @@ def get_indep_layer(
     num_qubits -- number of qubits of generated circuit
     """
 
-    filename_indep = qc.name + "_t-indep_" + str(num_qubits)
+    filename_indep = qc.name + "_t-indep_opt" + str(opt_level) + "_" + str(num_qubits)
     path = "qasm_output/" + filename_indep + ".qasm"
     if os.path.isfile(path) and file_precheck:
         print(path + " already exists")
@@ -326,7 +327,7 @@ def get_indep_layer(
     else:
         openqasm_gates = get_openqasm_gates()
         target_independent = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1
+            qc, basis_gates=openqasm_gates, optimization_level=opt_level
         )
         save_as_qasm(target_independent, filename_indep)
         if save_png:
