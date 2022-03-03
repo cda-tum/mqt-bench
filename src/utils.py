@@ -329,7 +329,7 @@ def get_indep_layer(
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=opt_level
         )
-        save_as_qasm(target_independent, filename_indep)
+        save_as_qasm(target_independent, filename_indep, opt_level=opt_level)
         if save_png:
             save_circ(target_independent, filename_indep)
         if save_hist:
