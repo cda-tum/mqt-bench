@@ -344,14 +344,17 @@ def generate_target_indep_layer_circuit(
     qc: QuantumCircuit, num_qubits: int, save_png, save_hist, file_precheck
 ):
     characteristics = []
-    res = benchmark_generation_watcher(
-        get_indep_layer, [qc, num_qubits, save_png, save_hist, file_precheck]
-    )
-    if res:
-        characteristics.append(res)
-        return characteristics
-    else:
-        return False
+
+    for opt_level in range(4):
+        res = benchmark_generation_watcher(
+            get_indep_layer,
+            [qc, opt_level, num_qubits, save_png, save_hist, file_precheck],
+        )
+        if res:
+            characteristics.append(res)
+        else:
+            break
+    return characteristics
 
 
 def generate_target_dep_layer_circuit(
