@@ -49,7 +49,7 @@ def create_benchmarks_from_config(cfg=None):
         "qaoa": "src.benchmarks.qaoa",
         "qft": "src.benchmarks.qft",
         "qftentangled": "src.benchmarks.qftentangled",
-        "qgan": "src.benchmarks.qiskit_application_finance.qgan",
+        "qgan": "src.benchmarks.qiskit_application_ml.qgan",
         "qpeexact": "src.benchmarks.qpeexact",
         "qpeinexact": "src.benchmarks.qpeinexact",
         "qwalk": "src.benchmarks.qwalk",
