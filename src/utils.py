@@ -316,7 +316,7 @@ def get_indep_layer(
     num_qubits -- number of qubits of generated circuit
     """
 
-    filename_indep = qc.name + "_t-indep_opt" + str(opt_level) + "_" + str(num_qubits)
+    filename_indep = qc.name + "_indep_opt" + str(opt_level) + "_" + str(num_qubits)
     path = "qasm_output/" + filename_indep + ".qasm"
     if os.path.isfile(path) and file_precheck:
         print(path + " already exists")
