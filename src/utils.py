@@ -21,9 +21,9 @@ from qiskit.test.mock import (
 )
 
 
-def get_compiled_circuit(
+def get_compiled_circuit_with_gateset(
     qc: QuantumCircuit,
-    opt_level: int = 2,
+    opt_level: int = 1,
     basis_gates=None,
     c_map: CouplingMap = None,
 ):
@@ -295,7 +295,6 @@ def handle_algorithm_layer(
 
 def get_indep_layer(
     qc: QuantumCircuit,
-    opt_level: int,
     num_qubits: int,
     save_png: bool,
     save_hist: bool,
@@ -316,7 +315,7 @@ def get_indep_layer(
     num_qubits -- number of qubits of generated circuit
     """
 
-    filename_indep = qc.name + "_indep_opt" + str(opt_level) + "_" + str(num_qubits)
+    filename_indep = qc.name + "_indep_" + str(num_qubits)
     path = "qasm_output/" + filename_indep + ".qasm"
     if os.path.isfile(path) and file_precheck:
         print(path + " already exists")
@@ -326,10 +325,8 @@ def get_indep_layer(
 
     else:
         openqasm_gates = get_openqasm_gates()
-        target_independent = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=opt_level
-        )
-        save_as_qasm(target_independent, filename_indep, opt_level=opt_level)
+        target_independent = transpile(qc, basis_gates=openqasm_gates)
+        save_as_qasm(target_independent, filename_indep)
         if save_png:
             save_circ(target_independent, filename_indep)
         if save_hist:
@@ -389,7 +386,7 @@ def get_native_gates_layer(
         return filename_nativegates, depth, num_qubits
 
     else:
-        compiled_without_architecture = get_compiled_circuit(
+        compiled_without_architecture = get_compiled_circuit_with_gateset(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
         n_actual = compiled_without_architecture.num_qubits
@@ -465,7 +462,7 @@ def get_mapped_layer(
             )
             depth = qc.depth()
         else:
-            compiled_with_architecture = get_compiled_circuit(
+            compiled_with_architecture = get_compiled_circuit_with_gateset(
                 qc=qc, opt_level=opt_level, basis_gates=gate_set, c_map=c_map
             )
             save_as_qasm(
