@@ -26,6 +26,7 @@ from src.benchmarks.qiskit_application_ml import qgan
 from src.benchmarks.qiskit_application_nature import groundstate, excitedstate
 from src.benchmarks.qiskit_application_optimization import tsp, routing
 from qiskit_nature.drivers import Molecule
+from benchmark_generator import get_one_benchmark
 
 import pytest
 import os
@@ -286,4 +287,39 @@ def test_ground_and_excited_state():
 
 def test_routing():
     qc = routing.create_circuit(4, 2)
+    assert qc.depth() > 0
+
+
+@pytest.mark.parametrize(
+    "benchmark_name, layer, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
+    [
+        ("dj", "alg", 5, None, None, None, None),
+        ("wstate", 0, 6, None, None, None, None),
+        ("ghz", "indep", 5, None, None, None, None),
+        ("graphstate", 1, 4, None, None, None, None),
+        ("dj", "gates", 5, None, 2, "ibm", None),
+        ("qft", 2, 6, None, 3, "rigetti", None),
+        ("qpeexact", "mapped", 5, None, 0, "ibm", True),
+        ("qpeinexact", 3, 4, None, None, "rigetti", False),
+    ],
+)
+def test_get_one_benchmark(
+    benchmark_name,
+    layer,
+    input_number,
+    instance,
+    opt_level,
+    gate_set_name,
+    smallest_fitting_arch,
+):
+
+    qc = get_one_benchmark(
+        benchmark_name,
+        layer,
+        input_number,
+        instance,
+        opt_level,
+        gate_set_name,
+        smallest_fitting_arch,
+    )
     assert qc.depth() > 0
