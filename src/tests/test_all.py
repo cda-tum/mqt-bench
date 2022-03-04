@@ -12,6 +12,7 @@ from src.benchmarks import (
     qpeinexact,
     qpeexact,
     vqe,
+    vqerandom,
     qwalk,
     wstate,
     shor,
@@ -49,6 +50,7 @@ import os
         (qpeinexact, 8),
         (qwalk, 5),
         (vqe, 5),
+        (vqerandom, 9),
         (wstate, 8),
         (shor, 15),
     ],
@@ -78,6 +80,7 @@ def test_quantumcircuit_algo_layer(benchmark, num_qubits):
         (tsp, 3, False),
         (qwalk, 5, False),
         (vqe, 5, True),
+        (vqerandom, 8, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
         (shor, 15, False),
@@ -85,7 +88,6 @@ def test_quantumcircuit_algo_layer(benchmark, num_qubits):
         (pricingcall, 5, False),
         (pricingput, 5, False),
         (qgan, 5, True),
-        (qgan, 3, False),
     ],
 )
 def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
@@ -122,6 +124,7 @@ def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
         (tsp, 3, False),
         (qwalk, 5, False),
         (vqe, 5, True),
+        (vqerandom, 3, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
         (shor, 15, False),
@@ -129,7 +132,6 @@ def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
         (pricingcall, 5, False),
         (pricingput, 5, False),
         (qgan, 5, True),
-        (qgan, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalable):
