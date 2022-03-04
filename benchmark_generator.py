@@ -6,6 +6,7 @@ import json
 import importlib
 import signal
 
+import utils
 from src.utils import *
 from src.benchmarks import (
     shor,
@@ -19,24 +20,7 @@ from src.benchmarks.qiskit_application_finance import (
 from src.benchmarks.qiskit_application_nature import groundstate, excitedstate
 
 
-def create_benchmarks_from_config(cfg=None):
-    characteristics = []
-
-    if not cfg:
-        with open("config.json", "r") as jsonfile:
-            cfg = json.load(jsonfile)
-            print("Read config successful")
-
-    # global seetings
-    global save_png
-    save_png = cfg["save_png"]
-    global save_hist
-    save_hist = cfg["save_hist"]
-    global max_depth
-    max_depth = cfg["max_depth"]
-    global timeout
-    timeout = cfg["timeout"]
-
+def init_module_paths():
     global scalable_benchmarks_module_paths_dict
     scalable_benchmarks_module_paths_dict = {
         "ae": "src.benchmarks.ae",
@@ -56,6 +40,29 @@ def create_benchmarks_from_config(cfg=None):
         "vqe": "src.benchmarks.vqe",
         "wstate": "src.benchmarks.wstate",
     }
+
+
+def create_benchmarks_from_config(cfg=None, target_directory=None):
+    characteristics = []
+
+    if not cfg:
+        with open("config.json", "r") as jsonfile:
+            cfg = json.load(jsonfile)
+            print("Read config successful")
+    else:
+        with open(path, "r") as jsonfile:
+            cfg = json.load(jsonfile)
+            print("Read config successful")
+
+    # global seetings
+    global save_png
+    save_png = cfg["save_png"]
+    global save_hist
+    save_hist = cfg["save_hist"]
+    global max_depth
+    max_depth = cfg["max_depth"]
+    global timeout
+    timeout = cfg["timeout"]
 
     for benchmark in cfg["benchmarks"]:
         print(benchmark["name"])
@@ -637,6 +644,150 @@ def save_benchmark_hist(characteristics):
     plt.savefig("benchmark_histogram")
 
 
+def get_one_benchmark(
+    benchmark_name,
+    layer=None,
+    input_number=None,
+    instance=None,
+    opt_level=None,
+    gate_set_name=None,
+    smallest_fitting_arch=None,
+):
+    """Returns one benchmark as a Qiskit::QuantumCircuit Object.
+
+    Keyword arguments:
+    benchmark_name -- name of the to be generated benchmark
+    layer -- Choice of layer, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
+    input_number -- Input for the benchmark creation, in most cases this is equal to the qubit number
+    instance -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
+    0 corresponds to "alg" layer and 3 to "mapped" layer
+    opt_level -- Level of optimization (relevant to "gates" and "mapped" layers)
+    gate_set_name -- Either "ibm" or "rigetti"
+    smallest_fitting_arch -- True->Smallest architecture is selected, False->Biggest one is selected (ibm: 127 qubits,
+    rigetti: 80 qubits)
+
+
+    Return values:
+    QuantumCircuit -- Representing the benchmark with the selected options
+    """
+    init_module_paths()
+    ibm_native_gates = FakeMontreal().configuration().basis_gates
+    rigetti_native_gates = ["rx", "rz", "cz"]
+
+    m_1 = Molecule(
+        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_2 = Molecule(
+        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_3 = Molecule(
+        geometry=[
+            ["O", [0.0, 0.0, 0.0]],
+            ["H", [0.586, 0.757, 0.0]],
+            ["H", [0.586, -0.757, 0.0]],
+        ],
+        charge=0,
+        multiplicity=1,
+    )
+
+    if gate_set_name and "ibm" in gate_set_name:
+        gate_set = ibm_native_gates
+    elif gate_set_name and "rigetti" in gate_set_name:
+        gate_set = rigetti_native_gates
+    else:
+        gate_set = None
+
+    if "grover" in benchmark_name or "qwalk" in benchmark_name:
+        if "noancilla" in benchmark_name:
+            anc_mode = "noancilla"
+        elif "v-chain" in benchmark_name:
+            anc_mode = "v-chain"
+
+        short_name = benchmark_name.split("-")[0]
+        lib = importlib.import_module(scalable_benchmarks_module_paths_dict[short_name])
+        qc = lib.create_circuit(input_number, ancillary_mode=anc_mode)
+        qc.name = qc.name + "-" + anc_mode
+
+    elif benchmark_name == "shor":
+        instances = {
+            "xsmall": [9, 4],  # 18 qubits
+            "small": [15, 4],  # 18 qubits
+            "medium": [821, 4],  # 42 qubits
+            "large": [11777, 4],  # 58 qubits
+            "xlarge": [201209, 4],  # 74 qubits
+        }
+
+        qc = shor.create_circuit(*instances[instance])
+
+    elif benchmark_name == "hhl":
+        qc = hhl.create_circuit(input_number)
+
+    elif benchmark_name == "routing":
+        qc = routing.create_circuit(input_number)
+
+    elif benchmark_name == "tsp":
+        qc = tsp.create_circuit(input_number)
+
+    elif benchmark_name == "groundstate":
+        instances = {"small": m_1, "medium": m_2, "large": m_3}
+        qc = groundstate.create_circuit(instances[instance])
+
+    elif benchmark_name == "excitedstate":
+        instances = {"small": m_1, "medium": m_2, "large": m_3}
+        qc = excitedstate.create_circuit(instances[instance])
+
+    elif benchmark_name == "pricingcall":
+        qc = pricingcall.create_circuit(input_number)
+
+    elif benchmark_name == "pricingput":
+        qc = pricingput.create_circuit(input_number)
+
+    else:
+        lib = importlib.import_module(
+            scalable_benchmarks_module_paths_dict[benchmark_name]
+        )
+        qc = lib.create_circuit(input_number)
+
+    if layer == "alg" or layer == 0:
+        return qc
+
+    elif layer == "indep" or layer == 1:
+
+        qc_indep = transpile(
+            qc, basis_gates=get_openqasm_gates(), optimization_level=opt_level
+        )
+        return qc_indep
+
+    elif layer == "gates" or layer == 2:
+        qc_gates = get_compiled_circuit(
+            qc=qc, opt_level=opt_level, basis_gates=gate_set
+        )
+        return qc_gates
+
+    elif layer == "mapped" or layer == 3:
+        c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(
+            gate_set_name, smallest_fitting_arch, input_number
+        )
+        if c_map_found:
+            qc_mapped = get_compiled_circuit(
+                qc=qc, opt_level=opt_level, basis_gates=gate_set, c_map=c_map
+            )
+            return qc_mapped
+        else:
+            return print("No Hardware Architecture available for that config.")
+    else:
+        return print("Layer specification was wrong.")
+
+
+def create_benchmarks_from_config_file(path):
+    create_benchmarks_from_config(path)
+
+
 if __name__ == "__main__":
+    init_module_paths()
     characteristics = create_benchmarks_from_config()
     save_benchmark_hist(characteristics)
