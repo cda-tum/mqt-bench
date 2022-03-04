@@ -352,16 +352,15 @@ def generate_target_indep_layer_circuit(
 ):
     characteristics = []
 
-    for opt_level in range(4):
-        res = benchmark_generation_watcher(
-            get_indep_layer,
-            [qc, opt_level, num_qubits, save_png, save_hist, file_precheck],
-        )
-        if res:
-            characteristics.append(res)
-        else:
-            break
-    return characteristics
+    res = benchmark_generation_watcher(
+        get_indep_layer,
+        [qc, num_qubits, save_png, save_hist, file_precheck],
+    )
+    if res:
+        characteristics.append(res)
+        return characteristics
+    else:
+        return False
 
 
 def generate_target_dep_layer_circuit(
@@ -757,13 +756,11 @@ def get_one_benchmark(
 
     elif layer == "indep" or layer == 1:
 
-        qc_indep = transpile(
-            qc, basis_gates=get_openqasm_gates(), optimization_level=opt_level
-        )
+        qc_indep = transpile(qc, basis_gates=get_openqasm_gates())
         return qc_indep
 
     elif layer == "gates" or layer == 2:
-        qc_gates = get_compiled_circuit(
+        qc_gates = get_compiled_circuit_with_gateset(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
         return qc_gates
@@ -773,7 +770,7 @@ def get_one_benchmark(
             gate_set_name, smallest_fitting_arch, input_number
         )
         if c_map_found:
-            qc_mapped = get_compiled_circuit(
+            qc_mapped = get_compiled_circuit_with_gateset(
                 qc=qc, opt_level=opt_level, basis_gates=gate_set, c_map=c_map
             )
             return qc_mapped
