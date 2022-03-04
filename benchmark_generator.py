@@ -6,7 +6,6 @@ import json
 import importlib
 import signal
 
-import utils
 from src.utils import *
 from src.benchmarks import (
     shor,
@@ -38,6 +37,7 @@ def init_module_paths():
         "qpeinexact": "src.benchmarks.qpeinexact",
         "qwalk": "src.benchmarks.qwalk",
         "vqe": "src.benchmarks.vqe",
+        "vqerandom": "src.benchmarks.vqerandom",
         "wstate": "src.benchmarks.wstate",
     }
 
