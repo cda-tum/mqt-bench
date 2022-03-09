@@ -220,7 +220,6 @@ def generate_benchmark(benchmark):
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
-                break
 
         elif benchmark["name"] == "routing":
             for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
