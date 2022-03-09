@@ -70,8 +70,8 @@ def save_as_qasm(
         c_map = []
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
-        f.write("// Benchmark was created by qTUMbench on " + str(date.today()) + "\n")
-        f.write("// qTUMbench version: " + "0.1.0" + "\n")
+        f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
+        f.write("// MQT Bench version: " + "0.1.0" + "\n")
         f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
