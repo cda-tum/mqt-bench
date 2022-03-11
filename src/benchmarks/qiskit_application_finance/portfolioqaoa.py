@@ -36,17 +36,17 @@ def create_circuit(num_qubits: int):
     penalty = num_assets  # set parameter to scale the budget penalty term
 
     qubit_op, offset = portfolio.get_operator(mu, sigma, q, budget, penalty)
-    backend = Aer.get_backend("statevector_simulator")
+    backend = Aer.get_backend("aer_simulator")
     seed = 10
 
     cobyla = COBYLA()
-    cobyla.set_options(maxiter=5)
+    cobyla.set_options(maxiter=25)
     qaoa = QAOA(qubit_op, cobyla, 3)
 
     qaoa.random_seed = seed
 
     quantum_instance = QuantumInstance(
-        backend=backend, seed_simulator=seed, seed_transpiler=seed
+        backend=backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
     )
 
     result = qaoa.run(quantum_instance)
