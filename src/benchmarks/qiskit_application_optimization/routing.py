@@ -2,11 +2,12 @@
 
 import numpy as np
 
-from qiskit import BasicAer
+from qiskit import Aer
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms import VQE
 from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
+from qiskit.algorithms.optimizers import SLSQP
 
 
 class Initializer:
@@ -108,14 +109,15 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp):
-        algorithm_globals.random_seed = 10598
+        algorithm_globals.random_seed = 10
         quantum_instance = QuantumInstance(
-            BasicAer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             seed_simulator=algorithm_globals.random_seed,
             seed_transpiler=algorithm_globals.random_seed,
+            shots=1024,
         )
 
-        vqe = VQE(quantum_instance=quantum_instance)
+        vqe = VQE(quantum_instance=quantum_instance, optimizer=SLSQP(maxiter=25))
         optimizer = MinimumEigenOptimizer(min_eigen_solver=vqe)
         result = optimizer.solve(qp)
         # compute cost of the obtained result

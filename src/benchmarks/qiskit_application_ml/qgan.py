@@ -1,7 +1,7 @@
 # Code from https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
 
 import numpy as np
-from qiskit import BasicAer
+from qiskit import Aer
 from qiskit.circuit.library import TwoLocal
 from qiskit_finance.circuit.library import UniformDistribution
 
@@ -45,12 +45,13 @@ def create_circuit(num_qubits: int):
     qgan = QGAN(
         real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None
     )
-    qgan.seed = 1
+    qgan.seed = 10
     # Set quantum instance to run the quantum generator
     quantum_instance = QuantumInstance(
-        backend=BasicAer.get_backend("statevector_simulator"),
+        backend=Aer.get_backend("aer_simulator"),
         seed_transpiler=seed,
         seed_simulator=seed,
+        shots=1024,
     )
 
     # Set an initial state for the generator circuit
