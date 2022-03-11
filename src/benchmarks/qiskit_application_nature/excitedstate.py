@@ -11,9 +11,10 @@ from qiskit_nature.mappers.second_quantization import JordanWignerMapper
 
 from qiskit import Aer
 from qiskit.utils import QuantumInstance
-from qiskit_nature.algorithms import GroundStateEigensolver, QEOM, VQEUCCFactory
+from qiskit_nature.algorithms import GroundStateEigensolver, QEOM
 from qiskit.circuit.library import TwoLocal
 from qiskit.algorithms import VQE
+from qiskit.algorithms.optimizers import SLSQP
 
 
 def create_circuit(molecule: Molecule, basis: str = "sto3g"):
@@ -46,7 +47,8 @@ def create_circuit(molecule: Molecule, basis: str = "sto3g"):
 
     another_solver = VQE(
         ansatz=tl_circuit,
-        quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator_statevector")),
+        quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator"), shots=1024),
+        optimizer=SLSQP(maxiter=25),
     )
     gsc = GroundStateEigensolver(qubit_converter, another_solver)
 

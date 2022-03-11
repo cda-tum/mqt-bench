@@ -19,10 +19,10 @@ def create_circuit(num_qubits: int):
 
     qp = get_examplary_max_cut_qp(num_qubits)
     sim = QuantumInstance(
-        backend=Aer.get_backend("qasm_simulator"), shots=1024, seed_simulator=123
+        backend=Aer.get_backend("aer_simulator"), shots=1024, seed_simulator=10
     )
 
-    qaoa = QAOA(reps=2, optimizer=SLSQP(), quantum_instance=sim)
+    qaoa = QAOA(reps=2, optimizer=SLSQP(maxiter=25), quantum_instance=sim)
     qaoa_optimizer = MinimumEigenOptimizer(min_eigen_solver=qaoa)
     qaoa_result = qaoa_optimizer.solve(qp)
     qc = qaoa.get_optimal_circuit()
