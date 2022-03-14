@@ -42,15 +42,15 @@ def init_module_paths():
     }
 
 
-def create_benchmarks_from_config(cfg=None, target_directory=None):
+def create_benchmarks_from_config(cfg_path=None):
     characteristics = []
 
-    if not cfg:
+    if not cfg_path:
         with open("config.json", "r") as jsonfile:
             cfg = json.load(jsonfile)
             print("Read config successful")
     else:
-        with open(path, "r") as jsonfile:
+        with open(cfg_path, "r") as jsonfile:
             cfg = json.load(jsonfile)
             print("Read config successful")
 
@@ -94,7 +94,7 @@ def benchmark_generation_watcher(func, args):
 
             if os.path.isfile(path):
                 os.remove(path)
-                print("removed file: ", path)
+                #print("removed file: ", path)
 
         elif func == get_native_gates_layer:
             qc = args[0]
@@ -115,7 +115,7 @@ def benchmark_generation_watcher(func, args):
             path = "qasm_output/" + filename_nativegates + ".qasm"
             if os.path.isfile(path):
                 os.remove(path)
-                print("removed file: ", path)
+                #print("removed file: ", path)
 
         elif func == get_mapped_layer:
             qc = args[0]
@@ -141,7 +141,7 @@ def benchmark_generation_watcher(func, args):
             path = "qasm_output/" + filename_mapped + ".qasm"
             if os.path.isfile(path):
                 os.remove(path)
-                print("removed file: ", path)
+                #print("removed file: ", path)
 
         return False
     else:
