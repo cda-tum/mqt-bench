@@ -1,6 +1,7 @@
 from qiskit import QuantumCircuit, QuantumRegister, AncillaRegister
 from qiskit.circuit.library import GroverOperator
 from qiskit.algorithms import Grover
+import numpy as np
 
 
 def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
@@ -20,7 +21,7 @@ def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
     state_preparation.x(flag)
 
     oracle = QuantumCircuit(q, flag)
-    oracle.mct(q, flag)
+    oracle.mcp(np.pi, q, flag)
 
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, num_qubits)
