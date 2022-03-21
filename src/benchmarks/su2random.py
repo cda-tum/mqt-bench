@@ -1,4 +1,4 @@
-from qiskit.circuit.library.n_local import EfficientSU2
+from qiskit.circuit.library import EfficientSU2
 import numpy as np
 
 
