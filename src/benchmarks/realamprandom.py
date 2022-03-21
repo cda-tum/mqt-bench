@@ -3,7 +3,7 @@ import numpy as np
 
 
 def create_circuit(num_qubits: int):
-    """Returns a quantum circuit implementing the Variational Quantum Eigensolver Algorithm with random parameter
+    """Returns a quantum circuit implementing the RealAmplitudes ansatz with random parameter
     values.
 
     Keyword arguments:
@@ -11,10 +11,10 @@ def create_circuit(num_qubits: int):
     """
 
     np.random.seed = 10
-    qc = RealAmplitudes(num_qubits, reps=2)
+    qc = RealAmplitudes(num_qubits, entanglement="full", reps=3)
     num_params = qc.num_parameters
     qc = qc.bind_parameters(np.random.rand(num_params))
     qc.measure_all()
-    qc.name = "vqerandom"
+    qc.name = "realamprandom"
 
     return qc
