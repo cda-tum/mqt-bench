@@ -21,8 +21,8 @@ from src.benchmarks.qiskit_application_nature import groundstate, excitedstate
 
 
 def init_module_paths():
-    global scalable_benchmarks_module_paths_dict
-    scalable_benchmarks_module_paths_dict = {
+    global benchmarks_module_paths_dict
+    benchmarks_module_paths_dict = {
         "ae": "src.benchmarks.ae",
         "dj": "src.benchmarks.dj",
         "grover": "src.benchmarks.grover",
@@ -37,8 +37,10 @@ def init_module_paths():
         "qpeexact": "src.benchmarks.qpeexact",
         "qpeinexact": "src.benchmarks.qpeinexact",
         "qwalk": "src.benchmarks.qwalk",
+        "realamprandom": "src.benchmarks.realamprandom",
+        "su2random": "src.benchmarks.su2random",
+        "twolocalrandom": "src.benchmarks.twolocalrandom",
         "vqe": "src.benchmarks.vqe",
-        "vqerandom": "src.benchmarks.vqerandom",
         "wstate": "src.benchmarks.wstate",
     }
 
@@ -452,9 +454,7 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
     try:
         # Creating the circuit on Algorithmic Description Layer
-        lib = importlib.import_module(
-            scalable_benchmarks_module_paths_dict[benchmark["name"]]
-        )
+        lib = importlib.import_module(benchmarks_module_paths_dict[benchmark["name"]])
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             qc = lib.create_circuit(num_qubits, ancillary_mode=ancillary_mode)
             qc.name = qc.name + "-" + ancillary_mode
@@ -707,7 +707,7 @@ def get_one_benchmark(
             anc_mode = "v-chain"
 
         short_name = benchmark_name.split("-")[0]
-        lib = importlib.import_module(scalable_benchmarks_module_paths_dict[short_name])
+        lib = importlib.import_module(benchmarks_module_paths_dict[short_name])
         qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
         qc.name = qc.name + "-" + anc_mode
 
@@ -746,9 +746,7 @@ def get_one_benchmark(
         qc = pricingput.create_circuit(circuit_size)
 
     else:
-        lib = importlib.import_module(
-            scalable_benchmarks_module_paths_dict[benchmark_name]
-        )
+        lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
     if layer == "alg" or layer == 0:
