@@ -45,17 +45,12 @@ def init_module_paths():
     }
 
 
-def create_benchmarks_from_config(cfg_path=None):
+def create_benchmarks_from_config(cfg_path):
     characteristics = []
 
-    if not cfg_path:
-        with open("config.json", "r") as jsonfile:
-            cfg = json.load(jsonfile)
-            print("Read default config successful")
-    else:
-        with open(cfg_path, "r") as jsonfile:
-            cfg = json.load(jsonfile)
-            print("Read config successful")
+    with open(cfg_path, "r") as jsonfile:
+        cfg = json.load(jsonfile)
+        print("Read config successful")
 
     # global seetings
     global save_png
@@ -780,5 +775,15 @@ def get_one_benchmark(
 
 if __name__ == "__main__":
     init_module_paths()
-    characteristics = create_benchmarks_from_config()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Create Configuration")
+    parser.add_argument(
+        "--file-name", type=str, help="optional filename", default="config.json"
+    )
+
+    args = parser.parse_args()
+
+    print(args.file_name)
+    characteristics = create_benchmarks_from_config(args.file_name)
     save_benchmark_hist(characteristics)
