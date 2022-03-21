@@ -5,6 +5,7 @@ import os.path
 import json
 import importlib
 import signal
+from typing import Union
 
 from src.utils import *
 from src.benchmarks import (
@@ -48,7 +49,7 @@ def create_benchmarks_from_config(cfg_path=None):
     if not cfg_path:
         with open("config.json", "r") as jsonfile:
             cfg = json.load(jsonfile)
-            print("Read config successful")
+            print("Read default config successful")
     else:
         with open(cfg_path, "r") as jsonfile:
             cfg = json.load(jsonfile)
@@ -643,13 +644,13 @@ def save_benchmark_hist(characteristics):
 
 
 def get_one_benchmark(
-    benchmark_name,
-    layer=None,
-    input_number=None,
-    instance=None,
-    opt_level=None,
-    gate_set_name=None,
-    smallest_fitting_arch=None,
+    benchmark_name: str,
+    layer: Union[str, int],
+    circuit_size: int,
+    benchmark_instance_name: str = None,
+    opt_level: int = None,
+    gate_set_name: str = None,
+    smallest_fitting_arch: bool = None,
 ):
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
 
@@ -707,7 +708,7 @@ def get_one_benchmark(
 
         short_name = benchmark_name.split("-")[0]
         lib = importlib.import_module(scalable_benchmarks_module_paths_dict[short_name])
-        qc = lib.create_circuit(input_number, ancillary_mode=anc_mode)
+        qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
         qc.name = qc.name + "-" + anc_mode
 
     elif benchmark_name == "shor":
@@ -719,36 +720,36 @@ def get_one_benchmark(
             "xlarge": [201209, 4],  # 74 qubits
         }
 
-        qc = shor.create_circuit(*instances[instance])
+        qc = shor.create_circuit(*instances[benchmark_instance_name])
 
     elif benchmark_name == "hhl":
-        qc = hhl.create_circuit(input_number)
+        qc = hhl.create_circuit(circuit_size)
 
     elif benchmark_name == "routing":
-        qc = routing.create_circuit(input_number)
+        qc = routing.create_circuit(circuit_size)
 
     elif benchmark_name == "tsp":
-        qc = tsp.create_circuit(input_number)
+        qc = tsp.create_circuit(circuit_size)
 
     elif benchmark_name == "groundstate":
         instances = {"small": m_1, "medium": m_2, "large": m_3}
-        qc = groundstate.create_circuit(instances[instance])
+        qc = groundstate.create_circuit(instances[benchmark_instance_name])
 
     elif benchmark_name == "excitedstate":
         instances = {"small": m_1, "medium": m_2, "large": m_3}
-        qc = excitedstate.create_circuit(instances[instance])
+        qc = excitedstate.create_circuit(instances[benchmark_instance_name])
 
     elif benchmark_name == "pricingcall":
-        qc = pricingcall.create_circuit(input_number)
+        qc = pricingcall.create_circuit(circuit_size)
 
     elif benchmark_name == "pricingput":
-        qc = pricingput.create_circuit(input_number)
+        qc = pricingput.create_circuit(circuit_size)
 
     else:
         lib = importlib.import_module(
             scalable_benchmarks_module_paths_dict[benchmark_name]
         )
-        qc = lib.create_circuit(input_number)
+        qc = lib.create_circuit(circuit_size)
 
     if layer == "alg" or layer == 0:
         return qc
@@ -766,7 +767,7 @@ def get_one_benchmark(
 
     elif layer == "mapped" or layer == 3:
         c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(
-            gate_set_name, smallest_fitting_arch, input_number
+            gate_set_name, smallest_fitting_arch, circuit_size
         )
         if c_map_found:
             qc_mapped = get_compiled_circuit_with_gateset(
@@ -777,10 +778,6 @@ def get_one_benchmark(
             return print("No Hardware Architecture available for that config.")
     else:
         return print("Layer specification was wrong.")
-
-
-def create_benchmarks_from_config_file(path):
-    create_benchmarks_from_config(path)
 
 
 if __name__ == "__main__":
