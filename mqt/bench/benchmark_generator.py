@@ -1,51 +1,55 @@
 from qiskit_nature.drivers import Molecule
 
 import matplotlib.pyplot as plt
-import os.path
+from os import path, mkdir, remove
 import json
 import importlib
 import signal
+
 from typing import Union
 
-from src.utils import *
-from src.benchmarks import (
+from qiskit import QuantumCircuit, transpile
+import numpy as np
+from mqt.bench.utils import utils
+from mqt.bench.benchmarks import (
     shor,
     hhl,
 )
-from src.benchmarks.qiskit_application_optimization import routing, tsp
-from src.benchmarks.qiskit_application_finance import (
+from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
+from mqt.bench.benchmarks.qiskit_application_finance import (
     pricingcall,
     pricingput,
 )
-from src.benchmarks.qiskit_application_nature import groundstate, excitedstate
+from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
 
 
 def init_module_paths():
     global benchmarks_module_paths_dict
     benchmarks_module_paths_dict = {
-        "ae": "src.benchmarks.ae",
-        "dj": "src.benchmarks.dj",
-        "grover": "src.benchmarks.grover",
-        "ghz": "src.benchmarks.ghz",
-        "graphstate": "src.benchmarks.graphstate",
-        "portfolioqaoa": "src.benchmarks.qiskit_application_finance.portfolioqaoa",
-        "portfoliovqe": "src.benchmarks.qiskit_application_finance.portfoliovqe",
-        "qaoa": "src.benchmarks.qaoa",
-        "qft": "src.benchmarks.qft",
-        "qftentangled": "src.benchmarks.qftentangled",
-        "qgan": "src.benchmarks.qiskit_application_ml.qgan",
-        "qpeexact": "src.benchmarks.qpeexact",
-        "qpeinexact": "src.benchmarks.qpeinexact",
-        "qwalk": "src.benchmarks.qwalk",
-        "realamprandom": "src.benchmarks.realamprandom",
-        "su2random": "src.benchmarks.su2random",
-        "twolocalrandom": "src.benchmarks.twolocalrandom",
-        "vqe": "src.benchmarks.vqe",
-        "wstate": "src.benchmarks.wstate",
+        "ae": "mqt.bench.benchmarks.ae",
+        "dj": "mqt.bench.benchmarks.dj",
+        "grover": "mqt.bench.benchmarks.grover",
+        "ghz": "mqt.bench.benchmarks.ghz",
+        "graphstate": "mqt.bench.benchmarks.graphstate",
+        "portfolioqaoa": "mqt.bench.benchmarks.qiskit_application_finance.portfolioqaoa",
+        "portfoliovqe": "mqt.bench.benchmarks.qiskit_application_finance.portfoliovqe",
+        "qaoa": "mqt.bench.benchmarks.qaoa",
+        "qft": "mqt.bench.benchmarks.qft",
+        "qftentangled": "mqt.bench.benchmarks.qftentangled",
+        "qgan": "mqt.bench.benchmarks.qiskit_application_ml.qgan",
+        "qpeexact": "mqt.bench.benchmarks.qpeexact",
+        "qpeinexact": "mqt.bench.benchmarks.qpeinexact",
+        "qwalk": "mqt.bench.benchmarks.qwalk",
+        "realamprandom": "mqt.bench.benchmarks.realamprandom",
+        "su2random": "mqt.bench.benchmarks.su2random",
+        "twolocalrandom": "mqt.bench.benchmarks.twolocalrandom",
+        "vqe": "mqt.bench.benchmarks.vqe",
+        "wstate": "mqt.bench.benchmarks.wstate",
     }
 
 
-def create_benchmarks_from_config(cfg_path):
+def create_benchmarks_from_config(cfg_path: str):
+    init_module_paths()
     characteristics = []
 
     with open(cfg_path, "r") as jsonfile:
@@ -61,6 +65,9 @@ def create_benchmarks_from_config(cfg_path):
     max_depth = cfg["max_depth"]
     global timeout
     timeout = cfg["timeout"]
+
+    if not path.isdir("./qasm_output"):
+        mkdir("qasm_output")
 
     for benchmark in cfg["benchmarks"]:
         print(benchmark["name"])
@@ -84,17 +91,17 @@ def benchmark_generation_watcher(func, args):
     except Exception as e:
         # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
         print("Exception: ", e, func, args[1:])
-        if func == get_indep_layer:
+        if func == utils.get_indep_layer:
             qc = args[0]
             num_qubits = args[1]
             filename_indep = qc.name + "_t-indep_" + str(num_qubits)
             path = "qasm_output/" + filename_indep + ".qasm"
 
-            if os.path.isfile(path):
-                os.remove(path)
+            if path.isfile(path):
+                remove(path)
                 # print("removed file: ", path)
 
-        elif func == get_native_gates_layer:
+        elif func == utils.get_native_gates_layer:
             qc = args[0]
             gate_set_name = args[2]
             opt_level = args[3]
@@ -111,11 +118,11 @@ def benchmark_generation_watcher(func, args):
             )
 
             path = "qasm_output/" + filename_nativegates + ".qasm"
-            if os.path.isfile(path):
-                os.remove(path)
+            if path.isfile(path):
+                remove(path)
                 # print("removed file: ", path)
 
-        elif func == get_mapped_layer:
+        elif func == utils.get_mapped_layer:
             qc = args[0]
             gate_set_name_mapped = args[2]
             opt_level = args[3]
@@ -137,8 +144,8 @@ def benchmark_generation_watcher(func, args):
             )
 
             path = "qasm_output/" + filename_mapped + ".qasm"
-            if os.path.isfile(path):
-                os.remove(path)
+            if path.isfile(path):
+                remove(path)
                 # print("removed file: ", path)
 
         return False
@@ -333,7 +340,7 @@ def generate_algo_layer_circuit(
 ):
     characteristics = []
     res = benchmark_generation_watcher(
-        handle_algorithm_layer, [qc, num_qubits, save_png, save_hist]
+        utils.handle_algorithm_layer, [qc, num_qubits, save_png, save_hist]
     )
     characteristics.append(res)
 
@@ -350,7 +357,7 @@ def generate_target_indep_layer_circuit(
     characteristics = []
 
     res = benchmark_generation_watcher(
-        get_indep_layer,
+        utils.get_indep_layer,
         [qc, num_qubits, save_png, save_hist, file_precheck],
     )
     if res:
@@ -365,7 +372,7 @@ def generate_target_dep_layer_circuit(
 ):
     characteristics = []
 
-    ibm_native_gates = FakeMontreal().configuration().basis_gates
+    ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
     rigetti_native_gates = ["rx", "rz", "cz"]
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
 
@@ -376,7 +383,7 @@ def generate_target_dep_layer_circuit(
                 # Creating the circuit on target-dependent: native gates layer
 
                 res = benchmark_generation_watcher(
-                    get_native_gates_layer,
+                    utils.get_native_gates_layer,
                     [
                         qc,
                         gate_set,
@@ -396,7 +403,7 @@ def generate_target_dep_layer_circuit(
 
                 # Creating the circuit on target-dependent: mapped layer for both mapping schemes
                 res = benchmark_generation_watcher(
-                    get_mapped_layer,
+                    utils.get_mapped_layer,
                     [
                         qc,
                         gate_set,
@@ -415,7 +422,7 @@ def generate_target_dep_layer_circuit(
                 else:
                     break
                 res = benchmark_generation_watcher(
-                    get_mapped_layer,
+                    utils.get_mapped_layer,
                     [
                         qc,
                         gate_set,
@@ -665,7 +672,7 @@ def get_one_benchmark(
     QuantumCircuit -- Representing the benchmark with the selected options
     """
     init_module_paths()
-    ibm_native_gates = FakeMontreal().configuration().basis_gates
+    ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
     rigetti_native_gates = ["rx", "rz", "cz"]
 
     m_1 = Molecule(
@@ -749,21 +756,21 @@ def get_one_benchmark(
 
     elif layer == "indep" or layer == 1:
 
-        qc_indep = transpile(qc, basis_gates=get_openqasm_gates())
+        qc_indep = transpile(qc, basis_gates=utils.get_openqasm_gates())
         return qc_indep
 
     elif layer == "gates" or layer == 2:
-        qc_gates = get_compiled_circuit_with_gateset(
+        qc_gates = utils.get_compiled_circuit_with_gateset(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
         return qc_gates
 
     elif layer == "mapped" or layer == 3:
-        c_map, backend_name, gate_set_name_mapped, c_map_found = select_c_map(
+        c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
             gate_set_name, smallest_fitting_arch, circuit_size
         )
         if c_map_found:
-            qc_mapped = get_compiled_circuit_with_gateset(
+            qc_mapped = utils.get_compiled_circuit_with_gateset(
                 qc=qc, opt_level=opt_level, basis_gates=gate_set, c_map=c_map
             )
             return qc_mapped
@@ -779,7 +786,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument(
-        "--file-name", type=str, help="optional filename", default="config.json"
+        "--file-name", type=str, help="optional filename", default="../../config.json"
     )
 
     args = parser.parse_args()
