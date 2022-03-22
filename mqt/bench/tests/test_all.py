@@ -1,5 +1,5 @@
-from src import utils
-from src.benchmarks import (
+from mqt.bench.utils import utils
+from mqt.bench.benchmarks import (
     ghz,
     dj,
     ae,
@@ -19,17 +19,17 @@ from src.benchmarks import (
     wstate,
     shor,
 )
-from src.benchmarks.qiskit_application_finance import (
+from mqt.bench.benchmarks.qiskit_application_finance import (
     pricingcall,
     pricingput,
     portfoliovqe,
     portfolioqaoa,
 )
-from src.benchmarks.qiskit_application_ml import qgan
-from src.benchmarks.qiskit_application_nature import groundstate, excitedstate
-from src.benchmarks.qiskit_application_optimization import tsp, routing
+from mqt.bench.benchmarks.qiskit_application_ml import qgan
+from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
+from mqt.bench.benchmarks.qiskit_application_optimization import tsp, routing
 from qiskit_nature.drivers import Molecule
-from benchmark_generator import get_one_benchmark
+from mqt.bench.benchmark_generator import get_one_benchmark
 
 import pytest
 import os
