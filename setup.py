@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 import os
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
@@ -6,9 +6,17 @@ with open(README_PATH) as readme_file:
     README = readme_file.read()
 
 setup(
-    name="mqtbench",
-    packages=["mqtbench"],
-    version="0.1.0",
+    name="mqt.bench",
+    packages=[
+        "mqt.bench",
+        "mqt.bench.utils",
+        "mqt.bench.benchmarks",
+        "mqt.bench.benchmarks.qiskit_application_finance",
+        "mqt.bench.benchmarks.qiskit_application_ml",
+        "mqt.bench.benchmarks.qiskit_application_optimization",
+        "mqt.bench.benchmarks.qiskit_application_nature",
+    ],
+    version="0.1.11",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
     long_description=README,
