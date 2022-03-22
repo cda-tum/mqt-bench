@@ -65,6 +65,10 @@ So far, the following benchmarks are implemented:
 - Shor's Algorithm
 - QAOA
 - VQE
+- VQE-ansätze with random values:
+  - Two Local
+  - Real Amplitudes
+  - Efficient SU2
 - Deutsch Jozsa
 - HHL
 - Quantum Walk
@@ -96,8 +100,9 @@ MQT Bench
 │ - README.md
 │ - benchmark_generator.ipynb  
 │
-└───src
-│   │ - utils.py
+└───mqt/bench
+│   └───utils
+│   │   │ - utils.py
 │   │
 │   └───benchmarks
 │       │ - ae.py
@@ -113,8 +118,6 @@ MQT Bench
 │       │       ...
 │
 └───qasm_output
-│
-└───qpy_output
 ```
 
 # Usage

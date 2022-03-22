@@ -10,7 +10,7 @@ mqt/bench/hist_output/*
 /qasm_output
 .idea/*
 *.DS_Store
-*png
+*hist_output/*png
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
