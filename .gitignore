@@ -3,8 +3,11 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,jupyternotebooks
 
 ### Manually added
-mqt/bench/qasm_output/*.qasm
-mqt/bench/hist_output/*.png
+mqt/bench/qasm_output/*
+mqt/bench/hist_output/*
+*.qasm
+/hist_output
+/qasm_output
 .idea/*
 *.DS_Store
 *png
