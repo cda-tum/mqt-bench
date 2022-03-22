@@ -95,10 +95,10 @@ def benchmark_generation_watcher(func, args):
             qc = args[0]
             num_qubits = args[1]
             filename_indep = qc.name + "_t-indep_" + str(num_qubits)
-            path = "qasm_output/" + filename_indep + ".qasm"
+            file_path = "qasm_output/" + filename_indep + ".qasm"
 
-            if path.isfile(path):
-                remove(path)
+            if path.isfile(file_path):
+                remove(file_path)
                 # print("removed file: ", path)
 
         elif func == utils.get_native_gates_layer:
@@ -117,10 +117,9 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            path = "qasm_output/" + filename_nativegates + ".qasm"
-            if path.isfile(path):
-                remove(path)
-                # print("removed file: ", path)
+            file_path = "qasm_output/" + filename_nativegates + ".qasm"
+            if path.isfile(file_path):
+                remove(file_path)
 
         elif func == utils.get_mapped_layer:
             qc = args[0]
@@ -143,10 +142,9 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            path = "qasm_output/" + filename_mapped + ".qasm"
-            if path.isfile(path):
-                remove(path)
-                # print("removed file: ", path)
+            file_path = "qasm_output/" + filename_mapped + ".qasm"
+            if path.isfile(file_path):
+                remove(file_path)
 
         return False
     else:
@@ -786,7 +784,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument(
-        "--file-name", type=str, help="optional filename", default="../../config.json"
+        "--file-name", type=str, help="optional filename", default="./config.json"
     )
 
     args = parser.parse_args()

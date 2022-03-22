@@ -10,7 +10,7 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
-import os
+from os import path, mkdir
 
 from qiskit.test.mock import (
     FakeBogota,
@@ -119,6 +119,9 @@ def sim_and_print_hist(qc: QuantumCircuit, filename: str):
     filename -- filename of the histogram
     """
 
+    if not path.isdir("./hist_output"):
+        mkdir("hist_output")
+
     simulator = Aer.get_backend("aer_simulator")
     result = simulator.run(qc.decompose(), shots=1024).result()
     counts = result.get_counts()
@@ -133,6 +136,9 @@ def save_circ(qc: QuantumCircuit, filename: str):
     qc -- to be saved quantum circuit
     filename -- filename of the schematic picture
     """
+    if not path.isdir("./hist_output"):
+        mkdir("hist_output")
+
     qc.draw(output="mpl", filename="hist_output/" + filename + ".png")
 
 
@@ -274,12 +280,11 @@ def handle_algorithm_layer(
     depth -- circuit depth of created benchmark
     num_qubits -- number of qubits of generated circuit
     """
-
     filename_algo = qc.name + "_algorithm_" + str(num_qubits)
-    if os.path.isfile("qpy_output/" + filename_algo + ".qpy"):
-        path = "qpy_output/" + filename_algo + ".qpy"
-        print(path + " already exists")
-        with open(path, "rb") as fd:
+    if path.isfile("qpy_output/" + filename_algo + ".qpy"):
+        filepath = "qpy_output/" + filename_algo + ".qpy"
+        print(filepath + " already exists")
+        with open(filepath, "rb") as fd:
             qc = qpy_serialization.load(fd)[0]
         depth = qc.depth()
     else:
@@ -316,10 +321,10 @@ def get_indep_layer(
     """
 
     filename_indep = qc.name + "_indep_" + str(num_qubits)
-    path = "qasm_output/" + filename_indep + ".qasm"
-    if os.path.isfile(path) and file_precheck:
-        print(path + " already exists")
-        qc = QuantumCircuit.from_qasm_file(path)
+    filepath = "qasm_output/" + filename_indep + ".qasm"
+    if path.isfile(filepath) and file_precheck:
+        print(filepath + " already exists")
+        qc = QuantumCircuit.from_qasm_file(filepath)
         depth = qc.depth()
         return filename_indep, depth, num_qubits
 
@@ -376,10 +381,7 @@ def get_native_gates_layer(
         + str(num_qubits)
     )
 
-    if (
-        os.path.isfile("qasm_output/" + filename_nativegates + ".qasm")
-        and file_precheck
-    ):
+    if path.isfile("qasm_output/" + filename_nativegates + ".qasm") and file_precheck:
         print("qasm_output/" + filename_nativegates + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
             "qasm_output/" + filename_nativegates + ".qasm"
@@ -457,7 +459,7 @@ def get_mapped_layer(
             + "_"
             + str(num_qubits)
         )
-        if os.path.isfile("qasm_output/" + filename_mapped + ".qasm") and file_precheck:
+        if path.isfile("qasm_output/" + filename_mapped + ".qasm") and file_precheck:
             print("qasm_output/" + filename_mapped + ".qasm" + " already exists")
             qc = QuantumCircuit.from_qasm_file(
                 "qasm_output/" + filename_mapped + ".qasm"
