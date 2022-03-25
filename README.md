@@ -1,5 +1,4 @@
-![GitHub](https://img.shields.io/github/license/nq8/MQTbench?style=plastic)
-[![Codecov branch](https://img.shields.io/codecov/c/github/nq8/DAQCBench/master?label=codecov&logo=codecov&style=plastic)](https://codecov.io/gh/nq8/DAQCBench)
+![GitHub](https://img.shields.io/github/license/cda-tum/MQTbench?style=plastic)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
@@ -57,7 +56,6 @@ This is the target-dependent mapped layer description.
 ## Benchmark Selection
 So far, the following benchmarks are implemented:
 - Amplitude Estimation
-- Iterative Amplitude Estimation
 - GHZ State
 - Graph State
 - W State
