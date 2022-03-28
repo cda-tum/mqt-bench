@@ -646,7 +646,7 @@ def save_benchmark_hist(characteristics):
 def get_one_benchmark(
     benchmark_name: str,
     layer: Union[str, int],
-    circuit_size: int,
+    circuit_size: int = None,
     benchmark_instance_name: str = None,
     opt_level: int = None,
     gate_set_name: str = None,
