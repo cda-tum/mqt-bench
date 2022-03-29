@@ -757,7 +757,7 @@ def get_one_benchmark(
         qc_indep = transpile(qc, basis_gates=utils.get_openqasm_gates())
         return qc_indep
 
-    elif layer == "gates" or layer == 2:
+    elif layer == "nativegates" or layer == 2:
         qc_gates = utils.get_compiled_circuit_with_gateset(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
