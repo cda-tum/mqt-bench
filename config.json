@@ -183,6 +183,6 @@
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
-  },
+  }
 ]
 }
