@@ -1,15 +1,16 @@
 from qiskit_nature.drivers import Molecule
+from qiskit import QuantumCircuit, transpile
 
 import matplotlib.pyplot as plt
-from os import path, mkdir, remove
 import json
 import importlib
 import signal
+import argparse
+import numpy as np
 
 from typing import Union
+from os import path, mkdir, remove
 
-from qiskit import QuantumCircuit, transpile
-import numpy as np
 from mqt.bench.utils import utils
 from mqt.bench.benchmarks import (
     shor,
@@ -780,7 +781,6 @@ def get_one_benchmark(
 
 if __name__ == "__main__":
     init_module_paths()
-    import argparse
 
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument(
