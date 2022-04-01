@@ -71,6 +71,10 @@ def save_as_qasm(
 
     with open("qasm_output/" + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
+        f.write(
+            "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
+            + "\n"
+        )
         f.write("// MQT Bench version: " + "0.1.0" + "\n")
         f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         if gate_set:
