@@ -372,7 +372,7 @@ def generate_target_dep_layer_circuit(
     characteristics = []
 
     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
-    rigetti_native_gates = ["rx", "rz", "cz"]
+    rigetti_native_gates = utils.get_rigetti_native_gates()
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
 
     for gate_set, gate_set_name in gate_sets:
@@ -672,7 +672,7 @@ def get_one_benchmark(
     """
     init_module_paths()
     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
-    rigetti_native_gates = ["rx", "rz", "cz"]
+    rigetti_native_gates = utils.get_rigetti_native_gates()
 
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],

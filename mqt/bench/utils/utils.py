@@ -45,6 +45,9 @@ def get_compiled_circuit_with_gateset(
     return t_qc
 
 
+def get_rigetti_native_gates():
+    return ["rx", "rz", "cz", "id", "reset"]
+
 def save_as_qasm(
     qc: QuantumCircuit,
     filename: str,
