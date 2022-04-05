@@ -16,7 +16,7 @@ setup(
         "mqt.bench.benchmarks.qiskit_application_optimization",
         "mqt.bench.benchmarks.qiskit_application_nature",
     ],
-    version="0.1.14",
+    version="0.1.15",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
     long_description=README,
