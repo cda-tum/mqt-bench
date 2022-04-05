@@ -146,17 +146,7 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     # Instantiate the quantum optimizer class with parameters:
     quantum_solution, quantum_cost, vqe = quantum_optimizer.solve_problem(qp)
     qc = vqe.get_optimal_circuit()
+    qc.measure_all()
     qc.name = "routing"
-
-    # Put the solution in a way that is compatible with the classical variables
-    x_quantum = np.zeros(n**2)
-    kk = 0
-    for ii in range(n**2):
-        if ii // n != ii % n:
-            x_quantum[ii] = quantum_solution[kk]
-            kk += 1
-
-    # visualize the solution
-    # visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
 
     return qc
