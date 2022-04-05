@@ -1,4 +1,4 @@
-![GitHub](https://img.shields.io/github/license/cda-tum/MQTbench?style=plastic)
+![GitHub](https://img.shields.io/github/license/cda-tum/MQTBench?style=plastic)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
