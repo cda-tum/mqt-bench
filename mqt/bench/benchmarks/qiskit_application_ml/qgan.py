@@ -82,6 +82,7 @@ def create_circuit(num_qubits: int):
 
     param_values = qgan.generator.parameter_values
     qc = qgan.generator.construct_circuit(params=param_values)
+    qc.measure_all()
     qc.name = "qgan"
 
     return qc
