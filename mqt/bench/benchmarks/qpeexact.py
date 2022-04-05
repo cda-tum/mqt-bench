@@ -47,6 +47,7 @@ def create_circuit(num_qubits: int):
         inplace=True,
         qubits=list(range(num_qubits)),
     )
+    qc.barrier()
     qc.measure(q, c)
 
     return qc
