@@ -4,11 +4,11 @@ Circuits on the algorithm level can directly be generated (as IBM Qiskit Quantum
 To get access, please follow these installation and import instructions:
 
 pip install mqt.bench
-from mqt.bench import benchmark_generator
+from mqt.bench import get_one_benchmark
 
 To generate one benchmark on the algorithm level, please use this method:
 
-benchmark_generator.get_one_benchmark(
+get_one_benchmark(
     benchmark_name: str,
     level: Union[str, int],
     circuit_size: int = None,
@@ -19,7 +19,7 @@ benchmark_generator.get_one_benchmark(
 )
 
 For example:
-qc = benchmark_generator.get_one_benchmark("dj", "alg", 5)
+qc = get_one_benchmark("dj", "alg", 5)
 
 The available parameters are:
     -> benchmark_name: "ae", "dj", "grover-noancilla", "grover-v-chain", "ghz", "graphstate", "portfolioqaoa",
