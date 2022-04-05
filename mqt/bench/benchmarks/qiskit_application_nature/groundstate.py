@@ -14,7 +14,7 @@ from qiskit.utils import QuantumInstance
 from qiskit_nature.algorithms import GroundStateEigensolver
 from qiskit.circuit.library import TwoLocal
 from qiskit.algorithms import VQE
-from qiskit.algorithms.optimizers import SLSQP
+from qiskit.algorithms.optimizers import COBYLA
 
 
 def create_circuit(molecule: Molecule, basis: str = "sto3g"):
@@ -45,7 +45,7 @@ def create_circuit(molecule: Molecule, basis: str = "sto3g"):
     another_solver = VQE(
         ansatz=tl_circuit,
         quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator"), shots=1024),
-        optimizer=SLSQP(maxiter=25),
+        optimizer=COBYLA(maxiter=25),
     )
 
     calc = GroundStateEigensolver(qubit_converter, another_solver)
