@@ -1,4 +1,3 @@
-from qiskit_nature.drivers import Molecule
 from qiskit import QuantumCircuit, transpile
 
 import matplotlib.pyplot as plt
@@ -526,7 +525,11 @@ def create_tsp_qc(nodes: int):
 
 
 def create_groundstate_qc(choice: str):
-
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return False
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
@@ -564,7 +567,11 @@ def create_groundstate_qc(choice: str):
 
 
 def create_excitedstate_qc(choice: str):
-
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return False
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
@@ -651,17 +658,17 @@ def get_one_benchmark(
     level: Union[str, int],
     circuit_size: int = None,
     benchmark_instance_name: str = None,
-    opt_level: int = None,
-    gate_set_name: str = None,
-    smallest_fitting_arch: bool = None,
+    opt_level: int = 0,
+    gate_set_name: str = "ibm",
+    smallest_fitting_arch: bool = True,
 ):
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
 
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
     level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
-    input_number -- Input for the benchmark creation, in most cases this is equal to the qubit number
-    instance -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
+    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
+    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
     0 corresponds to "alg" level and 3 to "mapped" level
     opt_level -- Level of optimization (relevant to "gates" and "mapped" levels)
     gate_set_name -- Either "ibm" or "rigetti"
@@ -675,26 +682,6 @@ def get_one_benchmark(
     init_module_paths()
     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
     rigetti_native_gates = utils.get_rigetti_native_gates()
-
-    m_1 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_2 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_3 = Molecule(
-        geometry=[
-            ["O", [0.0, 0.0, 0.0]],
-            ["H", [0.586, 0.757, 0.0]],
-            ["H", [0.586, -0.757, 0.0]],
-        ],
-        charge=0,
-        multiplicity=1,
-    )
 
     if gate_set_name and "ibm" in gate_set_name:
         gate_set = ibm_native_gates
@@ -735,10 +722,58 @@ def get_one_benchmark(
         qc = tsp.create_circuit(circuit_size)
 
     elif benchmark_name == "groundstate":
+        try:
+            from qiskit_nature.drivers import Molecule
+        except:
+            print("Please install qiskit_nature.")
+            return False
+        m_1 = Molecule(
+            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_2 = Molecule(
+            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_3 = Molecule(
+            geometry=[
+                ["O", [0.0, 0.0, 0.0]],
+                ["H", [0.586, 0.757, 0.0]],
+                ["H", [0.586, -0.757, 0.0]],
+            ],
+            charge=0,
+            multiplicity=1,
+        )
         instances = {"small": m_1, "medium": m_2, "large": m_3}
         qc = groundstate.create_circuit(instances[benchmark_instance_name])
 
     elif benchmark_name == "excitedstate":
+        try:
+            from qiskit_nature.drivers import Molecule
+        except:
+            print("Please install qiskit_nature.")
+            return False
+        m_1 = Molecule(
+            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_2 = Molecule(
+            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_3 = Molecule(
+            geometry=[
+                ["O", [0.0, 0.0, 0.0]],
+                ["H", [0.586, 0.757, 0.0]],
+                ["H", [0.586, -0.757, 0.0]],
+            ],
+            charge=0,
+            multiplicity=1,
+        )
         instances = {"small": m_1, "medium": m_2, "large": m_3}
         qc = excitedstate.create_circuit(instances[benchmark_instance_name])
 
