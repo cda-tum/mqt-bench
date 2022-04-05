@@ -5,7 +5,7 @@ on: push
 jobs:
   build-n-publish:
     name: Build and publish Python distributions to PyPI and TestPyPI
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@master
       - name: Set up Python 3.9
