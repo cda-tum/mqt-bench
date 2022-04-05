@@ -16,7 +16,7 @@ setup(
         "mqt.bench.benchmarks.qiskit_application_optimization",
         "mqt.bench.benchmarks.qiskit_application_nature",
     ],
-    version="0.1.11",
+    version="0.1.16",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
     long_description=README,
@@ -27,9 +27,22 @@ setup(
     download_url="https://github.com/user/reponame/archive/v_01.tar.gz",
     keywords="mqt quantum benchmarking performance testing",
     install_requires=[
-        "validators",
-        "beautifulsoup4",
+        "matplotlib~=3.5.1",
+        "qiskit~=0.34.1",
+        "pandas~=1.3.5",
+        "flask~=2.0.2",
+        "networkx~=2.7.1",
+        "pytest~=7.1.1",
     ],
+    extras_require={
+        "all": [
+            "qiskit-finance~=0.3.1",
+            "qiskit-machine-learning==0.3.1",
+            "qiskit-nature~=0.3.1",
+            "qiskit-optimization~=0.3.2",
+            "qiskit-aqua~=0.9.5",
+        ],
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

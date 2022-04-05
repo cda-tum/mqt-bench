@@ -1,8 +1,8 @@
 {
 "timeout": 300,
 "max_depth": 1000000,
-"save_png": true,
-"save_hist": true,
+"save_png": false,
+"save_hist": false,
 "benchmarks": [
   {
     "name": "ae",

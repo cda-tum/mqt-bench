@@ -1,9 +1,6 @@
 # Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
 import numpy as np
-from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
-from qiskit.finance.applications import EuropeanCallExpectedValue
-from qiskit_finance.circuit.library import LogNormalDistribution
 
 
 def create_circuit(num_uncertainty_qubits: int = 5):
@@ -13,6 +10,19 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     Keyword arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
+    try:
+        from qiskit.finance.applications import EuropeanCallExpectedValue
+        from qiskit_finance.circuit.library import LogNormalDistribution
+    except:
+        print("Please install qiskit_finance.")
+        return False
+
+    try:
+
+        from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
+    except:
+        print("Please install qiskit_aqua.")
+        return False
 
     num_uncertainty_qubits = num_uncertainty_qubits
 
@@ -68,6 +78,7 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     # result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
 
     qc = iae.construct_circuit(1)
+    qc.measure_all()
     qc.name = "pricingcall"
 
     return qc

@@ -1,4 +1,4 @@
-![GitHub](https://img.shields.io/github/license/cda-tum/MQTbench?style=plastic)
+![GitHub](https://img.shields.io/github/license/cda-tum/MQTBench?style=plastic)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
@@ -80,7 +80,7 @@ Additionally, several quantum application algorithms are available.
 ## Native Gate-Set Support
 So far, MQT Bench supports the following native gate-sets:
 1) IBM-Q gate set with ['id', 'rz', 'sx', 'x', 'cx', 'reset']
-2) Rigetti gate set with ['rx','rz','cz']
+2) Rigetti gate set with ['id, 'rx', 'rz', 'cz', 'reset']
 
 ## Mapping Scheme Support
 Currently, MQT Bench supports two mapping schemes:
@@ -92,17 +92,17 @@ Currently, MQT Bench supports two mapping schemes:
 - benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
   - Additionally, folders for each qiskit application module and their respective benchmarks are listed
 - qasm_output: Here, the created benchmarks on the target-independent and -dependent layers will be created
-- qpy_output: This is the folder for the created benchmarks on algorithm layer.
+- benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/app/benchviewer/](https://www.cda.cit.tum.de/app/benchviewer/).
 ```
-MQT Bench
+MQT Bench/
 │ - README.md
 │ - benchmark_generator.ipynb  
 │
-└───mqt/bench
-│   └───utils
+└───mqt/bench/
+│   └───utils/
 │   │   │ - utils.py
 │   │
-│   └───benchmarks
+│   └───benchmarks/
 │       │ - ae.py
 │       │   ...
 │       │ - wstate.py
@@ -115,11 +115,12 @@ MQT Bench
 │       └─── qiskit_application_optimization
 │       │       ...
 │
-└───qasm_output
+│───benchviewer/
+└───qasm_output/
 ```
 
 # Usage
-To start the creation of all benchmarks, just run the jupyter notebook ```benchmark_generator.ipynb``` file.
+To start the creation of all benchmarks, just run the jupyter notebook ```python benchmark_creator.py <config_name>.json``` file.
 
 # References:
 [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021 

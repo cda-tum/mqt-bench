@@ -2,12 +2,9 @@
 
 from qiskit import Aer
 from qiskit.circuit.library import TwoLocal
-from qiskit_optimization.applications import Tsp
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SPSA
 from qiskit.utils import algorithm_globals, QuantumInstance
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
-from qiskit_optimization.converters import QuadraticProgramToQubo
 
 
 def create_circuit(num_nodes: int):
@@ -16,6 +13,15 @@ def create_circuit(num_nodes: int):
     Keyword arguments:
     num_nodes -- number of to be visited nodes
     """
+
+    try:
+        from qiskit_optimization.algorithms import MinimumEigenOptimizer
+        from qiskit_optimization.converters import QuadraticProgramToQubo
+        from qiskit_optimization.applications import Tsp
+    except:
+        print("Please install qiskit_optimization.")
+        return False
+
     # Generating a graph of 3 nodes
     n = num_nodes
     tsp = Tsp.create_random_instance(n, seed=10)
@@ -44,6 +50,7 @@ def create_circuit(num_nodes: int):
     result = vqe_optimizer.solve(qp)
 
     qc = vqe.get_optimal_circuit()
+    qc.measure_all()
     qc.name = "tsp"
 
     return qc
