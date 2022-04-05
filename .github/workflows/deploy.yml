@@ -1,13 +1,6 @@
 name: Deploy to PyPI
 
-on:
-  release:
-    types: [ published ]
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+on: push
 
 jobs:
   build_wheels:
