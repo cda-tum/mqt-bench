@@ -17,7 +17,7 @@ app = Flask(__name__)
 # app.config["SERVER_NAME"] = "cda.cit.tum.de"
 # app.config["APPLICATION_ROOT"] = "/app/benchviewer/"
 
-PREFIX = "/app/benchviewer"
+PREFIX = "/mqtbench"
 
 
 @app.before_first_request
