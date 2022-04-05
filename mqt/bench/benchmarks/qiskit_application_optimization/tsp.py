@@ -44,6 +44,7 @@ def create_circuit(num_nodes: int):
     result = vqe_optimizer.solve(qp)
 
     qc = vqe.get_optimal_circuit()
+    qc.measure_all()
     qc.name = "tsp"
 
     return qc
