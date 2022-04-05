@@ -1,8 +1,6 @@
 # Code from https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
 
 import numpy as np
-from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
-from qiskit_finance.circuit.library import LogNormalDistribution
 from qiskit.circuit.library import LinearAmplitudeFunction
 
 
@@ -12,6 +10,19 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     Keyword arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
+
+    try:
+
+        from qiskit_finance.circuit.library import LogNormalDistribution
+    except:
+        print("Please install qiskit_finance.")
+        return False
+
+    try:
+        from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
+    except:
+        print("Please install qiskit_aqua.")
+        return False
 
     num_uncertainty_qubits = num_uncertainty_qubits
 
