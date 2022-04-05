@@ -2,11 +2,7 @@
 
 from qiskit import Aer
 from qiskit.circuit.library import TwoLocal
-from qiskit.aqua import QuantumInstance
-from qiskit.finance.applications.ising import portfolio
-from qiskit.finance.data_providers import RandomDataProvider
-from qiskit.aqua.algorithms import VQE
-from qiskit.aqua.components.optimizers import COBYLA
+
 import datetime
 
 
@@ -16,7 +12,20 @@ def create_circuit(num_qubits: int):
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
+    try:
+        from qiskit.finance.applications.ising import portfolio
+        from qiskit.finance.data_providers import RandomDataProvider
+    except:
+        print("Please install qiskit_finance.")
+        return False
 
+    try:
+        from qiskit.aqua import QuantumInstance
+        from qiskit.aqua.algorithms import VQE
+        from qiskit.aqua.components.optimizers import COBYLA
+    except:
+        print("Please install qiskit_aqua.")
+        return False
     # set number of assets (= number of qubits)
     num_assets = num_qubits
 

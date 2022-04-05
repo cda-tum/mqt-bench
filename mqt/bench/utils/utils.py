@@ -1,7 +1,6 @@
 from qiskit import QuantumCircuit, Aer, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
-from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
 from qiskit.algorithms import EstimationProblem
@@ -115,6 +114,12 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     n_nodes -- number of graph nodes (and also number of qubits)
     degree -- edges per node
     """
+    try:
+        from qiskit_optimization.applications import Maxcut
+    except:
+
+        print("Please install qiskit_optimization.")
+        return False
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
