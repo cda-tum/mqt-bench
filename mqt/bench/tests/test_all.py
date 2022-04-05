@@ -35,7 +35,7 @@ import pytest
 import os
 
 
-@pytest.mark.skip(reason="Algo Layer Errors are known when reading in existing files")
+@pytest.mark.skip(reason="Algo Level Errors are known when reading in existing files")
 @pytest.mark.parametrize(
     "benchmark, num_qubits",
     [
@@ -59,9 +59,9 @@ import os
         (shor, 15),
     ],
 )
-def test_quantumcircuit_algo_layer(benchmark, num_qubits):
+def test_quantumcircuit_algo_level(benchmark, num_qubits):
     qc = benchmark.create_circuit(num_qubits)
-    filename_algo, depth, num_qubits = utils.handle_algorithm_layer(
+    filename_algo, depth, num_qubits = utils.handle_algorithm_level(
         qc, num_qubits, save_png=False, save_hist=False
     )
     assert depth > 0
@@ -96,18 +96,18 @@ def test_quantumcircuit_algo_layer(benchmark, num_qubits):
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
+def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
         qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    filename_indep, depth, num_qubits = utils.get_indep_layer(
+    filename_indep, depth, num_qubits = utils.get_indep_level(
         qc, input_value, save_png=False, save_hist=False, file_precheck=False
     )
     assert depth > 0
-    filename_indep, depth, num_qubits = utils.get_indep_layer(
+    filename_indep, depth, num_qubits = utils.get_indep_level(
         qc, input_value, save_png=False, save_hist=False, file_precheck=True
     )
     assert depth > 0
@@ -142,7 +142,7 @@ def test_quantumcircuit_indep_layer(benchmark, input_value, scalable):
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalable):
+def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
         qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
     else:
@@ -154,7 +154,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
     for (gate_set, gate_set_name) in gate_sets:
         opt_level = 1
-        filename_indep, depth_native, n_actual = utils.get_native_gates_layer(
+        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
             qc,
             gate_set,
             gate_set_name,
@@ -165,7 +165,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=False,
         )
         assert depth_native > 0
-        filename_indep, depth_native, n_actual = utils.get_native_gates_layer(
+        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
             qc,
             gate_set,
             gate_set_name,
@@ -176,7 +176,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=True,
         )
         assert depth_native > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_layer(
+        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
             qc,
             gate_set,
             gate_set_name,
@@ -188,7 +188,7 @@ def test_quantumcircuit_native_and_mapped_layers(benchmark, input_value, scalabl
             file_precheck=False,
         )
         assert depth_mapped > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_layer(
+        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
             qc,
             gate_set,
             gate_set_name,
@@ -301,13 +301,13 @@ def test_routing():
 
 
 @pytest.mark.parametrize(
-    "benchmark_name, layer, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
+    "benchmark_name, level, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
     [
         ("dj", "alg", 5, None, None, None, None),
         ("wstate", 0, 6, None, None, None, None),
         ("ghz", "indep", 5, None, None, None, None),
         ("graphstate", 1, 4, None, None, None, None),
-        ("dj", "gates", 5, None, 2, "ibm", None),
+        ("dj", "nativegates", 5, None, 2, "ibm", None),
         ("qft", 2, 6, None, 3, "rigetti", None),
         ("qpeexact", "mapped", 5, None, 0, "ibm", True),
         ("qpeinexact", 3, 4, None, None, "rigetti", False),
@@ -315,7 +315,7 @@ def test_routing():
 )
 def test_get_one_benchmark(
     benchmark_name,
-    layer,
+    level,
     input_number,
     instance,
     opt_level,
@@ -325,7 +325,7 @@ def test_get_one_benchmark(
 
     qc = get_one_benchmark(
         benchmark_name,
-        layer,
+        level,
         input_number,
         instance,
         opt_level,
