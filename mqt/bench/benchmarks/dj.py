@@ -50,6 +50,7 @@ def dj_algorithm(oracle, n):
     for qubit in range(n):
         dj_circuit.h(qubit)
 
+    dj_circuit.barrier()
     for i in range(n):
         dj_circuit.measure(i, i)
 
