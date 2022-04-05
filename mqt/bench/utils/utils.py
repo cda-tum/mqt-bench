@@ -48,6 +48,7 @@ def get_compiled_circuit_with_gateset(
 def get_rigetti_native_gates():
     return ["rx", "rz", "cz", "id", "reset"]
 
+
 def save_as_qasm(
     qc: QuantumCircuit,
     filename: str,
@@ -271,10 +272,10 @@ def get_google_c_map():
     return c_map_google
 
 
-def handle_algorithm_layer(
+def handle_algorithm_level(
     qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hist: bool
 ):
-    """Handles the creation of the benchmark on the algorithm layer.
+    """Handles the creation of the benchmark on the algorithm level.
 
     Keyword arguments:
     qc -- quantum circuit which shall be created
@@ -305,14 +306,14 @@ def handle_algorithm_layer(
     return filename_algo, depth, num_qubits
 
 
-def get_indep_layer(
+def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int,
     save_png: bool,
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-independent layer.
+    """Handles the creation of the benchmark on the target-independent level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
@@ -350,7 +351,7 @@ def get_indep_layer(
         return filename_indep, depth, qc.num_qubits
 
 
-def get_native_gates_layer(
+def get_native_gates_level(
     qc: QuantumCircuit,
     gate_set: list,
     gate_set_name: str,
@@ -360,7 +361,7 @@ def get_native_gates_layer(
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-dependent native gates layer.
+    """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
@@ -422,7 +423,7 @@ def get_native_gates_layer(
         return filename_nativegates, depth, n_actual
 
 
-def get_mapped_layer(
+def get_mapped_level(
     qc: QuantumCircuit,
     gate_set: list,
     gate_set_name: str,
@@ -433,7 +434,7 @@ def get_mapped_layer(
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-dependent mapped layer.
+    """Handles the creation of the benchmark on the target-dependent mapped level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
