@@ -73,7 +73,8 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    with open("qasm_output/" + filename + ".qasm", "w") as f:
+    qasm_output_folder = get_qasm_output_path()
+    with open(qasm_output_folder + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
             "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
@@ -329,7 +330,8 @@ def get_indep_level(
     """
 
     filename_indep = qc.name + "_indep_" + str(num_qubits)
-    filepath = "qasm_output/" + filename_indep + ".qasm"
+    qasm_output_folder = get_qasm_output_path()
+    filepath = qasm_output_folder + filename_indep + ".qasm"
     if path.isfile(filepath) and file_precheck:
         print(filepath + " already exists")
         qc = QuantumCircuit.from_qasm_file(filepath)
@@ -389,10 +391,14 @@ def get_native_gates_level(
         + str(num_qubits)
     )
 
-    if path.isfile("qasm_output/" + filename_nativegates + ".qasm") and file_precheck:
-        print("qasm_output/" + filename_nativegates + ".qasm" + " already exists")
+    qasm_output_folder = get_qasm_output_path()
+    if (
+        path.isfile(qasm_output_folder + filename_nativegates + ".qasm")
+        and file_precheck
+    ):
+        print(qasm_output_folder + filename_nativegates + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
-            "qasm_output/" + filename_nativegates + ".qasm"
+            qasm_output_folder + filename_nativegates + ".qasm"
         )
         depth = qc.depth()
         return filename_nativegates, depth, num_qubits
@@ -467,10 +473,14 @@ def get_mapped_level(
             + "_"
             + str(num_qubits)
         )
-        if path.isfile("qasm_output/" + filename_mapped + ".qasm") and file_precheck:
-            print("qasm_output/" + filename_mapped + ".qasm" + " already exists")
+        qasm_output_folder = get_qasm_output_path()
+        if (
+            path.isfile(qasm_output_folder + filename_mapped + ".qasm")
+            and file_precheck
+        ):
+            print(qasm_output_folder + filename_mapped + ".qasm" + " already exists")
             qc = QuantumCircuit.from_qasm_file(
-                "qasm_output/" + filename_mapped + ".qasm"
+                qasm_output_folder + filename_mapped + ".qasm"
             )
             depth = qc.depth()
         else:
@@ -789,3 +799,7 @@ def get_openqasm_gates():
         "c4x",
     ]
     return gate_list
+
+
+def get_qasm_output_path():
+    return "./benchviewer/static/files/qasm_output/"
