@@ -67,8 +67,10 @@ def create_benchmarks_from_config(cfg_path: str):
     global timeout
     timeout = cfg["timeout"]
 
-    if not path.isdir("./qasm_output"):
-        mkdir("qasm_output")
+    global qasm_output_folder
+    qasm_output_folder = utils.get_qasm_output_path()
+    if not path.isdir(qasm_output_folder):
+        mkdir(qasm_output_folder)
 
     for benchmark in cfg["benchmarks"]:
         print(benchmark["name"])
@@ -96,7 +98,7 @@ def benchmark_generation_watcher(func, args):
             qc = args[0]
             num_qubits = args[1]
             filename_indep = qc.name + "_t-indep_" + str(num_qubits)
-            file_path = "qasm_output/" + filename_indep + ".qasm"
+            file_path = qasm_output_folder + filename_indep + ".qasm"
 
             if path.isfile(file_path):
                 remove(file_path)
@@ -118,7 +120,7 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            file_path = "qasm_output/" + filename_nativegates + ".qasm"
+            file_path = qasm_output_folder + filename_nativegates + ".qasm"
             if path.isfile(file_path):
                 remove(file_path)
 
@@ -143,7 +145,7 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            file_path = "qasm_output/" + filename_mapped + ".qasm"
+            file_path = qasm_output_folder + filename_mapped + ".qasm"
             if path.isfile(file_path):
                 remove(file_path)
 
