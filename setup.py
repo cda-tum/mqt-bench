@@ -30,7 +30,7 @@ setup(
         "matplotlib~=3.5.1",
         "qiskit~=0.35",
         "pandas~=1.3.5",
-        "flask~=2.0.2",
+        "flask>=2.0.2,<2.2.0",
         "networkx~=2.7.1",
         "pytest~=7.1.1",
     ],
