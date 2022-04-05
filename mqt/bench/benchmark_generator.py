@@ -1,4 +1,3 @@
-from qiskit_nature.drivers import Molecule
 from qiskit import QuantumCircuit, transpile
 
 import matplotlib.pyplot as plt
@@ -67,8 +66,10 @@ def create_benchmarks_from_config(cfg_path: str):
     global timeout
     timeout = cfg["timeout"]
 
-    if not path.isdir("./qasm_output"):
-        mkdir("qasm_output")
+    global qasm_output_folder
+    qasm_output_folder = utils.get_qasm_output_path()
+    if not path.isdir(qasm_output_folder):
+        mkdir(qasm_output_folder)
 
     for benchmark in cfg["benchmarks"]:
         print(benchmark["name"])
@@ -92,17 +93,17 @@ def benchmark_generation_watcher(func, args):
     except Exception as e:
         # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
         print("Exception: ", e, func, args[1:])
-        if func == utils.get_indep_layer:
+        if func == utils.get_indep_level:
             qc = args[0]
             num_qubits = args[1]
             filename_indep = qc.name + "_t-indep_" + str(num_qubits)
-            file_path = "qasm_output/" + filename_indep + ".qasm"
+            file_path = qasm_output_folder + filename_indep + ".qasm"
 
             if path.isfile(file_path):
                 remove(file_path)
                 # print("removed file: ", path)
 
-        elif func == utils.get_native_gates_layer:
+        elif func == utils.get_native_gates_level:
             qc = args[0]
             gate_set_name = args[2]
             opt_level = args[3]
@@ -118,11 +119,11 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            file_path = "qasm_output/" + filename_nativegates + ".qasm"
+            file_path = qasm_output_folder + filename_nativegates + ".qasm"
             if path.isfile(file_path):
                 remove(file_path)
 
-        elif func == utils.get_mapped_layer:
+        elif func == utils.get_mapped_level:
             qc = args[0]
             gate_set_name_mapped = args[2]
             opt_level = args[3]
@@ -143,7 +144,7 @@ def benchmark_generation_watcher(func, args):
                 + str(num_qubits)
             )
 
-            file_path = "qasm_output/" + filename_mapped + ".qasm"
+            file_path = qasm_output_folder + filename_mapped + ".qasm"
             if path.isfile(file_path):
                 remove(file_path)
 
@@ -200,7 +201,7 @@ def generate_benchmark(benchmark):
                     )
                     if not res_qc_creation:
                         break
-                    res = generate_circuits_on_all_layer(*res_qc_creation)
+                    res = generate_circuits_on_all_levels(*res_qc_creation)
                     if len(res) == 0:
                         break
                     characteristics.extend(res)
@@ -210,7 +211,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_shor_qc, [choice])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -220,7 +221,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_hhl_qc, [i])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -230,7 +231,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_routing_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -240,7 +241,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_tsp_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -250,7 +251,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_groundstate_qc, [choice])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -260,7 +261,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_excitedstate_qc, [choice])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -272,7 +273,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_pricingcall_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -284,7 +285,7 @@ def generate_benchmark(benchmark):
                 res_qc_creation = qc_creation_watcher(create_pricingput_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -300,7 +301,7 @@ def generate_benchmark(benchmark):
                 )
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_layer(*res_qc_creation)
+                res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
                 characteristics.extend(res)
@@ -308,12 +309,12 @@ def generate_benchmark(benchmark):
     return characteristics
 
 
-def generate_circuits_on_all_layer(qc, num_qubits, file_precheck):
+def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     characteristics = []
-    # filename_algo, depth = generate_algo_layer_circuit(qc, n, save_png, save_hist)
+    # filename_algo, depth = generate_algo_level_circuit(qc, n, save_png, save_hist)
     # characteristics.append([filename_algo, n, depth])
 
-    res_t_indep = generate_target_indep_layer_circuit(
+    res_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, save_png, save_hist, file_precheck
     )
 
@@ -322,7 +323,7 @@ def generate_circuits_on_all_layer(qc, num_qubits, file_precheck):
     else:
         return characteristics
 
-    res_t_dep = generate_target_dep_layer_circuit(
+    res_t_dep = generate_target_dep_level_circuit(
         qc, num_qubits, save_png, save_hist, file_precheck
     )
 
@@ -334,12 +335,12 @@ def generate_circuits_on_all_layer(qc, num_qubits, file_precheck):
     return characteristics
 
 
-def generate_algo_layer_circuit(
+def generate_algo_level_circuit(
     qc: QuantumCircuit, num_qubits: int, save_png, save_hist
 ):
     characteristics = []
     res = benchmark_generation_watcher(
-        utils.handle_algorithm_layer, [qc, num_qubits, save_png, save_hist]
+        utils.handle_algorithm_level, [qc, num_qubits, save_png, save_hist]
     )
     characteristics.append(res)
 
@@ -350,13 +351,13 @@ def generate_algo_layer_circuit(
         return False
 
 
-def generate_target_indep_layer_circuit(
+def generate_target_indep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, save_png, save_hist, file_precheck
 ):
     characteristics = []
 
     res = benchmark_generation_watcher(
-        utils.get_indep_layer,
+        utils.get_indep_level,
         [qc, num_qubits, save_png, save_hist, file_precheck],
     )
     if res:
@@ -366,23 +367,23 @@ def generate_target_indep_layer_circuit(
         return False
 
 
-def generate_target_dep_layer_circuit(
+def generate_target_dep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, save_png, save_hist, file_precheck
 ):
     characteristics = []
 
     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
-    rigetti_native_gates = ["rx", "rz", "cz"]
+    rigetti_native_gates = utils.get_rigetti_native_gates()
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
 
     for gate_set, gate_set_name in gate_sets:
         try:
             for opt_level in range(4):
 
-                # Creating the circuit on target-dependent: native gates layer
+                # Creating the circuit on target-dependent: native gates level
 
                 res = benchmark_generation_watcher(
-                    utils.get_native_gates_layer,
+                    utils.get_native_gates_level,
                     [
                         qc,
                         gate_set,
@@ -400,9 +401,9 @@ def generate_target_dep_layer_circuit(
                     break
                 n_actual = res[2]
 
-                # Creating the circuit on target-dependent: mapped layer for both mapping schemes
+                # Creating the circuit on target-dependent: mapped level for both mapping schemes
                 res = benchmark_generation_watcher(
-                    utils.get_mapped_layer,
+                    utils.get_mapped_level,
                     [
                         qc,
                         gate_set,
@@ -421,7 +422,7 @@ def generate_target_dep_layer_circuit(
                 else:
                     break
                 res = benchmark_generation_watcher(
-                    utils.get_mapped_layer,
+                    utils.get_mapped_level,
                     [
                         qc,
                         gate_set,
@@ -454,7 +455,7 @@ def generate_target_dep_layer_circuit(
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark["name"]])
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             qc = lib.create_circuit(num_qubits, ancillary_mode=ancillary_mode)
@@ -493,7 +494,7 @@ def create_shor_qc(choice: str):
 def create_hhl_qc(index: int):
     # index is not the number of qubits in this case
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         qc = hhl.create_circuit(index)
         return qc, qc.num_qubits, False
 
@@ -503,7 +504,7 @@ def create_hhl_qc(index: int):
 
 def create_routing_qc(nodes: int):
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         qc = routing.create_circuit(nodes, 2)
         return qc, qc.num_qubits, False
 
@@ -515,7 +516,7 @@ def create_routing_qc(nodes: int):
 
 def create_tsp_qc(nodes: int):
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         qc = tsp.create_circuit(nodes)
         return qc, qc.num_qubits, False
 
@@ -524,7 +525,11 @@ def create_tsp_qc(nodes: int):
 
 
 def create_groundstate_qc(choice: str):
-
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return False
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
@@ -562,7 +567,11 @@ def create_groundstate_qc(choice: str):
 
 
 def create_excitedstate_qc(choice: str):
-
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return False
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
@@ -603,7 +612,7 @@ def create_excitedstate_qc(choice: str):
 def create_pricingcall_qc(num_uncertainty: int):
     # num_options is not the number of qubits in this case
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         qc = pricingcall.create_circuit(num_uncertainty)
         return qc, qc.num_qubits, False
 
@@ -619,7 +628,7 @@ def create_pricingcall_qc(num_uncertainty: int):
 def create_pricingput_qc(num_uncertainty: int):
     # num_uncertainty is not the number of qubits in this case
     try:
-        # Creating the circuit on Algorithmic Description Layer
+        # Creating the circuit on Algorithmic Description level
         qc = pricingput.create_circuit(num_uncertainty)
         return qc, qc.num_qubits, False
 
@@ -646,22 +655,22 @@ def save_benchmark_hist(characteristics):
 
 def get_one_benchmark(
     benchmark_name: str,
-    layer: Union[str, int],
+    level: Union[str, int],
     circuit_size: int = None,
     benchmark_instance_name: str = None,
-    opt_level: int = None,
-    gate_set_name: str = None,
-    smallest_fitting_arch: bool = None,
+    opt_level: int = 0,
+    gate_set_name: str = "ibm",
+    smallest_fitting_arch: bool = True,
 ):
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
 
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
-    layer -- Choice of layer, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
-    input_number -- Input for the benchmark creation, in most cases this is equal to the qubit number
-    instance -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
-    0 corresponds to "alg" layer and 3 to "mapped" layer
-    opt_level -- Level of optimization (relevant to "gates" and "mapped" layers)
+    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
+    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
+    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
+    0 corresponds to "alg" level and 3 to "mapped" level
+    opt_level -- Level of optimization (relevant to "gates" and "mapped" levels)
     gate_set_name -- Either "ibm" or "rigetti"
     smallest_fitting_arch -- True->Smallest architecture is selected, False->Biggest one is selected (ibm: 127 qubits,
     rigetti: 80 qubits)
@@ -672,27 +681,7 @@ def get_one_benchmark(
     """
     init_module_paths()
     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
-    rigetti_native_gates = ["rx", "rz", "cz"]
-
-    m_1 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_2 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_3 = Molecule(
-        geometry=[
-            ["O", [0.0, 0.0, 0.0]],
-            ["H", [0.586, 0.757, 0.0]],
-            ["H", [0.586, -0.757, 0.0]],
-        ],
-        charge=0,
-        multiplicity=1,
-    )
+    rigetti_native_gates = utils.get_rigetti_native_gates()
 
     if gate_set_name and "ibm" in gate_set_name:
         gate_set = ibm_native_gates
@@ -733,10 +722,58 @@ def get_one_benchmark(
         qc = tsp.create_circuit(circuit_size)
 
     elif benchmark_name == "groundstate":
+        try:
+            from qiskit_nature.drivers import Molecule
+        except:
+            print("Please install qiskit_nature.")
+            return False
+        m_1 = Molecule(
+            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_2 = Molecule(
+            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_3 = Molecule(
+            geometry=[
+                ["O", [0.0, 0.0, 0.0]],
+                ["H", [0.586, 0.757, 0.0]],
+                ["H", [0.586, -0.757, 0.0]],
+            ],
+            charge=0,
+            multiplicity=1,
+        )
         instances = {"small": m_1, "medium": m_2, "large": m_3}
         qc = groundstate.create_circuit(instances[benchmark_instance_name])
 
     elif benchmark_name == "excitedstate":
+        try:
+            from qiskit_nature.drivers import Molecule
+        except:
+            print("Please install qiskit_nature.")
+            return False
+        m_1 = Molecule(
+            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_2 = Molecule(
+            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+            charge=0,
+            multiplicity=1,
+        )
+        m_3 = Molecule(
+            geometry=[
+                ["O", [0.0, 0.0, 0.0]],
+                ["H", [0.586, 0.757, 0.0]],
+                ["H", [0.586, -0.757, 0.0]],
+            ],
+            charge=0,
+            multiplicity=1,
+        )
         instances = {"small": m_1, "medium": m_2, "large": m_3}
         qc = excitedstate.create_circuit(instances[benchmark_instance_name])
 
@@ -750,21 +787,21 @@ def get_one_benchmark(
         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
-    if layer == "alg" or layer == 0:
+    if level == "alg" or level == 0:
         return qc
 
-    elif layer == "indep" or layer == 1:
+    elif level == "indep" or level == 1:
 
         qc_indep = transpile(qc, basis_gates=utils.get_openqasm_gates())
         return qc_indep
 
-    elif layer == "nativegates" or layer == 2:
+    elif level == "nativegates" or level == 2:
         qc_gates = utils.get_compiled_circuit_with_gateset(
             qc=qc, opt_level=opt_level, basis_gates=gate_set
         )
         return qc_gates
 
-    elif layer == "mapped" or layer == 3:
+    elif level == "mapped" or level == 3:
         c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
             gate_set_name, smallest_fitting_arch, circuit_size
         )
@@ -776,7 +813,7 @@ def get_one_benchmark(
         else:
             return print("No Hardware Architecture available for that config.")
     else:
-        return print("Layer specification was wrong.")
+        return print("Level specification was wrong.")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 from qiskit import QuantumCircuit, Aer, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
-from qiskit_optimization.applications import Maxcut
 from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
 from qiskit.algorithms import EstimationProblem
@@ -45,6 +44,10 @@ def get_compiled_circuit_with_gateset(
     return t_qc
 
 
+def get_rigetti_native_gates():
+    return ["rx", "rz", "cz", "id", "reset"]
+
+
 def save_as_qasm(
     qc: QuantumCircuit,
     filename: str,
@@ -69,7 +72,8 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    with open("qasm_output/" + filename + ".qasm", "w") as f:
+    qasm_output_folder = get_qasm_output_path()
+    with open(qasm_output_folder + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
             "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
@@ -110,6 +114,12 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     n_nodes -- number of graph nodes (and also number of qubits)
     degree -- edges per node
     """
+    try:
+        from qiskit_optimization.applications import Maxcut
+    except:
+
+        print("Please install qiskit_optimization.")
+        return False
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
@@ -268,10 +278,10 @@ def get_google_c_map():
     return c_map_google
 
 
-def handle_algorithm_layer(
+def handle_algorithm_level(
     qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hist: bool
 ):
-    """Handles the creation of the benchmark on the algorithm layer.
+    """Handles the creation of the benchmark on the algorithm level.
 
     Keyword arguments:
     qc -- quantum circuit which shall be created
@@ -302,14 +312,14 @@ def handle_algorithm_layer(
     return filename_algo, depth, num_qubits
 
 
-def get_indep_layer(
+def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int,
     save_png: bool,
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-independent layer.
+    """Handles the creation of the benchmark on the target-independent level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
@@ -325,7 +335,8 @@ def get_indep_layer(
     """
 
     filename_indep = qc.name + "_indep_" + str(num_qubits)
-    filepath = "qasm_output/" + filename_indep + ".qasm"
+    qasm_output_folder = get_qasm_output_path()
+    filepath = qasm_output_folder + filename_indep + ".qasm"
     if path.isfile(filepath) and file_precheck:
         print(filepath + " already exists")
         qc = QuantumCircuit.from_qasm_file(filepath)
@@ -347,7 +358,7 @@ def get_indep_layer(
         return filename_indep, depth, qc.num_qubits
 
 
-def get_native_gates_layer(
+def get_native_gates_level(
     qc: QuantumCircuit,
     gate_set: list,
     gate_set_name: str,
@@ -357,7 +368,7 @@ def get_native_gates_layer(
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-dependent native gates layer.
+    """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
@@ -385,10 +396,14 @@ def get_native_gates_layer(
         + str(num_qubits)
     )
 
-    if path.isfile("qasm_output/" + filename_nativegates + ".qasm") and file_precheck:
-        print("qasm_output/" + filename_nativegates + ".qasm" + " already exists")
+    qasm_output_folder = get_qasm_output_path()
+    if (
+        path.isfile(qasm_output_folder + filename_nativegates + ".qasm")
+        and file_precheck
+    ):
+        print(qasm_output_folder + filename_nativegates + ".qasm" + " already exists")
         qc = QuantumCircuit.from_qasm_file(
-            "qasm_output/" + filename_nativegates + ".qasm"
+            qasm_output_folder + filename_nativegates + ".qasm"
         )
         depth = qc.depth()
         return filename_nativegates, depth, num_qubits
@@ -419,7 +434,7 @@ def get_native_gates_layer(
         return filename_nativegates, depth, n_actual
 
 
-def get_mapped_layer(
+def get_mapped_level(
     qc: QuantumCircuit,
     gate_set: list,
     gate_set_name: str,
@@ -430,7 +445,7 @@ def get_mapped_layer(
     save_hist: bool,
     file_precheck: bool,
 ):
-    """Handles the creation of the benchmark on the target-dependent mapped layer.
+    """Handles the creation of the benchmark on the target-dependent mapped level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
@@ -463,10 +478,14 @@ def get_mapped_layer(
             + "_"
             + str(num_qubits)
         )
-        if path.isfile("qasm_output/" + filename_mapped + ".qasm") and file_precheck:
-            print("qasm_output/" + filename_mapped + ".qasm" + " already exists")
+        qasm_output_folder = get_qasm_output_path()
+        if (
+            path.isfile(qasm_output_folder + filename_mapped + ".qasm")
+            and file_precheck
+        ):
+            print(qasm_output_folder + filename_mapped + ".qasm" + " already exists")
             qc = QuantumCircuit.from_qasm_file(
-                "qasm_output/" + filename_mapped + ".qasm"
+                qasm_output_folder + filename_mapped + ".qasm"
             )
             depth = qc.depth()
         else:
@@ -785,3 +804,7 @@ def get_openqasm_gates():
         "c4x",
     ]
     return gate_list
+
+
+def get_qasm_output_path():
+    return "./benchviewer/static/files/qasm_output/"

@@ -5,14 +5,18 @@ import numpy as np
 from qiskit import Aer
 from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms import VQE
-from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit.algorithms.optimizers import SLSQP
 
 
 class Initializer:
     def __init__(self, n):
         self.n = n
+        try:
+            from qiskit_optimization import QuadraticProgram
+            from qiskit_optimization.algorithms import MinimumEigenOptimizer
+        except:
+            print("Please install qiskit_optimization.")
+            return False
 
     def generate_instance(self):
         n = self.n
@@ -36,6 +40,12 @@ class QuantumOptimizer:
         self.instance = instance
         self.n = n
         self.K = k
+        try:
+            from qiskit_optimization import QuadraticProgram
+            from qiskit_optimization.algorithms import MinimumEigenOptimizer
+        except:
+            print("Please install qiskit_optimization.")
+            return False
 
     def binary_representation(self, x_sol=0):
 
@@ -99,7 +109,13 @@ class QuantumOptimizer:
 
         return q, g, c, cost
 
-    def construct_problem(self, q, g, c) -> QuadraticProgram:
+    def construct_problem(self, q, g, c):
+        try:
+            from qiskit_optimization import QuadraticProgram
+            from qiskit_optimization.algorithms import MinimumEigenOptimizer
+        except:
+            print("Please install qiskit_optimization.")
+            return False
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
@@ -109,6 +125,14 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp):
+
+        try:
+            from qiskit_optimization import QuadraticProgram
+            from qiskit_optimization.algorithms import MinimumEigenOptimizer
+        except:
+            print("Please install qiskit_optimization.")
+            return False
+
         algorithm_globals.random_seed = 10
         quantum_instance = QuantumInstance(
             Aer.get_backend("aer_simulator"),
@@ -146,17 +170,7 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     # Instantiate the quantum optimizer class with parameters:
     quantum_solution, quantum_cost, vqe = quantum_optimizer.solve_problem(qp)
     qc = vqe.get_optimal_circuit()
+    qc.measure_all()
     qc.name = "routing"
-
-    # Put the solution in a way that is compatible with the classical variables
-    x_quantum = np.zeros(n**2)
-    kk = 0
-    for ii in range(n**2):
-        if ii // n != ii % n:
-            x_quantum[ii] = quantum_solution[kk]
-            kk += 1
-
-    # visualize the solution
-    # visualize_solution(xc, yc, x_quantum, quantum_cost, n, K, "Quantum")
 
     return qc
