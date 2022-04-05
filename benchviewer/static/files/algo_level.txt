@@ -1,0 +1,38 @@
+Until openQASM 3.0 is widely supported, all circuits (except those on the algorithm level) are provided as .qasm files following the openQASM 2.0 standard.
+Circuits on the algorithm level can directly be generated (as IBM Qiskit QuantumCircuit objects) using the mqt.bench python package.
+
+To get access, please follow these installation and import instructions:
+
+pip install mqt.bench
+from mqt.bench import benchmark_generator
+
+To generate one benchmark on the algorithm level, please use this method:
+
+benchmark_generator.get_one_benchmark(
+    benchmark_name: str,
+    level: Union[str, int],
+    circuit_size: int = None,
+    benchmark_instance_name: str = None,
+    opt_level: int = None,
+    gate_set_name: str = None,
+    smallest_fitting_arch: bool = None,
+)
+
+For example:
+qc = benchmark_generator.get_one_benchmark("dj", "alg", 5)
+
+The available parameters are:
+    -> benchmark_name: "ae", "dj", "grover-noancilla", "grover-v-chain", "ghz", "graphstate", "portfolioqaoa",
+                        "portfoliovqe", "qaoa", "qft", "qftentangled", "qgan", "qpeexact", "qpeinexact",
+                        "qwalk-noancilla", "qwalk-v-chain", "realamprandom", "su2random", "twolocalrandom", "vqe",
+                        "wstate", "shor", "hhl", "pricingcall", "pricingput", "groundstate", "excitedstate", "routing",
+                        "tsp"
+    -> level: 0 or "alg", 1 or "indep", 2 or "nativegates", 3 or "mapped"
+    -> circuit_size: most of the cases this is equal to number of qubits (for some benchmarks the number of qubits is higher)
+    -> benchmark_instance_name: "xsmall", "small", "medium", "large", "xlarge" (not all instances are available for each benchmark)
+    -> opt_level: 0, 1, 2, 3
+    -> gate_set_name: "ibm", "rigetti"
+    -> smallest_fitting_arch: False, True
+
+
+For more information, visit our MQT Bench webpage on https://www.cda.cit.tum.de/mqtbench/.
