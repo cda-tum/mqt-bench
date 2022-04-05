@@ -1,4 +1,4 @@
-from src import backend
+from benchviewer.src import backend
 
 import pytest
 
@@ -394,7 +394,11 @@ def test_parseFilterCriteria():
 
 
 def test_create_database():
-    test_path = r"static/files/test_output"
+    test_path = r"./benchviewer/static/files/test_output"
+    import os
+
+    cwd = os.getcwd()
+    print(cwd)
     database = backend.createDatabase(test_path)
     assert len(database) == 30
     backend.database = database
