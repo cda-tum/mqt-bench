@@ -122,7 +122,20 @@ MQT Bench/
 └───qasm_output/
 ```
 
-# Usage
+# Repository Usage
+Preferably, our benchmarks are accessed using our website or our using `pip install mqt.bench`. 
+Since all generated benchmarks hosted on our website are included in this repository, the repository is very large (>25 GB).
+Therefore, please do a sparse-checkout if you want to directly access the repository itself:
+
+```
+git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
+cd MQTBench
+git sparse-checkout init --cone
+git sparse-checkout set mqt img
+git checkout main
+```
+
+# Packages Usage
 To start the creation of all benchmarks, just run the jupyter notebook ```python benchmark_creator.py <config_name>.json``` file.
 
 # References:
