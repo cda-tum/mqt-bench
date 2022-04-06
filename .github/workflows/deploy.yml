@@ -10,38 +10,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_wheels:
-    name: Build ${{ matrix.os }}${{ matrix.archname }}${{ matrix.libc }} wheels
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        arch: [ x86_64 ]
-        archname: [ "" ]
-        skip: [ "*-musllinux_*" ]
-        libc: [ "" ]
-        include:
-          - arch:     arm64
-            archname: "-arm64"
-            os:       macos-latest
-          - arch: x86_64
-            os:   ubuntu-latest
-            skip: "*-manylinux_*"
-            libc: "-musl"
-
-
+  build_wheel:
+    name:    Build wheel
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.4.0
-        env:
-          CIBW_ARCHS_MACOS: ${{ matrix.arch }}
-          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
-          CIBW_SKIP:        ${{ matrix.skip }}
+      - uses: actions/setup-python@v3
+        name: Install Python
+      - name: Install dependencies
+        run: python -m pip install build
+      - name: Build wheel
+        run:  python -m build --wheel
+      - name: Install wheel
+        run: python -m pip install --verbose dist/*.whl
       - uses: actions/upload-artifact@v2
         with:
-          path: ./wheelhouse/*.whl
+          path: dist/*.whl
 
   build_sdist:
     name:    Build source distribution
