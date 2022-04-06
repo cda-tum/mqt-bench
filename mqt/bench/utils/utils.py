@@ -119,7 +119,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     except:
 
         print("Please install qiskit_optimization.")
-        return False
+        return None
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
@@ -807,4 +807,36 @@ def get_openqasm_gates():
 
 
 def get_qasm_output_path():
+    """Returns the path where all .qasm files are stored."""
     return "./benchviewer/static/files/qasm_output/"
+
+
+def get_molecule(benchmark_instance_name: str):
+    """Returns a Molecule object depending on the parameter value."""
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return None
+    m_1 = Molecule(
+        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_2 = Molecule(
+        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_3 = Molecule(
+        geometry=[
+            ["O", [0.0, 0.0, 0.0]],
+            ["H", [0.586, 0.757, 0.0]],
+            ["H", [0.586, -0.757, 0.0]],
+        ],
+        charge=0,
+        multiplicity=1,
+    )
+    instances = {"small": m_1, "medium": m_2, "large": m_3}
+
+    return instances[benchmark_instance_name]
