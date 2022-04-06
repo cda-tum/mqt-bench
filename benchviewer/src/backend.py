@@ -491,10 +491,6 @@ def get_selected_file_paths(prepared_data):
 
 
 def init_database():
-    import os
-
-    path = os.getcwd()
-    print("current working directory: ", path)
     """Generates the database and saves it into a global variable."""
     qasm_path = r"./static/files/qasm_output"
 
