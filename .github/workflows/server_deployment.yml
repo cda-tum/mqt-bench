@@ -13,7 +13,7 @@ env:
   CDA_USER_NAME: web-user
   CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
   CDA_TARGET_DIR_FILES: /home/web-user/mqtbench/
-  CDA_SOURCE_DIR_FILES: /benchviewer/static/files/qasm_output
+  CDA_SOURCE_DIR_FILES: benchviewer/static/files/qasm_output
 
 jobs:
   deploy:
