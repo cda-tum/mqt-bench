@@ -44,14 +44,10 @@ def download_data():
         data = request.form
         prepared_data = prepareFormInput(data)
         # print("prepared input data :", prepared_data)
-        file_paths, algo_dicts, python_files_list = get_selected_file_paths(
-            prepared_data
-        )
+        file_paths, python_files_list = get_selected_file_paths(prepared_data)
         if file_paths or python_files_list:
             # print("file paths : ", file_paths)
-            directory, filename = generate_zip(
-                file_paths, algo_dicts, python_files_list
-            )
+            directory, filename = generate_zip(file_paths, python_files_list)
             zip_name = (
                 "qtumbench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
             )
