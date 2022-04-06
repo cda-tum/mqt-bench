@@ -43,13 +43,8 @@ def create_circuit(num_nodes: int):
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
     vqe = VQE(ry, optimizer=spsa, quantum_instance=quantum_instance)
 
-    # create minimum eigen optimizer based on VQE
-    vqe_optimizer = MinimumEigenOptimizer(vqe)
-
-    # solve quadratic program
-    result = vqe_optimizer.solve(qp)
-
-    qc = vqe.get_optimal_circuit()
+    vqe_result = vqe.compute_minimum_eigenvalue(qubit_op)
+    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
     qc.measure_all()
     qc.name = "tsp"
 

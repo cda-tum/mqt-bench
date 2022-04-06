@@ -11,8 +11,8 @@ def create_circuit(num_qubits: int):
     num_qubits -- number of qubits of the returned quantum circuit
     """
     try:
-        from qiskit.finance.applications.ising import portfolio
-        from qiskit.finance.data_providers import RandomDataProvider
+        from qiskit_finance.applications.ising import portfolio
+        from qiskit_finance.data_providers import RandomDataProvider
 
     except:
         print("Please install qiskit_finance.")

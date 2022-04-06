@@ -23,9 +23,8 @@ def create_circuit(num_qubits: int):
     )
 
     qaoa = QAOA(reps=2, optimizer=SLSQP(maxiter=25), quantum_instance=sim)
-    qaoa_optimizer = MinimumEigenOptimizer(min_eigen_solver=qaoa)
-    qaoa_result = qaoa_optimizer.solve(qp)
-    qc = qaoa.get_optimal_circuit()
+    qaoa_result = qaoa.compute_minimum_eigenvalue(qp.to_ising()[0])
+    qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
 
     qc.measure_all()
     qc.name = "qaoa"
