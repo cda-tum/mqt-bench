@@ -1,0 +1,31 @@
+
+# Based on: https://zartman.xyz/blog/gh-static-deploy/
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+
+env:
+  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  CDA_HOST_NAME: tueicda-cda.srv.mwn.de
+  CDA_USER_NAME: web-user
+  CDA_TARGET_DIR: /var/www/cda/mqtbench/
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup SSH via the stored Action Secrets
+      run: |
+        mkdir -p ~/.ssh
+        echo "${KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+        echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
+        echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
+        chmod -R 700 ~/.ssh
+    - name: rsync deployment
+      working-directory: ${{ github.workspace }}
+      run: rsync -avz --update -e ssh . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
