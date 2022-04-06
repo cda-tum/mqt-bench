@@ -24,9 +24,8 @@ def create_circuit(num_qubits: int):
 
     ansatz = RealAmplitudes(num_qubits, reps=2)
     vqe = VQE(ansatz, optimizer=SLSQP(maxiter=25), quantum_instance=sim)
-    vqe_optimizer = MinimumEigenOptimizer(min_eigen_solver=vqe)
-    vqe_result = vqe_optimizer.solve(qp)
-    qc = vqe.get_optimal_circuit()
+    vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
+    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
 
     qc.measure_all()
     qc.name = "vqe"

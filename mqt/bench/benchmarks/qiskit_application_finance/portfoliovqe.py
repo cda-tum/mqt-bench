@@ -12,12 +12,13 @@ def create_circuit(num_qubits: int):
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-    try:
-        from qiskit.finance.applications.ising import portfolio
-        from qiskit.finance.data_providers import RandomDataProvider
-    except:
-        print("Please install qiskit_finance.")
-        return None
+    # try:
+    from qiskit.finance.applications.ising import portfolio
+    from qiskit.finance.data_providers import RandomDataProvider
+
+    # except:
+    #   print("Please install qiskit_finance.")
+    #  return None
 
     try:
         from qiskit.aqua import QuantumInstance
@@ -51,15 +52,15 @@ def create_circuit(num_qubits: int):
     cobyla = COBYLA()
     cobyla.set_options(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=3, entanglement="full")
-    vqe = VQE(qubit_op, ry, cobyla)
-    vqe.random_seed = seed
-
-    quantum_instance = QuantumInstance(
+    sim = QuantumInstance(
         backend=backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
     )
+    vqe = VQE(qubit_op, ry, cobyla, quantum_instance=sim)
+    vqe.random_seed = seed
 
-    result = vqe.run(quantum_instance)
-    qc = vqe.get_optimal_circuit()
+    vqe_result = vqe.compute_minimum_eigenvalue(qubit_op)
+    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
+
     qc.name = "portfoliovqe"
     qc.measure_all()
 

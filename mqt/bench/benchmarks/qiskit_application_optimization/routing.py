@@ -156,7 +156,10 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     qp = quantum_optimizer.construct_problem(q, g, c)
     # Instantiate the quantum optimizer class with parameters:
     quantum_solution, quantum_cost, vqe = quantum_optimizer.solve_problem(qp)
-    qc = vqe.get_optimal_circuit()
+
+    vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
+    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
+
     qc.measure_all()
     qc.name = "routing"
 
