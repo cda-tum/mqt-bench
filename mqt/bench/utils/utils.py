@@ -807,4 +807,35 @@ def get_openqasm_gates():
 
 
 def get_qasm_output_path():
+    """Returns the path where all .qasm files are stored."""
     return "./benchviewer/static/files/qasm_output/"
+
+def get_molecule(benchmark_instance_name:str):
+    """Returns a Molecule object depending on the parameter value."""
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return False
+    m_1 = Molecule(
+        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_2 = Molecule(
+        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_3 = Molecule(
+        geometry=[
+            ["O", [0.0, 0.0, 0.0]],
+            ["H", [0.586, 0.757, 0.0]],
+            ["H", [0.586, -0.757, 0.0]],
+        ],
+        charge=0,
+        multiplicity=1,
+    )
+    instances = {"small": m_1, "medium": m_2, "large": m_3}
+
+    return instances[benchmark_instance_name]
