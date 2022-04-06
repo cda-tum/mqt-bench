@@ -17,7 +17,7 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: |
-            set mqt img
+            mqt img
       - uses: actions/setup-python@v3
         name: Install Python
       - name: Install dependencies
@@ -37,7 +37,7 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: |
-            set mqt img
+            mqt img
       - uses: actions/setup-python@v3
         name: Install Python
       - name: Install dependencies
