@@ -4,7 +4,7 @@ name: Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
