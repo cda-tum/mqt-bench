@@ -36,10 +36,10 @@ setup(
     ],
     extras_require={
         "all": [
-            "qiskit-finance~=0.3.1",
-            "qiskit-machine-learning==0.3.1",
-            "qiskit-nature~=0.3.1",
-            "qiskit-optimization~=0.3.2",
+            "qiskit_finance~=0.3.1",
+            "qiskit_machine-learning==0.3.1",
+            "qiskit_nature~=0.3.1",
+            "qiskit_optimization~=0.3.2",
             "qiskit-aqua~=0.9.5",
         ],
     },
