@@ -1,0 +1,25 @@
+name: CodeCov
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: ‘2’
+
+    - name: Setup Python
+      uses: actions/setup-python@v3
+    - name: Generate Report
+      run: |
+        pip install coverage pytest
+        coverage run -m pytest
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2
