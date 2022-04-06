@@ -492,7 +492,7 @@ def get_selected_file_paths(prepared_data):
 
 def init_database():
     """Generates the database and saves it into a global variable."""
-    qasm_path = r"./benchviewer/static/files/qasm_output"
+    qasm_path = r"./static/files/qasm_output"
 
     global database
     database = createDatabase(qasm_path)
