@@ -16,7 +16,7 @@ setup(
         "mqt.bench.benchmarks.qiskit_application_optimization",
         "mqt.bench.benchmarks.qiskit_application_nature",
     ],
-    version="0.1.16",
+    version="0.1.0rc1",
     python_requires=">=3.8",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
@@ -25,7 +25,6 @@ setup(
     author="Nils Quetschlich",
     author_email="nils.quetschlich@tum.de",
     url="https://github.com/cda-tum/mqtbench",
-    download_url="https://github.com/user/reponame/archive/v_01.tar.gz",
     keywords="mqt quantum benchmarking performance testing",
     install_requires=[
         "matplotlib~=3.5.1",
