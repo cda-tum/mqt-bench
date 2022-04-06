@@ -60,7 +60,7 @@
 <form method="POST" class="form-inline" role="form" action="download" id="benchmark_form" onchange="checks_on_change()">
 
     <div class="col-12" style="height:50px;"></div>
-    <div class="container-sm">
+    <div class="container-fluid">
         <h1>
             Welcome to the MQT Benchmark Library (MQT Bench)!
         </h1>
@@ -121,12 +121,12 @@
             computation is summarized on <a href="https://www.cda.cit.tum.de/research/quantum" target="_blank">this page</a>.</p>
 
     </div>
-    <div class="container-xl">
+    <div class="container-fluid">
 
         <div class="col-12" style="height:50px;"></div>
 
         <div class="row h6">
-            <div class="col-4">
+            <div class="col-3">
                 Benchmarks
             </div>
             <div class="col-2 text-center">
@@ -146,7 +146,7 @@
             </div>
         </div>
         <div class="row h6">
-            <div class="col-4">
+            <div class="col-3">
             </div>
             <div class="col-2">
                 <div class="d-flex text-center">
@@ -205,7 +205,7 @@
 
         <div>
             <div class="row">
-                <div class="col-4">
+                <div class="col-3">
                     <input class="form-check-input" type="checkbox" value="all"
                            onchange="toggleSelectCheckbox(0)"
                            id="selectBench_0" name="selectBench_0">
@@ -242,7 +242,7 @@
                     </div>
                 </div>
 
-                <div class="col d-flex text-center">
+                <div class="col-1 d-flex text-center">
                     <div class="form-check-inline" style="width: 50%">
                         <input class=" form-check-input" type="checkbox" name="ibm_0"
                                id="ibm_0" value="ibm" onchange="toggleIBM()" disabled>
@@ -297,7 +297,7 @@
             {% for benchmark in benchmarks %}
 
             <div class="row">
-                <div class="col-4 align-items-center">
+                <div class="col-3 align-items-center">
                     <input class="form-check-input" type="checkbox" value="{{ benchmark.name }}"
                            onchange="toggleSelectCheckbox({{ benchmark.id }})"
                            id="selectBench_{{ benchmark.id }}" name="selectBench_{{ benchmark.id }}">
@@ -345,7 +345,7 @@
                                disabled>
                     </div>
                 </div>
-                <div class="col d-flex align-items-center text-center">
+                <div class="col-1 d-flex align-items-center text-center">
                     <div class="form-check-inline" style="width: 50%">
                         <input type="checkbox" class="form-check-input" name="ibm_{{ benchmark.id }}"
                                id="ibm_{{ benchmark.id }}" value="ibm" disabled>
@@ -395,7 +395,7 @@
             {% for benchmark in nonscalable_benchmarks %}
 
             <div class="row">
-                <div class="col-4 align-items-center">
+                <div class="col-3 align-items-center">
                     <input class="form-check-input" type="checkbox" value="{{ benchmark.name }}"
                            onchange="toggleSelectCheckboxNonscalable({{ benchmark.id }})"
                            id="selectBench_{{ benchmark.id }}" name="selectBench_{{ benchmark.id }}">
