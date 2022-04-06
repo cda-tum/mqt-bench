@@ -118,7 +118,7 @@ def get_num_benchmarks():
         # Calculation of algo level benchmarks for non_scalable benchmarks
         # check config.json for that
         if file_paths[1]:
-            config_file_path = "./config.json"
+            config_file_path = "../config.json"
             with open(config_file_path, "r") as jsonfile:
                 cfg = json.load(jsonfile)
             for dict in file_paths[1]:
