@@ -10,6 +10,14 @@ updates:
     schedule:
       interval: "daily"
     assignees:
-      - "nq8"
+      - "nquetschlich"
     reviewers:
-      - "nq8"
+      - "nquetschlich"
+  - package-ecosystem: "github-actions"
+    directory:         "/"
+    schedule:
+      interval: "weekly"
+      day:      "friday"
+      time:     "06:00"
+    assignees:
+      - "nquetschlich"
