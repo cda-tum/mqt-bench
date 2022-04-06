@@ -16,6 +16,7 @@ def create_circuit(num_qubits: int):
 
     except:
         print("Please install qiskit_finance.")
+        return None
 
     try:
         from qiskit.aqua import QuantumInstance
@@ -24,6 +25,7 @@ def create_circuit(num_qubits: int):
 
     except:
         print("Please install qiskit_aqua.")
+        return None
 
     # set number of assets (= number of qubits)
     num_assets = num_qubits

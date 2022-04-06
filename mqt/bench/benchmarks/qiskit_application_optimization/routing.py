@@ -11,12 +11,6 @@ from qiskit.algorithms.optimizers import SLSQP
 class Initializer:
     def __init__(self, n):
         self.n = n
-        try:
-            from qiskit_optimization import QuadraticProgram
-            from qiskit_optimization.algorithms import MinimumEigenOptimizer
-        except:
-            print("Please install qiskit_optimization.")
-            return False
 
     def generate_instance(self):
         n = self.n
@@ -40,12 +34,6 @@ class QuantumOptimizer:
         self.instance = instance
         self.n = n
         self.K = k
-        try:
-            from qiskit_optimization import QuadraticProgram
-            from qiskit_optimization.algorithms import MinimumEigenOptimizer
-        except:
-            print("Please install qiskit_optimization.")
-            return False
 
     def binary_representation(self, x_sol=0):
 
@@ -112,10 +100,10 @@ class QuantumOptimizer:
     def construct_problem(self, q, g, c):
         try:
             from qiskit_optimization import QuadraticProgram
-            from qiskit_optimization.algorithms import MinimumEigenOptimizer
         except:
             print("Please install qiskit_optimization.")
-            return False
+            return None
+
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
@@ -127,11 +115,10 @@ class QuantumOptimizer:
     def solve_problem(self, qp):
 
         try:
-            from qiskit_optimization import QuadraticProgram
             from qiskit_optimization.algorithms import MinimumEigenOptimizer
         except:
             print("Please install qiskit_optimization.")
-            return False
+            return None
 
         algorithm_globals.random_seed = 10
         quantum_instance = QuantumInstance(

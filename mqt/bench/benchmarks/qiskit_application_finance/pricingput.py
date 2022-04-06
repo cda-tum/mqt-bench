@@ -16,13 +16,13 @@ def create_circuit(num_uncertainty_qubits: int = 5):
         from qiskit_finance.circuit.library import LogNormalDistribution
     except:
         print("Please install qiskit_finance.")
-        return False
+        return None
 
     try:
         from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
     except:
         print("Please install qiskit_aqua.")
-        return False
+        return None
 
     num_uncertainty_qubits = num_uncertainty_qubits
 
