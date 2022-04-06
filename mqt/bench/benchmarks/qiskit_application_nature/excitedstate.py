@@ -29,7 +29,7 @@ def create_circuit(molecule, basis: str = "sto3g"):
         from qiskit_nature.algorithms import GroundStateEigensolver, QEOM
     except:
         print("Please install qiskit_nature.")
-        return False
+        return None
 
     driver = ElectronicStructureMoleculeDriver(
         molecule, basis=basis, driver_type=ElectronicStructureDriverType.PYSCF
