@@ -201,10 +201,8 @@ def parseFilterCriteria(input_data):
 
     Return values:
     filter_list -- list of filter criteria for each selected benchmark
-    algo_dicts -- dictionary to handle the algorithm level, since that one is not available as a downloadable file
-    list(set(python_files_list)) -- list of all python files needed to generated the algorithm level
+    list(set(python_files_list)) -- list of all python files needed to generate the algorithm level
     """
-    algo_dicts = []
     python_files_list = []
 
     filter_list = []
@@ -280,27 +278,9 @@ def parseFilterCriteria(input_data):
         )
 
         if algorithm_flag:
-            if min_qubits != -1 and max_qubits != -1:
-                tmp_dict = {
-                    "name": name,
-                    "min_qubits": min_qubits,
-                    "max_qubits": max_qubits,
-                }
-            else:
-                config_file_path = "../config.json"
-                with open(config_file_path, "r") as jsonfile:
-                    cfg = json.load(jsonfile)
-                for benchmark_config in cfg["benchmarks"]:
-                    if name == benchmark_config["name"]:
-                        tmp_dict = benchmark_config
-                        del tmp_dict["include"]
-            algo_dicts.append(tmp_dict)
-            # python_files_list.append(name.split("-")[0])
             python_files_list.append("./static/files/algo_level.txt")
 
-    # print(filter_list, algo_dicts, list(set(python_files_list)))
-
-    return filter_list, algo_dicts, list(set(python_files_list))
+    return filter_list, list(set(python_files_list))
 
 
 def filterDatabase(filterCriteria, database):
@@ -438,12 +418,11 @@ def filterDatabase(filterCriteria, database):
     return db_filtered["path"].to_list()
 
 
-def generate_zip(paths: list, algo_dicts=None, python_files_list=None):
+def generate_zip(paths: list, python_files_list=None):
     """Generates the zip file for the selected benchmarks.
 
     Keyword arguments:
     paths -- list of file paths for all selected benchmarks
-    algo_dicts -- dictionary containing the characteristic to generate the benchmarks on the algorithm level
     python_files_list -- list of all python files necessary to generate the benchmarks on the algorithm level
 
     Return values:
@@ -460,7 +439,7 @@ def generate_zip(paths: list, algo_dicts=None, python_files_list=None):
                 arcname=individualFile.split("/")[-1],
                 compress_type=ZIP_DEFLATED,
             )
-        if algo_dicts:
+        if python_files_list:
             zf.write(
                 "./static/files/algo_level.txt",
                 compress_type=ZIP_DEFLATED,
@@ -482,10 +461,10 @@ def get_selected_file_paths(prepared_data):
     algo_dicts -- dictionary to handle the algorithm level, since that one is not available as a downloadable file
     python_files_list -- list of all python files needed to generated the algorithm level
     """
-    filter_criteria, algo_dicts, python_files_list = parseFilterCriteria(prepared_data)
+    filter_criteria, python_files_list = parseFilterCriteria(prepared_data)
     if filter_criteria:
         file_paths = filterDatabase(filter_criteria, database)
-        return file_paths, algo_dicts, python_files_list
+        return file_paths, python_files_list
     else:
         return False, False, False
 
