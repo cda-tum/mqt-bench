@@ -287,7 +287,7 @@ def parseFilterCriteria(input_data):
                     "max_qubits": max_qubits,
                 }
             else:
-                config_file_path = "./config.json"
+                config_file_path = "../config.json"
                 with open(config_file_path, "r") as jsonfile:
                     cfg = json.load(jsonfile)
                 for benchmark_config in cfg["benchmarks"]:
