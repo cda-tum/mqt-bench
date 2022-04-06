@@ -17,8 +17,8 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: |
-            /*
-            !/benchviewer
+            *
+            !benchviewer
       - uses: actions/setup-python@v3
         name: Install Python
       - name: Install dependencies
