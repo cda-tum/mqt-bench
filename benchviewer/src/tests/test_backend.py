@@ -383,12 +383,10 @@ def test_parseFilterCriteria():
             [],
         ],
     ]
-    expected_algo_dicts = [{"name": "qpeexact", "min_qubits": "5", "max_qubits": "40"}]
     expected_python_files_list = ["./static/files/algo_level.txt"]
 
     assert backend.parseFilterCriteria(input_data) == (
         expected_filter_criteria,
-        expected_algo_dicts,
         expected_python_files_list,
     )
 
