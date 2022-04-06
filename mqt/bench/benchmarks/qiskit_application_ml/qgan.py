@@ -16,13 +16,13 @@ def create_circuit(num_qubits: int):
         from qiskit_finance.circuit.library import UniformDistribution
     except:
         print("Please install qiskit_finance.")
-        return False
+        return None
 
     try:
         from qiskit_machine_learning.algorithms import NumPyDiscriminator, QGAN
     except:
         print("Please install qiskit_machine_learning.")
-        return False
+        return None
 
     seed = 10
     np.random.seed = seed

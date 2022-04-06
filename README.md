@@ -1,4 +1,7 @@
-![GitHub](https://img.shields.io/github/license/cda-tum/MQTBench?style=plastic)
+[![PyPI](https://img.shields.io/pypi/v/mqt.bench?logo=pypi&style=flat-square)](https://pypi.org/project/mqt.bench/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Bindings](https://img.shields.io/github/workflow/status/cda-tum/bench/Deploy%20to%20PyPI?style=flat-square&logo=github&label=python)](https://github.com/cda-tum/bench/actions/workflows/deploy.yml)
+[![codecov](https://img.shields.io/codecov/c/github/cda-tum/bench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/bench)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
@@ -119,7 +122,20 @@ MQT Bench/
 └───qasm_output/
 ```
 
-# Usage
+# Repository Usage
+Preferably, our benchmarks are accessed using our website or our using `pip install mqt.bench`. 
+Since all generated benchmarks hosted on our website are included in this repository, the repository is very large (>25 GB).
+Therefore, please do a sparse-checkout if you want to directly access the repository itself:
+
+```
+git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
+cd MQTBench
+git sparse-checkout init --cone
+git sparse-checkout set mqt img
+git checkout main
+```
+
+# Packages Usage
 To start the creation of all benchmarks, just run the jupyter notebook ```python benchmark_creator.py <config_name>.json``` file.
 
 # References:
