@@ -1,6 +1,6 @@
 
 # Based on: https://zartman.xyz/blog/gh-static-deploy/
-name: Deploy
+name: Server Deployment
 on:
   push:
     branches:
