@@ -89,7 +89,7 @@ def test_quantumcircuit_algo_level(benchmark, num_qubits):
         (twolocalrandom, 8, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        (shor, 15, False),
+        #(shor, 15, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -121,7 +121,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (dj, 5, True),
         (graphstate, 8, True),
         (grover, 5, False),
-        (hhl, 2, False),
+        #(hhl, 2, False),
         (qaoa, 5, True),
         (qft, 8, True),
         (qftentangled, 8, True),
@@ -131,11 +131,11 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (qwalk, 5, False),
         (vqe, 5, True),
         (realamprandom, 3, True),
-        (su2random, 74, True),
+        (su2random, 7, True),
         (twolocalrandom, 5, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        (shor, 15, False),
+        #(shor, 15, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -150,7 +150,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
     if scalable:
         assert qc.num_qubits == input_value
     ibm_native_gates = ["id", "rz", "sx", "x", "cx", "reset"]
-    rigetti_native_gates = ["rx", "rz", "cz"]
+    rigetti_native_gates = utils.get_rigetti_native_gates()
     gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
     for (gate_set, gate_set_name) in gate_sets:
         opt_level = 1
