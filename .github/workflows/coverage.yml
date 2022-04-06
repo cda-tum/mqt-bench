@@ -17,6 +17,8 @@ jobs:
 
     - name: Setup Python
       uses: actions/setup-python@v3
+    - name: Install MQT Bench
+      run: pip install ".[all]"
     - name: Generate Report
       run: |
         pip install coverage pytest
