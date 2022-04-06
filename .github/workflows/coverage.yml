@@ -20,7 +20,7 @@ jobs:
       with:
         python-version: '3.9'
     - name: Install MQT Bench
-      run: pip install ".[all]"
+      run: pip install .[all]
     - name: Generate Report
       run: |
         pip install coverage pytest
