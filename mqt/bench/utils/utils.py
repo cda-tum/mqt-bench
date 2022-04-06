@@ -810,7 +810,8 @@ def get_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
     return "./benchviewer/static/files/qasm_output/"
 
-def get_molecule(benchmark_instance_name:str):
+
+def get_molecule(benchmark_instance_name: str):
     """Returns a Molecule object depending on the parameter value."""
     try:
         from qiskit_nature.drivers import Molecule

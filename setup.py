@@ -17,7 +17,7 @@ setup(
         "mqt.bench.benchmarks.qiskit_application_nature",
     ],
     version="0.1.16",
-    python_requires='>=3.8',
+    python_requires=">=3.8",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
     long_description=README,
