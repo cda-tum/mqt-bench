@@ -722,60 +722,12 @@ def get_one_benchmark(
         qc = tsp.create_circuit(circuit_size)
 
     elif benchmark_name == "groundstate":
-        try:
-            from qiskit_nature.drivers import Molecule
-        except:
-            print("Please install qiskit_nature.")
-            return False
-        m_1 = Molecule(
-            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-            charge=0,
-            multiplicity=1,
-        )
-        m_2 = Molecule(
-            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-            charge=0,
-            multiplicity=1,
-        )
-        m_3 = Molecule(
-            geometry=[
-                ["O", [0.0, 0.0, 0.0]],
-                ["H", [0.586, 0.757, 0.0]],
-                ["H", [0.586, -0.757, 0.0]],
-            ],
-            charge=0,
-            multiplicity=1,
-        )
-        instances = {"small": m_1, "medium": m_2, "large": m_3}
-        qc = groundstate.create_circuit(instances[benchmark_instance_name])
+        molecule = utils.get_molecule(benchmark_instance_name)
+        qc = groundstate.create_circuit(molecule)
 
     elif benchmark_name == "excitedstate":
-        try:
-            from qiskit_nature.drivers import Molecule
-        except:
-            print("Please install qiskit_nature.")
-            return False
-        m_1 = Molecule(
-            geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-            charge=0,
-            multiplicity=1,
-        )
-        m_2 = Molecule(
-            geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-            charge=0,
-            multiplicity=1,
-        )
-        m_3 = Molecule(
-            geometry=[
-                ["O", [0.0, 0.0, 0.0]],
-                ["H", [0.586, 0.757, 0.0]],
-                ["H", [0.586, -0.757, 0.0]],
-            ],
-            charge=0,
-            multiplicity=1,
-        )
-        instances = {"small": m_1, "medium": m_2, "large": m_3}
-        qc = excitedstate.create_circuit(instances[benchmark_instance_name])
+        molecule = utils.get_molecule(benchmark_instance_name)
+        qc = excitedstate.create_circuit(molecule)
 
     elif benchmark_name == "pricingcall":
         qc = pricingcall.create_circuit(circuit_size)
