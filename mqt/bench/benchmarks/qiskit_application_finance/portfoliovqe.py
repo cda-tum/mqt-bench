@@ -17,7 +17,7 @@ def create_circuit(num_qubits: int):
         from qiskit.finance.data_providers import RandomDataProvider
     except:
         print("Please install qiskit_finance.")
-        return False
+        return None
 
     try:
         from qiskit.aqua import QuantumInstance
@@ -25,7 +25,7 @@ def create_circuit(num_qubits: int):
         from qiskit.aqua.components.optimizers import COBYLA
     except:
         print("Please install qiskit_aqua.")
-        return False
+        return None
     # set number of assets (= number of qubits)
     num_assets = num_qubits
 

@@ -20,7 +20,7 @@ def create_circuit(num_nodes: int):
         from qiskit_optimization.applications import Tsp
     except:
         print("Please install qiskit_optimization.")
-        return False
+        return None
 
     # Generating a graph of 3 nodes
     n = num_nodes

@@ -119,7 +119,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     except:
 
         print("Please install qiskit_optimization.")
-        return False
+        return None
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
@@ -817,7 +817,7 @@ def get_molecule(benchmark_instance_name: str):
         from qiskit_nature.drivers import Molecule
     except:
         print("Please install qiskit_nature.")
-        return False
+        return None
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
