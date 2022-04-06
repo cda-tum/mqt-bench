@@ -31,6 +31,6 @@ jobs:
     - name: rsync deployment
       working-directory: ${{ github.workspace }}
       run: |
-        rsync -avz --update --exclude -e ${CDA_SOURCE_DIR_FILES} ssh . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
+        rsync -avz --update  -e ssh . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR} --exclude ${CDA_SOURCE_DIR_FILES}
         rsync -avz --update -e ssh ${CDA_SOURCE_DIR_FILES} ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR_FILES}
 
