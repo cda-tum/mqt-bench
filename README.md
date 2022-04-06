@@ -1,4 +1,7 @@
-![GitHub](https://img.shields.io/github/license/cda-tum/MQTBench?style=plastic)
+[![PyPI](https://img.shields.io/pypi/v/mqt.bench?logo=pypi&style=flat-square)](https://pypi.org/project/mqt.bench/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Bindings](https://img.shields.io/github/workflow/status/cda-tum/bench/Deploy%20to%20PyPI?style=flat-square&logo=github&label=python)](https://github.com/cda-tum/bench/actions/workflows/deploy.yml)
+[![codecov](https://img.shields.io/codecov/c/github/cda-tum/bench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/bench)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
