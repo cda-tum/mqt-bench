@@ -94,14 +94,13 @@ Currently, MQT Bench supports two mapping schemes:
 - src: Directory for  utils.py file and the source code of the benchmarks
 - benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
   - Additionally, folders for each qiskit application module and their respective benchmarks are listed
-- qasm_output: Here, the created benchmarks on the target-independent and -dependent layers will be created
 - benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/app/benchviewer/](https://www.cda.cit.tum.de/app/benchviewer/).
 ```
 MQT Bench/
 │ - README.md
-│ - benchmark_generator.ipynb  
 │
 └───mqt/bench/
+│   │───benchmark_generator.py  
 │   └───utils/
 │   │   │ - utils.py
 │   │
