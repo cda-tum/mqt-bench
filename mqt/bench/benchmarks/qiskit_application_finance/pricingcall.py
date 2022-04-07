@@ -17,7 +17,7 @@ def create_circuit(num_uncertainty_qubits: int = 5):
 
     except:
         print("Please install qiskit_finance.")
-    return None
+        return None
 
     num_uncertainty_qubits = num_uncertainty_qubits
 
