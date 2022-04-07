@@ -35,6 +35,15 @@ import pytest
 import os
 
 
+def test_configure_begin():
+    test_qasm_output_path = "./test_output/"
+    if not os.path.exists(test_qasm_output_path):
+        os.mkdir(test_qasm_output_path)
+    utils.set_qasm_output_path(test_qasm_output_path)
+    print("test")
+    assert utils.get_qasm_output_path() == test_qasm_output_path
+
+
 @pytest.mark.skip(reason="Algo Level Errors are known when reading in existing files")
 @pytest.mark.parametrize(
     "benchmark, num_qubits",
@@ -333,3 +342,11 @@ def test_get_one_benchmark(
         smallest_fitting_arch,
     )
     assert qc.depth() > 0
+
+
+def test_configure_end():
+    test_qasm_output_path = "./test_output/"
+    for f in os.listdir(test_qasm_output_path):
+        os.remove(os.path.join(test_qasm_output_path, f))
+    os.rmdir(test_qasm_output_path)
+    utils.set_qasm_output_path()
