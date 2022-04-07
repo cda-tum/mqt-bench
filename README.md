@@ -131,7 +131,7 @@ Therefore, please do a sparse-checkout if you want to directly access the reposi
 git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
 cd MQTBench
 git sparse-checkout init --cone
-git sparse-checkout set mqt img
+git sparse-checkout set mqt
 git checkout main
 ```
 
