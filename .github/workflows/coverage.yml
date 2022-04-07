@@ -14,7 +14,6 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: "mqt"
-
     - name: Setup Python
       uses: actions/setup-python@v3
       with:
