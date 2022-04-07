@@ -1,6 +1,7 @@
-# Code from https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
+# Code based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
 
 import numpy as np
+from qiskit.algorithms import IterativeAmplitudeEstimation, EstimationProblem
 from qiskit.circuit.library import LinearAmplitudeFunction
 
 
@@ -12,16 +13,9 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     """
 
     try:
-
         from qiskit_finance.circuit.library import LogNormalDistribution
     except:
         print("Please install qiskit_finance.")
-        return None
-
-    try:
-        from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
-    except:
-        print("Please install qiskit_aqua.")
         return None
 
     num_uncertainty_qubits = num_uncertainty_qubits
@@ -78,18 +72,15 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     epsilon = 0.01
     alpha = 0.05
 
-    # construct amplitude estimation
-    iae = IterativeAmplitudeEstimation(
-        epsilon=epsilon,
-        alpha=alpha,
+    problem = EstimationProblem(
         state_preparation=european_put,
         objective_qubits=[num_uncertainty_qubits],
         post_processing=european_put_objective.post_processing,
     )
 
-    # result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
+    iae = IterativeAmplitudeEstimation(epsilon, alpha=alpha)
+    qc = iae.construct_circuit(problem)
 
-    qc = iae.construct_circuit(1)
     qc.measure_all()
     qc.name = "pricingput"
 

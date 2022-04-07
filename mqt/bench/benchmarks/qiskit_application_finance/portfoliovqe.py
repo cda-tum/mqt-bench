@@ -24,7 +24,6 @@ def create_circuit(num_qubits: int):
         return None
 
     try:
-
         from qiskit_optimization.converters import QuadraticProgramToQubo
     except:
         print("Please install qiskit_optimization.")
@@ -52,6 +51,8 @@ def create_circuit(num_qubits: int):
         expected_returns=mu, covariances=sigma, risk_factor=q, budget=budget
     )
     qp = portfolio.to_quadratic_program()
+    conv = QuadraticProgramToQubo()
+    qp_qubo = conv.convert(qp)
 
     backend = Aer.get_backend("aer_simulator")
     seed = 10
@@ -62,8 +63,6 @@ def create_circuit(num_qubits: int):
     sim = QuantumInstance(
         backend=backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
     )
-    conv = QuadraticProgramToQubo()
-    qp_qubo = conv.convert(qp)
 
     vqe = VQE(ry, optimizer=cobyla, quantum_instance=sim)
     vqe.random_seed = seed
