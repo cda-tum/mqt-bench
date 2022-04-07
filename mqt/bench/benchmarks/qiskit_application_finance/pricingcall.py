@@ -1,6 +1,7 @@
-# Code from https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
+# Code based on https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
 import numpy as np
+from qiskit.algorithms import IterativeAmplitudeEstimation
 
 
 def create_circuit(num_uncertainty_qubits: int = 5):
@@ -11,18 +12,12 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
     try:
-        from qiskit.finance.applications import EuropeanCallExpectedValue
+        from qiskit_finance.applications.estimation import EuropeanCallPricing
         from qiskit_finance.circuit.library import LogNormalDistribution
+
     except:
         print("Please install qiskit_finance.")
-        return None
-
-    try:
-
-        from qiskit.aqua.algorithms import IterativeAmplitudeEstimation
-    except:
-        print("Please install qiskit_aqua.")
-        return None
+    return None
 
     num_uncertainty_qubits = num_uncertainty_qubits
 
@@ -54,30 +49,22 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     # set the approximation scaling for the payoff function
     c_approx = 0.25
 
-    european_call_objective = EuropeanCallExpectedValue(
-        num_uncertainty_qubits,
-        strike_price,
+    european_call_pricing = EuropeanCallPricing(
+        num_state_qubits=num_uncertainty_qubits,
+        strike_price=strike_price,
         rescaling_factor=c_approx,
         bounds=(low, high),
+        uncertainty_model=uncertainty_model,
     )
 
-    # append the uncertainty model to the front
-    european_call = european_call_objective.compose(uncertainty_model, front=True)
     # set target precision and confidence level
     epsilon = 0.01
     alpha = 0.05
 
-    # construct amplitude estimation
-    iae = IterativeAmplitudeEstimation(
-        epsilon=epsilon,
-        alpha=alpha,
-        state_preparation=european_call,
-        objective_qubits=[num_uncertainty_qubits],
-        post_processing=european_call_objective.post_processing,
-    )
-    # result = iae.run(quantum_instance=Aer.get_backend('qasm_simulator'), shots=100)
+    problem = european_call_pricing.to_estimation_problem()
+    iae = IterativeAmplitudeEstimation(epsilon, alpha=alpha)
 
-    qc = iae.construct_circuit(1)
+    qc = iae.construct_circuit(problem)
     qc.measure_all()
     qc.name = "pricingcall"
 
