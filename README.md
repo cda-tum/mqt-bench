@@ -1,6 +1,6 @@
 [![PyPI](https://img.shields.io/pypi/v/mqt.bench?logo=pypi&style=flat-square)](https://pypi.org/project/mqt.bench/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Bindings](https://img.shields.io/github/workflow/status/cda-tum/bench/Deploy%20to%20PyPI?style=flat-square&logo=github&label=python)](https://github.com/cda-tum/bench/actions/workflows/deploy.yml)
+[![Deploy to PyPI](https://github.com/cda-tum/MQTBench/actions/workflows/deploy.yml/badge.svg)](https://github.com/cda-tum/MQTBench/actions/workflows/deploy.yml)
 [![CodeCov](https://github.com/cda-tum/MQTBench/actions/workflows/coverage.yml/badge.svg)](https://github.com/cda-tum/MQTBench/actions/workflows/coverage.yml)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
