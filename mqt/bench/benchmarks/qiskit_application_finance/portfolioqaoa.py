@@ -1,6 +1,9 @@
-# Code from https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
+# Code based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
 
 from qiskit import Aer
+from qiskit.utils import QuantumInstance
+from qiskit.algorithms import QAOA
+from qiskit.algorithms.optimizers import COBYLA
 import datetime
 
 
@@ -11,7 +14,7 @@ def create_circuit(num_qubits: int):
     num_qubits -- number of qubits of the returned quantum circuit
     """
     try:
-        from qiskit_finance.applications.ising import portfolio
+        from qiskit_finance.applications import PortfolioOptimization
         from qiskit_finance.data_providers import RandomDataProvider
 
     except:
@@ -19,12 +22,9 @@ def create_circuit(num_qubits: int):
         return None
 
     try:
-        from qiskit.aqua import QuantumInstance
-        from qiskit.aqua.algorithms import QAOA
-        from qiskit.aqua.components.optimizers import COBYLA
-
+        from qiskit_optimization.converters import QuadraticProgramToQubo
     except:
-        print("Please install qiskit_aqua.")
+        print("Please install qiskit_optimization.")
         return None
 
     # set number of assets (= number of qubits)
@@ -45,23 +45,28 @@ def create_circuit(num_qubits: int):
     budget = num_assets // 2  # set budget
     penalty = num_assets  # set parameter to scale the budget penalty term
 
-    qubit_op, offset = portfolio.get_operator(mu, sigma, q, budget, penalty)
+    portfolio = PortfolioOptimization(
+        expected_returns=mu, covariances=sigma, risk_factor=q, budget=budget
+    )
+    qp = portfolio.to_quadratic_program()
+    conv = QuadraticProgramToQubo()
+    qp_qubo = conv.convert(qp)
+
     backend = Aer.get_backend("aer_simulator")
     seed = 10
 
     cobyla = COBYLA()
     cobyla.set_options(maxiter=25)
-    qaoa = QAOA(qubit_op, cobyla, 3)
 
-    qaoa.random_seed = seed
-
-    quantum_instance = QuantumInstance(
+    sim = QuantumInstance(
         backend=backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
     )
 
-    result = qaoa.run(quantum_instance)
+    qaoa = QAOA(cobyla, 3, quantum_instance=sim)
+    qaoa.random_seed = seed
+    qaoa_result = qaoa.compute_minimum_eigenvalue(qp_qubo.to_ising()[0])
+    qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
 
-    qc = qaoa.get_optimal_circuit()
     qc.name = "portfolioqaoa"
     qc.measure_all()
 
