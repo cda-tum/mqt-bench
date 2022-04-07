@@ -19,6 +19,18 @@ from qiskit.test.mock import (
     FakeManhattan,
 )
 
+qasm_path = "./benchviewer/static/files/qasm_output/"
+
+
+def set_qasm_output_path(new_path: str = "./benchviewer/static/files/qasm_output/"):
+    global qasm_path
+    qasm_path = new_path
+
+
+def get_qasm_output_path():
+    """Returns the path where all .qasm files are stored."""
+    return qasm_path
+
 
 def get_compiled_circuit_with_gateset(
     qc: QuantumCircuit,
@@ -73,6 +85,7 @@ def save_as_qasm(
         c_map = []
 
     qasm_output_folder = get_qasm_output_path()
+    print(qasm_output_folder)
     with open(qasm_output_folder + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
@@ -804,11 +817,6 @@ def get_openqasm_gates():
         "c4x",
     ]
     return gate_list
-
-
-def get_qasm_output_path():
-    """Returns the path where all .qasm files are stored."""
-    return "./benchviewer/static/files/qasm_output/"
 
 
 def get_molecule(benchmark_instance_name: str):
