@@ -316,7 +316,6 @@ def filterDatabase(filterCriteria, database):
         max_qubits = int(line[2])
         gate_set_ibm = line[3]
         gate_set_rigetti = line[4]
-        algo_flag = line[5]
         indep_flag = line[6]
         nativegates_flag = line[7]
         mapped_flag = line[8]
