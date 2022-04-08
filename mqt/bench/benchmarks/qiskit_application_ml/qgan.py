@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
+# Code based on https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
 
 import numpy as np
 from qiskit import Aer
