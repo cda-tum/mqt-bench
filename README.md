@@ -123,10 +123,62 @@ MQT Bench/
 ```
 
 # Repository Usage
-Preferably, our benchmarks are accessed using our website or our using `pip install mqt.bench`. 
+There are three ways how to use this benchmark suite:
+1) Via our webinterface hosted at [https://www.cda.cit.tum.de/app/benchviewer/](https://www.cda.cit.tum.de/app/benchviewer/)
+2) Via our pip package
+3) Directly via this repository
+
+Since the first way is rather self-explainatory, we explain the other two ways in detail in the following.
+
+## Usage via pip package
+To use our basic benchmarks, please follow these installation and import instructions:
+```python
+pip install mqt.bench
+from mqt.bench import get_one_benchmark
+```
+
+To generate one benchmark on the algorithm level, please use this method:
+
+```python
+get_one_benchmark(
+    benchmark_name: str,
+    level: Union[str, int],
+    circuit_size: int = None,
+    benchmark_instance_name: str = None,
+    opt_level: int = None,
+    gate_set_name: str = None,
+    smallest_fitting_arch: bool = None,
+)
+```
+
+For example:
+
+```python
+qc = get_one_benchmark("dj", "alg", 5)
+```
+
+If you want to use all benchmarks including the application ones, please install the package like this:
+```python
+pip install mqt.bench[all]
+from mqt.bench import get_one_benchmark
+```
+
+The available parameters are:
+  - benchmark_name: "ae", "dj", "grover-noancilla", "grover-v-chain", "ghz", "graphstate", "portfolioqaoa",
+                        "portfoliovqe", "qaoa", "qft", "qftentangled", "qgan", "qpeexact", "qpeinexact",
+                        "qwalk-noancilla", "qwalk-v-chain", "realamprandom", "su2random", "twolocalrandom", "vqe",
+                        "wstate", "shor", "hhl", "pricingcall", "pricingput", "groundstate", "excitedstate", "routing",
+                        "tsp"
+  - level: 0 or "alg", 1 or "indep", 2 or "nativegates", 3 or "mapped"
+  - circuit_size: most of the cases this is equal to number of qubits (for some benchmarks the number of qubits is higher)
+  - benchmark_instance_name: "xsmall", "small", "medium", "large", "xlarge" (not all instances are available for each benchmark)
+  - opt_level: 0, 1, 2, 3
+  - gate_set_name: "ibm", "rigetti"
+  - smallest_fitting_arch: False, True
+
+## Usage directly via this repository
 Since all generated benchmarks hosted on our website are included in this repository, the repository is very large (>25 GB).
 Therefore, please do a sparse-checkout if you want to directly access the repository itself:
-
 ```
 git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
 cd MQTBench
