@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
+# Code based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
 
 
 from qiskit import Aer
@@ -37,9 +37,8 @@ def create_circuit(molecule, basis: str = "sto3g"):
 
     es_problem = ElectronicStructureProblem(driver)
     qubit_converter = QubitConverter(JordanWignerMapper())
-
-    # quantum_instance = QuantumInstance(backend=Aer.get_backend("aer_simulator_statevector"))
-    # vqe_solver = VQEUCCFactory(quantum_instance)
+    second_q_op = es_problem.second_q_ops()
+    operator = qubit_converter.convert_only(second_q_op[0])
 
     tl_circuit = TwoLocal(
         rotation_blocks=["h", "rx"],
@@ -55,10 +54,9 @@ def create_circuit(molecule, basis: str = "sto3g"):
         optimizer=COBYLA(maxiter=25),
     )
 
-    calc = GroundStateEigensolver(qubit_converter, another_solver)
-    res = calc.solve(es_problem)
+    result = another_solver.compute_minimum_eigenvalue(operator)
+    qc = another_solver.ansatz.bind_parameters(result.optimal_point)
 
-    qc = another_solver.get_optimal_circuit()
     qc.name = "groundstate"
     qc.measure_all()
 
