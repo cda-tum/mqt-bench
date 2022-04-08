@@ -47,7 +47,7 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
             <a class="nav-item nav-link active" href=".">Benchmarks</a>
-            <a class="nav-item nav-link " href="description">File Description</a>
+            <a class="nav-item nav-link " href="description">Level and File Descriptions</a>
             <a class="nav-item nav-link " href="benchmark_description">Benchmark Description</a>
             <a class="nav-item nav-link " href="https://www.cda.cit.tum.de/research/quantum/" target="_blank">More on
                 our Work</a>
@@ -118,7 +118,8 @@
 
         <p>In case you have any problems with or questions feel free to contact us via <a
                 href="mailto:quantum.cda@xcit.tum.de">quantum.cda@xcit.tum.de</a>. More on our work on quantum
-            computation is summarized on <a href="https://www.cda.cit.tum.de/research/quantum" target="_blank">this page</a>.</p>
+            computation is summarized on <a href="https://www.cda.cit.tum.de/research/quantum" target="_blank">this
+                page</a>.</p>
 
     </div>
     <div class="container-fluid">
@@ -150,53 +151,53 @@
             </div>
             <div class="col-2">
                 <div class="d-flex text-center">
-                    <div class="form-check-inline" style="width: 50%">Min (>1)</div>
-                    <div class="form-check-inline" style="width: 50%">Max (<130)</div>
+                    <div class="" style="width: 50%">Min (>1)</div>
+                    <div class="" style="width: 50%">Max (&leq;130)</div>
                 </div>
             </div>
             <div class="col-2 d-flex text-center">
-                <div class=" form-check-inline" style="width: 25%">
+                <div style="width: 25%">
                     Alg.
                 </div>
-                <div class=" form-check-inline" style="width: 25%">
+                <div style="width: 25%">
                     Indep.
                 </div>
-                <div class=" form-check-inline" style="width: 25%">
+                <div style="width: 25%">
                     Gates
                 </div>
-                <div class=" form-check-inline" style="width: 25%">
+                <div style="width: 25%">
                     Map.
                 </div>
             </div>
             <div class="col-1">
-            <div class="col d-flex text-center">
-                <div class="form-check-inline" style="width: 50%">
-                    IBM
-                </div>
-                <div class="form-check-inline" style="width: 50%">
-                    Rigetti
-                </div>
+                <div class="col d-flex text-center">
+                    <div style="width: 50%">
+                        IBM
+                    </div>
+                    <div style="width: 50%">
+                        Rigetti
+                    </div>
                 </div>
             </div>
             <div class="col-2 d-flex text-center">
-                <div class=" form-check-inline " style="width: 50%">
+                <div style="width: 50%">
                     Smallest
                 </div>
-                <div class=" form-check-inline" style="width: 50%">
+                <div style="width: 50%">
                     Biggest
                 </div>
             </div>
             <div class="col-1 d-flex text-center">
-                <div class="  " style="width: 25%">
+                <div style="width: 25%">
                     0
                 </div>
-                <div class=" " style="width: 25%">
+                <div style="width: 25%">
                     1
                 </div>
-                <div class=" " style="width: 25%">
+                <div style="width: 25%">
                     2
                 </div>
-                <div class=" " style="width: 25%">
+                <div style="width: 25%">
                     3
                 </div>
             </div>
@@ -214,40 +215,40 @@
                 </div>
                 <div class="col-2 d-flex">
 
-                    <input type="number" class="form-control form-control-sm" min="2" max="129" value="5"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="5"
                            id="minQubits_0" name="minQubits_0" placeholder="Min" disabled
                            onchange="QubitMinAllChange(this.value)">
-                    <input type="number" class="form-control form-control-sm" min="2" max="129" value="40"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="40"
                            id="maxQubits_0" name="maxQubits_0" placeholder="Min" disabled
                            onchange="QubitMaxAllChange(this.value)">
                 </div>
 
                 <div class="col-2 text-center d-flex ">
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true" id="algorithmLevel_0"
                                name="algorithmLevel_0" onchange="toggleAlgoCheckbox()" disabled>
                     </div>
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true" id="indepLevel_0"
                                name="indepLevel_0" onchange="toggleIndepCheckbox(0)" disabled>
                     </div>
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true" id="nativeGatesLevel_0"
                                name="nativeGatesLevel_0" onchange="toggleNativeGatesCheckbox(0)" disabled>
 
                     </div>
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true" id="mappedLevel_0"
                                name="mappedLevel_0" onchange="toggleMappedCheckbox(0)" disabled>
                     </div>
                 </div>
 
                 <div class="col-1 d-flex text-center">
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class=" form-check-input" type="checkbox" name="ibm_0"
                                id="ibm_0" value="ibm" onchange="toggleIBM()" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class=" form-check-input" type="checkbox" name="rigetti_0"
                                id="rigetti_0" value="rigetti" onchange="toggleRigetti()" disabled>
                     </div>
@@ -255,33 +256,33 @@
 
                 <div class="col-2 d-flex text-center">
 
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="smallest_arch_0"
                                id="smallest_arch_0" onchange="toggleArchSmall()" value="True" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="biggest_arch_0"
                                id="biggest_arch_0" value="True" onchange="toggleArchBig()" disabled>
                     </div>
                 </div>
                 <div class="col-1 d-flex text-center ">
 
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel0_0"
                                id="optlevel0_0" value="0"
                                onchange="toogleOptLevel(0)" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel1_0"
                                id="optlevel1_0" value="1"
                                onchange="toogleOptLevel(1)" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel2_0"
                                id="optlevel2_0" value="2"
                                onchange="toogleOptLevel(2)" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel3_0"
                                id="optlevel3_0" value="3"
                                onchange="toogleOptLevel(3)" disabled>
@@ -304,24 +305,24 @@
                     {{ benchmark.name }}
                 </div>
                 <div class="col-2 d-flex text-center">
-                    <input type="number" class="form-control form-control-sm" min="2" max="129" value="5"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="5"
                            id="minQubits_{{ benchmark.id }}" name="minQubits_{{ benchmark.id }}" placeholder="Min"
                            disabled
                            onchange="check_qubit_input_value(this.id, value)">
-                    <input type="number" class="form-control form-control-sm" min="2" max="129" value="40"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="40"
                            id="maxQubits_{{ benchmark.id }}" name="maxQubits_{{ benchmark.id }}" placeholder="Min"
                            disabled
                            onchange="check_qubit_input_value(this.id, value)">
                 </div>
 
                 <div class="col-2 d-flex align-items-center text-center">
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="algorithmLevel_{{ benchmark.id }}"
                                name="algorithmLevel_{{ benchmark.id }}" disabled>
                     </div>
 
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="indepLevel_{{ benchmark.id }}"
                                name="indepLevel_{{ benchmark.id }}"
@@ -329,7 +330,7 @@
                                disabled>
                     </div>
 
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="nativeGatesLevel_{{ benchmark.id }}"
                                name="nativeGatesLevel_{{ benchmark.id }}"
@@ -337,7 +338,7 @@
                                disabled>
                     </div>
 
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="mappedLevel_{{ benchmark.id }}"
                                name="mappedLevel_{{ benchmark.id }}"
@@ -346,11 +347,11 @@
                     </div>
                 </div>
                 <div class="col-1 d-flex align-items-center text-center">
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input type="checkbox" class="form-check-input" name="ibm_{{ benchmark.id }}"
                                id="ibm_{{ benchmark.id }}" value="ibm" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input type="checkbox" class="form-check-input" name="rigetti_{{ benchmark.id }}"
                                id="rigetti_{{ benchmark.id }}" value="rigetti" disabled>
                     </div>
@@ -358,29 +359,29 @@
                 </div>
 
                 <div class="col-2 d-flex align-items-center text-center">
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="smallest_arch_{{ benchmark.id }}"
                                id="smallest_arch_{{ benchmark.id }}" value="True" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="biggest_arch_{{ benchmark.id }}"
                                id="biggest_arch_{{ benchmark.id }}" value="True" disabled>
                     </div>
                 </div>
                 <div class="col-1 d-flex align-items-center text-center ">
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel0_{{ benchmark.id }}"
                                id="optlevel0_{{ benchmark.id }}" value="0" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel1_{{ benchmark.id }}"
                                id="optlevel1_{{ benchmark.id }}" value="1" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel2_{{ benchmark.id }}"
                                id="optlevel2_{{ benchmark.id }}" value="2" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel3_{{ benchmark.id }}"
                                id="optlevel3_{{ benchmark.id }}" value="3" disabled>
                     </div>
@@ -406,13 +407,13 @@
                 </div>
 
                 <div class="col-2 d-flex align-items-center text-center">
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="algorithmLevel_{{ benchmark.id }}"
                                name="algorithmLevel_{{ benchmark.id }}" disabled>
                     </div>
 
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="indepLevel_{{ benchmark.id }}"
                                name="indepLevel_{{ benchmark.id }}"
@@ -420,7 +421,7 @@
                                disabled>
                     </div>
 
-                    <div class=" form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="nativeGatesLevel_{{ benchmark.id }}"
                                name="nativeGatesLevel_{{ benchmark.id }}"
@@ -428,7 +429,7 @@
                                disabled>
                     </div>
 
-                    <div class="form-check-inline" style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" value="true"
                                id="mappedLevel_{{ benchmark.id }}"
                                name="mappedLevel_{{ benchmark.id }}"
@@ -437,40 +438,40 @@
                     </div>
                 </div>
                 <div class="col-1 d-flex align-items-center text-center">
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input type="checkbox" class="form-check-input" name="ibm_{{ benchmark.id }}"
                                id="ibm_{{ benchmark.id }}" value="ibm" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input type="checkbox" class="form-check-input" name="rigetti_{{ benchmark.id }}"
                                id="rigetti_{{ benchmark.id }}" value="rigetti" disabled>
                     </div>
                 </div>
 
                 <div class="col-2 d-flex align-items-center text-center">
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="smallest_arch_{{ benchmark.id }}"
                                id="smallest_arch_{{ benchmark.id }}" value="True" disabled>
                     </div>
-                    <div class="form-check-inline" style="width: 50%">
+                    <div style="width: 50%">
                         <input class="form-check-input" type="checkbox" name="biggest_arch_{{ benchmark.id }}"
                                id="biggest_arch_{{ benchmark.id }}" value="True" disabled>
                     </div>
                 </div>
                 <div class="col-1 d-flex align-items-center text-center">
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel0_{{ benchmark.id }}"
                                id="optlevel0_{{ benchmark.id }}" value="0" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel1_{{ benchmark.id }}"
                                id="optlevel1_{{ benchmark.id }}" value="1" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel2_{{ benchmark.id }}"
                                id="optlevel2_{{ benchmark.id }}" value="2" disabled>
                     </div>
-                    <div class=" " style="width: 25%">
+                    <div style="width: 25%">
                         <input class="form-check-input" type="checkbox" name="optlevel3_{{ benchmark.id }}"
                                id="optlevel3_{{ benchmark.id }}" value="3" disabled>
                     </div>
@@ -961,9 +962,9 @@
     }
 
     function QubitMinAllChange(value) {
-        if (value > 129) {
-            document.getElementById("minQubits_0").value = 129;
-            value = 129
+        if (value > 130) {
+            document.getElementById("minQubits_0").value = 130;
+            value = 130
         } else if (value < 1) {
             document.getElementById("minQubits_0").value = 2;
             value = 2
@@ -983,9 +984,9 @@
     }
 
     function QubitMaxAllChange(value) {
-        if (value > 129) {
-            document.getElementById("maxQubits_0").value = 129;
-            value = 129
+        if (value > 130) {
+            document.getElementById("maxQubits_0").value = 130;
+            value = 130
         } else if (value < 1) {
             document.getElementById("maxQubits_0").value = 2;
             value = 2
