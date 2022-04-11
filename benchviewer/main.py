@@ -16,7 +16,7 @@ app = Flask(__name__)
 # app.config["SERVER_NAME"] = "cda.cit.tum.de"
 # app.config["APPLICATION_ROOT"] = "/app/benchviewer/"
 
-PREFIX = "/mqtbench"
+PREFIX = "/mqtbench/"
 
 
 @app.before_first_request
@@ -43,7 +43,9 @@ def download_data():
         data = request.form
         prepared_data = prepareFormInput(data)
         # print("prepared input data :", prepared_data)
-        file_paths, python_files_list = get_selected_file_paths(prepared_data)
+        file_paths, algo_dicts, python_files_list = get_selected_file_paths(
+            prepared_data
+        )
         if file_paths or python_files_list:
             # print("file paths : ", file_paths)
             directory, filename = generate_zip(file_paths, python_files_list)
