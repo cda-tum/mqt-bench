@@ -19,11 +19,6 @@
     "stepsize": 1
   },
   {
-    "name": "excitedstate",
-    "include": true,
-    "instances": []
-  },
-  {
     "name": "ghz",
     "include": true,
     "min_qubits": 2,
@@ -40,13 +35,13 @@
   {
     "name": "groundstate",
     "include": true,
-    "instances": []
+    "instances": ["small", "medium"]
   },
   {
     "name": "grover",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 130,
+    "max_qubits": 23,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
@@ -60,33 +55,33 @@
     "name": "portfolioqaoa",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 130,
+    "max_qubits": 19,
     "stepsize": 1
   },
   {
     "name": "portfoliovqe",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 130,
+    "max_qubits": 19,
     "stepsize": 1
   },
   {
     "name": "pricingcall",
     "include": true,
     "min_uncertainty": 2,
-    "max_uncertainty": 12
+    "max_uncertainty": 14
   },
   {
     "name": "pricingput",
     "include": true,
     "min_uncertainty": 2,
-    "max_uncertainty": 12
+    "max_uncertainty": 14
   },
   {
     "name": "qaoa",
     "include": true ,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 24,
     "stepsize": 1
   },
   {
@@ -107,7 +102,7 @@
     "name": "qgan",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 9,
+    "max_qubits": 14,
     "stepsize": 1
   },
   {
@@ -128,7 +123,7 @@
     "name": "qwalk",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 95,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
@@ -136,14 +131,14 @@
     "name": "realamprandom",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 15,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "routing",
     "include": true,
     "min_nodes": 2,
-    "max_nodes": 5
+    "max_nodes": 4
   },
   {
     "name": "shor",
@@ -154,27 +149,27 @@
     "name": "su2random",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 16,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "tsp",
     "include": true,
     "min_nodes": 2,
-    "max_nodes": 5
+    "max_nodes": 4
   },
   {
     "name": "twolocalrandom",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 16,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "vqe",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 20,
+    "max_qubits": 21,
     "stepsize": 1
   },
   {
