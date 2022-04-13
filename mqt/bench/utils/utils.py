@@ -827,12 +827,12 @@ def get_molecule(benchmark_instance_name: str):
         print("Please install qiskit_nature.")
         return None
     m_1 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
         charge=0,
         multiplicity=1,
     )
     m_2 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
         multiplicity=1,
     )
