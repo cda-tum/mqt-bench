@@ -288,11 +288,11 @@ def test_parseFilterCriteria():
                 "optlevel0_21": "0",
                 "optlevel2_21": "2",
             },
-            "29": {
-                "selectBench_29": "Travelling Salesman",
-                "minQubits_29": "-1",
-                "maxQubits_29": "-1",
-                "indepLevel_29": "true",
+            "28": {
+                "selectBench_28": "Travelling Salesman",
+                "minQubits_28": "-1",
+                "maxQubits_28": "-1",
+                "indepLevel_28": "true",
             },
         }
     )
