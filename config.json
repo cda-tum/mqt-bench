@@ -19,6 +19,11 @@
     "stepsize": 1
   },
   {
+    "name": "excitedstate",
+    "include": true,
+    "instances": ["small"]
+  },
+  {
     "name": "ghz",
     "include": true,
     "min_qubits": 2,
