@@ -59,13 +59,14 @@ benchmarks = [
 ]
 
 nonscalable_benchmarks = [
-    {"name": "Ground State", "id": "22", "filename": "groundstate"},
-    {"name": "HHL", "id": "23", "filename": "hhl"},
-    {"name": "Pricing Call Option", "id": "24", "filename": "pricingcall"},
-    {"name": "Pricing Put Option", "id": "25", "filename": "pricingput"},
-    {"name": "Routing", "id": "26", "filename": "routing"},
-    {"name": "Shor's", "id": "27", "filename": "shor"},
-    {"name": "Travelling Salesman", "id": "28", "filename": "tsp"},
+    {"name": "Excited State", "id": "22", "filename": "excitedstate"},
+    {"name": "Ground State", "id": "23", "filename": "groundstate"},
+    {"name": "HHL", "id": "24", "filename": "hhl"},
+    {"name": "Pricing Call Option", "id": "25", "filename": "pricingcall"},
+    {"name": "Pricing Put Option", "id": "26", "filename": "pricingput"},
+    {"name": "Routing", "id": "27", "filename": "routing"},
+    {"name": "Shor's", "id": "28", "filename": "shor"},
+    {"name": "Travelling Salesman", "id": "29", "filename": "tsp"},
 ]
 
 # Store the pandas dataframe as the database containing all available benchmarks
