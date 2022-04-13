@@ -529,7 +529,7 @@ def create_groundstate_qc(choice: str):
 
     try:
         qc = groundstate.create_circuit(molecule)
-        qc.name = qc.name + "-" + choice
+        qc.name = qc.name + "_" + choice
         return qc, qc.num_qubits, False
 
     except Exception as e:
@@ -546,7 +546,7 @@ def create_excitedstate_qc(choice: str):
 
     try:
         qc = excitedstate.create_circuit(molecule)
-        qc.name = qc.name + "-" + choice
+        qc.name = qc.name + "_" + choice
         return qc, qc.num_qubits, False
 
     except Exception as e:
