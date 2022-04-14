@@ -12,7 +12,7 @@ env:
   CDA_HOST_NAME: tueicda-cda.srv.mwn.de
   CDA_USER_NAME: web-user
   CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
-  CDA_TARGET_DIR_FILES: /local/mqtbench/
+  CDA_TARGET_DIR_FILES: /local/mqtbench/qasm_output/
   CDA_SOURCE_DIR_FILES: benchviewer/static/files/qasm_output/
   CDA_ZIP_TMP_DIR_FILES: benchviewer/static/files/zip_tmp/
   CDA_GIT_DIR: .git/
