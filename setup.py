@@ -31,7 +31,7 @@ setup(
         "qiskit~=0.35",
         "pandas~=1.3.5",
         "flask>=2.0.2,<2.2.0",
-        "networkx~=2.7.1",
+        "networkx>=2.7.1,<2.9.0",
         "pytest~=7.1.1",
         "pylatexenc~=2.10",
     ],
