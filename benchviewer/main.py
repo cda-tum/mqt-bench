@@ -21,6 +21,7 @@ PREFIX = "/mqtbench/"
 
 @app.before_first_request
 def init():
+    clear_zip_tmp_folder()
     init_database()
 
 
