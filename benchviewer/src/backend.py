@@ -457,14 +457,14 @@ def generate_zip(paths: list, python_files_list=None):
                 individualFile,
                 arcname=individualFile.split("/")[-1],
                 compress_type=ZIP_DEFLATED,
-                compresslevel=1
+                compresslevel=1,
             )
         if python_files_list:
             zf.write(
                 "./static/files/algo_level.txt",
                 compress_type=ZIP_DEFLATED,
                 arcname="algo_level.txt",
-                compresslevel=1
+                compresslevel=1,
             )
 
         directory = "./static/files/zip_tmp/"
@@ -497,8 +497,10 @@ def init_database():
     global database
     database = createDatabase(qasm_path)
 
+
 def get_zip_tmp_folder():
     return "./static/files/zip_tmp/"
+
 
 def clear_zip_tmp_folder():
     zip_tmp_path = get_zip_tmp_folder()
