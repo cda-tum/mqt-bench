@@ -449,18 +449,22 @@ def generate_zip(paths: list, python_files_list=None):
 
     filename = str(uuid.uuid4()) + ".zip"
 
-    with ZipFile("./static/files/zip_tmp/" + filename, "w") as zf:
+    zip_path = get_zip_tmp_folder()
+
+    with ZipFile(zip_path + filename, "w") as zf:
         for individualFile in paths:
             zf.write(
                 individualFile,
                 arcname=individualFile.split("/")[-1],
                 compress_type=ZIP_DEFLATED,
+                compresslevel=1,
             )
         if python_files_list:
             zf.write(
                 "./static/files/algo_level.txt",
                 compress_type=ZIP_DEFLATED,
                 arcname="algo_level.txt",
+                compresslevel=1,
             )
 
         directory = "./static/files/zip_tmp/"
@@ -493,7 +497,16 @@ def init_database():
     global database
     database = createDatabase(qasm_path)
 
-    # add_min_max_qubit_number(database)
+
+def get_zip_tmp_folder():
+    return "./static/files/zip_tmp/"
+
+
+def clear_zip_tmp_folder():
+    zip_tmp_path = get_zip_tmp_folder()
+    for f in os.listdir(zip_tmp_path):
+        if ".zip" in f:
+            os.remove(os.path.join(zip_tmp_path, f))
 
 
 def prepareFormInput(formData):
