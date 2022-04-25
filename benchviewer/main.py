@@ -51,7 +51,7 @@ def download_data():
             # print("file paths : ", file_paths)
             directory, filename = generate_zip(file_paths, python_files_list)
             zip_name = (
-                "qtumbench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
+                "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
             )
 
             @after_this_request
