@@ -12,7 +12,7 @@ jobs:
 
     - uses: vimtor/action-zip@v1
       with:
-        files: config.json benchviewer/requirements.txt
+        files: config.json /benchviewer/requirements.txt
         recursive: true
         dest: MQTBench_all.zip
     - uses: actions/upload-artifact@v1
