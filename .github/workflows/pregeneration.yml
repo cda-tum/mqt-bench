@@ -10,9 +10,9 @@ jobs:
       - uses: papeloto/action-zip@v1
         with:
           files: benchviewer/static/files/qasm_output/ benchviewer/static/files/algo_level.txt
-          recursive: false
-          dest: benchviewer/static/files/MQTBench_all.zip
+          recursive: true
+          dest: MQTBench_all.zip
       - uses: actions/upload-artifact@v1
         with:
-          name: my-artifact
+          name: MQTBench_all.zip
           path: ${{ github.workspace }}/result.zip
