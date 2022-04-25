@@ -37,6 +37,19 @@ def index():
     )
 
 
+@app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
+def download_pre_gen_zip():
+    directory = "./static/files/qasm_output/"
+    filename = "MQTBench_all.zip"
+    return send_from_directory(
+        directory=directory,
+        path=filename,
+        as_attachment=True,
+        mimetype="application/zip",
+        download_name="MQTBench_all.zip",
+    )
+
+
 @app.route(f"{PREFIX}/download", methods=["POST", "GET"])
 def download_data():
     """Triggers the downloading process of all benchmarks according to the user's input."""
