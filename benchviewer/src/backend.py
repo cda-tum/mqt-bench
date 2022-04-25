@@ -55,7 +55,7 @@ benchmarks = [
         "id": "20",
         "filename": "twolocalrandom",
     },
-    {"name": "W State", "id": "21", "filename": "wstate"},
+    {"name": "W-State", "id": "21", "filename": "wstate"},
 ]
 
 nonscalable_benchmarks = [
