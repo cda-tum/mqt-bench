@@ -22,14 +22,14 @@ on four different abstraction levels:
 Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of 
 applications. A respective circuit is shown on the left, it represents an example of an ansatz function 
 frequently used for Variational Quantum Eigensolvers (VQEs), a subclass of VQAs. On this abstraction 
-level, the circuit is parameterized by the angles θi of the six single-qubit gates.
+level, the circuit is parameterized by the angles θ<sub>i</sub> of the six single-qubit gates.
 
 <img src="img/layer_2.png"  align="left" width="250"/>
 
 VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are 
 iteratively updated by a classical optimizer analogous to conventional gradient-based optimization. 
 Consider again the circuit from the previous image. Assuming these parameters have been determined, 
-e.g., θi = −π for i = 0, .., 5, they are now propagated and the resulting quantum circuit is 
+e.g., θ<sub>i</sub> = −π for i = 0, ..., 5, they are now propagated and the resulting quantum circuit is 
 shown here.
 
 
@@ -39,8 +39,8 @@ shown here.
 
 Different quantum computer realizations support
 different native gate-sets. In our example, we consider the
-IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates. Consequently,
-the Ry gates in Fig. 1b have to be converted using only these native gates. In this case, 
+IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates. 
+Consequently, the Ry gates in the previous figure have to be converted using only these native gates. In this case, 
 they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
 
 
@@ -48,7 +48,7 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 
 Consider again the previous scenario. The architecture of the IBMQ Manila device is shown 
 on the right and it defines between which qubits a two-qubit operation may be performed. 
-Since the circuit shown in Fig. 1c contains CX gates operating between all combination of qubits, 
+Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits, 
 there is no mapping directly matching the target architecture’s layout. As a consequence, 
 a non-trivial mapping followed by a round of optimization leads to the resulting circuit 
 shown on the left. This is also the reason for the different sequence of CX gates compared 
