@@ -12,10 +12,10 @@ jobs:
 
     - uses: vimtor/action-zip@v1
       with:
-        files: config.json
+        files: config.json benchviewer/requirements.txt
         recursive: false
         dest: MQTBench_all.zip
     - uses: actions/upload-artifact@v1
       with:
-        name: MQTBench_all.zip
+        name: MQTBench_all
         path: ${{ github.workspace }}/MQTBench_all.zip
