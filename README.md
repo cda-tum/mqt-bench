@@ -5,16 +5,16 @@
 [![codecov](https://codecov.io/gh/cda-tum/mqtbench/branch/main/graph/badge.svg?token=m9ocRq7OxR)](https://codecov.io/gh/cda-tum/mqtbench)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
-MQT Bench is a benchmarking suite with cross-layer support. This means, that the same benchmarking
-algorithms are provided for different abstraction layers throught the quantum computing
+MQT Bench is a benchmark suite with cross-level support. This means, that the same benchmarking
+algorithms are provided for different abstraction levels through the quantum computing
 software stack.
 
 MQT Bench uses the structure proposed by the openQASM 3.0 consortia [1] and offers benchmarks
-on four different abstraction layers:
-1) Algorithm Layer
-2) Target-independent Layer
-3) Target-dependent Native Gates Layer
-4) Target-dependent Mapped Layer
+on four different abstraction levels:
+1) Algorithm Level
+2) Target-independent Level
+3) Target-dependent Native Gates Level
+4) Target-dependent Mapped Level
 
 
 <img src="img/layer_1.png"  align="left" width="250"/>
