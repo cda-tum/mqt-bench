@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install zip
-      uses: montudor/action-zip@v1
-
-    - name: Zip output
-      run: zip -qq -r MQTBench_all.zip benchviewer/static/qasm_output benchviewer/static/algo_level.txt
+    - uses: vimtor/action-zip@v1
+      with:
+        files: ${{ github.workspace }}/benchviewer/static/files/qasm_output/ ${{ github.workspace }}/benchviewer/static/files/algo_level.txt
+        recursive: false
+        dest: ${{ github.workspace }}/MQTBench_all.zip
     - uses: actions/upload-artifact@v1
       with:
         name: MQTBench_all.zip
