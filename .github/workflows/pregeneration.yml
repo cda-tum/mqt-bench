@@ -6,13 +6,10 @@ jobs:
   zip-files:
     runs-on: ubuntu-latest
     steps:
-    - uses: snow-actions/sparse-checkout@v1.1.0
-      with:
-        patterns: "mqt"
-
+    - uses: actions/checkout@v3
     - uses: vimtor/action-zip@v1
       with:
-        files: /mqt/bench/tests/ config.json
+        files: /benchviewer/static/files/qasm_output/ /benchviewer/static/files/config.json
         recursive: true
         dest: /benchviewer/static/files/qasm_output/MQTBench_all.zip
     - uses: actions/upload-artifact@v1
