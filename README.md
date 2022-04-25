@@ -16,70 +16,75 @@ on four different abstraction layers:
 3) Target-dependent Native Gates Layer
 4) Target-dependent Mapped Layer
 
-[//]: # (![alt text]&#40;img/layer_1.png "Title"&#41;)
+
 <img src="img/layer_1.png"  align="left" width="250"/>
 
-Variational quantum algorithms (VQAs) are an emerging class of quantum algorithms with a 
-wide range of applications. A respective circuit is depicted above and shows an example of an 
-ansatz function frequently used for variational quantum eigensolvers, a subclass of VQAs. On 
-this abstraction layer, the circuit is parameterized by the angles 
-&theta;<sub>i</sub> of the six single-qubit gates. This is the Algorithm layer description.
+Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of 
+applications. A respective circuit is shown on the left, it represents an example of an ansatz function 
+frequently used for Variational Quantum Eigensolvers (VQEs), a subclass of VQAs. On this abstraction 
+level, the circuit is parameterized by the angles θi of the six single-qubit gates.
 
-[//]: # (![alt text]&#40;img/layer_2.png "Title"&#41;)
 <img src="img/layer_2.png"  align="left" width="250"/>
 
 VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are 
-iteratively updated by a classical optimizer analogous to conventional gradient-based optimization.
-Assuming these parameters have been calculated, they are now propagated and the resulting 
-quantum circuit is shown in above. This is the target-independent layer description.
+iteratively updated by a classical optimizer analogous to conventional gradient-based optimization. 
+Consider again the circuit from the previous image. Assuming these parameters have been determined, 
+e.g., θi = −π for i = 0, .., 5, they are now propagated and the resulting quantum circuit is 
+shown here.
 
-[//]: # (![alt text]&#40;img/layer_3.png "Title"&#41; ![alt text]&#40;img/arch.png "Title"&#41;)
+
 <img src="img/layer_3.png"  align="left" width="250"/>
+
 <img src="img/arch.png"  align="right" width="100"/>
 
-Different quantum computer realizations support different native gate-sets. 
-In our example, the target device is the IBM-Q Manila device which natively supports 
-R<sub>z</sub>, √X, CX, U, and X and is shown in the graph. Consequently, the R<sub>y</sub> 
-gates in the previous figure have to be converted using only the native gates. 
-In this case, they are substituted by a sequence of R<sub>z</sub>
-gates denoted as phase gates of -pi and X gates as shown in the figure above.
-This is the target-dependent native gates layer description.
+Different quantum computer realizations support
+different native gate-sets. In our example, we consider the
+IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates. Consequently,
+the Ry gates in Fig. 1b have to be converted using only these native gates. In this case, 
+they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
 
-[//]: # (![alt text]&#40;img/layer_4.png "Title"&#41;)
+
 <img src="img/layer_4.png"  align="left" width="300"/>
 
-The architecture of the IBM-Q Manila device is shown in the hardware architecture figure and 
-it defines between which qubits a two-qubit operation may be performed.
-Since the circuit shown in the previous figure contains CX gates operating between all combination of 
-qubits, there is no mapping directly matching the target architecture's layout. As a consequence, 
-a non-trivial mapping followed by a round of optimization leads to the resulting circuit shown 
-in the figure above. This is also the reason for the different sequence of CX gates compared 
+Consider again the previous scenario. The architecture of the IBMQ Manila device is shown 
+on the right and it defines between which qubits a two-qubit operation may be performed. 
+Since the circuit shown in Fig. 1c contains CX gates operating between all combination of qubits, 
+there is no mapping directly matching the target architecture’s layout. As a consequence, 
+a non-trivial mapping followed by a round of optimization leads to the resulting circuit 
+shown on the left. This is also the reason for the different sequence of CX gates compared 
 to the previous example.
-This is the target-dependent mapped layer description.
 
 ## Benchmark Selection
 So far, the following benchmarks are implemented:
 - Amplitude Estimation
+- Deutsch-Jozsa
+- Excited State
 - GHZ State
 - Graph State
-- W State
-- Grover's Algorithm
-- Shor's Algorithm
-- QAOA
-- VQE
-- VQE-ansätze with random values:
-  - Two Local
-  - Real Amplitudes
-  - Efficient SU2
-- Deutsch Jozsa
+- Ground State
+- Grover's (no ancilla)
+- Grover's (v-chain)
 - HHL
-- Quantum Walk
-- Quantum Fourier Transformation
-- Quantum Fourier Transformation Entangled
-- Quantum Phase Estimation Exact
-- Quantum Phase Estimation Inexact
-
-Additionally, several quantum application algorithms are available.
+- Portfolio Optimization with QAOA
+- Portfolio Optimization with VQE
+- Pricing Call Option
+- Pricing Put Option
+- Quantum Fourier Transformation (QFT)
+- QFT Entangled
+- Quantum Generative Adversarial Network (QGAN)
+- Quantum Phase Estimation (QPE) Exact
+- Quantum Phase Estimation (QPE) Inexact
+- Quantum Walk (no ancilla)
+- Quantum Walk (-chain)
+- Routing
+- Shor's
+- Travelling Salesman
+- Variational Quantum Eigensolver (VQE)
+- VQE-ansätze with random values:
+  - Efficient SU2 ansatz with Random Parameters
+  - Real Amplitudes ansatz with Random Parameters
+  - Two Local ansatz with Random Parameters
+- W-State
 
 ## Native Gate-Set Support
 So far, MQT Bench supports the following native gate-sets:
@@ -119,12 +124,11 @@ MQT Bench/
 │       │       ...
 │
 │───benchviewer/
-└───qasm_output/
 ```
 
 # Repository Usage
 There are three ways how to use this benchmark suite:
-1) Via our webinterface hosted at [https://www.cda.cit.tum.de/app/benchviewer/](https://www.cda.cit.tum.de/app/benchviewer/)
+1) Via our webinterface hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/)
 2) Via our pip package
 3) Directly via this repository
 
@@ -177,8 +181,9 @@ The available parameters are:
   - smallest_fitting_arch: False, True
 
 ## Usage directly via this repository
-Since all generated benchmarks hosted on our website are included in this repository, the repository is very large (>25 GB).
-Therefore, please do a sparse-checkout if you want to directly access the repository itself:
+Since all generated benchmarks hosted on our website are included in this repository, 
+the repository is very large (>25 GB). Therefore, please do a sparse-checkout if you want to 
+directly access the repository itself:
 ```
 git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
 cd MQTBench
