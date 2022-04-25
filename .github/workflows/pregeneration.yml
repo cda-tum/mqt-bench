@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: vimtor/action-zip@v1
       with:
-        files: ${{ github.workspace }}/benchviewer/static/files/qasm_output/ ${{ github.workspace }}/benchviewer/static/files/algo_level.txt
+        files: benchviewer/static/files/qasm_output benchviewer/static/files/algo_level.txt
         recursive: false
         dest: ${{ github.workspace }}/MQTBench_all.zip
     - uses: actions/upload-artifact@v1
