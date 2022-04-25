@@ -57,7 +57,6 @@
 </nav>
 
 
-<form method="POST" class="form-inline" role="form" action="download" id="benchmark_form" onchange="checks_on_change()">
 
     <div class="col-12" style="height:50px;"></div>
     <div class="container-fluid">
@@ -123,6 +122,8 @@
                 page</a>.</p>
 
     </div>
+
+<form method="POST" class="form-inline" role="form" action="download" id="benchmark_form" onchange="checks_on_change()">
     <div class="container-fluid">
 
         <div class="col-11 " style="height:50px;"></div>
@@ -485,15 +486,29 @@
         <div class="text-center ">
             <div class="same_row"> # of selected benchmarks:</div>
             <div class="same_row" id="num_benchmarks">0</div>
-            <div class="same_row">Caution: Downloading a very large number of benchmarks takes long and sometimes exceeds the server timeout.</div>
+            <div class="same_row">Caution: Downloading a very large number of benchmarks takes long and sometimes
+                exceeds the server timeout.
+            </div>
             <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadButton"
                     value="submit">
-                Download Benchmarks
+                Download selected Benchmarks
             </button>
         </div>
-        <div class="col-11" style="height:50px;"></div>
 
     </div>
+</form>
+
+<form method="POST" class="form-inline" role="form" action="get_pre_gen" id="preGenForm" onchange="checks_on_change()">
+    <div class="container-fluid text-center">
+            <br>
+            You can download a pre-generated zip file with all available benchmarks here:
+            <br>
+            <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadPreGenZip">
+                Download all Benchmarks
+            </button>
+        </div>
+
+        <div class="col-11" style="height:50px;"></div>
 </form>
 
 <!-- Optional JavaScript -->
@@ -511,7 +526,6 @@
 
 
 <script>
-
     function checks_on_change() {
         get_num_benchs()
         handle_option_disabling()
