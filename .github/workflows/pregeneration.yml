@@ -8,4 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Creating zip file
-      run:  zip -rj ./benchviewer/static/files/test.zip ./benchviewer/static/files/qasm_output/ ./benchviewer/static/files/algo_level.txt
+      run:  zip -rjv ./benchviewer/static/files/qasm_output/MQTBench_all.zip ./benchviewer/static/files/qasm_output/ ./benchviewer/static/files/algo_level.txt
