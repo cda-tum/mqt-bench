@@ -39,7 +39,7 @@ def index():
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip():
-    directory = "./static/files/"
+    directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
     return send_from_directory(
         directory=directory,
