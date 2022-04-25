@@ -1,4 +1,4 @@
-name: Pre-generated zip with all benchmarks
+name: Pre-generate zip with all benchmarks
 
 on: [push, pull_request]
 
@@ -7,12 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: vimtor/action-zip@v1
-      with:
-        files: /benchviewer/static/files/qasm_output/ /benchviewer/static/files/algo_level.txt
-        recursive: true
-        dest: /benchviewer/static/files/qasm_output/MQTBench_all.zip
-    - uses: actions/upload-artifact@v1
-      with:
-        name: MQTBench_all
-        path: /benchviewer/static/files/qasm_output/MQTBench_all.zip
+    - name: Creating zip file
+      run:  zip -rj ./benchviewer/static/files/test.zip ./benchviewer/static/files/qasm_output/ ./benchviewer/static/files/algo_level.txt
