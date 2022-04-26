@@ -16,26 +16,31 @@ on four different abstraction levels:
 3) Target-dependent Native Gates Level
 4) Target-dependent Mapped Level
 
+An example is given in the following:
 
-<img src="img/layer_1.png"  align="left" width="250"/>
+1) Algorithm Level
+
+<img src="img/layer_1.png"  align="center" width="250">
 
 Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of 
 applications. A respective circuit is shown on the left, it represents an example of an ansatz function 
 frequently used for Variational Quantum Eigensolvers (VQEs), a subclass of VQAs. On this abstraction 
 level, the circuit is parameterized by the angles θ<sub>i</sub> of the six single-qubit gates.
 
-<img src="img/layer_2.png"  align="left" width="250"/>
+2) Target-independent Level
+
+<img src="img/layer_2.png"  align="center" width="250">
 
 VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are 
 iteratively updated by a classical optimizer analogous to conventional gradient-based optimization. 
 Consider again the circuit from the previous image. Assuming these parameters have been determined, 
 e.g., θ<sub>i</sub> = −π for i = 0, ..., 5, they are now propagated and the resulting quantum circuit is 
-shown here.
+shown above.
 
 
-<img src="img/layer_3.png"  align="left" width="250"/>
+3) Target-dependent Native Gates Level
 
-<img src="img/arch.png"  align="right" width="100"/>
+<img src="img/layer_3.png"  align="center" width="250"/>
 
 Different quantum computer realizations support
 different native gate-sets. In our example, we consider the
@@ -44,14 +49,15 @@ Consequently, the Ry gates in the previous figure have to be converted using onl
 they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
 
 
-<img src="img/layer_4.png"  align="left" width="300"/>
+<img src="img/layer_4.png"  align="center" width="300"/>
+<img src="img/arch.png"  align="center" width="100"/>
 
 Consider again the previous scenario. The architecture of the IBMQ Manila device is shown 
-on the right and it defines between which qubits a two-qubit operation may be performed. 
+above on the right and it defines between which qubits a two-qubit operation may be performed. 
 Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits, 
 there is no mapping directly matching the target architecture’s layout. As a consequence, 
 a non-trivial mapping followed by a round of optimization leads to the resulting circuit 
-shown on the left. This is also the reason for the different sequence of CX gates compared 
+shown above on the left. This is also the reason for the different sequence of CX gates compared 
 to the previous example.
 
 ## Benchmark Selection
@@ -100,7 +106,7 @@ Currently, MQT Bench supports two mapping schemes:
 - src: Directory for  utils.py file and the source code of the benchmarks
 - benchmarks: On top level, the benchmarks are included with one benchmark algorithms per file. 
   - Additionally, folders for each qiskit application module and their respective benchmarks are listed
-- benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/app/benchviewer/](https://www.cda.cit.tum.de/app/benchviewer/).
+- benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 ```
 MQT Bench/
 │ - README.md
