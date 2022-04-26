@@ -1,12 +1,12 @@
-Until openQASM 3.0 is widely supported, all circuits (except those on the algorithm level) are provided as .qasm files following the openQASM 2.0 standard.
-Circuits on the algorithm level can directly be generated (as IBM Qiskit QuantumCircuit objects) using the mqt.bench python package.
+Until openQASM 3.0 is widely supported, all circuits (except those on the algorithmic level) are provided as .qasm files following the openQASM 2.0 standard.
+Circuits on the algorithmic level can directly be generated (as IBM Qiskit QuantumCircuit objects) using the mqt.bench python package.
 
 To get access, please follow these installation and import instructions:
 
 pip install mqt.bench
 from mqt.bench import get_one_benchmark
 
-To generate one benchmark on the algorithm level, please use this method:
+To generate one benchmark on the algorithmic level, please use this method:
 
 get_one_benchmark(
     benchmark_name: str,

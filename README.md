@@ -17,14 +17,14 @@ MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair fo
 ## Abstraction Levels
 It uses the structure proposed by the openQASM 3.0 specification [[1]](https://arxiv.org/abs/2104.14722) and offers benchmarks
 on four different abstraction levels:
-1) Algorithm Level
+1) Algorithmic Level
 2) Target-independent Level
 3) Target-dependent Native Gates Level
 4) Target-dependent Mapped Level
 
 An example is given in the following:
 
-1) Algorithm Level
+1) Algorithmic Level
 
 <img src="img/level_1.png"  align="center" width="250">
 
@@ -160,7 +160,7 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 ```console
 (venv) $ pip install mqt.bench
 ```
-To generate a benchmark circuit on the algorithm level, please use the `get_one_benchmark` method:
+To generate a benchmark circuit on the algorithmic level, please use the `get_one_benchmark` method:
 
 ```python
 get_one_benchmark(

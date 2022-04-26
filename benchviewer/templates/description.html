@@ -54,9 +54,9 @@
         Benchmarks are provided on four different abstraction levels:
     </p>
     <ul>
-        <li><i>Algorithm Level</i>: Circuits are described in a textbook-like fashion using high-level constructs.</li>
+        <li><i>Algorithmic Level</i>: Circuits are described in a textbook-like fashion using high-level constructs.</li>
         <li><i>Target-Independent Level</i>: Circuits are unfolded and unrolled representations of the circuits from the
-            algorithm level.
+            algorithmic level.
         </li>
         <li><i>Native-Gates Level</i>: Circuits are synthesized to a particular native gate-set.</li>
         <li><i>Mapped Level</i>: Circuits are mapped to a particular architecture.</li>
@@ -66,12 +66,12 @@
     </p>
     <ul>
         <li>
-            Until openQASM 3.0 is widely supported, all circuits (except those on the algorithm level) are
+            Until openQASM 3.0 is widely supported, all circuits (except those on the algorithmic level) are
             provided as <i>.qasm</i> files following the openQASM 2.0 standard.
-            Circuits on the algorithm level can directly be generated (as IBM Qiskit QuantumCircuit objects)
+            Circuits on the algorithmic level can directly be generated (as IBM Qiskit QuantumCircuit objects)
             using the <i>mqt.bench</i> python package.
             Instructions on how to use the package are included in the downloaded <i>.zip</i> file whenever an
-            algorithm level circuit is requested.     More details on openQASM 2.0 can be found <a href="https://arxiv.org/abs/1707.03429">here</a>,
+            algorithmic level circuit is requested. More details on openQASM 2.0 can be found <a href="https://arxiv.org/abs/1707.03429">here</a>,
     and on openQASM 3.0 <a href="https://arxiv.org/abs/2104.14722">here</a>.
 
         </li>
@@ -105,7 +105,7 @@
         </thead>
         <tbody>
         <tr>
-            <td style="vertical-align:top">Algorithm Level</td>
+            <td style="vertical-align:top">Algorithmic Level</td>
             <td style="vertical-align:top">For this level, dedicated <i>.qasm</i> files cannot be provided yet, since
                 openQASM 2.0 supports only a
                 set of quantum gates. Thus, we provide those benchmarks using our pypi package which is accessible via
