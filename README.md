@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/cda-tum/mqtbench/branch/main/graph/badge.svg?token=m9ocRq7OxR)](https://codecov.io/gh/cda-tum/mqtbench)
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
-MQT Bench is a benchmark suite with cross-level support. This means, that the same benchmarking
+MQT Bench is a benchmark suite with cross-level support and hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/). This means, that the same benchmarking
 algorithms are provided for different abstraction levels through the quantum computing
 software stack.
 
