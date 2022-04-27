@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
+# Code based on https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
 
 import numpy as np
 
