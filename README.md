@@ -59,7 +59,6 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 <img src="img/level_4.png"  align="center" width="300"/>
 <img src="img/arch.png"  align="right" width="100"/>
 
-
 The architecture of the IBMQ Manila device is shown 
 above on the right and it defines between which qubits a two-qubit operation may be performed. 
 Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits, 
