@@ -57,7 +57,7 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 4) Target-dependent Mapped Level
 
 <img src="img/level_4.png"  align="center" width="300"/>
-<img src="img/arch.png"  align="center" width="100"/>
+<img src="img/arch.png"  align="right" width="100"/>
 
 
 The architecture of the IBMQ Manila device is shown 
