@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/documentation/nature/tutorials/04_excited_states_solvers.html
+# Code based on https://qiskit.org/documentation/nature/tutorials/04_excited_states_solvers.html
 
 
 from qiskit import Aer
