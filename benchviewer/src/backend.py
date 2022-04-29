@@ -1,9 +1,10 @@
 import pandas as pd
 import os
 import re
-import uuid
 import json
+import io
 from zipfile import *
+from typing import List, Iterable
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -435,27 +436,20 @@ def filterDatabase(filterCriteria, database):
     return db_filtered["path"].to_list()
 
 
-def generate_zip(paths: list, python_files_list=None):
-    """Generates the zip file for the selected benchmarks.
+def generate_zip_chunks(paths: List[str], python_files_list=None) -> Iteratable[bytes]:
+    """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
     paths -- list of file paths for all selected benchmarks
     python_files_list -- list of all python files necessary to generate the benchmarks on the algorithm level
 
     Return values:
-    directory -- directory path to temporary zip files
-    filename -- zip file name
+        Generator of bytes to send to the browser
     """
-
-    filename = str(uuid.uuid4()) + ".zip"
-
-    zip_path = get_zip_tmp_folder()
-    import io
-
     fileobj = io.BytesIO()
-    # zip_name = zip_path + filename
-    with ZipFile(fileobj, "w") as zf:
+    pos = fileobj.tell()
 
+    with ZipFile(fileobj, "w") as zf:
         for individualFile in paths:
             zf.write(
                 individualFile,
@@ -463,6 +457,11 @@ def generate_zip(paths: list, python_files_list=None):
                 compress_type=ZIP_DEFLATED,
                 compresslevel=1,
             )
+            new_pos = fileobj.tell()
+            fileobj.seek(pos)
+            yield fileobj.read()
+            pos = new_pos
+
         if python_files_list:
             zf.write(
                 "./static/files/algo_level.txt",
@@ -470,15 +469,14 @@ def generate_zip(paths: list, python_files_list=None):
                 arcname="algo_level.txt",
                 compresslevel=1,
             )
-    fileobj.seek(0)
+            new_pos = fileobj.tell()
+            fileobj.seek(pos)
+            yield fileobj.read()
+            pos = new_pos
 
-    from flask import send_file
-    from datetime import datetime
-
-    zip_name = "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
-    return send_file(
-        fileobj, as_attachment=True, mimetype="application/zip", download_name=zip_name
-    )
+    fileobj.seek(pos)
+    yield fileobj.read()
+    fileobj.close()
 
 
 def get_selected_file_paths(prepared_data):

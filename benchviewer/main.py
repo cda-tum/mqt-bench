@@ -61,31 +61,16 @@ def download_data():
             prepared_data
         )
         if file_paths or python_files_list:
-            # print("file paths : ", file_paths)
-            return generate_zip(file_paths, python_files_list)
-            # zip_name = (
-            #     "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
-            # )
-            #
-            # @after_this_request
-            # def remove_file(response):
-            #     try:
-            #         os.remove(directory + filename)
-            #     except Exception as error:
-            #         app.logger.error(
-            #             "Error removing or closing downloaded file handle", error
-            #         )
-            #     return response
-            #
-            # return send_from_directory(
-            #     directory=directory,
-            #     path=filename,
-            #     as_attachment=True,
-            #     mimetype="application/zip",
-            #     download_name=zip_name,
-            # )
-        # else:
-        # print("No file paths are found")
+            timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            return app.response_class(
+                generate_zip_chunks(file_paths, python_files_list),
+                mimetype="application/zip",
+                headers={
+                    'Content-Disposition': 'attachment; filename="MQTBench_{}.zip"'.format(timestamp)
+                },
+                direct_passthrough=True
+            )
+
     return render_template(
         "index.html",
         benchmarks=benchmarks,
