@@ -453,8 +453,9 @@ def generate_zip(paths: list, python_files_list=None):
     import io
 
     fileobj = io.BytesIO()
-    # zip_name = zip_path + filename
-    with ZipFile(fileobj, "w") as zf:
+    zip_name = zip_path + filename
+    # with ZipFile(fileobj, "w") as zf:
+    with ZipFile(zip_name, "w") as zf:
 
         for individualFile in paths:
             zf.write(
@@ -470,15 +471,17 @@ def generate_zip(paths: list, python_files_list=None):
                 arcname="algo_level.txt",
                 compresslevel=1,
             )
-    fileobj.seek(0)
-
-    from flask import send_file
-    from datetime import datetime
-
-    zip_name = "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
-    return send_file(
-        fileobj, as_attachment=True, mimetype="application/zip", download_name=zip_name
-    )
+    directory = "./static/files/zip_tmp/"
+    return directory, filename
+    # fileobj.seek(0)
+    #
+    # from flask import send_file
+    # from datetime import datetime
+    #
+    # zip_name = "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
+    # return send_file(
+    #     fileobj, as_attachment=True, mimetype="application/zip", download_name=zip_name
+    # )
 
 
 def get_selected_file_paths(prepared_data):
