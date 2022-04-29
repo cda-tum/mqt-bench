@@ -436,7 +436,7 @@ def filterDatabase(filterCriteria, database):
     return db_filtered["path"].to_list()
 
 
-def generate_zip_chunks(paths: List[str], python_files_list=None) -> Iteratable[bytes]:
+def generate_zip_chunks(paths: List[str], python_files_list=None) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
