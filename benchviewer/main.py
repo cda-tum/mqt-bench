@@ -21,7 +21,6 @@ PREFIX = "/mqtbench/"
 
 @app.before_first_request
 def init():
-    clear_zip_tmp_folder()
     init_database()
 
 
@@ -63,7 +62,7 @@ def download_data():
         if file_paths or python_files_list:
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             return app.response_class(
-                generate_zip_chunks(file_paths, python_files_list),
+                generate_zip_ephemeral_chunks(file_paths, python_files_list),
                 mimetype="application/zip",
                 headers={
                     'Content-Disposition': 'attachment; filename="MQTBench_{}.zip"'.format(timestamp)
