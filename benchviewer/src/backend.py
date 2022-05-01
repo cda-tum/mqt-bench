@@ -505,6 +505,7 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
     fileobj.close()
 
 
+
 def get_selected_file_paths(prepared_data):
     """Extracts all file paths according to the prepared user's filter criteria.
 
