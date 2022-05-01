@@ -21,7 +21,6 @@ PREFIX = "/mqtbench/"
 
 @app.before_first_request
 def init():
-    clear_zip_tmp_folder()
     init_database()
 
 
@@ -61,32 +60,16 @@ def download_data():
             prepared_data
         )
         if file_paths or python_files_list:
-            # print("file paths : ", file_paths)
-            # return generate_zip(file_paths, python_files_list)
-            directory, filename = generate_zip(file_paths, python_files_list)
-            zip_name = (
-                "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
-            )
-
-            @after_this_request
-            def remove_file(response):
-                try:
-                    os.remove(directory + filename)
-                except Exception as error:
-                    app.logger.error(
-                        "Error removing or closing downloaded file handle", error
-                    )
-                return response
-
-            return send_from_directory(
-                directory=directory,
-                path=filename,
-                as_attachment=True,
+            timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+            return app.response_class(
+                generate_zip_ephemeral_chunks(file_paths, python_files_list),
                 mimetype="application/zip",
-                download_name=zip_name,
+                headers={
+                    'Content-Disposition': 'attachment; filename="MQTBench_{}.zip"'.format(timestamp)
+                },
+                direct_passthrough=True
             )
-        else:
-            print("No file paths are found")
+
     return render_template(
         "index.html",
         benchmarks=benchmarks,

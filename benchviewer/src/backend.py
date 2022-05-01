@@ -1,9 +1,11 @@
 import pandas as pd
 import os
 import re
-import uuid
 import json
-from zipfile import *
+import io
+from zipfile import ZipFile, ZIP_DEFLATED
+from pathlib import Path
+from typing import List, Iterable
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -435,53 +437,73 @@ def filterDatabase(filterCriteria, database):
     return db_filtered["path"].to_list()
 
 
-def generate_zip(paths: list, python_files_list=None):
-    """Generates the zip file for the selected benchmarks.
+class NoSeekBytesIO:
+    def __init__(self, fp: io.BytesIO):
+        self.fp = fp
+        self.deleted_offset = 0
+
+    def write(self, b):
+        return self.fp.write(b)
+
+    def tell(self):
+        return self.deleted_offset + self.fp.tell()
+
+    def seekable(self):
+        return False
+
+    def hidden_seek(self, offset, start_point=io.SEEK_SET):
+        return self.fp.seek(offset, start_point)
+
+    def truncate_and_remember_offset(self, size):
+        self.deleted_offset += self.fp.tell()
+        self.fp.seek(0)
+        return self.fp.truncate(size)
+
+    def get_value(self):
+        return self.fp.getvalue()
+
+    def close(self):
+        return self.fp.close()
+
+    def read(self):
+        return self.fp.read()
+
+    def flush(self):
+        return self.fp.flush()
+
+
+def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool = False) -> Iterable[bytes]:
+    """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
     paths -- list of file paths for all selected benchmarks
     python_files_list -- list of all python files necessary to generate the benchmarks on the algorithm level
 
     Return values:
-    directory -- directory path to temporary zip files
-    filename -- zip file name
+        Generator of bytes to send to the browser
     """
+    fileobj = NoSeekBytesIO(io.BytesIO())
 
-    filename = str(uuid.uuid4()) + ".zip"
+    paths: List[Path] = [Path(name) for name in filenames]
+    if python_files_list:
+        paths.append(Path("./static/files/algo_level.txt"))
 
-    zip_path = get_zip_tmp_folder()
-    import io
-
-    fileobj = io.BytesIO()
-    zip_name = zip_path + filename
-    # with ZipFile(fileobj, "w") as zf:
-    with ZipFile(zip_name, "w") as zf:
-
+    with ZipFile(fileobj, mode="w") as zf:
         for individualFile in paths:
             zf.write(
                 individualFile,
-                arcname=individualFile.split("/")[-1],
+                arcname=individualFile.name,
                 compress_type=ZIP_DEFLATED,
-                compresslevel=1,
+                compresslevel=2
             )
-        if python_files_list:
-            zf.write(
-                "./static/files/algo_level.txt",
-                compress_type=ZIP_DEFLATED,
-                arcname="algo_level.txt",
-                compresslevel=1,
-            )
-    directory = "./static/files/zip_tmp/"
-    return directory, filename
-    # fileobj.seek(0)
-    #
-    # from flask import send_file
-    # from datetime import datetime
-    #
-    # zip_name = "MQTBench_" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".zip"
-    # return send_file(
-    #     fileobj, as_attachment=True, mimetype="application/zip", download_name=zip_name
-    # )
+            fileobj.hidden_seek(0)
+            yield fileobj.read()
+            fileobj.truncate_and_remember_offset(0)
+
+    fileobj.hidden_seek(0)
+    yield fileobj.read()
+    fileobj.close()
+
 
 
 def get_selected_file_paths(prepared_data):
@@ -509,17 +531,6 @@ def init_database():
 
     global database
     database = createDatabase(qasm_path)
-
-
-def get_zip_tmp_folder():
-    return "./static/files/zip_tmp/"
-
-
-def clear_zip_tmp_folder():
-    zip_tmp_path = get_zip_tmp_folder()
-    for f in os.listdir(zip_tmp_path):
-        if ".zip" in f:
-            os.remove(os.path.join(zip_tmp_path, f))
 
 
 def prepareFormInput(formData):
