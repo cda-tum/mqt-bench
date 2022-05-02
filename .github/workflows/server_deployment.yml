@@ -22,8 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: PyTest
-      run: pytest -v
+    - name: Run Pytest
+      run: |
+        pip install pytest-cov
+        pytest -v
     - name: Creating zip file
       run:  zip -rjv ./benchviewer/static/files/qasm_output/MQTBench_all.zip ./benchviewer/static/files/qasm_output/ ./benchviewer/static/files/algo_level.txt
     - name: Setup SSH via the stored Action Secrets
