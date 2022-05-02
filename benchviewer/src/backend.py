@@ -124,7 +124,7 @@ def createDatabase(zip_file: ZipFile):
     database -- database containing all available benchmarks
     """
     rows_list = []
-    #for filename in os.listdir(qasm_path):
+    # for filename in os.listdir(qasm_path):
     for filename in zip_file.namelist():
         if filename.endswith(".qasm"):
             parsed_data = parse_data(filename)
@@ -163,10 +163,9 @@ def read_mqtbench_all_zip():
 
 
 def parse_data(filename: str):
-    """Extracts the optimization level based on a filename.
+    """Extracts the necessary information from a given filename.
 
     Keyword arguments:
-    directory -- location of file
     filename -- name of file
 
     Return values:
@@ -487,7 +486,9 @@ class NoSeekBytesIO:
         return self.fp.flush()
 
 
-def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool = False) -> Iterable[bytes]:
+def generate_zip_ephemeral_chunks(
+    filenames: List[str], python_files_list: bool = False
+) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
@@ -512,11 +513,12 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
             #     compress_type=ZIP_DEFLATED,
             #     compresslevel=1
             # )
-            zf.writestr(individualFile.name,
-                        data=MQTBENCH_ALL_ZIP.read(individualFile.name),
-                        compress_type=ZIP_DEFLATED,
-                        compresslevel=1
-                        )
+            zf.writestr(
+                individualFile.name,
+                data=MQTBENCH_ALL_ZIP.read(individualFile.name),
+                compress_type=ZIP_DEFLATED,
+                compresslevel=1,
+            )
             fileobj.hidden_seek(0)
             yield fileobj.read()
             fileobj.truncate_and_remember_offset(0)
@@ -524,7 +526,6 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
     fileobj.hidden_seek(0)
     yield fileobj.read()
     fileobj.close()
-
 
 
 def get_selected_file_paths(prepared_data):
@@ -550,7 +551,7 @@ def init_database():
     """Generates the database and saves it into a global variable."""
     global database
 
-    assert(MQTBENCH_ALL_ZIP is not None)
+    assert MQTBENCH_ALL_ZIP is not None
 
     print("Creating data base...")
     database = createDatabase(MQTBENCH_ALL_ZIP)
