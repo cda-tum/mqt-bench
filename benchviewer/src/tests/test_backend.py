@@ -1,6 +1,9 @@
 from benchviewer.src import backend
 
 import pytest
+from pathlib import Path
+import io
+from zipfile import ZipFile, ZIP_DEFLATED
 
 
 @pytest.mark.parametrize(
@@ -10,7 +13,7 @@ import pytest
         ("dj_mapped_ibm-s_opt3_103.qasm", 3),
         ("graphstate_nativegates_ibm_opt2_15.qasm", 2),
         ("grover-noancilla_nativegates_ibm_opt1_8.qasm", 1),
-        ("HHL_t-indep_5.qasm", -1),
+        ("HHL_indep_5.qasm", -1),
     ],
 )
 def test_get_opt_level(filename, expected_res):
@@ -24,7 +27,7 @@ def test_get_opt_level(filename, expected_res):
         ("dj_mapped_ibm-s_opt3_103.qasm", 103),
         ("graphstate_nativegates_ibm_opt2_15.qasm", 15),
         ("grover-noancilla_nativegates_ibm_opt1_8.qasm", 8),
-        ("HHL_t-indep_a.qasm", -1),
+        ("HHL_indep_a.qasm", -1),
     ],
 )
 def test_get_num_qubits(filename, expected_res):
@@ -32,10 +35,9 @@ def test_get_num_qubits(filename, expected_res):
 
 
 @pytest.mark.parametrize(
-    "directory, filename, expected_res",
+    "filename, expected_res",
     [
         (
-            "../../static/qasm_output",
             "shor_15_4_nativegates_rigetti_opt0_18.qasm",
             [
                 "shor",
@@ -48,11 +50,10 @@ def test_get_num_qubits(filename, expected_res):
                 False,
                 False,
                 0,
-                "../../static/qasm_output/shor_15_4_nativegates_rigetti_opt0_18.qasm",
+                "shor_15_4_nativegates_rigetti_opt0_18.qasm",
             ],
         ),
         (
-            "../../static/qasm_output",
             "dj_mapped_ibm-s_opt3_103.qasm",
             [
                 "dj",
@@ -65,11 +66,10 @@ def test_get_num_qubits(filename, expected_res):
                 True,
                 False,
                 3,
-                "../../static/qasm_output/dj_mapped_ibm-s_opt3_103.qasm",
+                "dj_mapped_ibm-s_opt3_103.qasm",
             ],
         ),
         (
-            "../../static/qasm_output",
             "dj_mapped_ibm-b_opt3_103.qasm",
             [
                 "dj",
@@ -82,11 +82,10 @@ def test_get_num_qubits(filename, expected_res):
                 False,
                 True,
                 3,
-                "../../static/qasm_output/dj_mapped_ibm-b_opt3_103.qasm",
+                "dj_mapped_ibm-b_opt3_103.qasm",
             ],
         ),
         (
-            "../../static/qasm_output",
             "grover-noancilla_nativegates_ibm_opt3_8.qasm",
             [
                 "grover-noancilla",
@@ -99,12 +98,11 @@ def test_get_num_qubits(filename, expected_res):
                 False,
                 False,
                 3,
-                "../../static/qasm_output/grover-noancilla_nativegates_ibm_opt3_8.qasm",
+                "grover-noancilla_nativegates_ibm_opt3_8.qasm",
             ],
         ),
         (
-            "../../static/qasm_output",
-            "HHL_t-indep_5.qasm",
+            "HHL_indep_5.qasm",
             [
                 "hhl",
                 5,
@@ -116,13 +114,13 @@ def test_get_num_qubits(filename, expected_res):
                 False,
                 False,
                 -1,
-                "../../static/qasm_output/HHL_t-indep_5.qasm",
+                "HHL_indep_5.qasm",
             ],
         ),
     ],
 )
-def test_parse_data(directory, filename, expected_res):
-    assert backend.parse_data(directory, filename) == expected_res
+def test_parse_data(filename, expected_res):
+    assert backend.parse_data(filename) == expected_res
 
 
 def test_prepareFormInput():
@@ -394,13 +392,15 @@ def test_parseFilterCriteria():
 
 
 def test_create_database():
-    test_path = r"./benchviewer/static/files/test_output"
-    import os
 
-    cwd = os.getcwd()
-    print(cwd)
-    database = backend.createDatabase(test_path)
-    assert len(database) == 30
+    huge_zip = Path("./benchviewer/static/files/qasm_output/MQTBench_all.zip")
+    MQTBENCH_ALL_ZIP = None
+    with huge_zip.open("rb") as zf:
+        bytes = io.BytesIO(zf.read())
+        MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
+
+    database = backend.createDatabase(MQTBENCH_ALL_ZIP)
+    assert len(database) == 37497
     backend.database = database
 
     input_data = dict(
@@ -414,9 +414,8 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    print(res)
-    assert len(res[0]) == 1
-    assert res[0][0] == test_path + "/" + "ghz_t-indep_5.qasm"
+    assert len(res[0]) == 3
+    assert res[0][0] == "ghz_indep_7.qasm"
 
     input_data = dict(
         {
@@ -432,7 +431,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 2
+    assert len(res[0]) == 16
 
     input_data = dict(
         {
@@ -447,7 +446,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 0
+    assert len(res[0]) == 8
 
     input_data = dict(
         {
@@ -474,7 +473,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 1
+    assert len(res[0]) == 2
 
     input_data = dict(
         {
@@ -491,7 +490,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 2
+    assert len(res[0]) == 4
 
     input_data = dict(
         {
@@ -509,7 +508,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 4
+    assert len(res[0]) == 8
 
     input_data = dict(
         {
@@ -528,7 +527,7 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 12
+    assert len(res[0]) == 24
 
     input_data = dict(
         {
@@ -556,4 +555,4 @@ def test_create_database():
         }
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 14
+    assert len(res[0]) == 30
