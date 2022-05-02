@@ -72,7 +72,8 @@ nonscalable_benchmarks = [
 ]
 
 # Store the pandas dataframe as the database containing all available benchmarks
-database = None
+database: pd.DataFrame = None
+MQTBENCH_ALL_ZIP: ZipFile = None
 
 
 def get_opt_level(filename: str):
@@ -85,7 +86,7 @@ def get_opt_level(filename: str):
     num -- optimization level
     """
 
-    pat = re.compile("opt[0-9]")
+    pat = re.compile(r"opt\d")
     m = pat.search(filename)
     if m:
         num = m.group()[-1:]
@@ -104,7 +105,7 @@ def get_num_qubits(filename: str):
     num -- optimization level
     """
 
-    pat = re.compile("(\d+)\.")
+    pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
     if m:
         num = m.group()[0:-1]
@@ -113,19 +114,20 @@ def get_num_qubits(filename: str):
     return int(num)
 
 
-def createDatabase(qasm_path: str):
+def createDatabase(zip_file: ZipFile):
     """Creates the database based on the provided directories.
 
     Keyword arguments:
-    qasm_path -- directory containing all .qasm files
+    qasm_path -- zip containing all .qasm files
 
     Return values:
     database -- database containing all available benchmarks
     """
     rows_list = []
-    for filename in os.listdir(qasm_path):
+    # for filename in os.listdir(qasm_path):
+    for filename in zip_file.namelist():
         if filename.endswith(".qasm"):
-            parsed_data = parse_data(qasm_path, filename)
+            parsed_data = parse_data(filename)
             rows_list.append(parsed_data)
             continue
 
@@ -150,11 +152,20 @@ def createDatabase(qasm_path: str):
     return database
 
 
-def parse_data(directory: str, filename: str):
-    """Extracts the optimization level based on a filename.
+def read_mqtbench_all_zip():
+    global MQTBENCH_ALL_ZIP
+    huge_zip = Path("./static/files/qasm_output/MQTBench_all.zip")
+    print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
+    with huge_zip.open("rb") as zf:
+        bytes = io.BytesIO(zf.read())
+        MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
+    print("files: {}".format(len(MQTBENCH_ALL_ZIP.namelist())))
+
+
+def parse_data(filename: str):
+    """Extracts the necessary information from a given filename.
 
     Keyword arguments:
-    directory -- location of file
     filename -- name of file
 
     Return values:
@@ -169,7 +180,7 @@ def parse_data(directory: str, filename: str):
     smallest_mapping = False
     biggest_mapping = False
     opt_level = get_opt_level(filename)
-    path = os.path.join(directory, filename)
+    path = os.path.join(filename)
     gate_set = False
     if "ibm" in filename:
         gate_set = "ibm"
@@ -448,6 +459,9 @@ class NoSeekBytesIO:
     def tell(self):
         return self.deleted_offset + self.fp.tell()
 
+    def hidden_tell(self):
+        return self.fp.tell()
+
     def seekable(self):
         return False
 
@@ -472,7 +486,9 @@ class NoSeekBytesIO:
         return self.fp.flush()
 
 
-def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool = False) -> Iterable[bytes]:
+def generate_zip_ephemeral_chunks(
+    filenames: List[str], python_files_list: bool = False
+) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
@@ -482,6 +498,7 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
     Return values:
         Generator of bytes to send to the browser
     """
+    global MQTBENCH_ALL_ZIP
     fileobj = NoSeekBytesIO(io.BytesIO())
 
     paths: List[Path] = [Path(name) for name in filenames]
@@ -490,11 +507,17 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
 
     with ZipFile(fileobj, mode="w") as zf:
         for individualFile in paths:
-            zf.write(
-                individualFile,
-                arcname=individualFile.name,
+            # zf.write(
+            #     individualFile,
+            #     arcname=individualFile.name,
+            #     compress_type=ZIP_DEFLATED,
+            #     compresslevel=1
+            # )
+            zf.writestr(
+                individualFile.name,
+                data=MQTBENCH_ALL_ZIP.read(individualFile.name),
                 compress_type=ZIP_DEFLATED,
-                compresslevel=2
+                compresslevel=1,
             )
             fileobj.hidden_seek(0)
             yield fileobj.read()
@@ -503,7 +526,6 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
     fileobj.hidden_seek(0)
     yield fileobj.read()
     fileobj.close()
-
 
 
 def get_selected_file_paths(prepared_data):
@@ -527,10 +549,14 @@ def get_selected_file_paths(prepared_data):
 
 def init_database():
     """Generates the database and saves it into a global variable."""
-    qasm_path = r"./static/files/qasm_output"
-
     global database
-    database = createDatabase(qasm_path)
+
+    assert MQTBENCH_ALL_ZIP is not None
+
+    print("Creating data base...")
+    database = createDatabase(MQTBENCH_ALL_ZIP)
+    print("rows: {}".format(len(database)))
+    print("... done")
 
 
 def prepareFormInput(formData):
