@@ -21,6 +21,7 @@ PREFIX = "/mqtbench/"
 
 @app.before_first_request
 def init():
+    read_mqtbench_all_zip()
     init_database()
 
 
@@ -65,9 +66,11 @@ def download_data():
                 generate_zip_ephemeral_chunks(file_paths, python_files_list),
                 mimetype="application/zip",
                 headers={
-                    'Content-Disposition': 'attachment; filename="MQTBench_{}.zip"'.format(timestamp)
+                    "Content-Disposition": 'attachment; filename="MQTBench_{}.zip"'.format(
+                        timestamp
+                    )
                 },
-                direct_passthrough=True
+                direct_passthrough=True,
             )
 
     return render_template(

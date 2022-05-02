@@ -14,7 +14,6 @@ env:
   CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
   CDA_TARGET_DIR_FILES: /local/mqtbench/qasm_output/
   CDA_SOURCE_DIR_FILES: benchviewer/static/files/qasm_output/
-  CDA_ZIP_TMP_DIR_FILES: benchviewer/static/files/zip_tmp/
   CDA_GIT_DIR: .git/
 
 jobs:
@@ -25,6 +24,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: Creating zip file
       run:  zip -rjv ./benchviewer/static/files/qasm_output/MQTBench_all.zip ./benchviewer/static/files/qasm_output/ ./benchviewer/static/files/algo_level.txt
+    - name: Generate Report
+      run: |
+        pip install pytest-cov
+        pytest -v
     - name: Setup SSH via the stored Action Secrets
       run: |
         mkdir -p ~/.ssh
@@ -35,6 +38,6 @@ jobs:
     - name: rsync deployment
       working-directory: ${{ github.workspace }}
       run: |
-        rsync -avz --update  -e ssh . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR} --exclude ${CDA_SOURCE_DIR_FILES} --exclude ${CDA_ZIP_TMP_DIR_FILES} --exclude ${CDA_GIT_DIR}
-        rsync -avz --update -e ssh ${CDA_SOURCE_DIR_FILES} ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR_FILES}
+        rsync -avz --update  -e ssh . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR} --exclude ${CDA_SOURCE_DIR_FILES} --exclude ${CDA_GIT_DIR}
+        rsync -avz --update -e ssh ${CDA_SOURCE_DIR_FILES}/MQTBench_all.zip ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR_FILES}/MQTBench_all.zip
 
