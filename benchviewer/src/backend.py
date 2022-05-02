@@ -472,7 +472,9 @@ class NoSeekBytesIO:
         return self.fp.flush()
 
 
-def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool = False) -> Iterable[bytes]:
+def generate_zip_ephemeral_chunks(
+    filenames: List[str], python_files_list: bool = False
+) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
@@ -494,7 +496,7 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
                 individualFile,
                 arcname=individualFile.name,
                 compress_type=ZIP_DEFLATED,
-                compresslevel=2
+                compresslevel=2,
             )
             fileobj.hidden_seek(0)
             yield fileobj.read()
@@ -503,7 +505,6 @@ def generate_zip_ephemeral_chunks(filenames: List[str], python_files_list: bool 
     fileobj.hidden_seek(0)
     yield fileobj.read()
     fileobj.close()
-
 
 
 def get_selected_file_paths(prepared_data):
