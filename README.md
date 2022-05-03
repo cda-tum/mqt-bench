@@ -215,31 +215,14 @@ In case you are using MQT Bench in your work, we would be thankful if you referr
 ```bibtex
 @misc{quetschlich2022mqtbench,
   title={{{MQT Bench}}: Benchmarking Software and Design Automation Tools for Quantum Computing},
+  shorttitle = {{{MQT Bench}}},
   author={Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
   year={2022},
-  url = {http://arxiv.org/abs/2204.13719},
   eprint = {2204.13719},
   eprinttype = {arxiv},
   publisher = {arXiv},
-  doi = {10.48550/ARXIV.2204.13719},
   note={{{MQT Bench}} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
 }
 ````
-
-
-
-@misc{https://doi.org/10.48550/arxiv.2204.13719,
-  doi = {10.48550/ARXIV.2204.13719},
-  url = {https://arxiv.org/abs/2204.13719},
-  publisher = {arXiv},
-  year = {2022},
- 
-  title = {MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing},
-  
-
-  
-  copyright = {arXiv.org perpetual, non-exclusive license}
-}
-
 
 [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021 
