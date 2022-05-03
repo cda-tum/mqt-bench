@@ -44,6 +44,6 @@ jobs:
     - name: rsync deployment
       working-directory: ${{ github.workspace }}
       run: |
-        rsync -avz --update -e ssh --cvs-exclude --exclude "__pycache__/" --exclude "*.qasm" --exclude ${CDA_SOURCE_DIR_FILES}/MQTBench_all.zip ./benchviewer ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}/benchviewer
+        rsync -avz --update -e ssh --cvs-exclude --exclude "__pycache__/" --exclude "*.qasm" --exclude ${CDA_SOURCE_DIR_FILES}/MQTBench_all.zip ./benchviewer ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
         rsync -avz --update -e ssh ${CDA_SOURCE_DIR_FILES}/MQTBench_all.zip ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR_FILES}/MQTBench_all.zip
 
