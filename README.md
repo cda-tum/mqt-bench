@@ -214,10 +214,14 @@ git checkout main
 In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
 ```bibtex
 @misc{quetschlich2022mqtbench,
-  title={MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing},
+  title={{{MQT Bench}}: Benchmarking Software and Design Automation Tools for Quantum Computing},
+  shorttitle = {{{MQT Bench}}},
   author={Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
   year={2022},
-  note={{MQT Bench} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
+  eprint = {2204.13719},
+  eprinttype = {arxiv},
+  publisher = {arXiv},
+  note={{{MQT Bench}} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
 }
 ````
 
