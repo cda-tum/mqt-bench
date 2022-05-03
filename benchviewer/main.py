@@ -12,17 +12,16 @@ from flask import (
 from src.backend import *
 from datetime import datetime
 
-app = Flask(__name__)
-# app.config["SERVER_NAME"] = "cda.cit.tum.de"
-# app.config["APPLICATION_ROOT"] = "/app/benchviewer/"
-
-PREFIX = "/mqtbench/"
-
-
-@app.before_first_request
+# @app.before_first_request
 def init():
     read_mqtbench_all_zip()
     init_database()
+
+
+init()
+app = Flask(__name__)
+
+PREFIX = "/mqtbench/"
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
