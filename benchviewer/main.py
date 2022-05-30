@@ -4,18 +4,20 @@ import json
 from flask import (
     Flask,
     jsonify,
-    after_this_request,
     render_template,
     request,
     send_from_directory,
 )
 from src.backend import *
 from datetime import datetime
+import logging
 
-# @app.before_first_request
+
 def init():
     read_mqtbench_all_zip()
     init_database()
+
+    logging.basicConfig(filename="downloads.log", level=logging.INFO)
 
 
 init()
@@ -59,6 +61,12 @@ def download_data():
         file_paths, algo_dicts, python_files_list = get_selected_file_paths(
             prepared_data
         )
+        app.logger.info("###### Start ######")
+        app.logger.info("Headers: %s", request.headers)
+        app.logger.info("Prepared_data: %s", prepared_data)
+        app.logger.info("Download started: %s", len(file_paths))
+        app.logger.info("###### End ######")
+
         if file_paths or python_files_list:
             timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             return app.response_class(
@@ -130,7 +138,6 @@ def get_num_benchmarks():
                             num += res
                             break
         data = {"num_selected": num}
-
         return jsonify(data)
     else:
         data = {"num_selected": 0}
