@@ -42,6 +42,10 @@ def index():
 def download_pre_gen_zip():
     directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
+    app.logger.info("###### Start ######")
+    app.logger.info("Headers: %s", request.headers)
+    app.logger.info("Download of pre-generated zip")
+    app.logger.info("###### End ######")
     return send_from_directory(
         directory=directory,
         path=filename,
