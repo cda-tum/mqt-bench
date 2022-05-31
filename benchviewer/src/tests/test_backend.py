@@ -415,7 +415,6 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert len(res[0]) == 3
-    assert res[0][0] == "ghz_indep_7.qasm"
 
     input_data = dict(
         {
