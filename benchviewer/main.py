@@ -17,7 +17,7 @@ def init():
     read_mqtbench_all_zip()
     init_database()
 
-    logging.basicConfig(filename="downloads.log", level=logging.INFO)
+    logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
 
 init()
