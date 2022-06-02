@@ -42,7 +42,9 @@ def index():
 def download_pre_gen_zip():
     directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     app.logger.info("###### Start ######")
+    app.logger.info("Timestamp: %s", timestamp)
     app.logger.info("Headers: %s", request.headers)
     app.logger.info("Download of pre-generated zip")
     app.logger.info("###### End ######")
@@ -65,14 +67,15 @@ def download_data():
         file_paths, algo_dicts, python_files_list = get_selected_file_paths(
             prepared_data
         )
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         app.logger.info("###### Start ######")
+        app.logger.info("Timestamp: %s", timestamp)
         app.logger.info("Headers: %s", request.headers)
         app.logger.info("Prepared_data: %s", prepared_data)
         app.logger.info("Download started: %s", len(file_paths))
         app.logger.info("###### End ######")
 
         if file_paths or python_files_list:
-            timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             return app.response_class(
                 generate_zip_ephemeral_chunks(file_paths, python_files_list),
                 mimetype="application/zip",
