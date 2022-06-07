@@ -33,6 +33,7 @@ setup(
         "flask==2.1.2",
         "networkx==2.8.3",
         "pytest==7.1.1",
+        "pylatexenc~=2.10"
     ],
     extras_require={
         "all": [
