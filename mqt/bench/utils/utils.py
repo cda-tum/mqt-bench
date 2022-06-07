@@ -51,7 +51,11 @@ def get_compiled_circuit_with_gateset(
         basis_gates = ["id", "rz", "sx", "x", "cx", "reset"]
 
     t_qc = transpile(
-        qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map
+        qc,
+        basis_gates=basis_gates,
+        optimization_level=opt_level,
+        coupling_map=c_map,
+        seed_transpiler=10,
     )
     return t_qc
 
@@ -359,7 +363,7 @@ def get_indep_level(
     else:
         openqasm_gates = get_openqasm_gates()
         target_independent = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1
+            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
         )
         save_as_qasm(target_independent, filename_indep)
         if save_png:
