@@ -694,7 +694,12 @@ def get_one_benchmark(
 
     elif level == "indep" or level == 1:
 
-        qc_indep = transpile(qc, basis_gates=utils.get_openqasm_gates())
+        qc_indep = transpile(
+            qc,
+            basis_gates=utils.get_openqasm_gates(),
+            optimization_level=1,
+            seed_transpiler=10,
+        )
         return qc_indep
 
     elif level == "nativegates" or level == 2:
