@@ -57,10 +57,6 @@ def create_benchmarks_from_config(cfg_path: str):
         print("Read config successful")
 
     # global seetings
-    global save_png
-    save_png = cfg["save_png"]
-    global save_hist
-    save_hist = cfg["save_hist"]
     global max_depth
     max_depth = cfg["max_depth"]
     global timeout
@@ -311,21 +307,17 @@ def generate_benchmark(benchmark):
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     characteristics = []
-    # filename_algo, depth = generate_algo_level_circuit(qc, n, save_png, save_hist)
+    # filename_algo, depth = generate_algo_level_circuit(qc, n)
     # characteristics.append([filename_algo, n, depth])
 
-    res_t_indep = generate_target_indep_level_circuit(
-        qc, num_qubits, save_png, save_hist, file_precheck
-    )
+    res_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
 
     if res_t_indep:
         characteristics.extend(res_t_indep)
     else:
         return characteristics
 
-    res_t_dep = generate_target_dep_level_circuit(
-        qc, num_qubits, save_png, save_hist, file_precheck
-    )
+    res_t_dep = generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
 
     if res_t_dep:
         characteristics.extend(res_t_dep)
@@ -336,12 +328,11 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 
 
 def generate_algo_level_circuit(
-    qc: QuantumCircuit, num_qubits: int, save_png, save_hist
+    qc: QuantumCircuit,
+    num_qubits: int,
 ):
     characteristics = []
-    res = benchmark_generation_watcher(
-        utils.handle_algorithm_level, [qc, num_qubits, save_png, save_hist]
-    )
+    res = benchmark_generation_watcher(utils.handle_algorithm_level, [qc, num_qubits])
     characteristics.append(res)
 
     if res:
@@ -352,13 +343,13 @@ def generate_algo_level_circuit(
 
 
 def generate_target_indep_level_circuit(
-    qc: QuantumCircuit, num_qubits: int, save_png, save_hist, file_precheck
+    qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
     characteristics = []
 
     res = benchmark_generation_watcher(
         utils.get_indep_level,
-        [qc, num_qubits, save_png, save_hist, file_precheck],
+        [qc, num_qubits, file_precheck],
     )
     if res:
         characteristics.append(res)
@@ -368,7 +359,7 @@ def generate_target_indep_level_circuit(
 
 
 def generate_target_dep_level_circuit(
-    qc: QuantumCircuit, num_qubits: int, save_png, save_hist, file_precheck
+    qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
     characteristics = []
 
@@ -390,8 +381,6 @@ def generate_target_dep_level_circuit(
                         gate_set_name,
                         opt_level,
                         num_qubits,
-                        save_png,
-                        save_hist,
                         file_precheck,
                     ],
                 )
@@ -411,8 +400,6 @@ def generate_target_dep_level_circuit(
                         opt_level,
                         n_actual,
                         True,
-                        save_png,
-                        save_hist,
                         file_precheck,
                     ],
                 )
@@ -430,8 +417,6 @@ def generate_target_dep_level_circuit(
                         opt_level,
                         n_actual,
                         False,
-                        save_png,
-                        save_hist,
                         file_precheck,
                     ],
                 )
