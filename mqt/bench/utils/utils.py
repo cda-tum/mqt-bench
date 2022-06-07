@@ -1,7 +1,6 @@
-from qiskit import QuantumCircuit, Aer, __qiskit_version__
+from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.compiler import transpile
 from qiskit.transpiler import CouplingMap
-from qiskit.visualization import plot_histogram
 from qiskit.circuit import qpy_serialization
 from qiskit.algorithms import EstimationProblem
 
@@ -9,7 +8,7 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
-from os import path, mkdir
+from os import path
 
 from qiskit.test.mock import (
     FakeBogota,
@@ -142,37 +141,6 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     return maxcut.to_quadratic_program()
 
 
-def sim_and_print_hist(qc: QuantumCircuit, filename: str):
-    """Simulates a given quantum circuit and prints its resulting histogram.
-
-    Keyword arguments:
-    qc -- to be simulated quantum circuit
-    filename -- filename of the histogram
-    """
-
-    if not path.isdir("./hist_output"):
-        mkdir("hist_output")
-
-    simulator = Aer.get_backend("aer_simulator")
-    result = simulator.run(qc.decompose(), shots=1024).result()
-    counts = result.get_counts()
-    plot = plot_histogram(counts, figsize=(15, 5), title=filename)
-    plot.savefig("hist_output/" + filename + "_hist" + ".png", bbox_inches="tight")
-
-
-def save_circ(qc: QuantumCircuit, filename: str):
-    """Save schematic picture of a given quantum circuit.
-
-    Keyword arguments:
-    qc -- to be saved quantum circuit
-    filename -- filename of the schematic picture
-    """
-    if not path.isdir("./hist_output"):
-        mkdir("hist_output")
-
-    qc.draw(output="mpl", filename="hist_output/" + filename + ".png")
-
-
 class BernoulliA(QuantumCircuit):
     """A circuit representing the Bernoulli A operator."""
 
@@ -295,16 +263,13 @@ def get_google_c_map():
     return c_map_google
 
 
-def handle_algorithm_level(
-    qc: QuantumCircuit, num_qubits: int, save_png: bool, save_hist: bool
-):
+def handle_algorithm_level(qc: QuantumCircuit, num_qubits: int):
     """Handles the creation of the benchmark on the algorithm level.
 
     Keyword arguments:
     qc -- quantum circuit which shall be created
     num_qubits -- number of qubits
-    save_png -- flag indicated whether to save schematic picture of quantum circuit
-    save_hist -- flag indicated whether to simulate circuit and save its histogram
+
 
     Return values:
     filename_algo -- the filename of the created and saved benchmark
@@ -320,10 +285,6 @@ def handle_algorithm_level(
         depth = qc.depth()
     else:
         serialize_qc(qc, filename_algo)
-        if save_png:
-            save_circ(qc, filename_algo)
-        if save_hist:
-            sim_and_print_hist(qc, filename_algo)
         depth = qc.depth()
 
     return filename_algo, depth, num_qubits
@@ -332,8 +293,6 @@ def handle_algorithm_level(
 def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int,
-    save_png: bool,
-    save_hist: bool,
     file_precheck: bool,
 ):
     """Handles the creation of the benchmark on the target-independent level.
@@ -341,8 +300,6 @@ def get_indep_level(
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
-    save_png -- flag indicated whether to save schematic picture of quantum circuit
-    save_hist -- flag indicated whether to simulate circuit and save its histogram
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
@@ -366,10 +323,6 @@ def get_indep_level(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
         )
         save_as_qasm(target_independent, filename_indep)
-        if save_png:
-            save_circ(target_independent, filename_indep)
-        if save_hist:
-            sim_and_print_hist(target_independent, filename_indep)
 
         depth = target_independent.depth()
         return filename_indep, depth, qc.num_qubits
@@ -381,8 +334,6 @@ def get_native_gates_level(
     gate_set_name: str,
     opt_level: int,
     num_qubits: int,
-    save_png: bool,
-    save_hist: bool,
     file_precheck: bool,
 ):
     """Handles the creation of the benchmark on the target-dependent native gates level.
@@ -393,8 +344,6 @@ def get_native_gates_level(
     gate_set_name -- name of this gate set
     opt_level -- optimization level
     num_qubits -- number of qubits
-    save_png -- flag indicated whether to save schematic picture of quantum circuit
-    save_hist -- flag indicated whether to simulate circuit and save its histogram
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
@@ -442,10 +391,6 @@ def get_native_gates_level(
         save_as_qasm(
             compiled_without_architecture, filename_nativegates, gate_set, opt_level
         )
-        if save_png:
-            save_circ(compiled_without_architecture, filename_nativegates)
-        if save_hist:
-            sim_and_print_hist(compiled_without_architecture, filename_nativegates)
 
         depth = compiled_without_architecture.depth()
         return filename_nativegates, depth, n_actual
@@ -458,8 +403,6 @@ def get_mapped_level(
     opt_level: int,
     num_qubits: int,
     smallest_fitting_arch: bool,
-    save_png: bool,
-    save_hist: bool,
     file_precheck: bool,
 ):
     """Handles the creation of the benchmark on the target-dependent mapped level.
@@ -471,8 +414,6 @@ def get_mapped_level(
     opt_level -- optimization level
     num_qubits -- number of qubits
     smallest_fitting_arch -- flag indicating whether smallest fitting mapping scheme shall be used
-    save_png -- flag indicated whether to save schematic picture of quantum circuit
-    save_hist -- flag indicated whether to simulate circuit and save its histogram
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
@@ -518,11 +459,6 @@ def get_mapped_level(
                 c_map,
                 gate_set_name_mapped + "-" + backend_name,
             )
-
-            if save_png:
-                save_circ(compiled_with_architecture, filename_mapped)
-            if save_hist:
-                sim_and_print_hist(compiled_with_architecture, filename_mapped)
 
             depth = compiled_with_architecture.depth()
         return filename_mapped, depth, num_qubits
