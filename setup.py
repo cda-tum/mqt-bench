@@ -29,7 +29,7 @@ setup(
     install_requires=[
         "matplotlib==3.5.1",
         "qiskit==0.35",
-        "pandas==1.4.0",
+        "pandas==1.3.5",
         "flask==2.1.2",
         "networkx==2.8.3",
         "pytest==7.1.1",
