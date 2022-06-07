@@ -51,7 +51,11 @@ def get_compiled_circuit_with_gateset(
         basis_gates = ["id", "rz", "sx", "x", "cx", "reset"]
 
     t_qc = transpile(
-        qc, basis_gates=basis_gates, optimization_level=opt_level, coupling_map=c_map, seed_transpiler=10
+        qc,
+        basis_gates=basis_gates,
+        optimization_level=opt_level,
+        coupling_map=c_map,
+        seed_transpiler=10,
     )
     return t_qc
 
