@@ -17,7 +17,7 @@ from qiskit.test.mock import (
     FakeGuadalupe,
     FakeMontreal,
     FakeManhattan,
-    FakeWashington
+    FakeWashington,
 )
 
 qasm_path = "./benchviewer/static/files/qasm_output/"
