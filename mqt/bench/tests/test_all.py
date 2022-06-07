@@ -203,11 +203,6 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
         assert depth_mapped > 0
 
 
-def test_washington_cmap():
-    c_map_ibmq_washington = utils.get_cmap_imbq_washington()
-    assert len(c_map_ibmq_washington) == 284
-
-
 def test_openqasm_gates():
     openqasm_gates = utils.get_openqasm_gates()
     assert len(openqasm_gates) == 42
