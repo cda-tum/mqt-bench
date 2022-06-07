@@ -71,7 +71,8 @@ def test_configure_begin():
 def test_quantumcircuit_algo_level(benchmark, num_qubits):
     qc = benchmark.create_circuit(num_qubits)
     filename_algo, depth, num_qubits = utils.handle_algorithm_level(
-        qc, num_qubits, save_png=False, save_hist=False
+        qc,
+        num_qubits,
     )
     assert depth > 0
 
@@ -113,11 +114,11 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     if scalable:
         assert qc.num_qubits == input_value
     filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, save_png=False, save_hist=False, file_precheck=False
+        qc, input_value, file_precheck=False
     )
     assert depth > 0
     filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, save_png=False, save_hist=False, file_precheck=True
+        qc, input_value, file_precheck=True
     )
     assert depth > 0
 
@@ -169,8 +170,6 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             gate_set_name,
             opt_level,
             input_value,
-            save_png=False,
-            save_hist=False,
             file_precheck=False,
         )
         assert depth_native > 0
@@ -180,8 +179,6 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             gate_set_name,
             opt_level,
             input_value,
-            save_png=False,
-            save_hist=False,
             file_precheck=True,
         )
         assert depth_native > 0
@@ -192,8 +189,6 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             opt_level,
             n_actual,
             False,
-            save_png=False,
-            save_hist=False,
             file_precheck=False,
         )
         assert depth_mapped > 0
@@ -204,8 +199,6 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             opt_level,
             n_actual,
             False,
-            save_png=False,
-            save_hist=False,
             file_precheck=True,
         )
         assert depth_mapped > 0
@@ -267,22 +260,6 @@ def test_rigetti_cmap_generator(num_circles: int):
 
 def test_get_google_c_map():
     assert len(utils.get_google_c_map()) == 176
-
-
-def test_save_circ():
-    qc = ghz.create_circuit(5)
-    utils.save_circ(qc, "pytest")
-    assert os.path.exists("hist_output/pytest.png")
-    if os.path.exists("hist_output/pytest.png"):
-        os.remove("hist_output/pytest.png")
-
-
-def test_sim_and_print_hist():
-    qc = ghz.create_circuit(5)
-    utils.sim_and_print_hist(qc, "pytest")
-    assert os.path.exists("hist_output/pytest_hist.png")
-    if os.path.exists("hist_output/pytest_hist.png"):
-        os.remove("hist_output/pytest_hist.png")
 
 
 def test_dj_constant_oracle():
