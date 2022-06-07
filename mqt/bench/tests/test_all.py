@@ -40,7 +40,6 @@ def test_configure_begin():
     if not os.path.exists(test_qasm_output_path):
         os.mkdir(test_qasm_output_path)
     utils.set_qasm_output_path(test_qasm_output_path)
-    print("test")
     assert utils.get_qasm_output_path() == test_qasm_output_path
 
 
