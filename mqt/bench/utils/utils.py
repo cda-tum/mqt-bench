@@ -16,6 +16,7 @@ from qiskit.test.mock import (
     FakeGuadalupe,
     FakeMontreal,
     FakeManhattan,
+    FakeWashington,
 )
 
 qasm_path = "./benchviewer/static/files/qasm_output/"
@@ -538,15 +539,17 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
                 c_map = backend.configuration().coupling_map
                 backend_name = backend.name()
             elif num_qubits <= 127:
-                c_map = get_cmap_imbq_washington()
-                backend_name = "Washington"
+                backend = FakeWashington()
+                c_map = backend.configuration().coupling_map
+                backend_name = backend.name()
             else:
                 c_map_found = False
             gate_set_name_mapped = gate_set_name + "-s"
 
         elif num_qubits <= 127:
-            c_map = get_cmap_imbq_washington()
-            backend_name = "Washington"
+            backend = FakeWashington()
+            c_map = backend.configuration().coupling_map
+            backend_name = backend.name()
             gate_set_name_mapped = gate_set_name + "-b"
         else:
             c_map_found = False
@@ -555,158 +558,6 @@ def select_c_map(gate_set_name: str, smallest_fitting_arch: bool, num_qubits: in
         return c_map, backend_name, gate_set_name_mapped, c_map_found
     else:
         return None, "", "", False
-
-
-def get_cmap_imbq_washington():
-    """Returns the coupling map of the IBM-Q washington quantum computer."""
-    c_map_ibmq_washington = [
-        [0, 1],
-        [1, 2],
-        [2, 3],
-        [3, 4],
-        [4, 5],
-        [5, 6],
-        [6, 7],
-        [7, 8],
-        [0, 14],
-        [14, 18],
-        [18, 19],
-        [19, 20],
-        [20, 21],
-        [21, 22],
-        [4, 15],
-        [15, 22],
-        [22, 23],
-        [23, 24],
-        [24, 25],
-        [25, 26],
-        [8, 16],
-        [16, 26],
-        [26, 27],
-        [27, 28],
-        [28, 29],
-        [29, 30],
-        [30, 31],
-        [31, 32],
-        [9, 10],
-        [10, 11],
-        [11, 12],
-        [12, 13],
-        [12, 17],
-        [17, 30],
-        [32, 36],
-        [36, 51],
-        [20, 33],
-        [33, 39],
-        [24, 34],
-        [34, 43],
-        [28, 35],
-        [35, 47],
-        [37, 38],
-        [38, 39],
-        [39, 40],
-        [40, 41],
-        [41, 42],
-        [42, 43],
-        [43, 44],
-        [44, 45],
-        [45, 46],
-        [46, 47],
-        [47, 48],
-        [48, 49],
-        [49, 50],
-        [50, 51],
-        [37, 52],
-        [52, 56],
-        [41, 53],
-        [53, 60],
-        [45, 54],
-        [54, 64],
-        [49, 55],
-        [55, 68],
-        [56, 57],
-        [57, 58],
-        [58, 59],
-        [59, 60],
-        [60, 61],
-        [61, 62],
-        [62, 63],
-        [63, 64],
-        [64, 65],
-        [65, 66],
-        [66, 67],
-        [67, 68],
-        [68, 69],
-        [69, 70],
-        [70, 74],
-        [74, 89],
-        [58, 71],
-        [71, 77],
-        [62, 72],
-        [72, 81],
-        [66, 73],
-        [73, 85],
-        [75, 76],
-        [76, 77],
-        [77, 78],
-        [78, 79],
-        [79, 80],
-        [80, 81],
-        [81, 82],
-        [82, 83],
-        [83, 84],
-        [84, 85],
-        [85, 86],
-        [86, 87],
-        [87, 88],
-        [88, 89],
-        [75, 90],
-        [90, 94],
-        [79, 91],
-        [91, 98],
-        [83, 92],
-        [92, 102],
-        [87, 93],
-        [93, 106],
-        [94, 95],
-        [95, 96],
-        [96, 97],
-        [97, 98],
-        [98, 99],
-        [99, 100],
-        [100, 101],
-        [101, 102],
-        [102, 103],
-        [103, 104],
-        [104, 105],
-        [105, 106],
-        [106, 107],
-        [107, 108],
-        [108, 112],
-        [112, 126],
-        [96, 109],
-        [100, 110],
-        [110, 118],
-        [104, 111],
-        [111, 122],
-        [113, 114],
-        [114, 115],
-        [115, 116],
-        [116, 117],
-        [117, 118],
-        [118, 119],
-        [119, 120],
-        [120, 121],
-        [121, 122],
-        [122, 123],
-        [123, 124],
-        [124, 125],
-        [125, 126],
-    ]
-
-    inverted = [[item[1], item[0]] for item in c_map_ibmq_washington]
-    c_map_ibmq_washington = c_map_ibmq_washington + inverted
-    return c_map_ibmq_washington
 
 
 def get_openqasm_gates():
