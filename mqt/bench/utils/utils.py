@@ -333,7 +333,6 @@ def save_as_qasm(
         c_map = []
 
     qasm_output_folder = get_qasm_output_path()
-    print(qasm_output_folder)
     with open(qasm_output_folder + filename + ".qasm", "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
@@ -372,3 +371,34 @@ def get_cmap_from_devicename(device: str):
         return get_cmap_oqc_lucy()
     else:
         return False
+
+
+def get_molecule(benchmark_instance_name: str):
+    """Returns a Molecule object depending on the parameter value."""
+    try:
+        from qiskit_nature.drivers import Molecule
+    except:
+        print("Please install qiskit_nature.")
+        return None
+    m_1 = Molecule(
+        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_2 = Molecule(
+        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
+        charge=0,
+        multiplicity=1,
+    )
+    m_3 = Molecule(
+        geometry=[
+            ["O", [0.0, 0.0, 0.0]],
+            ["H", [0.586, 0.757, 0.0]],
+            ["H", [0.586, -0.757, 0.0]],
+        ],
+        charge=0,
+        multiplicity=1,
+    )
+    instances = {"small": m_1, "medium": m_2, "large": m_3}
+
+    return instances[benchmark_instance_name]
