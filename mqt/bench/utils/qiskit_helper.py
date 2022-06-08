@@ -66,7 +66,8 @@ def get_indep_level(
         )
         utils.save_as_qasm(target_independent.qasm(), filename_indep)
 
-        return 1
+        return target_independent.num_qubits
+    return 0
 
 
 def get_native_gates_level(
@@ -127,6 +128,7 @@ def get_native_gates_level(
             opt_level,
         )
         return qc.num_qubits
+    return 0
 
 
 def get_mapped_level(
@@ -188,5 +190,5 @@ def get_mapped_level(
         utils.save_as_qasm(
             compiled_with_architecture.qasm(), filename_mapped, gate_set, True, c_map
         )
-
-    return
+        return compiled_with_architecture.num_qubits
+    return 0
