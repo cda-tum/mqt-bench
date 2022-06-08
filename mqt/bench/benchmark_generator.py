@@ -22,6 +22,8 @@ from mqt.bench.benchmarks.qiskit_application_finance import (
 )
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
 
+from qiskit_helper import *
+
 
 def init_module_paths():
     global benchmarks_module_paths_dict
@@ -50,7 +52,6 @@ def init_module_paths():
 
 def create_benchmarks_from_config(cfg_path: str):
     init_module_paths()
-    characteristics = []
 
     with open(cfg_path, "r") as jsonfile:
         cfg = json.load(jsonfile)
@@ -69,8 +70,8 @@ def create_benchmarks_from_config(cfg_path: str):
 
     for benchmark in cfg["benchmarks"]:
         print(benchmark["name"])
-        characteristics.extend(generate_benchmark(benchmark))
-    return characteristics
+        generate_benchmark(benchmark)
+    return
 
 
 def benchmark_generation_watcher(func, args):
@@ -183,7 +184,6 @@ def qc_creation_watcher(func, args):
 
 
 def generate_benchmark(benchmark):
-    characteristics = []
     if benchmark["include"]:
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             for anc_mode in benchmark["ancillary_mode"]:
@@ -200,7 +200,6 @@ def generate_benchmark(benchmark):
                     res = generate_circuits_on_all_levels(*res_qc_creation)
                     if len(res) == 0:
                         break
-                    characteristics.extend(res)
 
         elif benchmark["name"] == "shor":
             for choice in benchmark["instances"]:
@@ -210,7 +209,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "hhl":
             for i in range(benchmark["min_index"], benchmark["max_index"]):
@@ -220,7 +218,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "routing":
             for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
@@ -230,7 +227,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "tsp":
             for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
@@ -240,7 +236,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "groundstate":
             for choice in benchmark["instances"]:
@@ -250,7 +245,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "excitedstate":
             for choice in benchmark["instances"]:
@@ -260,7 +254,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "pricingcall":
             for nodes in range(
@@ -272,7 +265,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
         elif benchmark["name"] == "pricingput":
             for nodes in range(
@@ -284,7 +276,6 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
         else:
             for n in range(
                 benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]
@@ -300,60 +291,34 @@ def generate_benchmark(benchmark):
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if len(res) == 0:
                     break
-                characteristics.extend(res)
 
-    return characteristics
+    return
 
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
-    characteristics = []
-    # filename_algo, depth = generate_algo_level_circuit(qc, n)
-    # characteristics.append([filename_algo, n, depth])
 
     res_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
-
-    if res_t_indep:
-        characteristics.extend(res_t_indep)
-    else:
-        return characteristics
+    if not res_t_indep:
+        return False
 
     res_t_dep = generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
-
-    if res_t_dep:
-        characteristics.extend(res_t_dep)
-    else:
-        return characteristics
-
-    return characteristics
-
-
-def generate_algo_level_circuit(
-    qc: QuantumCircuit,
-    num_qubits: int,
-):
-    characteristics = []
-    res = benchmark_generation_watcher(utils.handle_algorithm_level, [qc, num_qubits])
-    characteristics.append(res)
-
-    if res:
-        characteristics.append(res)
-        return characteristics
-    else:
+    if not res_t_dep:
         return False
+
+    return
+
 
 
 def generate_target_indep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
-    characteristics = []
 
     res = benchmark_generation_watcher(
         utils.get_indep_level,
         [qc, num_qubits, file_precheck],
     )
     if res:
-        characteristics.append(res)
-        return characteristics
+        return
     else:
         return False
 
@@ -399,42 +364,13 @@ def generate_target_dep_level_circuit(
                         gate_set_name,
                         opt_level,
                         n_actual,
-                        True,
                         file_precheck,
                     ],
                 )
-
-                if res:
-                    characteristics.append(res)
-                else:
+                if not res:
                     break
-                res = benchmark_generation_watcher(
-                    utils.get_mapped_level,
-                    [
-                        qc,
-                        gate_set,
-                        gate_set_name,
-                        opt_level,
-                        n_actual,
-                        False,
-                        file_precheck,
-                    ],
-                )
 
-                if res:
-                    characteristics.append(res)
-                else:
-                    break
-        except Exception as e:
-            print(
-                "\n Problem occured in inner loop: ",
-                qc.name,
-                num_qubits,
-                gate_set_name,
-                e,
-            )
-
-    return characteristics
+    return
 
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
@@ -576,18 +512,6 @@ def create_pricingput_qc(num_uncertainty: int):
         )
 
 
-def save_benchmark_hist(characteristics):
-    characteristics = np.array(characteristics)
-    plt.scatter(
-        x=characteristics[:, 2].astype(int), y=characteristics[:, 1].astype(int)
-    )
-    plt.yscale("log")
-    plt.title("Depth and Width of generated Benchmarks")
-    plt.xlabel("# of Qubits")
-    plt.ylabel("Circuit Depth")
-    plt.savefig("benchmark_histogram")
-
-
 def get_one_benchmark(
     benchmark_name: str,
     level: Union[str, int],
@@ -719,5 +643,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(args.file_name)
-    characteristics = create_benchmarks_from_config(args.file_name)
-    save_benchmark_hist(characteristics)
+    create_benchmarks_from_config(args.file_name)
