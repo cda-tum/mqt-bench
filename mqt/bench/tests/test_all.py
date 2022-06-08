@@ -1,4 +1,4 @@
-from mqt.bench.utils import utils
+from mqt.bench.utils import utils, qiskit_helper, tket_helper
 from mqt.bench.benchmarks import (
     ghz,
     dj,
@@ -43,39 +43,6 @@ def test_configure_begin():
     assert utils.get_qasm_output_path() == test_qasm_output_path
 
 
-@pytest.mark.skip(reason="Algo Level Errors are known when reading in existing files")
-@pytest.mark.parametrize(
-    "benchmark, num_qubits",
-    [
-        (ae, 8),
-        (ghz, 5),
-        (dj, 5),
-        (graphstate, 8),
-        (grover, 5),
-        (hhl, 2),
-        (qaoa, 5),
-        (qft, 8),
-        (qftentangled, 8),
-        (qpeexact, 8),
-        (qpeinexact, 8),
-        (qwalk, 5),
-        (vqe, 5),
-        (realamprandom, 9),
-        (su2random, 7),
-        (twolocalrandom, 8),
-        (wstate, 8),
-        (shor, 15),
-    ],
-)
-def test_quantumcircuit_algo_level(benchmark, num_qubits):
-    qc = benchmark.create_circuit(num_qubits)
-    filename_algo, depth, num_qubits = utils.handle_algorithm_level(
-        qc,
-        num_qubits,
-    )
-    assert depth > 0
-
-
 @pytest.mark.parametrize(
     "benchmark, input_value, scalable",
     [
@@ -112,14 +79,10 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, file_precheck=False
-    )
-    assert depth > 0
-    filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, file_precheck=True
-    )
-    assert depth > 0
+    num_qubits = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert num_qubits > 0
+    num_qubits = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
+    assert num_qubits == 0
 
 
 @pytest.mark.parametrize(
@@ -158,87 +121,58 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    ibm_native_gates = ["id", "rz", "sx", "x", "cx", "reset"]
-    rigetti_native_gates = utils.get_rigetti_native_gates()
-    gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
-    for (gate_set, gate_set_name) in gate_sets:
+
+    compilation_paths = [
+        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
+        ("rigetti", [("aspen_m1", 80)]),
+        ("ionq", [("ionq11", 11)]),
+        ("oqc", [("lucy", 8)]),
+    ]
+    for gate_set_name, devices in compilation_paths:
         opt_level = 1
-        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
+        n_actual = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
+            qc.num_qubits,
             opt_level,
-            input_value,
             file_precheck=False,
         )
-        assert depth_native > 0
-        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
+        assert n_actual > 0
+        n_actual = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
+            qc.num_qubits,
             opt_level,
-            input_value,
             file_precheck=True,
         )
-        assert depth_native > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
-            qc,
-            gate_set,
-            gate_set_name,
-            opt_level,
-            n_actual,
-            False,
-            file_precheck=False,
-        )
-        assert depth_mapped > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
-            qc,
-            gate_set,
-            gate_set_name,
-            opt_level,
-            n_actual,
-            False,
-            file_precheck=True,
-        )
-        assert depth_mapped > 0
+        assert n_actual == 0
+        if gate_set_name != "ionq":
+            for device_name, max_qubits in devices:
+                # Creating the circuit on target-dependent: mapped level qiskit
+                if max_qubits >= qc.num_qubits:
+                    num_qubits = qiskit_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        n_actual,
+                        device_name,
+                        opt_level,
+                        file_precheck=False,
+                    )
+                    assert num_qubits > 0
+                    num_qubits = qiskit_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        n_actual,
+                        device_name,
+                        opt_level,
+                        file_precheck=True,
+                    )
+                    assert num_qubits == 0
 
 
 def test_openqasm_gates():
     openqasm_gates = utils.get_openqasm_gates()
     assert len(openqasm_gates) == 42
-
-
-@pytest.mark.parametrize(
-    "gate_set_name, smallest_fitting_arch, num_qubits, c_map_found_result",
-    [
-        ("ibm", False, 120, True),
-        ("ibm", False, 130, False),
-        ("ibm", True, 4, True),
-        ("ibm", True, 6, True),
-        ("ibm", True, 15, True),
-        ("ibm", True, 27, True),
-        ("ibm", True, 65, True),
-        ("ibm", True, 125, True),
-        ("rigetti", False, 79, True),
-        ("rigetti", False, 82, False),
-        ("rigetti", True, 7, True),
-        ("rigetti", True, 15, True),
-        ("rigetti", True, 31, True),
-        ("rigetti", True, 39, True),
-        ("rigetti", True, 79, True),
-        ("google", True, 20, False),
-    ],
-)
-def test_cmap_selection(
-    gate_set_name: str,
-    smallest_fitting_arch: bool,
-    num_qubits: int,
-    c_map_found_result: bool,
-):
-    c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
-        gate_set_name, smallest_fitting_arch, num_qubits
-    )
-    assert c_map_found == c_map_found_result
 
 
 @pytest.mark.parametrize("num_circles", [2, 3, 4, 5, 10])

@@ -177,4 +177,5 @@ def get_mapped_level(
             circuit_to_qasm_str(qc_tket), filename_mapped, native_gate_set_rebase
         )
 
+        return qc_tket.n_qubits
     return
