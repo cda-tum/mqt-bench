@@ -1,4 +1,5 @@
 from pytket.passes import auto_rebase_pass
+
 from pytket import OpType
 from pytket.passes import (
     PlacementPass,
@@ -10,8 +11,11 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str, circuit_to_qasm
 from pytket import architecture, circuit
 
-import utils
+from utils import utils
 from os import path
+from pytket.extensions.qiskit import qiskit_to_tk
+
+from qiskit import transpile
 
 
 def get_rebase(gate_set_name: str):
@@ -56,26 +60,71 @@ def get_indep_level(
     num_qubits: int,
     file_precheck: bool,
 ):
-    pass
+    qasm_output_folder = utils.get_qasm_output_path()
+
+    filename_native = qc.name + "_indep_tket_" + str(num_qubits)
+
+    if not (
+        path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
+    ):
+        print(
+            qasm_output_folder
+            + filename_native
+            + ".qasm"
+            + " does not already exists and is newly created"
+        )
+        openqasm_gates = utils.get_openqasm_gates()
+        target_independent_qiskit = transpile(
+            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
+        )
+        qc_tket = qiskit_to_tk(target_independent_qiskit)
+        FullPeepholeOptimise().apply(qc_tket)
+        utils.save_as_qasm(circuit_to_qasm_str(qc_tket), filename_native)
 
 
 def get_native_gates_level(
     qc: circuit,
-    gate_set: list,
     gate_set_name: str,
-    opt_level: int,
     num_qubits: int,
     file_precheck: bool,
 ):
-    pass
+    qasm_output_folder = utils.get_qasm_output_path()
+
+    filename_native = (
+        qc.name + "_nativegates_" + gate_set_name + "_tket_" + str(num_qubits)
+    )
+    if not (
+        path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
+    ):
+        print(
+            qasm_output_folder
+            + filename_native
+            + ".qasm"
+            + " does not already exists and is newly created"
+        )
+        openqasm_gates = utils.get_openqasm_gates()
+        target_independent_qiskit = transpile(
+            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
+        )
+        qc_tket = qiskit_to_tk(target_independent_qiskit)
+        native_gate_set_rebase = get_rebase(gate_set_name)
+        native_gate_set_rebase.apply(qc_tket)
+        FullPeepholeOptimise().apply(qc_tket)
+        native_gate_set_rebase.apply(qc_tket)
+        utils.save_as_qasm(
+            circuit_to_qasm_str(qc_tket), filename_native, native_gate_set_rebase
+        )
+
+        return qc_tket.n_qubits
+    return True
 
 
 def get_mapped_level(
     qc: circuit,
     gate_set_name: str,
     num_qubits: int,
-    lineplacement: bool,
     device: str,
+    lineplacement: bool,
     file_precheck: bool,
 ):
 
@@ -107,20 +156,25 @@ def get_mapped_level(
             + ".qasm"
             + " does not already exists and is newly created"
         )
+        openqasm_gates = utils.get_openqasm_gates()
+        target_independent_qiskit = transpile(
+            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
+        )
+        qc_tket = qiskit_to_tk(target_independent_qiskit)
+
         native_gate_set_rebase = get_rebase(gate_set_name)
         arch = architecture.Architecture(cmap)
 
-        native_gate_set_rebase.apply(qc)
-        FullPeepholeOptimise().apply(qc)
-        if gate_set_name != "ionq":
-            if lineplacement:
-                PlacementPass(LinePlacement(arch)).apply(qc)
-            else:
-                PlacementPass(GraphPlacement(arch)).apply(qc)
-            RoutingPass(arch).apply(qc)
-        native_gate_set_rebase.apply(qc)
+        native_gate_set_rebase.apply(qc_tket)
+        FullPeepholeOptimise().apply(qc_tket)
+        if lineplacement:
+            PlacementPass(LinePlacement(arch)).apply(qc_tket)
+        else:
+            PlacementPass(GraphPlacement(arch)).apply(qc_tket)
+        RoutingPass(arch).apply(qc_tket)
+        native_gate_set_rebase.apply(qc_tket)
         utils.save_as_qasm(
-            circuit_to_qasm_str(qc), filename_mapped, native_gate_set_rebase
+            circuit_to_qasm_str(qc_tket), filename_mapped, native_gate_set_rebase
         )
 
-    return qc
+    return

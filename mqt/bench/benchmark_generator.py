@@ -10,7 +10,6 @@ import numpy as np
 from typing import Union
 from os import path, mkdir, remove
 
-from mqt.bench.utils import utils
 from mqt.bench.benchmarks import (
     shor,
     hhl,
@@ -22,9 +21,8 @@ from mqt.bench.benchmarks.qiskit_application_finance import (
 )
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
 
-from pytket.extensions.qiskit import qiskit_to_tk
 
-import qiskit_helper
+from utils import qiskit_helper, tket_helper, utils
 
 
 def init_module_paths():
@@ -88,75 +86,71 @@ def benchmark_generation_watcher(func, args):
 
     signal.alarm(timeout)
     try:
-        filename, depth, num_qubits = func(*args)
+        res = func(*args)
     except Exception as e:
         # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-        print("Exception: ", e, func, args[1:])
-        if func == utils.get_indep_level:
-            qc = args[0]
-            num_qubits = args[1]
-            filename_indep = qc.name + "_t-indep_" + str(num_qubits)
-            file_path = qasm_output_folder + filename_indep + ".qasm"
-
-            if path.isfile(file_path):
-                remove(file_path)
-                # print("removed file: ", path)
-
-        elif func == utils.get_native_gates_level:
-            qc = args[0]
-            gate_set_name = args[2]
-            opt_level = args[3]
-            num_qubits = args[4]
-
-            filename_nativegates = (
-                qc.name
-                + "_nativegates_"
-                + gate_set_name
-                + "_opt"
-                + str(opt_level)
-                + "_"
-                + str(num_qubits)
-            )
-
-            file_path = qasm_output_folder + filename_nativegates + ".qasm"
-            if path.isfile(file_path):
-                remove(file_path)
-
-        elif func == utils.get_mapped_level:
-            qc = args[0]
-            gate_set_name_mapped = args[2]
-            opt_level = args[3]
-            num_qubits = args[4]
-            smallest_arch = args[5]
-            if smallest_arch:
-                gate_set_name_mapped += "-s"
-            else:
-                gate_set_name_mapped += "-b"
-
-            filename_mapped = (
-                qc.name
-                + "_mapped_"
-                + gate_set_name_mapped
-                + "_opt"
-                + str(opt_level)
-                + "_"
-                + str(num_qubits)
-            )
-
-            file_path = qasm_output_folder + filename_mapped + ".qasm"
-            if path.isfile(file_path):
-                remove(file_path)
+        print("Exception: ", e, func, args[0].name, args[1:])
+        # if func == qiskit_helper.get_indep_level or func == tket_helper.get_indep_level:
+        #     qc = args[0]
+        #     num_qubits = args[1]
+        #     filename_indep = qc.name + "_t-indep_" + str(num_qubits)
+        #     file_path = qasm_output_folder + filename_indep + ".qasm"
+        #
+        #     if path.isfile(file_path):
+        #         remove(file_path)
+        #         # print("removed file: ", path)
+        #
+        # elif func == qiskit_helper.get_native_gates_level or func == tket_helper.get_native_gates_level:
+        #     qc = args[0]
+        #     gate_set_name = args[2]
+        #     opt_level = args[3]
+        #     num_qubits = args[4]
+        #
+        #     filename_nativegates = (
+        #         qc.name
+        #         + "_nativegates_"
+        #         + gate_set_name
+        #         + "_opt"
+        #         + str(opt_level)
+        #         + "_"
+        #         + str(num_qubits)
+        #     )
+        #
+        #     file_path = qasm_output_folder + filename_nativegates + ".qasm"
+        #     if path.isfile(file_path):
+        #         remove(file_path)
+        #
+        # elif func == qiskit_helper.get_mapped_level or func == tket_helper.get_mapped_level:
+        #     qc = args[0]
+        #     gate_set_name_mapped = args[2]
+        #     opt_level = args[3]
+        #     num_qubits = args[4]
+        #     smallest_arch = args[5]
+        #     if smallest_arch:
+        #         gate_set_name_mapped += "-s"
+        #     else:
+        #         gate_set_name_mapped += "-b"
+        #
+        #     filename_mapped = (
+        #         qc.name
+        #         + "_mapped_"
+        #         + gate_set_name_mapped
+        #         + "_opt"
+        #         + str(opt_level)
+        #         + "_"
+        #         + str(num_qubits)
+        #     )
+        #
+        #     file_path = qasm_output_folder + filename_mapped + ".qasm"
+        #     if path.isfile(file_path):
+        #         remove(file_path)
 
         return False
     else:
         # Reset the alarm
         signal.alarm(0)
 
-    if depth > max_depth:
-        print("Depth of generated circuit is too large: ", depth)
-        return False
-
-    return filename, depth, num_qubits
+    return res
 
 
 def qc_creation_watcher(func, args):
@@ -200,7 +194,7 @@ def generate_benchmark(benchmark):
                     if not res_qc_creation:
                         break
                     res = generate_circuits_on_all_levels(*res_qc_creation)
-                    if len(res) == 0:
+                    if res == 0:
                         break
 
         elif benchmark["name"] == "shor":
@@ -209,7 +203,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "hhl":
@@ -218,7 +212,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "routing":
@@ -227,7 +221,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "tsp":
@@ -236,7 +230,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "groundstate":
@@ -245,7 +239,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "excitedstate":
@@ -254,7 +248,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "pricingcall":
@@ -265,7 +259,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
 
         elif benchmark["name"] == "pricingput":
@@ -276,7 +270,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
                     break
         else:
             for n in range(
@@ -291,7 +285,8 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if len(res) == 0:
+                if res == 0:
+                    print("####### FAIL")
                     break
 
     return
@@ -299,29 +294,43 @@ def generate_benchmark(benchmark):
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 
-    res_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
-    if not res_t_indep:
-        return False
+    num_generated_circuits_t_indep = generate_target_indep_level_circuit(
+        qc, num_qubits, file_precheck
+    )
+    num_generated_circuits_t_dep = generate_target_dep_level_circuit(
+        qc, num_qubits, file_precheck
+    )
 
-    res_t_dep = generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
-    if not res_t_dep:
-        return False
+    print(num_generated_circuits_t_indep, num_generated_circuits_t_dep)
 
-    return
+    return num_generated_circuits_t_indep + num_generated_circuits_t_dep
 
 
 def generate_target_indep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
 
-    res = benchmark_generation_watcher(
-        utils.get_indep_level,
-        [qc, num_qubits, file_precheck],
-    )
-    if res:
-        return
-    else:
-        return False
+    num_generated_circuits = 0
+    # res = benchmark_generation_watcher(
+    #     qiskit_helper.get_indep_level,
+    #     [qc, num_qubits, file_precheck],
+    # )
+    res = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
+    if not res:
+        return num_generated_circuits
+
+    num_generated_circuits += 1
+
+    # res = benchmark_generation_watcher(
+    #     tket_helper.get_indep_level,
+    #     [qc, num_qubits, file_precheck],
+    # )
+    res = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
+    if not res:
+        return num_generated_circuits
+
+    num_generated_circuits += 1
+    return num_generated_circuits
 
 
 def generate_target_dep_level_circuit(
@@ -334,8 +343,8 @@ def generate_target_dep_level_circuit(
         ("ionq", [("ionq11", 11)]),
         ("oqc", [("lucy", 8)]),
     ]
-
-    for gate_set, devices in compilation_paths:
+    num_generated_benchmarks = 0
+    for gate_set_name, devices in compilation_paths:
         # Creating the circuit on both target-dependent levels for qiskit
         for opt_level in range(4):
             res = benchmark_generation_watcher(
@@ -343,94 +352,66 @@ def generate_target_dep_level_circuit(
                 [
                     qc,
                     gate_set_name,
-                    opt_level,
                     num_qubits,
+                    opt_level,
                     file_precheck,
                 ],
             )
             if not res:
                 break
-            n_actual = res[2]
+            num_generated_benchmarks += 1
+            n_actual = res
 
-            for device, max_qubits in devices:
-                # Creating the circuit on target-dependent: mapped level for both mapping schemes
-                if max_qubits >= qc.num_qubits:
-                    res = benchmark_generation_watcher(
-                        qiskit_helper.get_mapped_level,
-                        [
-                            qc,
-                            gate_set_name,
-                            device_name,
-                            opt_level,
-                            n_actual,
-                            file_precheck,
-                        ],
-                    )
-                    if not res:
-                        print(
-                            "Mapped circuit failed for: ",
-                            qc,
-                            gate_set_name,
-                            device_name,
-                            opt_level,
-                            n_actual,
-                            file_precheck,
+            if gate_set_name != "ionq":
+                for device_name, max_qubits in devices:
+                    # Creating the circuit on target-dependent: mapped level qiskit
+                    if max_qubits >= qc.num_qubits:
+                        res = benchmark_generation_watcher(
+                            qiskit_helper.get_mapped_level,
+                            [
+                                qc,
+                                gate_set_name,
+                                n_actual,
+                                device_name,
+                                opt_level,
+                                file_precheck,
+                            ],
                         )
+
+                        num_generated_benchmarks += 1
 
         # Creating the circuit on both target-dependent levels for tket
 
-        qc_tket = qiskit_to_tk(qc)
         res = benchmark_generation_watcher(
             tket_helper.get_native_gates_level,
             [
-                qc_tket.copy(),
-                gate_set,
+                qc,
                 gate_set_name,
-                opt_level,
                 num_qubits,
                 file_precheck,
             ],
         )
-        if not res:
-            print(
-                "Mapped circuit failed for: ",
-                qc_tket.copy(),
-                gate_set,
-                gate_set_name,
-                opt_level,
-                num_qubits,
-                file_precheck,
-            )
-        if not res:
-            break
-        n_actual = res[2]
+        num_generated_benchmarks += 1
+        n_actual = res
 
-        for device, max_qubits in devices:
-            if max_qubits >= qc.num_qubits:
-                for lineplacement in set(False, True):
-                    # Creating the circuit on target-dependent: mapped level for both mapping schemes
-                    res = benchmark_generation_watcher(
-                        tket_helper.get_mapped_level,
-                        [
-                            qc_tket.copy(),
-                            gate_set_name,
-                            device_name,
-                            lineplacement,
-                            n_actual,
-                            file_precheck,
-                        ],
-                    )
-                    if not res:
-                        print(
-                            "Mapped circuit failed for: ",
-                            qc_tket.copy(),
-                            gate_set,
-                            gate_set_name,
-                            opt_level,
-                            num_qubits,
-                            file_precheck,
+        if gate_set_name != "ionq":
+            for device_name, max_qubits in devices:
+                if max_qubits >= qc.num_qubits:
+                    for lineplacement in (False, True):
+                        # Creating the circuit on target-dependent: mapped level tket
+                        res = benchmark_generation_watcher(
+                            tket_helper.get_mapped_level,
+                            [
+                                qc,
+                                gate_set_name,
+                                n_actual,
+                                device_name,
+                                lineplacement,
+                                file_precheck,
+                            ],
                         )
-    return
+                        num_generated_benchmarks += 1
+    return num_generated_benchmarks
 
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
@@ -572,131 +553,131 @@ def create_pricingput_qc(num_uncertainty: int):
         )
 
 
-# def get_one_benchmark(
-#     benchmark_name: str,
-#     level: Union[str, int],
-#     circuit_size: int = None,
-#     benchmark_instance_name: str = None,
-#     opt_level: int = 0,
-#     gate_set_name: str = "ibm",
-#     smallest_fitting_arch: bool = True,
-# ):
-#     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
-#
-#     Keyword arguments:
-#     benchmark_name -- name of the to be generated benchmark
-#     level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
-#     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
-#     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
-#     0 corresponds to "alg" level and 3 to "mapped" level
-#     opt_level -- Level of optimization (relevant to "gates" and "mapped" levels)
-#     gate_set_name -- Either "ibm" or "rigetti"
-#     smallest_fitting_arch -- True->Smallest architecture is selected, False->Biggest one is selected (ibm: 127 qubits,
-#     rigetti: 80 qubits)
-#
-#
-#     Return values:
-#     QuantumCircuit -- Representing the benchmark with the selected options
-#     """
-#     init_module_paths()
-#     ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
-#     rigetti_native_gates = utils.get_rigetti_native_gates()
-#
-#     if gate_set_name and "ibm" in gate_set_name:
-#         gate_set = ibm_native_gates
-#     elif gate_set_name and "rigetti" in gate_set_name:
-#         gate_set = rigetti_native_gates
-#     else:
-#         gate_set = None
-#
-#     if "grover" in benchmark_name or "qwalk" in benchmark_name:
-#         if "noancilla" in benchmark_name:
-#             anc_mode = "noancilla"
-#         elif "v-chain" in benchmark_name:
-#             anc_mode = "v-chain"
-#
-#         short_name = benchmark_name.split("-")[0]
-#         lib = importlib.import_module(benchmarks_module_paths_dict[short_name])
-#         qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
-#         qc.name = qc.name + "-" + anc_mode
-#
-#     elif benchmark_name == "shor":
-#         instances = {
-#             "xsmall": [9, 4],  # 18 qubits
-#             "small": [15, 4],  # 18 qubits
-#             "medium": [821, 4],  # 42 qubits
-#             "large": [11777, 4],  # 58 qubits
-#             "xlarge": [201209, 4],  # 74 qubits
-#         }
-#
-#         qc = shor.create_circuit(*instances[benchmark_instance_name])
-#
-#     elif benchmark_name == "hhl":
-#         qc = hhl.create_circuit(circuit_size)
-#
-#     elif benchmark_name == "routing":
-#         qc = routing.create_circuit(circuit_size)
-#
-#     elif benchmark_name == "tsp":
-#         qc = tsp.create_circuit(circuit_size)
-#
-#     elif benchmark_name == "groundstate":
-#         molecule = utils.get_molecule(benchmark_instance_name)
-#         qc = groundstate.create_circuit(molecule)
-#
-#     elif benchmark_name == "excitedstate":
-#         molecule = utils.get_molecule(benchmark_instance_name)
-#         qc = excitedstate.create_circuit(molecule)
-#
-#     elif benchmark_name == "pricingcall":
-#         qc = pricingcall.create_circuit(circuit_size)
-#
-#     elif benchmark_name == "pricingput":
-#         qc = pricingput.create_circuit(circuit_size)
-#
-#     else:
-#         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
-#         qc = lib.create_circuit(circuit_size)
-#
-#     if level == "alg" or level == 0:
-#         return qc
-#
-#     elif level == "indep" or level == 1:
-#
-#         qc_indep = transpile(
-#             qc,
-#             basis_gates=utils.get_openqasm_gates(),
-#             optimization_level=1,
-#             seed_transpiler=10,
-#         )
-#         return qc_indep
-#
-#     elif level == "nativegates" or level == 2:
-#         qc_gates = transpile(
-#             qc,
-#             basis_gates=gate_set,
-#             optimization_level=opt_level,
-#             seed_transpiler=10,
-#         )
-#         return qc_gates
-#
-#     elif level == "mapped" or level == 3:
-#         c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
-#             gate_set_name, smallest_fitting_arch, circuit_size
-#         )
-#         if c_map_found:
-#             qc_mapped = transpile(
-#                 qc,
-#                 basis_gates=gate_set,
-#                 optimization_level=opt_level,
-#                 coupling_map=c_map,
-#                 seed_transpiler=10,
-#             )
-#             return qc_mapped
-#         else:
-#             return print("No Hardware Architecture available for that config.")
-#     else:
-#         return print("Level specification was wrong.")
+def get_one_benchmark(
+    benchmark_name: str,
+    level: Union[str, int],
+    circuit_size: int = None,
+    benchmark_instance_name: str = None,
+    opt_level: int = 0,
+    gate_set_name: str = "ibm",
+    smallest_fitting_arch: bool = True,
+):
+    """Returns one benchmark as a Qiskit::QuantumCircuit Object.
+
+    Keyword arguments:
+    benchmark_name -- name of the to be generated benchmark
+    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
+    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
+    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
+    0 corresponds to "alg" level and 3 to "mapped" level
+    opt_level -- Level of optimization (relevant to "gates" and "mapped" levels)
+    gate_set_name -- Either "ibm" or "rigetti"
+    smallest_fitting_arch -- True->Smallest architecture is selected, False->Biggest one is selected (ibm: 127 qubits,
+    rigetti: 80 qubits)
+
+
+    Return values:
+    QuantumCircuit -- Representing the benchmark with the selected options
+    """
+    init_module_paths()
+    ibm_native_gates = utils.FakeMontreal().configuration().basis_gates
+    rigetti_native_gates = utils.get_rigetti_native_gates()
+
+    if gate_set_name and "ibm" in gate_set_name:
+        gate_set = ibm_native_gates
+    elif gate_set_name and "rigetti" in gate_set_name:
+        gate_set = rigetti_native_gates
+    else:
+        gate_set = None
+
+    if "grover" in benchmark_name or "qwalk" in benchmark_name:
+        if "noancilla" in benchmark_name:
+            anc_mode = "noancilla"
+        elif "v-chain" in benchmark_name:
+            anc_mode = "v-chain"
+
+        short_name = benchmark_name.split("-")[0]
+        lib = importlib.import_module(benchmarks_module_paths_dict[short_name])
+        qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
+        qc.name = qc.name + "-" + anc_mode
+
+    elif benchmark_name == "shor":
+        instances = {
+            "xsmall": [9, 4],  # 18 qubits
+            "small": [15, 4],  # 18 qubits
+            "medium": [821, 4],  # 42 qubits
+            "large": [11777, 4],  # 58 qubits
+            "xlarge": [201209, 4],  # 74 qubits
+        }
+
+        qc = shor.create_circuit(*instances[benchmark_instance_name])
+
+    elif benchmark_name == "hhl":
+        qc = hhl.create_circuit(circuit_size)
+
+    elif benchmark_name == "routing":
+        qc = routing.create_circuit(circuit_size)
+
+    elif benchmark_name == "tsp":
+        qc = tsp.create_circuit(circuit_size)
+
+    elif benchmark_name == "groundstate":
+        molecule = utils.get_molecule(benchmark_instance_name)
+        qc = groundstate.create_circuit(molecule)
+
+    elif benchmark_name == "excitedstate":
+        molecule = utils.get_molecule(benchmark_instance_name)
+        qc = excitedstate.create_circuit(molecule)
+
+    elif benchmark_name == "pricingcall":
+        qc = pricingcall.create_circuit(circuit_size)
+
+    elif benchmark_name == "pricingput":
+        qc = pricingput.create_circuit(circuit_size)
+
+    else:
+        lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
+        qc = lib.create_circuit(circuit_size)
+
+    if level == "alg" or level == 0:
+        return qc
+
+    elif level == "indep" or level == 1:
+
+        qc_indep = transpile(
+            qc,
+            basis_gates=utils.get_openqasm_gates(),
+            optimization_level=1,
+            seed_transpiler=10,
+        )
+        return qc_indep
+
+    elif level == "nativegates" or level == 2:
+        qc_gates = transpile(
+            qc,
+            basis_gates=gate_set,
+            optimization_level=opt_level,
+            seed_transpiler=10,
+        )
+        return qc_gates
+
+    elif level == "mapped" or level == 3:
+        c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
+            gate_set_name, smallest_fitting_arch, circuit_size
+        )
+        if c_map_found:
+            qc_mapped = transpile(
+                qc,
+                basis_gates=gate_set,
+                optimization_level=opt_level,
+                coupling_map=c_map,
+                seed_transpiler=10,
+            )
+            return qc_mapped
+        else:
+            return print("No Hardware Architecture available for that config.")
+    else:
+        return print("Level specification was wrong.")
 
 
 if __name__ == "__main__":

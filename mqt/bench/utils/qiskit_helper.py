@@ -3,7 +3,7 @@ from qiskit.compiler import transpile
 
 from os import path
 
-import utils
+from utils import utils
 
 
 def get_native_gates(gate_set_name: str):
@@ -55,7 +55,7 @@ def get_indep_level(
     num_qubits -- number of qubits of generated circuit
     """
 
-    filename_indep = qc.name + "_indep_" + str(num_qubits)
+    filename_indep = qc.name + "_indep_qiskit_" + str(num_qubits)
     qasm_output_folder = utils.get_qasm_output_path()
     filepath = qasm_output_folder + filename_indep + ".qasm"
     if not (path.isfile(filepath) and file_precheck):
@@ -64,16 +64,16 @@ def get_indep_level(
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
         )
-        utils.save_as_qasm(target_independent, filename_indep)
+        utils.save_as_qasm(target_independent.qasm(), filename_indep)
 
-        return
+        return 1
 
 
 def get_native_gates_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    opt_level: int,
     num_qubits: int,
+    opt_level: int,
     file_precheck: bool,
 ):
     """Handles the creation of the benchmark on the target-dependent native gates level.
@@ -90,7 +90,7 @@ def get_native_gates_level(
         qc.name
         + "_nativegates_"
         + gate_set_name
-        + "_opt"
+        + "_qiskit_opt"
         + str(opt_level)
         + "_"
         + str(num_qubits)
@@ -115,23 +115,26 @@ def get_native_gates_level(
             qc.name
             + "_nativegates_"
             + gate_set_name
-            + "_opt"
+            + "_qiskit_opt"
             + str(opt_level)
             + "_"
             + str(n_actual)
         )
         utils.save_as_qasm(
-            compiled_without_architecture, filename_nativegates, gate_set, opt_level
+            compiled_without_architecture.qasm(),
+            filename_nativegates,
+            gate_set,
+            opt_level,
         )
-        return
+        return qc.num_qubits
 
 
 def get_mapped_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    opt_level: int,
     num_qubits: int,
-    smallest_fitting_arch: bool,
+    device_name: str,
+    opt_level: int,
     file_precheck: bool,
 ):
     """Handles the creation of the benchmark on the target-dependent mapped level.
@@ -152,73 +155,38 @@ def get_mapped_level(
     """
 
     gate_set = get_native_gates(gate_set_name)
-    c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
-        gate_set_name, smallest_fitting_arch, num_qubits
-    )
+    c_map = utils.get_cmap_from_devicename(device_name)
 
-    if c_map_found:
-        filename_mapped = (
-            qc.name
-            + "_mapped_"
-            + gate_set_name_mapped
-            + "_opt"
-            + str(opt_level)
-            + "_"
-            + str(num_qubits)
+    filename_mapped = (
+        qc.name
+        + "_mapped_"
+        + device_name
+        + "_"
+        + gate_set_name
+        + "_qiskit_opt"
+        + str(opt_level)
+        + "_"
+        + str(num_qubits)
+    )
+    qasm_output_folder = utils.get_qasm_output_path()
+    if not (
+        path.isfile(qasm_output_folder + filename_mapped + ".qasm") and file_precheck
+    ):
+        print(
+            qasm_output_folder
+            + filename_mapped
+            + ".qasm"
+            + " does not already exists and is newly created"
         )
-        qasm_output_folder = utils.get_qasm_output_path()
-        if not (
-            path.isfile(qasm_output_folder + filename_mapped + ".qasm")
-            and file_precheck
-        ):
-            print(
-                qasm_output_folder
-                + filename_mapped
-                + ".qasm"
-                + " does not already exists and is newly created"
-            )
-            compiled_with_architecture = utils.get_compiled_circuit_with_gateset(
-                qc=qc, opt_level=opt_level, basis_gates=gate_set, c_map=c_map
-            )
-            utils.save_as_qasm(
-                compiled_with_architecture,
-                filename_mapped,
-                gate_set,
-                opt_level,
-                True,
-                c_map,
-                gate_set_name_mapped + "-" + backend_name,
-            )
+        compiled_with_architecture = transpile(
+            qc,
+            optimization_level=opt_level,
+            basis_gates=gate_set,
+            coupling_map=c_map,
+            seed_transpiler=10,
+        )
+        utils.save_as_qasm(
+            compiled_with_architecture.qasm(), filename_mapped, gate_set, True, c_map
+        )
 
     return
-
-
-def get_molecule(benchmark_instance_name: str):
-    """Returns a Molecule object depending on the parameter value."""
-    try:
-        from qiskit_nature.drivers import Molecule
-    except:
-        print("Please install qiskit_nature.")
-        return None
-    m_1 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_2 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_3 = Molecule(
-        geometry=[
-            ["O", [0.0, 0.0, 0.0]],
-            ["H", [0.586, 0.757, 0.0]],
-            ["H", [0.586, -0.757, 0.0]],
-        ],
-        charge=0,
-        multiplicity=1,
-    )
-    instances = {"small": m_1, "medium": m_2, "large": m_3}
-
-    return instances[benchmark_instance_name]
