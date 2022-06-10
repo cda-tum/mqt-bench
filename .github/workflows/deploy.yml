@@ -19,6 +19,8 @@ jobs:
           patterns: "mqt"
       - uses: actions/setup-python@v4
         name: Install Python
+        with:
+          python-version: '3.9'
       - name: Install dependencies
         run: python -m pip install build
       - name: Build wheel
@@ -38,6 +40,8 @@ jobs:
           patterns: "mqt"
       - uses: actions/setup-python@v4
         name: Install Python
+        with:
+          python-version: '3.9'
       - name: Install dependencies
         run: python -m pip install build
       - name: Build sdist

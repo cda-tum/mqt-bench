@@ -10,5 +10,7 @@ jobs:
         with:
           patterns: "mqt"
       - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
       - name: Black
         uses: psf/black@stable
