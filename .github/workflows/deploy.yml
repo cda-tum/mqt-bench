@@ -17,7 +17,7 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: "mqt"
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         name: Install Python
       - name: Install dependencies
         run: python -m pip install build
@@ -36,7 +36,7 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: "mqt"
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         name: Install Python
       - name: Install dependencies
         run: python -m pip install build

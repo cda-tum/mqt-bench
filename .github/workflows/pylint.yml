@@ -9,6 +9,6 @@ jobs:
       - uses: snow-actions/sparse-checkout@v1.1.0
         with:
           patterns: "mqt"
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
       - name: Black
         uses: psf/black@stable
