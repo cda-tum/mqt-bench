@@ -28,7 +28,7 @@ setup(
     keywords="mqt quantum benchmarking performance testing",
     install_requires=[
         "qiskit[visualization]==0.35.0",
-        "pandas==1.3.5",
+        "pandas==1.4.2",
         "flask==2.1.2",
         "networkx==2.8.3",
         "pytest==7.1.2",
