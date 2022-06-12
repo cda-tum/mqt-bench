@@ -31,7 +31,7 @@ setup(
         "pandas==1.3.5",
         "flask==2.1.2",
         "networkx==2.8.3",
-        "pytest==7.1.1",
+        "pytest==7.1.2",
     ],
     extras_require={
         "all": [
