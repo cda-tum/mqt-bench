@@ -37,7 +37,7 @@ setup(
         "all": [
             "qiskit_finance~=0.3.1",
             "qiskit_machine-learning==0.4.0",
-            "qiskit_nature~=0.3.1",
+            "qiskit_nature>=0.3.1,<0.5.0",
             "qiskit_optimization~=0.3.2",
         ],
     },
