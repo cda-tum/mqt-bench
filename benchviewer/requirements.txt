@@ -1,5 +1,5 @@
 Flask~=2.1.2
-numpy~=1.23.0
+numpy~=1.23.1
 pandas~=1.4.2
 pytest~=7.1.2
 networkx~=2.8
