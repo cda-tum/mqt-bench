@@ -29,7 +29,7 @@ setup(
     install_requires=[
         "qiskit[visualization]==0.35.0",
         "pandas==1.3.5",
-        "flask==2.1.2",
+        "flask==2.2.0",
         "networkx==2.8.4",
         "pytest==7.1.2",
     ],
