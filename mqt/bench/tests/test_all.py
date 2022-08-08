@@ -74,15 +74,20 @@ def test_configure_begin():
 )
 def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
-        qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
+        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    num_qubits = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
-    assert num_qubits > 0
-    num_qubits = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
-    assert num_qubits == 0
+    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert res
+    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
+    assert res
+
+    res = tket_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert res
+    res = tket_helper.get_indep_level(qc, input_value, file_precheck=True)
+    assert res
 
 
 @pytest.mark.parametrize(
@@ -116,7 +121,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
 )
 def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
-        qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
+        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
@@ -130,44 +135,82 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
     ]
     for gate_set_name, devices in compilation_paths:
         opt_level = 1
-        n_actual = qiskit_helper.get_native_gates_level(
+        res = qiskit_helper.get_native_gates_level(
             qc,
             gate_set_name,
             qc.num_qubits,
             opt_level,
             file_precheck=False,
         )
-        assert n_actual > 0
-        n_actual = qiskit_helper.get_native_gates_level(
+        assert res
+        res = qiskit_helper.get_native_gates_level(
             qc,
             gate_set_name,
             qc.num_qubits,
             opt_level,
             file_precheck=True,
         )
-        assert n_actual == 0
+        assert res
         if gate_set_name != "ionq":
             for device_name, max_qubits in devices:
                 # Creating the circuit on target-dependent: mapped level qiskit
                 if max_qubits >= qc.num_qubits:
-                    num_qubits = qiskit_helper.get_mapped_level(
+                    res = qiskit_helper.get_mapped_level(
                         qc,
                         gate_set_name,
-                        n_actual,
+                        qc.num_qubits,
                         device_name,
                         opt_level,
                         file_precheck=False,
                     )
-                    assert num_qubits > 0
-                    num_qubits = qiskit_helper.get_mapped_level(
+                    assert res
+                    res = qiskit_helper.get_mapped_level(
                         qc,
                         gate_set_name,
-                        n_actual,
+                        qc.num_qubits,
                         device_name,
                         opt_level,
                         file_precheck=True,
                     )
-                    assert num_qubits == 0
+                    assert res
+
+    for gate_set_name, devices in compilation_paths:
+        res = tket_helper.get_native_gates_level(
+            qc,
+            gate_set_name,
+            qc.num_qubits,
+            file_precheck=False,
+        )
+        assert res
+        res = tket_helper.get_native_gates_level(
+            qc,
+            gate_set_name,
+            qc.num_qubits,
+            file_precheck=True,
+        )
+        assert res
+        if gate_set_name != "ionq":
+            for device_name, max_qubits in devices:
+                # Creating the circuit on target-dependent: mapped level qiskit
+                if max_qubits >= qc.num_qubits:
+                    res = tket_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        True,
+                        file_precheck=False,
+                    )
+                    assert res
+                    res = tket_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        False,
+                        file_precheck=True,
+                    )
+                    assert res
 
 
 def test_openqasm_gates():
@@ -214,6 +257,7 @@ def test_routing():
     assert qc.depth() > 0
 
 
+@pytest.mark.skip(reason="method not adjusted yet")
 @pytest.mark.parametrize(
     "benchmark_name, level, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
     [
