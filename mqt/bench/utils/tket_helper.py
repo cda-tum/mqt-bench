@@ -11,7 +11,7 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str, circuit_to_qasm
 from pytket import architecture, circuit
 
-from utils import utils
+from mqt.bench.utils import utils
 from os import path
 from pytket.extensions.qiskit import qiskit_to_tk
 
@@ -122,7 +122,6 @@ def get_native_gates_level(
         return True
 
 
-
 def get_mapped_level(
     qc: circuit,
     gate_set_name: str,
@@ -183,4 +182,3 @@ def get_mapped_level(
         return res
     else:
         return True
-

@@ -3,7 +3,7 @@ from qiskit.compiler import transpile
 
 from os import path
 
-from utils import utils
+from mqt.bench.utils import utils
 
 
 def get_native_gates(gate_set_name: str):
