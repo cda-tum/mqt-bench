@@ -262,8 +262,12 @@ def test_routing():
     [
         ("dj", "alg", 5, None, "qiskit", 1, None, None),
         ("wstate", 0, 6, None, "qiskit", 2, None, None),
+        ("wstate", 0, 6, None, "tket", True, None, None),
+        ("wstate", 0, 6, None, "tket", False, None, None),
         ("ghz", "indep", 5, None, "qiskit", 3, None, None),
         ("graphstate", 1, 4, None, "qiskit", 0, None, None),
+        ("graphstate", 1, 4, None, "tket", True, None, None),
+        ("graphstate", 1, 4, None, "tket", False, None, None),
         ("groundstate", 1, 4, "small", "qiskit", 1, None, None),
         ("dj", "nativegates", 5, None, "qiskit", 2, "ionq", None),
         ("dj", "nativegates", 5, None, "qiskit", 2, "ibm", None),
