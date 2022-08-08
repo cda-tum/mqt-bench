@@ -59,6 +59,7 @@ def get_indep_level(
     qc: circuit,
     num_qubits: int,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
     qasm_output_folder = utils.get_qasm_output_path()
 
@@ -79,8 +80,12 @@ def get_indep_level(
         )
         qc_tket = qiskit_to_tk(target_independent_qiskit)
         FullPeepholeOptimise().apply(qc_tket)
-        res = utils.save_as_qasm(circuit_to_qasm_str(qc_tket), filename_native)
-        return res
+        if return_qc:
+            return qc_tket
+        else:
+
+            res = utils.save_as_qasm(circuit_to_qasm_str(qc_tket), filename_native)
+            return res
     else:
         return True
 
@@ -90,6 +95,7 @@ def get_native_gates_level(
     gate_set_name: str,
     num_qubits: int,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
     qasm_output_folder = utils.get_qasm_output_path()
 
@@ -114,10 +120,14 @@ def get_native_gates_level(
         native_gate_set_rebase.apply(qc_tket)
         FullPeepholeOptimise().apply(qc_tket)
         native_gate_set_rebase.apply(qc_tket)
-        res = utils.save_as_qasm(
-            circuit_to_qasm_str(qc_tket), filename_native, native_gate_set_rebase
-        )
-        return res
+
+        if return_qc:
+            return qc_tket
+        else:
+            res = utils.save_as_qasm(
+                circuit_to_qasm_str(qc_tket), filename_native, native_gate_set_rebase
+            )
+            return res
     else:
         return True
 
@@ -129,6 +139,7 @@ def get_mapped_level(
     device: str,
     lineplacement: bool,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
 
     qasm_output_folder = utils.get_qasm_output_path()
@@ -176,9 +187,12 @@ def get_mapped_level(
             PlacementPass(GraphPlacement(arch)).apply(qc_tket)
         RoutingPass(arch).apply(qc_tket)
         native_gate_set_rebase.apply(qc_tket)
-        res = utils.save_as_qasm(
-            circuit_to_qasm_str(qc_tket), filename_mapped, native_gate_set_rebase
-        )
-        return res
+        if return_qc:
+            return qc_tket
+        else:
+            res = utils.save_as_qasm(
+                circuit_to_qasm_str(qc_tket), filename_mapped, native_gate_set_rebase
+            )
+            return res
     else:
         return True

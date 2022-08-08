@@ -150,6 +150,15 @@ def get_rigetti_c_map(circles: int = 4):
     return c_map_rigetti
 
 
+def get_ionq11_c_map():
+    ionq11_c_map = []
+    for i in range(0, 11):
+        for j in range(0, 11):
+            if i != j:
+                ionq11_c_map.append([i, j])
+    return ionq11_c_map
+
+
 def get_google_c_map():
     """Returns a coupling map of the hardware layout scheme used by Google's Sycamore chip."""
     c_map_google = []
@@ -376,6 +385,8 @@ def get_cmap_from_devicename(device: str):
         return get_rigetti_c_map(10)
     elif device == "lucy":
         return get_cmap_oqc_lucy()
+    elif device == "ionq11":
+        return get_ionq11_c_map()
     else:
         return False
 
