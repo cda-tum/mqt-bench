@@ -64,10 +64,11 @@ def get_indep_level(
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
         )
-        utils.save_as_qasm(target_independent.qasm(), filename_indep)
+        res = utils.save_as_qasm(target_independent.qasm(), filename_indep)
 
-        return target_independent.num_qubits
-    return 0
+        return res
+    else:
+        return True
 
 
 def get_native_gates_level(
@@ -121,14 +122,14 @@ def get_native_gates_level(
             + "_"
             + str(n_actual)
         )
-        utils.save_as_qasm(
+        res = utils.save_as_qasm(
             compiled_without_architecture.qasm(),
             filename_nativegates,
             gate_set,
-            opt_level,
         )
-        return qc.num_qubits
-    return 0
+        return res
+    else:
+        return True
 
 
 def get_mapped_level(
@@ -187,8 +188,9 @@ def get_mapped_level(
             coupling_map=c_map,
             seed_transpiler=10,
         )
-        utils.save_as_qasm(
+        res = utils.save_as_qasm(
             compiled_with_architecture.qasm(), filename_mapped, gate_set, True, c_map
         )
-        return compiled_with_architecture.num_qubits
-    return 0
+        return res
+    else:
+        return True
