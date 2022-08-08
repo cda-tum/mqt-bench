@@ -299,28 +299,26 @@ def generate_target_dep_level_circuit(
                 break
             else:
                 num_generated_benchmarks += 1
-            n_actual = res
 
-        if gate_set_name != "ionq":
-            for opt_level in range(4):
-                for device_name, max_qubits in devices:
-                    # Creating the circuit on target-dependent: mapped level qiskit
-                    if max_qubits >= qc.num_qubits:
-                        res = benchmark_generation_watcher(
-                            qiskit_helper.get_mapped_level,
-                            [
-                                qc,
-                                gate_set_name,
-                                n_actual,
-                                device_name,
-                                opt_level,
-                                file_precheck,
-                            ],
-                        )
-                        if not res:
-                            continue
-                        else:
-                            num_generated_benchmarks += 1
+        for opt_level in range(4):
+            for device_name, max_qubits in devices:
+                # Creating the circuit on target-dependent: mapped level qiskit
+                if max_qubits >= qc.num_qubits:
+                    res = benchmark_generation_watcher(
+                        qiskit_helper.get_mapped_level,
+                        [
+                            qc,
+                            gate_set_name,
+                            qc.num_qubits,
+                            device_name,
+                            opt_level,
+                            file_precheck,
+                        ],
+                    )
+                    if not res:
+                        continue
+                    else:
+                        num_generated_benchmarks += 1
 
         # Creating the circuit on both target-dependent levels for tket
 
@@ -334,28 +332,26 @@ def generate_target_dep_level_circuit(
             ],
         )
         num_generated_benchmarks += 1
-        n_actual = res
 
-        if gate_set_name != "ionq":
-            for device_name, max_qubits in devices:
-                if max_qubits >= qc.num_qubits:
-                    for lineplacement in (False, True):
-                        # Creating the circuit on target-dependent: mapped level tket
-                        res = benchmark_generation_watcher(
-                            tket_helper.get_mapped_level,
-                            [
-                                qc,
-                                gate_set_name,
-                                n_actual,
-                                device_name,
-                                lineplacement,
-                                file_precheck,
-                            ],
-                        )
-                        if not res:
-                            continue
-                        else:
-                            num_generated_benchmarks += 1
+        for device_name, max_qubits in devices:
+            if max_qubits >= qc.num_qubits:
+                for lineplacement in (False, True):
+                    # Creating the circuit on target-dependent: mapped level tket
+                    res = benchmark_generation_watcher(
+                        tket_helper.get_mapped_level,
+                        [
+                            qc,
+                            gate_set_name,
+                            qc.num_qubits,
+                            device_name,
+                            lineplacement,
+                            file_precheck,
+                        ],
+                    )
+                    if not res:
+                        continue
+                    else:
+                        num_generated_benchmarks += 1
     return num_generated_benchmarks
 
 
@@ -516,12 +512,13 @@ def get_one_benchmark(
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
     0 corresponds to "alg" level and 3 to "mapped" level
-    opt_level -- Level of optimization (relevant to "gates" and "mapped" levels)
-    gate_set_name -- Either "ibm" or "rigetti"
-
+    compiler -- "qiskit" or "tket"
+    compiler_settings -- Optimization level for if compiler is qiskit (0-3), Line Placement or Graph Placement if compiler is tket (True or False)
+    gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
+    device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
 
     Return values:
-    QuantumCircuit -- Representing the benchmark with the selected options
+    QuantumCircuit -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object
     """
     init_module_paths()
 

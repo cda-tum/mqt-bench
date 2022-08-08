@@ -154,16 +154,17 @@ def get_mapped_level(
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
-    gate_set -- set of to be used gates
-    gate_set_name -- name of this gate set
+    gate_set_name -- name of the gate set
+    num_qubits -- number of qubits
+    device_name -- -- name of the target device
     opt_level -- optimization level
     num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
+    return_qc -- flag indicating whether the actual circuit object is returned
 
     Return values:
-    filename_mapped -- the filename of the created and saved benchmark
-    depth -- circuit depth of created benchmark
-    num_qubits -- number of qubits of generated circuit
+    if return_qc == True -- quantum circuit object
+    else -- True/False indicating whether the function call was successful or not
     """
 
     gate_set = get_native_gates(gate_set_name)
