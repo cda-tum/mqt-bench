@@ -79,7 +79,10 @@ def get_indep_level(
         )
         qc_tket = qiskit_to_tk(target_independent_qiskit)
         FullPeepholeOptimise().apply(qc_tket)
-        utils.save_as_qasm(circuit_to_qasm_str(qc_tket), filename_native)
+        res = utils.save_as_qasm(circuit_to_qasm_str(qc_tket), filename_native)
+        return res
+    else:
+        return True
 
 
 def get_native_gates_level(
@@ -111,12 +114,13 @@ def get_native_gates_level(
         native_gate_set_rebase.apply(qc_tket)
         FullPeepholeOptimise().apply(qc_tket)
         native_gate_set_rebase.apply(qc_tket)
-        utils.save_as_qasm(
+        res = utils.save_as_qasm(
             circuit_to_qasm_str(qc_tket), filename_native, native_gate_set_rebase
         )
+        return res
+    else:
+        return True
 
-        return qc_tket.n_qubits
-    return True
 
 
 def get_mapped_level(
@@ -173,9 +177,10 @@ def get_mapped_level(
             PlacementPass(GraphPlacement(arch)).apply(qc_tket)
         RoutingPass(arch).apply(qc_tket)
         native_gate_set_rebase.apply(qc_tket)
-        utils.save_as_qasm(
+        res = utils.save_as_qasm(
             circuit_to_qasm_str(qc_tket), filename_mapped, native_gate_set_rebase
         )
+        return res
+    else:
+        return True
 
-        return qc_tket.n_qubits
-    return

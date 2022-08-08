@@ -90,61 +90,6 @@ def benchmark_generation_watcher(func, args):
     except Exception as e:
         # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
         print("Exception: ", e, func, args[0].name, args[1:])
-        # if func == qiskit_helper.get_indep_level or func == tket_helper.get_indep_level:
-        #     qc = args[0]
-        #     num_qubits = args[1]
-        #     filename_indep = qc.name + "_t-indep_" + str(num_qubits)
-        #     file_path = qasm_output_folder + filename_indep + ".qasm"
-        #
-        #     if path.isfile(file_path):
-        #         remove(file_path)
-        #         # print("removed file: ", path)
-        #
-        # elif func == qiskit_helper.get_native_gates_level or func == tket_helper.get_native_gates_level:
-        #     qc = args[0]
-        #     gate_set_name = args[2]
-        #     opt_level = args[3]
-        #     num_qubits = args[4]
-        #
-        #     filename_nativegates = (
-        #         qc.name
-        #         + "_nativegates_"
-        #         + gate_set_name
-        #         + "_opt"
-        #         + str(opt_level)
-        #         + "_"
-        #         + str(num_qubits)
-        #     )
-        #
-        #     file_path = qasm_output_folder + filename_nativegates + ".qasm"
-        #     if path.isfile(file_path):
-        #         remove(file_path)
-        #
-        # elif func == qiskit_helper.get_mapped_level or func == tket_helper.get_mapped_level:
-        #     qc = args[0]
-        #     gate_set_name_mapped = args[2]
-        #     opt_level = args[3]
-        #     num_qubits = args[4]
-        #     smallest_arch = args[5]
-        #     if smallest_arch:
-        #         gate_set_name_mapped += "-s"
-        #     else:
-        #         gate_set_name_mapped += "-b"
-        #
-        #     filename_mapped = (
-        #         qc.name
-        #         + "_mapped_"
-        #         + gate_set_name_mapped
-        #         + "_opt"
-        #         + str(opt_level)
-        #         + "_"
-        #         + str(num_qubits)
-        #     )
-        #
-        #     file_path = qasm_output_folder + filename_mapped + ".qasm"
-        #     if path.isfile(file_path):
-        #         remove(file_path)
-
         return False
     else:
         # Reset the alarm
@@ -194,7 +139,7 @@ def generate_benchmark(benchmark):
                     if not res_qc_creation:
                         break
                     res = generate_circuits_on_all_levels(*res_qc_creation)
-                    if res == 0:
+                    if not res:
                         break
 
         elif benchmark["name"] == "shor":
@@ -203,7 +148,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "hhl":
@@ -212,7 +157,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "routing":
@@ -221,7 +166,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "tsp":
@@ -230,7 +175,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "groundstate":
@@ -239,7 +184,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "excitedstate":
@@ -248,7 +193,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "pricingcall":
@@ -259,7 +204,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
 
         elif benchmark["name"] == "pricingput":
@@ -270,7 +215,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     break
         else:
             for n in range(
@@ -285,7 +230,7 @@ def generate_benchmark(benchmark):
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
-                if res == 0:
+                if not res:
                     print("####### FAIL")
                     break
 
@@ -311,25 +256,18 @@ def generate_target_indep_level_circuit(
 ):
 
     num_generated_circuits = 0
-    # res = benchmark_generation_watcher(
-    #     qiskit_helper.get_indep_level,
-    #     [qc, num_qubits, file_precheck],
-    # )
     res = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
     if not res:
         return num_generated_circuits
+    else:
+        num_generated_circuits += 1
 
-    num_generated_circuits += 1
-
-    # res = benchmark_generation_watcher(
-    #     tket_helper.get_indep_level,
-    #     [qc, num_qubits, file_precheck],
-    # )
     res = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
     if not res:
         return num_generated_circuits
+    else:
+        num_generated_circuits += 1
 
-    num_generated_circuits += 1
     return num_generated_circuits
 
 
@@ -359,10 +297,12 @@ def generate_target_dep_level_circuit(
             )
             if not res:
                 break
-            num_generated_benchmarks += 1
+            else:
+                num_generated_benchmarks += 1
             n_actual = res
 
-            if gate_set_name != "ionq":
+        if gate_set_name != "ionq":
+            for opt_level in range(4):
                 for device_name, max_qubits in devices:
                     # Creating the circuit on target-dependent: mapped level qiskit
                     if max_qubits >= qc.num_qubits:
@@ -377,8 +317,10 @@ def generate_target_dep_level_circuit(
                                 file_precheck,
                             ],
                         )
-
-                        num_generated_benchmarks += 1
+                        if not res:
+                            continue
+                        else:
+                            num_generated_benchmarks += 1
 
         # Creating the circuit on both target-dependent levels for tket
 
@@ -410,7 +352,10 @@ def generate_target_dep_level_circuit(
                                 file_precheck,
                             ],
                         )
-                        num_generated_benchmarks += 1
+                        if not res:
+                            continue
+                        else:
+                            num_generated_benchmarks += 1
     return num_generated_benchmarks
 
 
