@@ -1,6 +1,8 @@
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 
+from pytket import *
+
 from datetime import date
 
 import networkx as nx
@@ -340,7 +342,11 @@ def save_as_qasm(
             + "\n"
         )
         f.write("// MQT Bench version: " + "0.1.0" + "\n")
-        f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
+        if "qiskit" in filename:
+            f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
+        elif "tket" in filename:
+            f.write("// TKET version: " + str(pytket.__version__) + "\n")
+
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
         if mapped:
@@ -348,6 +354,7 @@ def save_as_qasm(
         f.write("\n")
         f.write(qc_str)
     f.close()
+    return True
 
 
 def get_cmap_oqc_lucy():
