@@ -1,6 +1,5 @@
 {
-"timeout": 300,
-"max_depth": 1000000,
+"timeout": 1,
 "save_png": false,
 "save_hist": false,
 "benchmarks": [
