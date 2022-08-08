@@ -41,6 +41,7 @@ def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -64,9 +65,12 @@ def get_indep_level(
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
         )
-        res = utils.save_as_qasm(target_independent.qasm(), filename_indep)
 
-        return res
+        if return_qc:
+            return target_independent
+        else:
+            res = utils.save_as_qasm(target_independent.qasm(), filename_indep)
+            return res
     else:
         return True
 
@@ -77,6 +81,7 @@ def get_native_gates_level(
     num_qubits: int,
     opt_level: int,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
@@ -122,12 +127,16 @@ def get_native_gates_level(
             + "_"
             + str(n_actual)
         )
-        res = utils.save_as_qasm(
-            compiled_without_architecture.qasm(),
-            filename_nativegates,
-            gate_set,
-        )
-        return res
+
+        if return_qc:
+            return compiled_without_architecture
+        else:
+            res = utils.save_as_qasm(
+                compiled_without_architecture.qasm(),
+                filename_nativegates,
+                gate_set,
+            )
+            return res
     else:
         return True
 
@@ -139,6 +148,7 @@ def get_mapped_level(
     device_name: str,
     opt_level: int,
     file_precheck: bool,
+    return_qc: bool = False,
 ):
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -148,7 +158,6 @@ def get_mapped_level(
     gate_set_name -- name of this gate set
     opt_level -- optimization level
     num_qubits -- number of qubits
-    smallest_fitting_arch -- flag indicating whether smallest fitting mapping scheme shall be used
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
 
     Return values:
@@ -188,9 +197,16 @@ def get_mapped_level(
             coupling_map=c_map,
             seed_transpiler=10,
         )
-        res = utils.save_as_qasm(
-            compiled_with_architecture.qasm(), filename_mapped, gate_set, True, c_map
-        )
-        return res
+        if return_qc:
+            return compiled_with_architecture
+        else:
+            res = utils.save_as_qasm(
+                compiled_with_architecture.qasm(),
+                filename_mapped,
+                gate_set,
+                True,
+                c_map,
+            )
+            return res
     else:
         return True

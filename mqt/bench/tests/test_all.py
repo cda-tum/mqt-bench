@@ -257,38 +257,57 @@ def test_routing():
     assert qc.depth() > 0
 
 
-@pytest.mark.skip(reason="method not adjusted yet")
 @pytest.mark.parametrize(
-    "benchmark_name, level, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
+    "benchmark_name, level, circuit_size, benchmark_instance_name, compiler, compiler_settings, gate_set_name, device_name,",
     [
-        ("dj", "alg", 5, None, None, None, None),
-        ("wstate", 0, 6, None, None, None, None),
-        ("ghz", "indep", 5, None, None, None, None),
-        ("graphstate", 1, 4, None, None, None, None),
-        ("dj", "nativegates", 5, None, 2, "ibm", None),
-        ("qft", 2, 6, None, 3, "rigetti", None),
-        ("qpeexact", "mapped", 5, None, 0, "ibm", True),
-        ("qpeinexact", 3, 4, None, None, "rigetti", False),
+        ("dj", "alg", 5, None, "qiskit", 1, None, None),
+        ("wstate", 0, 6, None, "qiskit", 2, None, None),
+        ("ghz", "indep", 5, None, "qiskit", 3, None, None),
+        ("graphstate", 1, 4, None, "qiskit", 0, None, None),
+        ("groundstate", 1, 4, "small", "qiskit", 1, None, None),
+        ("dj", "nativegates", 5, None, "qiskit", 2, "ionq", None),
+        ("dj", "nativegates", 5, None, "qiskit", 2, "ibm", None),
+        ("dj", "nativegates", 5, None, "qiskit", 2, "rigetti", None),
+        ("dj", "nativegates", 5, None, "qiskit", 2, "oqc", None),
+        ("qft", 2, 6, None, "qiskit", 3, "ionq", None),
+        ("qft", 2, 6, None, "qiskit", 3, "qiskit", None),
+        ("qft", 2, 6, None, "tket", False, "rigetti", None),
+        ("qft", 2, 6, None, "tket", True, "oqc", None),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "ibm", "ibm_washington"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "ibm", "ibm_montreal"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "rigetti", "aspen_m1"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "ionq", "ionq11"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "oqc", "lucy"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "ibm", "ibm_washington"),
+        ("qpeinexact", 3, 4, None, "tket", True, "ibm", "ibm_washington"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "ibm", "ibm_montreal"),
+        ("qpeinexact", 3, 4, None, "tket", False, "ibm", "ibm_montreal"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "rigetti", "aspen_m1"),
+        ("qpeinexact", 3, 4, None, "tket", True, "rigetti", "aspen_m1"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "oqc", "lucy"),
+        ("qpeinexact", 3, 4, None, "tket", False, "oqc", "lucy"),
     ],
 )
 def test_get_one_benchmark(
     benchmark_name,
     level,
-    input_number,
-    instance,
-    opt_level,
+    circuit_size,
+    benchmark_instance_name,
+    compiler,
+    compiler_settings,
     gate_set_name,
-    smallest_fitting_arch,
+    device_name,
 ):
 
     qc = get_one_benchmark(
         benchmark_name,
         level,
-        input_number,
-        instance,
-        opt_level,
+        circuit_size,
+        benchmark_instance_name,
+        compiler,
+        compiler_settings,
         gate_set_name,
-        smallest_fitting_arch,
+        device_name,
     )
     assert qc.depth() > 0
 
