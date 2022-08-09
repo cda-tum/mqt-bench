@@ -174,8 +174,6 @@ def get_mapped_level(
         qc.name
         + "_mapped_"
         + device_name
-        + "_"
-        + gate_set_name
         + "_qiskit_opt"
         + str(opt_level)
         + "_"
