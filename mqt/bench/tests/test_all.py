@@ -29,6 +29,7 @@ from mqt.bench.benchmarks.qiskit_application_ml import qgan
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
 from mqt.bench.benchmarks.qiskit_application_optimization import tsp, routing
 from qiskit_nature.drivers import Molecule
+from qiskit import QuantumCircuit
 from mqt.bench.benchmark_generator import get_one_benchmark
 
 import pytest
@@ -129,9 +130,9 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
 
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("aspen_m1", 80)]),
+        ("rigetti", [("rigetti_aspen_m1", 80)]),
         ("ionq", [("ionq11", 11)]),
-        ("oqc", [("lucy", 8)]),
+        ("oqc", [("oqc_lucy", 8)]),
     ]
     for gate_set_name, devices in compilation_paths:
         opt_level = 1
@@ -229,10 +230,6 @@ def test_rigetti_cmap_generator(num_circles: int):
         assert len(utils.get_rigetti_c_map(num_circles)) == 212
 
 
-def test_get_google_c_map():
-    assert len(utils.get_google_c_map()) == 176
-
-
 def test_dj_constant_oracle():
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
@@ -279,17 +276,17 @@ def test_routing():
         ("qft", 2, 6, None, "tket", True, "oqc", None),
         ("qpeexact", "mapped", 5, None, "qiskit", 1, "ibm", "ibm_washington"),
         ("qpeexact", "mapped", 5, None, "qiskit", 1, "ibm", "ibm_montreal"),
-        ("qpeexact", "mapped", 5, None, "qiskit", 1, "rigetti", "aspen_m1"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "rigetti", "rigetti_aspen_m1"),
         ("qpeexact", "mapped", 5, None, "qiskit", 1, "ionq", "ionq11"),
-        ("qpeexact", "mapped", 5, None, "qiskit", 1, "oqc", "lucy"),
+        ("qpeexact", "mapped", 5, None, "qiskit", 1, "oqc", "oqc_lucy"),
         ("qpeinexact", 3, 4, None, "qiskit", 1, "ibm", "ibm_washington"),
         ("qpeinexact", 3, 4, None, "tket", True, "ibm", "ibm_washington"),
         ("qpeinexact", 3, 4, None, "qiskit", 1, "ibm", "ibm_montreal"),
         ("qpeinexact", 3, 4, None, "tket", False, "ibm", "ibm_montreal"),
-        ("qpeinexact", 3, 4, None, "qiskit", 1, "rigetti", "aspen_m1"),
-        ("qpeinexact", 3, 4, None, "tket", True, "rigetti", "aspen_m1"),
-        ("qpeinexact", 3, 4, None, "qiskit", 1, "oqc", "lucy"),
-        ("qpeinexact", 3, 4, None, "tket", False, "oqc", "lucy"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "rigetti", "rigetti_aspen_m1"),
+        ("qpeinexact", 3, 4, None, "tket", True, "rigetti", "rigetti_aspen_m1"),
+        ("qpeinexact", 3, 4, None, "qiskit", 1, "oqc", "oqc_lucy"),
+        ("qpeinexact", 3, 4, None, "tket", False, "oqc", "oqc_lucy"),
     ],
 )
 def test_get_one_benchmark(
@@ -322,3 +319,12 @@ def test_configure_end():
         os.remove(os.path.join(test_qasm_output_path, f))
     os.rmdir(test_qasm_output_path)
     utils.set_qasm_output_path()
+
+
+# def test_generated_files():
+#     directory = os.fsencode(utils.get_qasm_output_path())
+#
+#     for f in os.listdir(directory):
+#         if f.endswith(".qasm"):
+#             qc = QuantumCircuit.from_qasm_str(os.path.join(directory, f))
+#             assert qc
