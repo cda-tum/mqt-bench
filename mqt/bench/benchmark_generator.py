@@ -295,9 +295,9 @@ def generate_target_dep_level_circuit(
 
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("aspen_m1", 80)]),
+        ("rigetti", [("rigetti_aspen_m1", 80)]),
         ("ionq", [("ionq11", 11)]),
-        ("oqc", [("lucy", 8)]),
+        ("oqc", [("oqc_lucy", 8)]),
     ]
     num_generated_benchmarks = 0
     for gate_set_name, devices in compilation_paths:
