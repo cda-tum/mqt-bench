@@ -321,10 +321,21 @@ def test_configure_end():
     utils.set_qasm_output_path()
 
 
-# def test_generated_files():
-#     directory = os.fsencode(utils.get_qasm_output_path())
-#
-#     for f in os.listdir(directory):
-#         if f.endswith(".qasm"):
-#             qc = QuantumCircuit.from_qasm_str(os.path.join(directory, f))
-#             assert qc
+def test_generated_files():
+
+    utils.postprocess_ocr_qasm_files()
+
+    directory = utils.get_qasm_output_path()
+    failed_files = []
+    for f in os.listdir(directory):
+        if f.endswith(".qasm"):
+            path = os.path.join(directory, f)
+            try:
+                qc = QuantumCircuit.from_qasm_file(path)
+            except:
+                failed_files.append(path)
+
+    with open("failed_files.txt", "w") as f:
+        for fail in failed_files:
+            f.write(str(fail) + "\n")
+            assert "oqc" in str(fail)

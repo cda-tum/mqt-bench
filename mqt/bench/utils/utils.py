@@ -7,14 +7,10 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
-from os import path
+import os
 
 from qiskit.test.mock import (
-    FakeBogota,
-    FakeCasablanca,
-    FakeGuadalupe,
     FakeMontreal,
-    FakeManhattan,
     FakeWashington,
 )
 
@@ -306,3 +302,49 @@ def get_molecule(benchmark_instance_name: str):
     instances = {"small": m_1, "medium": m_2, "large": m_3}
 
     return instances[benchmark_instance_name]
+
+
+def postprocess_ocr_qasm_files():
+    directory = get_qasm_output_path()
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if "oqc_lucy_qiskit" in f or "oqc_qiskit" in f:
+            with open(f, "r") as f:
+                lines = f.readlines()
+            new_name = os.path.join(directory + "qasm_compiled_postprocessed", filename)
+            with open(new_name, "w") as f:
+                for line in lines:
+                    if not (
+                        "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
+                    ):
+                        f.write(line)
+                    if "gate ecr" in line.strip("\n"):
+                        f.write(
+                            "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
+                        )
+                        f.write(
+                            "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
+                        )
+
+            qc = QuantumCircuit.from_qasm_file(new_name)
+            print("New qasm file for: ", new_name)
+
+        elif "oqc_lucy_tket" in f or "oqc_tket" in f:
+            with open(f, "r") as f:
+                lines = f.readlines()
+            new_name = os.path.join(directory + "qasm_compiled_postprocessed", filename)
+            with open(new_name, "w") as f:
+                count = 0
+                for line in lines:
+                    f.write(line)
+                    count += 1
+                    if count == 9:
+                        f.write(
+                            "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
+                        )
+                        f.write(
+                            "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
+                        )
+            qc = QuantumCircuit.from_qasm_file(new_name)
+            print("New qasm file for: ", new_name)
