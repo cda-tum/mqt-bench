@@ -333,11 +333,6 @@ def test_configure_end():
 
 def test_generated_files():
     directory = utils.get_qasm_output_path()
-    directory_postprocessing = directory + "qasm_compiled_postprocessed/"
-    for f in os.listdir(directory_postprocessing):
-        os.remove(os.path.join(directory_postprocessing, f))
-
-    utils.postprocess_ocr_qasm_files()
 
     failed_files = []
     for f in os.listdir(directory):
@@ -351,4 +346,5 @@ def test_generated_files():
     with open("failed_files.txt", "w") as f:
         for fail in failed_files:
             f.write(str(fail) + "\n")
-            assert "oqc" in str(fail)
+
+    assert len(failed_files) == 0
