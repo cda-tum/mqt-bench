@@ -66,13 +66,15 @@ def create_benchmarks_from_config(cfg_path: str):
     if not path.isdir(qasm_output_folder):
         mkdir(qasm_output_folder)
 
-
-    #for benchmark in cfg["benchmarks"]:
-        #print(benchmark["name"])
-        #generate_benchmark(benchmark)
+    # for benchmark in cfg["benchmarks"]:
+    # print(benchmark["name"])
+    # generate_benchmark(benchmark)
 
     from joblib import Parallel, delayed
-    Parallel(n_jobs=-1, verbose=1)(delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"])
+
+    Parallel(n_jobs=-1, verbose=1)(
+        delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
+    )
     return
 
 
@@ -252,9 +254,15 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     num_generated_circuits_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, file_precheck
     )
+    if not num_generated_circuits_t_indep:
+        return False
+
     num_generated_circuits_t_dep = generate_target_dep_level_circuit(
         qc, num_qubits, file_precheck
     )
+
+    if not num_generated_circuits_t_dep:
+        return False
 
     print(num_generated_circuits_t_indep, num_generated_circuits_t_dep)
 
@@ -268,13 +276,13 @@ def generate_target_indep_level_circuit(
     num_generated_circuits = 0
     res = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
     if not res:
-        return num_generated_circuits
+        return False
     else:
         num_generated_circuits += 1
 
     res = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
     if not res:
-        return num_generated_circuits
+        return False
     else:
         num_generated_circuits += 1
 
@@ -310,8 +318,8 @@ def generate_target_dep_level_circuit(
             else:
                 num_generated_benchmarks += 1
 
-        for opt_level in range(4):
-            for device_name, max_qubits in devices:
+        for device_name, max_qubits in devices:
+            for opt_level in range(4):
                 # Creating the circuit on target-dependent: mapped level qiskit
                 if max_qubits >= qc.num_qubits:
                     res = benchmark_generation_watcher(
@@ -326,7 +334,7 @@ def generate_target_dep_level_circuit(
                         ],
                     )
                     if not res:
-                        continue
+                        break
                     else:
                         num_generated_benchmarks += 1
 
@@ -341,6 +349,8 @@ def generate_target_dep_level_circuit(
                 file_precheck,
             ],
         )
+        if not res:
+            continue
         num_generated_benchmarks += 1
 
         for device_name, max_qubits in devices:
@@ -362,6 +372,8 @@ def generate_target_dep_level_circuit(
                         continue
                     else:
                         num_generated_benchmarks += 1
+    if num_generated_benchmarks == 0:
+        return False
     return num_generated_benchmarks
 
 
