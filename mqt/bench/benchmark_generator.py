@@ -261,10 +261,8 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
         qc, num_qubits, file_precheck
     )
 
-    if not num_generated_circuits_t_dep:
+    if not num_generated_circuits_t_dep and not num_generated_circuits_t_indep:
         return False
-
-    print(num_generated_circuits_t_indep, num_generated_circuits_t_dep)
 
     return num_generated_circuits_t_indep + num_generated_circuits_t_dep
 
@@ -656,3 +654,5 @@ if __name__ == "__main__":
 
     print(args.file_name)
     create_benchmarks_from_config(args.file_name)
+    postprocess_ocr_qasm_files()
+    utils.create_zip_file()

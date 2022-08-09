@@ -316,7 +316,7 @@ def postprocess_ocr_qasm_files():
         if "oqc_lucy_qiskit" in f or "oqc_qiskit" in f:
             with open(f, "r") as f:
                 lines = f.readlines()
-            new_name = os.path.join(directory + "qasm_compiled_postprocessed", filename)
+            new_name = os.path.join(directory, filename)
             with open(new_name, "w") as f:
                 for line in lines:
                     if not (
@@ -337,7 +337,7 @@ def postprocess_ocr_qasm_files():
         elif "oqc_lucy_tket" in f or "oqc_tket" in f:
             with open(f, "r") as f:
                 lines = f.readlines()
-            new_name = os.path.join(directory + "qasm_compiled_postprocessed", filename)
+            new_name = os.path.join(directory, filename)
             with open(new_name, "w") as f:
                 count = 0
                 for line in lines:
