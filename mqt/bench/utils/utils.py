@@ -159,27 +159,6 @@ def get_ionq11_c_map():
     return ionq11_c_map
 
 
-def get_google_c_map():
-    """Returns a coupling map of the hardware layout scheme used by Google's Sycamore chip."""
-    c_map_google = []
-    # iterate through each second line of qubits in sycamore architecture
-    for j in range(1, 8, 2):
-        for i in range(6):
-            # connect qubit to upper left und lower left qubits
-            c_map_google.append([i + 6 * j, i + 6 * j + 5])
-            c_map_google.append([i + 6 * j, i + 6 * j - 6])
-
-            # as long as it is not the most right qubit: connect it to upper right and lower right qubit
-            if i != 5:
-                c_map_google.append([i + 6 * j, i + 6 * j - 5])
-                c_map_google.append([i + 6 * j, i + 6 * j + 7])
-
-    inverted = [[item[1], item[0]] for item in c_map_google]
-    c_map_google = c_map_google + inverted
-
-    return c_map_google
-
-
 def get_openqasm_gates():
     """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
     # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
@@ -288,9 +267,9 @@ def get_cmap_from_devicename(device: str):
         return FakeWashington().configuration().coupling_map
     elif device == "ibm_montreal":
         return FakeMontreal().configuration().coupling_map
-    elif device == "aspen_m1":
+    elif device == "rigetti_aspen_m1":
         return get_rigetti_c_map(10)
-    elif device == "lucy":
+    elif device == "oqc_lucy":
         return get_cmap_oqc_lucy()
     elif device == "ionq11":
         return get_ionq11_c_map()
