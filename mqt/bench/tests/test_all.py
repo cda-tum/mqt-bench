@@ -30,6 +30,7 @@ from mqt.bench.benchmarks.qiskit_application_nature import groundstate, exciteds
 from mqt.bench.benchmarks.qiskit_application_optimization import tsp, routing
 from qiskit_nature.drivers import Molecule
 from qiskit import QuantumCircuit
+from pytket.qasm import circuit_to_qasm_str
 from mqt.bench.benchmark_generator import get_one_benchmark
 
 import pytest
@@ -271,7 +272,7 @@ def test_routing():
         ("dj", "nativegates", 5, None, "qiskit", 2, "rigetti", None),
         ("dj", "nativegates", 5, None, "qiskit", 2, "oqc", None),
         ("qft", 2, 6, None, "qiskit", 3, "ionq", None),
-        ("qft", 2, 6, None, "qiskit", 3, "qiskit", None),
+        ("qft", 2, 6, None, "qiskit", 3, "ibm", None),
         ("qft", 2, 6, None, "tket", False, "rigetti", None),
         ("qft", 2, 6, None, "tket", True, "oqc", None),
         ("qpeexact", "mapped", 5, None, "qiskit", 1, "ibm", "ibm_washington"),
@@ -311,6 +312,15 @@ def test_get_one_benchmark(
         device_name,
     )
     assert qc.depth() > 0
+    if gate_set_name and "oqc" not in gate_set_name:
+        if compiler == "tket":
+            qc = QuantumCircuit.from_qasm_str(circuit_to_qasm_str(qc))
+        for instruction, qargs, cargs in qc.data:
+            gate_type = instruction.name
+            assert (
+                gate_type in qiskit_helper.get_native_gates(gate_set_name)
+                or gate_type == "barrier"
+            )
 
 
 def test_configure_end():
@@ -322,10 +332,13 @@ def test_configure_end():
 
 
 def test_generated_files():
+    directory = utils.get_qasm_output_path()
+    directory_postprocessing = directory + "qasm_compiled_postprocessed/"
+    for f in os.listdir(directory_postprocessing):
+        os.remove(os.path.join(directory_postprocessing, f))
 
     utils.postprocess_ocr_qasm_files()
 
-    directory = utils.get_qasm_output_path()
     failed_files = []
     for f in os.listdir(directory):
         if f.endswith(".qasm"):
