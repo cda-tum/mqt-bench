@@ -17,7 +17,7 @@ def init():
     read_mqtbench_all_zip()
     init_database()
 
-    logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
+    #logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
 
 init()
@@ -43,11 +43,7 @@ def download_pre_gen_zip():
     directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    app.logger.info("###### Start ######")
-    app.logger.info("Timestamp: %s", timestamp)
-    app.logger.info("Headers: %s", request.headers)
-    app.logger.info("Download of pre-generated zip")
-    app.logger.info("###### End ######")
+
     return send_from_directory(
         directory=directory,
         path=filename,
@@ -68,12 +64,7 @@ def download_data():
             prepared_data
         )
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        app.logger.info("###### Start ######")
-        app.logger.info("Timestamp: %s", timestamp)
-        app.logger.info("Headers: %s", request.headers)
-        app.logger.info("Prepared_data: %s", prepared_data)
-        app.logger.info("Download started: %s", len(file_paths))
-        app.logger.info("###### End ######")
+
 
         if file_paths or python_files_list:
             return app.response_class(
