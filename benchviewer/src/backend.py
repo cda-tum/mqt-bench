@@ -206,114 +206,6 @@ def parse_data(filename: str):
     return parsed_data
 
 
-def parseFilterCriteria(input_data):
-    """Reformats the input_data such that it is easier to filter the database.
-
-    Keyword arguments:
-    input_data -- dictionaries of all selected benchmarks
-
-    Return values:
-    filter_list -- list of filter criteria for each selected benchmark
-    algo_dicts -- dictionary to handle the algorithm level, since that one is not available as a downloadable file
-    list(set(python_files_list)) -- list of all python files needed to generated the algorithm level
-    """
-    algo_dicts = []
-    python_files_list = []
-
-    filter_list = []
-    for key, value in input_data.items():
-        if "selectBench_" + str(key) not in value.keys():
-            continue
-        min_qubits = -1
-        max_qubits = -1
-        algorithm_flag = False
-        indep_flag = False
-        nativegates_flag = False
-        mapped_flag = False
-        smallest_mapping = False
-        biggest_mapping = False
-        gate_set_ibm = False
-        gate_set_rigetti = False
-        opt_levels = []
-        if int(key) > 0 and int(key) <= len(benchmarks):
-            name = benchmarks[int(key) - 1]["filename"]
-        elif int(key) > 0 and int(key) <= len(benchmarks) + len(nonscalable_benchmarks):
-            name = nonscalable_benchmarks[int(key) - 1 - len(benchmarks)]["filename"]
-        for key, value in value.items():
-            if "minQubits" in key:
-                min_qubits = value
-            if "maxQubits" in key:
-                max_qubits = value
-            if "algorithmLevel" in key and value:
-                algorithm_flag = True
-            if "indepLevel" in key and value:
-                indep_flag = True
-            elif "nativeGatesLevel" in key and value:
-                nativegates_flag = True
-            elif "mappedLevel" in key and value:
-                mapped_flag = True
-
-            if "ibm" in key:
-                gate_set_ibm = True
-            if "rigetti" in key:
-                gate_set_rigetti = True
-            if "optlevel0" in key:
-                opt_levels.append(0)
-            if "optlevel1" in key:
-                opt_levels.append(1)
-            if "optlevel2" in key:
-                opt_levels.append(2)
-            if "optlevel3" in key:
-                opt_levels.append(3)
-            if "smallest_arch" in key:
-                smallest_mapping = True
-            if "biggest_arch" in key:
-                biggest_mapping = True
-
-        if sum([algorithm_flag, indep_flag, nativegates_flag, mapped_flag]) == 0:
-            continue
-
-        filter_list.append(
-            [
-                name,
-                min_qubits,
-                max_qubits,
-                gate_set_ibm,
-                gate_set_rigetti,
-                algorithm_flag,
-                indep_flag,
-                nativegates_flag,
-                mapped_flag,
-                smallest_mapping,
-                biggest_mapping,
-                opt_levels,
-            ]
-        )
-
-        if algorithm_flag:
-            if min_qubits != -1 and max_qubits != -1:
-                tmp_dict = {
-                    "name": name,
-                    "min_qubits": min_qubits,
-                    "max_qubits": max_qubits,
-                }
-            else:
-                config_file_path = "../config.json"
-                with open(config_file_path, "r") as jsonfile:
-                    cfg = json.load(jsonfile)
-                for benchmark_config in cfg["benchmarks"]:
-                    if name == benchmark_config["name"]:
-                        tmp_dict = benchmark_config
-                        del tmp_dict["include"]
-                        break
-
-            algo_dicts.append(tmp_dict)
-            # python_files_list.append(name.split("-")[0])
-            python_files_list.append("./static/files/algo_level.txt")
-
-    return filter_list, algo_dicts, list(set(python_files_list))
-
-
 def filterDatabase(filterCriteria, database):
     """Filters the database according to the filter criteria.
 
@@ -340,19 +232,39 @@ def filterDatabase(filterCriteria, database):
     db_filtered = pd.DataFrame(columns=colnames)
     if len(database) == 0:
         return []
-    # for each line of input (benchmark)
-    for line in filterCriteria:
-        benchmark = line[0]
-        min_qubits = int(line[1])
-        max_qubits = int(line[2])
-        gate_set_ibm = line[3]
-        gate_set_rigetti = line[4]
-        indep_flag = line[6]
-        nativegates_flag = line[7]
-        mapped_flag = line[8]
-        smallest_mapping = line[9]
-        biggest_mapping = line[10]
-        opt_levels = line[11]
+
+    (
+        (min_qubits, max_qubits),
+        indices_benchmarks,
+        (indep_qiskit_compiler, indep_tket_compiler),
+        (
+            (nativegates_qiskit_compiler, nativegates_tket_compiler),
+            native_qiskit_opt_lvls,
+            native_gatesets,
+        ),
+        (
+            (mapped_qiskit_compiler, mapped_tket_compiler),
+            (mapped_qiskit_opt_lvls, mapped_tket_placements),
+            mapped_devices,
+        ),
+    ) = filterCriteria
+
+    db_tmp = database.loc[
+        (database["num_qubits"] >= min_qubits)
+        & (database["num_qubits"] <= max_qubits)
+        ]
+
+    if indep_qiskit_compiler:
+        #db_filtered = pd.concat([db_filtered, dbxyz])
+    if indep_tket_compiler:
+        #db_filtered = pd.concat([db_filtered, dbxyz])
+
+    if nativegates_qiskit_compiler:
+        #consider
+        #native_qiskit_opt_lvls,
+        #native_gatesets,
+
+    if nativegates_tket_compiler:
 
         # filter for benchmark name
         db1 = database.loc[(database["benchmark"] == benchmark)]
@@ -365,11 +277,7 @@ def filterDatabase(filterCriteria, database):
             ]
         else:
             db2 = db1
-        # Algo Layer
-        # if (algo_flag):
-        # db3 = db2.loc[(database["algo_layer"])]
-        # db_filtered = pd.concat([db_filtered, db3])
-        # T-indep layer
+
         if indep_flag:
             db4 = db2.loc[(database["indep_layer"])]
             # db4_tmp = db2.loc[(database["indep_layer"])]
@@ -539,12 +447,12 @@ def get_selected_file_paths(prepared_data):
     algo_dicts -- dictionary to handle the algorithm level, since that one is not available as a downloadable file
     python_files_list -- list of all python files needed to generated the algorithm level
     """
-    filter_criteria, algo_dicts, python_files_list = parseFilterCriteria(prepared_data)
-    if filter_criteria:
-        file_paths = filterDatabase(filter_criteria, database)
-        return file_paths, algo_dicts, python_files_list
+
+    if prepared_data:
+        file_paths = filterDatabase(prepared_data, database)
+        return file_paths
     else:
-        return False, False, False
+        return False
 
 
 def init_database():
@@ -560,25 +468,117 @@ def init_database():
 
 
 def prepareFormInput(formData):
-    """Formats the formData extracted from the user's inputs such that each benchmark is stored in one dictionary.
+    """Formats the formData extracted from the user's inputs."""
 
-    Keyword arguments:
-    formData -- unformatted user's filter criterias
+    min_qubits = -1
+    max_qubits = -1
+    indep_qiskit_compiler = False
+    indep_tket_compiler = False
+    nativegates_qiskit_compiler = False
+    nativegates_tket_compiler = False
+    native_qiskit_opt_lvls = []
+    native_gatesets = []
+    mapped_qiskit_compiler = False
+    mapped_tket_compiler = False
+    mapped_qiskit_opt_lvls = []
+    mapped_tket_placements = []
+    mapped_devices = []
 
-    Return values:
-    sub_dicts -- dictionary of dictionaries representing the user's filter criteria
-    """
-    # Path form data into several dictionaries, one for each benchmark
     pat = re.compile(r"_\d+")
-    sub_dicts = {}
+    num_benchmarks = []
     for k, v in formData.items():
         m = pat.search(k)
         if m:
             num = m.group()[1:]
-            sub_dicts.setdefault(num, {})[k] = v
-    if "0" in sub_dicts:
-        del sub_dicts["0"]
-    return sub_dicts
+            num_benchmarks.append(num)
+
+        if "minQubits" in k:
+            min_qubits = v
+        if "maxQubits" in k:
+            max_qubits = v
+        if "indep_qiskit_compiler" in k:
+            indep_qiskit_compiler = True
+        if "indep_tket_compiler" in k:
+            indep_tket_compiler = True
+
+        if "nativegates_qiskit_compiler" in k:
+            nativegates_qiskit_compiler = True
+        if "nativegates_tket_compiler" in k:
+            nativegates_tket_compiler = True
+        if "nativegates_qiskit_compiler_opt0" in k:
+            native_qiskit_opt_lvls.append(0)
+        if "nativegates_qiskit_compiler_opt1" in k:
+            native_qiskit_opt_lvls.append(1)
+        if "nativegates_qiskit_compiler_opt2" in k:
+            native_qiskit_opt_lvls.append(2)
+        if "nativegates_qiskit_compiler_opt3" in k:
+            native_qiskit_opt_lvls.append(3)
+
+        if "nativegates_ibm" in k:
+            native_gatesets.append("ibm")
+        if "nativegates_rigetti" in k:
+            native_gatesets.append("rigetti")
+        if "nativegates_oqc" in k:
+            native_gatesets.append("oqc")
+        if "nativegates_ionq" in k:
+            native_gatesets.append("ionq")
+
+        if "mapped_qiskit_compiler" in k:
+            mapped_qiskit_compiler = True
+        if "mapped_tket_compiler" in k:
+            mapped_tket_compiler = True
+        if "mapped_qiskit_compiler_opt0" in k:
+            mapped_qiskit_opt_lvls.append(0)
+        if "mapped_qiskit_compiler_opt1" in k:
+            mapped_qiskit_opt_lvls.append(1)
+        if "mapped_qiskit_compiler_opt2" in k:
+            mapped_qiskit_opt_lvls.append(2)
+        if "mapped_qiskit_compiler_opt3" in k:
+            mapped_qiskit_opt_lvls.append(3)
+
+        if "mapped_tket_compiler_graph" in k:
+            mapped_tket_placements.append("graph")
+        if "mapped_tket_compiler_line" in k:
+            mapped_tket_placements.append("line")
+
+        if "device_ibm_montreal" in k:
+            mapped_devices.append("ibm_montreal")
+        if "device_ibm_washington" in k:
+            mapped_devices.append("ibm_washington")
+        if "device_rigetti_aspen_m1" in k:
+            mapped_devices.append("rigetti_aspen_m1")
+        if "device_oqc_lucy" in k:
+            mapped_devices.append("oqc_lucy")
+        if "device_ionq_ionq11" in k:
+            mapped_devices.append("ionq11")
+
+    print("benchmarks: ", num_benchmarks)
+    print("indep compiler: ", indep_qiskit_compiler, indep_tket_compiler)
+    print("native compiler: ", nativegates_qiskit_compiler, nativegates_tket_compiler)
+    print("native compiler settings qiskit: ", native_qiskit_opt_lvls)
+    print("native compiler gatesets: ", native_gatesets)
+    print("mapped compiler: ", mapped_qiskit_compiler, mapped_tket_compiler)
+    print("mapped compiler settings qiskit: ", mapped_qiskit_opt_lvls)
+    print("mapped compiler settings tket: ", mapped_tket_placements)
+    print("mapped devices: ", mapped_devices)
+
+    res = (
+        (min_qubits, max_qubits),
+        num_benchmarks,
+        (indep_qiskit_compiler, indep_tket_compiler),
+        (
+            (nativegates_qiskit_compiler, nativegates_tket_compiler),
+            native_qiskit_opt_lvls,
+            native_gatesets,
+        ),
+        (
+            (mapped_qiskit_compiler, mapped_tket_compiler),
+            (mapped_qiskit_opt_lvls, mapped_tket_placements),
+            mapped_devices,
+        ),
+    )
+    print("Overall Result: ", res)
+    return res
 
 
 def add_min_max_qubit_number(database):

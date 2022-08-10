@@ -120,8 +120,9 @@
 
             <div class="row d-flex">
                 <div class="col-md-6">
-                    <input class="form-check-input" type="checkbox" value="true" id="all_benchmarks" name="all_benchmarks"
-                    onchange="toggleAllSelection()">
+                    <input class="form-check-input" type="checkbox" value="true" id="all_benchmarks"
+                           name="all_benchmarks"
+                           onchange="toggleAllSelection()">
                     Select all
                 </div>
             </div>
@@ -131,11 +132,9 @@
                 <h5>Scalable Benchmarks:</h5>
                 <div class="d-flex text-center">
                     <input type="number" class="form-control form-control-sm" min="2" max="130"
-                           id="minQubits" name="minQubits" placeholder="Min Qubits (2)"
-                           onchange="QubitMinAllChange(this.value)">
+                           id="minQubits" name="minQubits" placeholder="Min Qubits (2)">
                     <input type="number" class="form-control form-control-sm" min="2" max="130"
-                           id="maxQubits" name="maxQubits" placeholder="Max Qubits (130)"
-                           onchange="QubitMaxAllChange(this.value)">
+                           id="maxQubits" name="maxQubits" placeholder="Max Qubits (130)">
                 </div>
                 {% for benchmark in benchmarks %}
 
@@ -173,6 +172,19 @@
 
         <div class="col-12" style="height:20px;"></div>
         <div class=" row border border-secondary">
+            <h6>Algorithm Level</h6>
+            <div class="row d-flex">
+                <div class="col-md-10">
+                    Currently only available using the python package. For details can be found on our <a
+                        href="https://github.com/cda-tum/MQTBench/blob/main/README.md#repository-usage" target="_blank">Github
+                    page</a>.
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12" style="height:20px;"></div>
+        <div class=" row border border-secondary">
             <h6>Independent Level Options</h6>
 
             <div class="row">
@@ -203,10 +215,10 @@
                     <label for="nativegates_qiskit_compiler">Qiskit</label>
                 </div>
                 <div class="col-5 align-items-center">
-                    <input class="form-check-input" type="checkbox" name="nativegates_qiskit_compiler_opt0"  value="true"
+                    <input class="form-check-input" type="checkbox" name="nativegates_qiskit_compiler_opt0" value="true"
                            id="nativegates_qiskit_compiler_opt0" disabled>
                     <label for="nativegates_qiskit_compiler_opt0">Opt. 0</label>
-                    <input class="form-check-input" type="checkbox" name="nativegates_qiskit_compiler_opt1"  value="true"
+                    <input class="form-check-input" type="checkbox" name="nativegates_qiskit_compiler_opt1" value="true"
                            id="nativegates_qiskit_compiler_opt1" disabled>
                     <label for="nativegates_qiskit_compiler_opt1">Opt. 1</label>
                     <input class="form-check-input" type="checkbox" name="nativegates_qiskit_compiler_opt2" value="true"
@@ -221,8 +233,8 @@
             <div class="row">
                 <div class="col-2 align-items-center">
                     <input class="form-check-input" type="checkbox"
-                           id="indep_tket_compiler" name="indep_tket_compiler">
-                    <label for="indep_tket_compiler">TKET</label>
+                           id="nativegates_tket_compiler" name="nativegates_tket_compiler">
+                    <label for="nativegates_tket_compiler">TKET</label>
                 </div>
             </div>
             <div class="row">
@@ -250,20 +262,20 @@
             <div class="row">
                 <div class="col-2 align-items-center">
                     <input class="form-check-input" type="checkbox" value="true" onchange="toggleMappedQiskit()"
-                           id="indep_qiskit_compiler"  name="indep_qiskit_compiler">
-                    <label for="indep_qiskit_compiler">Qiskit</label>
+                           id="mapped_qiskit_compiler" name="mapped_qiskit_compiler">
+                    <label for="mapped_qiskit_compiler">Qiskit</label>
                 </div>
                 <div class="col-5 align-items-center">
                     <input class="form-check-input" type="checkbox" value="true" disabled
-                           id="mapped_qiskit_compiler_opt0"  name="mapped_qiskit_compiler_opt0">
+                           id="mapped_qiskit_compiler_opt0" name="mapped_qiskit_compiler_opt0">
                     <label for="mapped_qiskit_compiler_opt0">Opt. 0</label>
-                    <input class="form-check-input" type="checkbox" value="true"disabled
+                    <input class="form-check-input" type="checkbox" value="true" disabled
                            id="mapped_qiskit_compiler_opt1" name="mapped_qiskit_compiler_opt1">
                     <label for="mapped_qiskit_compiler_opt1">Opt. 1</label>
-                    <input class="form-check-input" type="checkbox" value="true"disabled
+                    <input class="form-check-input" type="checkbox" value="true" disabled
                            id="mapped_qiskit_compiler_opt2" name="mapped_qiskit_compiler_opt2">
                     <label for="mapped_qiskit_compiler_opt2">Opt. 2</label>
-                    <input class="form-check-input" type="checkbox" value="true"disabled
+                    <input class="form-check-input" type="checkbox" value="true" disabled
                            id="mapped_qiskit_compiler_opt3" name="mapped_qiskit_compiler_opt3">
                     <label for="mapped_qiskit_compiler_opt3">Opt. 3</label>
                 </div>
@@ -276,10 +288,10 @@
                 </div>
                 <div class="col-5 align-items-center">
                     <input class="form-check-input" type="checkbox" value="true" disabled
-                           id="mapped_tket_compiler_graph"  name="mapped_tket_compiler_graph">
+                           id="mapped_tket_compiler_graph" name="mapped_tket_compiler_graph">
                     <label for="mapped_tket_compiler_graph">Graph Placement</label>
                     <input class="form-check-input" type="checkbox" value="true" disabled
-                           id="mapped_tket_compiler_line"  name="mapped_tket_compiler_line">
+                           id="mapped_tket_compiler_line" name="mapped_tket_compiler_line">
                     <label for="mapped_tket_compiler_line">Line Placement</label>
                 </div>
 
@@ -330,7 +342,6 @@
 </form>
 
 
-
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script
@@ -346,29 +357,38 @@
 
 <script>
     function toggleNativeQiskit() {
-        document.getElementById("nativegates_qiskit_compiler_opt0").disabled = ! document.getElementById("nativegates_qiskit_compiler_opt0").disabled
-        document.getElementById("nativegates_qiskit_compiler_opt1").disabled = ! document.getElementById("nativegates_qiskit_compiler_opt1").disabled
-        document.getElementById("nativegates_qiskit_compiler_opt2").disabled = ! document.getElementById("nativegates_qiskit_compiler_opt2").disabled
-        document.getElementById("nativegates_qiskit_compiler_opt3").disabled = ! document.getElementById("nativegates_qiskit_compiler_opt3").disabled
+        document.getElementById("nativegates_qiskit_compiler_opt0").disabled = !document.getElementById("nativegates_qiskit_compiler_opt0").disabled
+        document.getElementById("nativegates_qiskit_compiler_opt1").disabled = !document.getElementById("nativegates_qiskit_compiler_opt1").disabled
+        document.getElementById("nativegates_qiskit_compiler_opt2").disabled = !document.getElementById("nativegates_qiskit_compiler_opt2").disabled
+        document.getElementById("nativegates_qiskit_compiler_opt3").disabled = !document.getElementById("nativegates_qiskit_compiler_opt3").disabled
     }
 
     function toggleMappedQiskit() {
-        document.getElementById("mapped_qiskit_compiler_opt0").disabled = ! document.getElementById("mapped_qiskit_compiler_opt0").disabled
-        document.getElementById("mapped_qiskit_compiler_opt1").disabled = ! document.getElementById("mapped_qiskit_compiler_opt1").disabled
-        document.getElementById("mapped_qiskit_compiler_opt2").disabled = ! document.getElementById("mapped_qiskit_compiler_opt2").disabled
-        document.getElementById("mapped_qiskit_compiler_opt3").disabled = ! document.getElementById("mapped_qiskit_compiler_opt3").disabled
+        document.getElementById("mapped_qiskit_compiler_opt0").disabled = !document.getElementById("mapped_qiskit_compiler_opt0").disabled
+        document.getElementById("mapped_qiskit_compiler_opt1").disabled = !document.getElementById("mapped_qiskit_compiler_opt1").disabled
+        document.getElementById("mapped_qiskit_compiler_opt2").disabled = !document.getElementById("mapped_qiskit_compiler_opt2").disabled
+        document.getElementById("mapped_qiskit_compiler_opt3").disabled = !document.getElementById("mapped_qiskit_compiler_opt3").disabled
     }
 
     function toggleMappedTKET() {
-        document.getElementById("mapped_tket_compiler_graph").disabled = ! document.getElementById("mapped_tket_compiler_graph").disabled
-        document.getElementById("mapped_tket_compiler_line").disabled = ! document.getElementById("mapped_tket_compiler_line").disabled
+        document.getElementById("mapped_tket_compiler_graph").disabled = !document.getElementById("mapped_tket_compiler_graph").disabled
+        document.getElementById("mapped_tket_compiler_line").disabled = !document.getElementById("mapped_tket_compiler_line").disabled
     }
 
     function toggleAllSelection() {
-        var ids = {{benchmarks|length}}+{{nonscalable_benchmarks|length}}
-            for (let i = 1; i <= ids; i++) {
-                document.getElementById("selectBench_" + i).checked = all_benchmarks.checked
-            }
+        var ids = {
+        {
+            benchmarks | length
+        }
+    }
+        +{
+        {
+            nonscalable_benchmarks | length
+        }
+    }
+        for (let i = 1; i <= ids; i++) {
+            document.getElementById("selectBench_" + i).checked = all_benchmarks.checked
+        }
     }
 
     function checks_on_change() {
@@ -377,20 +397,30 @@
     }
 
     function get_num_benchs() {
-        form = document.getElementById("benchmark_form")
-        const formData = new FormData(form);
-        fetch('./get_num_benchmarks', {
-            method: 'POST',
-            body: formData,
-            dataType: 'json',
-        }).then(response => response.json())
-            .then(response => {
-                document.getElementById("num_benchmarks").innerHTML = response.num_selected;
-            });
+        0
+        // form = document.getElementById("benchmark_form")
+        // const formData = new FormData(form);
+        // fetch('./get_num_benchmarks', {
+        //     method: 'POST',
+        //     body: formData,
+        //     dataType: 'json',
+        // }).then(response => response.json())
+        //     .then(response => {
+        //         document.getElementById("num_benchmarks").innerHTML = response.num_selected;
+        //     });
     }
 
     function check_col_if_all_selected() {
-        var ids = {{benchmarks|length}}+{{nonscalable_benchmarks|length}}
+        var ids = {
+        {
+            benchmarks | length
+        }
+    }
+        +{
+        {
+            nonscalable_benchmarks | length
+        }
+    }
         var check_all_selected = true;
         for (let i = 1; i <= ids; i++) {
             if (!document.getElementById("selectBench_" + i).checked) {
@@ -398,47 +428,17 @@
                 check_all_selected = false;
             }
         }
-        if (check_all_selected){
+        if (check_all_selected) {
             all_benchmarks.checked = true;
         }
     }
 
-    function QubitMinAllChange(value) {
-        if (value > 130) {
-            document.getElementById("minQubits_0").value = 130;
-            value = 130
-        } else if (value < 1) {
-            document.getElementById("minQubits_0").value = 2;
-            value = 2
+    $("form").keypress(function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            return false;
         }
-        var ids =
-        {{benchmarks|length}}
-        for (let i = 1; i <= ids; i++) {
-            document.getElementById("minQubits_" + i).value = value;
-        }
-        // min_val = document.getElementById("minQubits_"+i).min;
-        // if (Number(value) > min_val){
-        //     document.getElementById("minQubits_"+i).value = value;
-        // }
-        // else{
-        //     document.getElementById("minQubits_"+i).value = min_val;
-        // }
-    }
-
-    function QubitMaxAllChange(value) {
-        if (value > 130) {
-            document.getElementById("maxQubits_0").value = 130;
-            value = 130
-        } else if (value < 1) {
-            document.getElementById("maxQubits_0").value = 2;
-            value = 2
-        }
-        var ids =
-        {{benchmarks|length}}
-        for (let i = 1; i <= ids; i++) {
-            document.getElementById("maxQubits_" + i).value = value;
-        }
-    }
+    })
 
 </script>
 </body>
