@@ -159,7 +159,7 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 ```console
 (venv) $ pip install mqt.bench
 ```
-To generate a benchmark circuit on the algorithmic level, please use the `get_one_benchmark` method:
+To generate a benchmark circuit on the algorithmic level (and the other levels), please use the `get_one_benchmark` method which returns a Qiskit::QuantumCircuit object:
 
 ```python
 get_one_benchmark(
