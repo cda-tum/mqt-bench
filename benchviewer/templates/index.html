@@ -10,22 +10,22 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <style>
-        div {
-            font-size: 0.8vw;
-        }
+        /*div {*/
+        /*    font-size: 0.8vw;*/
+        /*}*/
 
-        h1 {
-            font-size: 2.2vw;
-        }
+        /*h1 {*/
+        /*    font-size: 2.2vw;*/
+        /*}*/
 
-        h2 {
-            font-size: 1.2vw;
-        }
+        /*h2 {*/
+        /*    font-size: 1.2vw;*/
+        /*}*/
 
-        .form-control {
-            margin: auto;
-            font-size: 0.8vw;
-        }
+        /*.form-control {*/
+        /*    margin: auto;*/
+        /*    font-size: 0.8vw;*/
+        /*}*/
     </style>
 
     <title>MQT Bench</title>
@@ -59,7 +59,7 @@
 
 
     <div class="col-12" style="height:80px;"></div>
-    <div class="container-fluid">
+    <div class="container">
         <h1>
             Welcome to the Munich Quantum Toolkit Benchmark Library (MQT Bench)!
         </h1>
@@ -127,8 +127,208 @@
                 page</a>.</p>
 
     </div>
-
 <form method="POST" class="form-inline" role="form" action="download" id="benchmark_form" onchange="checks_on_change()">
+    <div class="container">
+        <h4>Benchmark Selection</h4>
+
+        <div class="row">
+            <div class="col-md-6">
+            <h5>Scalable Benchmarks:</h5>
+                    <div class="d-flex text-center">
+                        <input type="number" class="form-control form-control-sm" min="2" max="130"
+                               id="minQubits_0" name="minQubits_0" placeholder="Min Qubits (2)"
+                               onchange="QubitMinAllChange(this.value)">
+                        <input type="number" class="form-control form-control-sm" min="2" max="130"
+                               id="maxQubits_0" name="maxQubits_0" placeholder="Max Qubits (130)"
+                               onchange="QubitMaxAllChange(this.value)">
+                    </div>
+            {% for benchmark in benchmarks %}
+
+            <div>
+                    <div class="col-md-12">
+                        <input class="form-check-input" type="checkbox" value="{{ benchmark.name }}"
+                               onchange="toggleSelectCheckbox({{ benchmark.id }})"
+                               id="selectBench_{{ benchmark.id }}" name="selectBench_{{ benchmark.id }}">
+                        {{ benchmark.name }}
+                    </div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <div class="col-md-5">
+            <h5>Non-Scalable Benchmarks:</h5>
+
+            <div class="col-5" style="height:30px;"></div>
+            {% for nonscalable_benchmark in nonscalable_benchmarks %}
+
+
+            <div>
+                <div class="col-md-5">
+                    <input class="form-check-input" type="checkbox" value="{{ nonscalable_benchmark.name }}"
+                           onchange="toggleSelectCheckbox({{ nonscalable_benchmark.id }})"
+                           id="selectBench_{{ nonscalable_benchmark.id }}" name="selectBench_{{ nonscalable_benchmark.id }}">
+                    {{ nonscalable_benchmark.name }}
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+
+        </div>
+
+    <div class="col-12" style="height:20px;"></div>
+        <h6>Independent Level Options</h6>
+            <div class="row">
+                <div class="col-3 align-items-center">
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler">
+                    <label for="indep_qiskit_compiler">Qiskit</label>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-5 align-items-center">
+                        <input class="form-check-input" type="checkbox"
+                       id="indep_tket_compiler">
+                        <label for="indep_tket_compiler">TKET</label>
+                    </div>
+                </div>
+
+
+    <div class="col-12" style="height:20px;"></div>
+        <h6>Target-dependent: Native-Gates Level Options</h6>
+
+            <div class="row">
+                <div class="col-2 align-items-center">
+                    <input class="form-check-input" type="checkbox"
+                   id="nativegates_qiskit_compiler">
+                    <label for="nativegates_qiskit_compiler">Qiskit</label>
+                </div>
+                <div class="col-5 align-items-center">
+                    <input class="form-check-input" type="checkbox"
+                   id="nativegates_qiskit_compiler_opt0">
+                    <label for="nativegates_qiskit_compiler_opt0">Opt. 0</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="nativegates_qiskit_compiler_opt1">
+                    <label for="nativegates_qiskit_compiler_opt1">Opt. 1</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="nativegates_qiskit_compiler_opt12">
+                    <label for="nativegates_qiskit_compiler_opt2">Opt. 2</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="nativegates_qiskit_compiler_opt3"">
+                    <label for="nativegates_qiskit_compiler_opt3">Opt. 3</label>
+                </div>
+            </div>
+
+                <div class="row">
+                    <div class="col-2 align-items-center">
+                        <input class="form-check-input" type="checkbox"
+                       id="indep_tket_compiler">
+                        <label for="indep_tket_compiler">TKET</label>
+                    </div>
+                </div>
+                        <div class="row">
+                    <div class="col-2 align-items-center"> Native Gate Sets </div>
+                    <div class="col-5 align-items-center">
+                        <input class="form-check-input" type="checkbox"
+                       id="nativegates_ibm">
+                        <label for="nativegates_ibm">IBM</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="nativegates_rigetti" >
+                        <label for="nativegates_rigetti">Riggeti</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="nativegates_oqc">
+                        <label for="nativegates_oqc">OQC</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="nativegates_ionq">
+                        <label for="nativegates_ionq">IonQ</label>
+                    </div>
+                </div>
+
+    <div class="col-12" style="height:20px;"></div>
+        <h6>Target-dependent: Mapped Level Options</h6>
+            <div class="row">
+                <div class="col-2 align-items-center">
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler">
+                    <label for="indep_qiskit_compiler">Qiskit</label>
+                </div>
+                <div class="col-5 align-items-center">
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler_opt0">
+                    <label for="indep_qiskit_compiler_opt0">Opt. 0</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler_opt1">
+                    <label for="indep_qiskit_compiler_opt1">Opt. 1</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler_opt12">
+                    <label for="indep_qiskit_compiler_opt2">Opt. 2</label>
+                    <input class="form-check-input" type="checkbox"
+                   id="indep_qiskit_compiler_opt3">
+                    <label for="indep_qiskit_compiler_opt3">Opt. 3</label>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-2 align-items-center">
+                        <input class="form-check-input" type="checkbox"
+                       id="indep_tket_compiler">
+                        <label for="indep_tket_compiler">TKET</label>
+                    </div>
+                        <div class="col-5 align-items-center">
+                            <input class="form-check-input" type="checkbox"
+                           id="mapped_tket_compiler_graph">
+                            <label for="mapped_tket_compiler_graph">Graph Placement</label>
+                            <input class="form-check-input" type="checkbox"
+                           id="mapped_tket_compiler_line">
+                            <label for="mapped_tket_compiler_line">Line Placement</label>
+                        </div>
+
+                    </div>
+                <div class="row">
+                    <div class="col-2 align-items-center"> Devices </div>
+                    <div class="col-10 align-items-center">
+                        <input class="form-check-input" type="checkbox"
+                       id="device_ibm_washington">
+                        <label for="device_ibm_washington">IBM Washington (127 Qubits)</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="device_ibm_montreal">
+                        <label for="device_ibm_montreal">IBM Montreal (27 Qubits)</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="device_rigetti_aspen_m1">
+                        <label for="device_rigetti_aspen_m1">Riggeti Aspen-M1 (80 Qubits)</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="device_oqc_lucy">
+                        <label for="device_oqc_lucy">OQC Lucy (8 Qubits)</label>
+                        <input class="form-check-input" type="checkbox"
+                       id="device_ionq_ionq11">
+                        <label for="device_ionq_ionq11">IonQ (11 Qubits)</label>
+                    </div>
+                </div>
+
+        <div class="col-11" style="height:50px;"></div>
+        <div class="text-center ">
+            <div class="same_row"> # of selected benchmarks:</div>
+            <div class="same_row" id="num_benchmarks">0</div>
+            <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadButton"
+                    value="submit">
+                Download selected Benchmarks
+            </button>
+        </div>
+
+    </div>
+</form>
+
+<form method="POST" class="form-inline" role="form" action="get_pre_gen" id="preGenForm" onchange="checks_on_change()">
+    <div class="container-fluid text-center">
+            <br>
+            You can download a pre-generated <i>.zip</i> file with <i>all</i> available benchmarks here:
+            <br>
+            <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadPreGenZip">
+                Download all Benchmarks
+            </button>
+        </div>
+</form>
+
+<!--<form method="POST" class="form-inline" role="form" action="download" id="benchmark_form" onchange="checks_on_change()">
     <div class="container-fluid">
 
         <div class="col-11 " style="height:50px;"></div>
@@ -511,7 +711,7 @@
         </div>
 
         <div class="col-11" style="height:50px;"></div>
-</form>
+</form>-->
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
