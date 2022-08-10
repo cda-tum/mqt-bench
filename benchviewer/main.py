@@ -17,7 +17,7 @@ def init():
     read_mqtbench_all_zip()
     init_database()
 
-    #logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
+    # logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
 
 init()
@@ -66,7 +66,6 @@ def download_data():
         )
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-
         if file_paths or python_files_list:
             return app.response_class(
                 generate_zip_ephemeral_chunks(file_paths, python_files_list),
@@ -111,6 +110,7 @@ def benchmark_description():
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
 def get_num_benchmarks():
+    return None
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
