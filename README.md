@@ -180,7 +180,7 @@ The available parameters are:
                         `"tsp"`
   - `level`: `0` or `"alg"`, `1` or `"indep"`, `2` or `"nativegates"`, `3` or `"mapped"`
   - `circuit_size`: most of the cases this is equal to number of qubits (for some benchmarks the number of qubits is higher)
-  - `benchmark_instance_name`: `"xsmall"`, `"small"`, `"medium"`, `"large"`, `"xlarge"` (not all instances are available for each benchmark)
+  - `benchmark_instance_name`: `"xsmall"`, `"small"`, `"medium"`, `"large"`, `"xlarge"` (This parameter applies only to `"shor"`, `"groundstate"`, and `"excitedstate"`, where the last two only support `"small"`, `"medium"`, `"large"`.)
   - `opt_level`: `0`, `1`, `2`, `3`
   - `gate_set_name`: `"ibm"`, `"rigetti"`
   - `smallest_fitting_arch`: `False`, `True`
