@@ -59,7 +59,8 @@ def download_data():
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
-        # print("prepared input data :", prepared_data)
+        print("raw data :", data)
+        print("prepared input data :", prepared_data)
         file_paths, algo_dicts, python_files_list = get_selected_file_paths(
             prepared_data
         )
