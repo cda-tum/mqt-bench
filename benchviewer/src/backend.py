@@ -573,7 +573,7 @@ def prepareFormInput(formData):
             mapped_devices,
         ),
     )
-    #print("Overall Result: ", res)
+    # print("Overall Result: ", res)
     return res
 
 
