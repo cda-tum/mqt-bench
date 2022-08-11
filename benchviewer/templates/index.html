@@ -131,9 +131,9 @@
 
                 <h5>Scalable Benchmarks:</h5>
                 <div class="d-flex text-center">
-                    <input type="number" class="form-control form-control-sm" min="2" max="130"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="2"
                            id="minQubits" name="minQubits" placeholder="Min Qubits (2)">
-                    <input type="number" class="form-control form-control-sm" min="2" max="130"
+                    <input type="number" class="form-control form-control-sm" min="2" max="130" value="130"
                            id="maxQubits" name="maxQubits" placeholder="Max Qubits (130)">
                 </div>
                 {% for benchmark in benchmarks %}
@@ -190,14 +190,14 @@
             <div class="row">
                 <div class="col-3 align-items-center">
                     <input class="form-check-input" type="checkbox"
-                           id="indep_qiskit_compiler">
+                           id="indep_qiskit_compiler" name="indep_qiskit_compiler" value="true">
                     <label for="indep_qiskit_compiler">Qiskit</label>
                 </div>
             </div>
             <div class="row">
                 <div class="col-5 align-items-center">
                     <input class="form-check-input" type="checkbox"
-                           id="indep_tket_compiler">
+                           id="indep_tket_compiler" name="indep_tket_compiler" value="true">
                     <label for="indep_tket_compiler">TKET</label>
                 </div>
             </div>
@@ -211,7 +211,7 @@
             <div class="row">
                 <div class="col-2 align-items-center">
                     <input class="form-check-input" type="checkbox" onchange="toggleNativeQiskit()"
-                           id="nativegates_qiskit_compiler" name="nativegates_qiskit_compiler">
+                           id="nativegates_qiskit_compiler" name="nativegates_qiskit_compiler" value="true">
                     <label for="nativegates_qiskit_compiler">Qiskit</label>
                 </div>
                 <div class="col-5 align-items-center">
@@ -233,7 +233,7 @@
             <div class="row">
                 <div class="col-2 align-items-center">
                     <input class="form-check-input" type="checkbox"
-                           id="nativegates_tket_compiler" name="nativegates_tket_compiler">
+                           id="nativegates_tket_compiler" name="nativegates_tket_compiler value="true"">
                     <label for="nativegates_tket_compiler">TKET</label>
                 </div>
             </div>
@@ -376,16 +376,8 @@
     }
 
     function toggleAllSelection() {
-        var ids = {
-        {
-            benchmarks | length
-        }
-    }
-        +{
-        {
-            nonscalable_benchmarks | length
-        }
-    }
+
+        var ids = {{benchmarks | length}}+{{nonscalable_benchmarks | length }}
         for (let i = 1; i <= ids; i++) {
             document.getElementById("selectBench_" + i).checked = all_benchmarks.checked
         }
@@ -397,30 +389,20 @@
     }
 
     function get_num_benchs() {
-        0
-        // form = document.getElementById("benchmark_form")
-        // const formData = new FormData(form);
-        // fetch('./get_num_benchmarks', {
-        //     method: 'POST',
-        //     body: formData,
-        //     dataType: 'json',
-        // }).then(response => response.json())
-        //     .then(response => {
-        //         document.getElementById("num_benchmarks").innerHTML = response.num_selected;
-        //     });
+        form = document.getElementById("benchmark_form")
+        const formData = new FormData(form);
+        fetch('./get_num_benchmarks', {
+            method: 'POST',
+            body: formData,
+            dataType: 'json',
+        }).then(response => response.json())
+            .then(response => {
+                document.getElementById("num_benchmarks").innerHTML = response.num_selected;
+            });
     }
 
     function check_col_if_all_selected() {
-        var ids = {
-        {
-            benchmarks | length
-        }
-    }
-        +{
-        {
-            nonscalable_benchmarks | length
-        }
-    }
+        var ids = {{benchmarks | length}}+{{nonscalable_benchmarks | length }}
         var check_all_selected = true;
         for (let i = 1; i <= ids; i++) {
             if (!document.getElementById("selectBench_" + i).checked) {
