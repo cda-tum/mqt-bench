@@ -1,7 +1,5 @@
 {
-"timeout": 10,
-"save_png": false,
-"save_hist": false,
+"timeout": 300,
 "benchmarks": [
   {
     "name": "ae",
@@ -45,7 +43,7 @@
     "name": "grover",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 23,
+    "max_qubits": 130,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
@@ -53,39 +51,39 @@
     "name": "hhl",
     "include": true,
     "min_index": 1,
-    "max_index": 4
+    "max_index": 10
   },
   {
     "name": "portfolioqaoa",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 19,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "portfoliovqe",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 19,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
     "name": "pricingcall",
     "include": true,
     "min_uncertainty": 2,
-    "max_uncertainty": 14
+    "max_uncertainty": 130
   },
   {
     "name": "pricingput",
     "include": true,
     "min_uncertainty": 2,
-    "max_uncertainty": 14
+    "max_uncertainty": 130
   },
   {
     "name": "qaoa",
     "include": true ,
     "min_qubits": 3,
-    "max_qubits": 24,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -106,7 +104,7 @@
     "name": "qgan",
     "include": true,
     "min_qubits": 2,
-    "max_qubits": 14,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
@@ -127,7 +125,7 @@
     "name": "qwalk",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 95,
+    "max_qubits": 130,
     "stepsize": 1,
     "ancillary_mode": ["noancilla", "v-chain"]
   },
@@ -142,7 +140,7 @@
     "name": "routing",
     "include": true,
     "min_nodes": 2,
-    "max_nodes": 4
+    "max_nodes": 130
   },
   {
     "name": "shor",
@@ -160,7 +158,7 @@
     "name": "tsp",
     "include": true,
     "min_nodes": 2,
-    "max_nodes": 4
+    "max_nodes": 10
   },
   {
     "name": "twolocalrandom",
@@ -173,7 +171,7 @@
     "name": "vqe",
     "include": true,
     "min_qubits": 3,
-    "max_qubits": 21,
+    "max_qubits": 130,
     "stepsize": 1
   },
   {
