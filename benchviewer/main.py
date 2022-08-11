@@ -61,14 +61,12 @@ def download_data():
         prepared_data = prepareFormInput(data)
         print("raw data :", data)
         print("prepared input data :", prepared_data)
-        file_paths, algo_dicts, python_files_list = get_selected_file_paths(
-            prepared_data
-        )
+        file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-        if file_paths or python_files_list:
+        if file_paths:
             return app.response_class(
-                generate_zip_ephemeral_chunks(file_paths, python_files_list),
+                generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
                 headers={
                     "Content-Disposition": 'attachment; filename="MQTBench_{}.zip"'.format(
@@ -110,32 +108,13 @@ def benchmark_description():
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
 def get_num_benchmarks():
-    return None
+
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
         file_paths = get_selected_file_paths(prepared_data)
-        num = 0
-        if file_paths[0]:
-            num += len(set(file_paths[0]))
-
-        # Calculation of algo level benchmarks for non_scalable benchmarks
-        # check config.json for that
-        if file_paths[1]:
-            config_file_path = "../config.json"
-            with open(config_file_path, "r") as jsonfile:
-                cfg = json.load(jsonfile)
-            for dict in file_paths[1]:
-                if "max_qubits" in dict and "min_qubits" in dict:
-                    num += int(dict["max_qubits"]) - int(dict["min_qubits"])
-                else:
-                    for benchmark_config in cfg["benchmarks"]:
-                        if dict["name"] == benchmark_config["name"]:
-                            res = get_num_algo_layer_benchmarks(
-                                dict["name"], benchmark_config
-                            )
-                            num += res
-                            break
+        num = len(file_paths)
+        print("Num benchmarks: ", num)
         data = {"num_selected": num}
         return jsonify(data)
     else:
