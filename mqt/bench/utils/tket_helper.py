@@ -82,12 +82,12 @@ def get_indep_level(
     if not (
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
-        print(
-            qasm_output_folder
-            + filename_native
-            + ".qasm"
-            + " does not already exists and is newly created"
-        )
+        # print(
+        #     qasm_output_folder
+        #     + filename_native
+        #     + ".qasm"
+        #     + " does not already exists and is newly created"
+        # )
         openqasm_gates = utils.get_openqasm_gates()
         target_independent_qiskit = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
@@ -119,12 +119,12 @@ def get_native_gates_level(
     if not (
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
-        print(
-            qasm_output_folder
-            + filename_native
-            + ".qasm"
-            + " does not already exists and is newly created"
-        )
+        # print(
+        #     qasm_output_folder
+        #     + filename_native
+        #     + ".qasm"
+        #     + " does not already exists and is newly created"
+        # )
         openqasm_gates = utils.get_openqasm_gates()
         target_independent_qiskit = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
@@ -171,12 +171,12 @@ def get_mapped_level(
         path.isfile(qasm_output_folder + filename_mapped + ".qasm") and file_precheck
     ):
         cmap = utils.get_cmap_from_devicename(device)
-        print(
-            qasm_output_folder
-            + filename_mapped
-            + ".qasm"
-            + " does not already exists and is newly created"
-        )
+        # print(
+        #     qasm_output_folder
+        #     + filename_mapped
+        #     + ".qasm"
+        #     + " does not already exists and is newly created"
+        # )
         openqasm_gates = utils.get_openqasm_gates()
         target_independent_qiskit = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
