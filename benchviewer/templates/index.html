@@ -321,7 +321,7 @@
         <div class="text-center ">
             <div class="same_row"> # of selected benchmarks:</div>
             <div class="same_row" id="num_benchmarks">0</div>
-            <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadButton"
+            <button type="submit" class=" btn btn-primary btn-lg mx-auto text-center" id="downloadButton" disabled
                     value="submit">
                 Download selected Benchmarks
             </button>
@@ -386,6 +386,8 @@
     function checks_on_change() {
         check_col_if_all_selected()
         get_num_benchs()
+
+
     }
 
     function get_num_benchs() {
@@ -398,7 +400,15 @@
         }).then(response => response.json())
             .then(response => {
                 document.getElementById("num_benchmarks").innerHTML = response.num_selected;
+
+                        if (num_benchmarks.innerHTML > 0) {
+                            downloadButton.disabled = false;
+                        }
+                        if (num_benchmarks.innerHTML == 0) {
+                            downloadButton.disabled = true;
+                        }
             });
+
     }
 
     function check_col_if_all_selected() {
@@ -414,13 +424,6 @@
             all_benchmarks.checked = true;
         }
     }
-
-    $("form").keypress(function (e) {
-        if (e.keyCode == 13) {
-            e.preventDefault();
-            return false;
-        }
-    })
 
 </script>
 </body>

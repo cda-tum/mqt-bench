@@ -309,6 +309,7 @@ def filterDatabase(filterCriteria, database):
         if nativegates_qiskit_compiler:
             for gate_set in native_gatesets:
                 for opt_lvl in native_qiskit_opt_lvls:
+                    print(opt_lvl)
                     db_tmp3 = db_tmp.loc[
                         (db_tmp["nativegates_flag"] == True)
                         & (db_tmp["gate_set"] == gate_set)
@@ -327,7 +328,7 @@ def filterDatabase(filterCriteria, database):
                 db_filtered = pd.concat([db_filtered, db_tmp4])
 
         if mapped_qiskit_compiler:
-            for opt_lvl in native_qiskit_opt_lvls:
+            for opt_lvl in mapped_qiskit_opt_lvls:
                 for device in mapped_devices:
                     db_tmp5 = db_tmp.loc[
                         (db_tmp["mapped_flag"] == True)
@@ -572,7 +573,7 @@ def prepareFormInput(formData):
             mapped_devices,
         ),
     )
-    print("Overall Result: ", res)
+    #print("Overall Result: ", res)
     return res
 
 
