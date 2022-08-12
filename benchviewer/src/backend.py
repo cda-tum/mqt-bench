@@ -309,7 +309,6 @@ def filterDatabase(filterCriteria, database):
         if nativegates_qiskit_compiler:
             for gate_set in native_gatesets:
                 for opt_lvl in native_qiskit_opt_lvls:
-                    print(opt_lvl)
                     db_tmp3 = db_tmp.loc[
                         (db_tmp["nativegates_flag"] == True)
                         & (db_tmp["gate_set"] == gate_set)
@@ -572,16 +571,3 @@ def prepareFormInput(formData):
     )
     # print("Overall Result: ", res)
     return res
-
-
-def add_min_max_qubit_number(database):
-    for benchmark in benchmarks:
-        max_val = database[database["benchmark"] == benchmark["filename"]][
-            "num_qubits"
-        ].max()
-        benchmark["max_qubits"] = int(max_val)
-
-        min_val = database[database["benchmark"] == benchmark["filename"]][
-            "num_qubits"
-        ].min()
-        benchmark["min_qubits"] = int(min_val)
