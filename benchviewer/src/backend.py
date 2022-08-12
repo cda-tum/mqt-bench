@@ -391,13 +391,12 @@ class NoSeekBytesIO:
 
 
 def generate_zip_ephemeral_chunks(
-    filenames: List[str], python_files_list: bool = False
+    filenames: List[str],
 ) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
     paths -- list of file paths for all selected benchmarks
-    python_files_list -- list of all python files necessary to generate the benchmarks on the algorithm level
 
     Return values:
         Generator of bytes to send to the browser
@@ -406,8 +405,8 @@ def generate_zip_ephemeral_chunks(
     fileobj = NoSeekBytesIO(io.BytesIO())
 
     paths: List[Path] = [Path(name) for name in filenames]
-    if python_files_list:
-        paths.append(Path("./static/files/algo_level.txt"))
+    # if python_files_list:
+    # paths.append(Path("./static/files/algo_level.txt"))
 
     with ZipFile(fileobj, mode="w") as zf:
         for individualFile in paths:
@@ -439,9 +438,7 @@ def get_selected_file_paths(prepared_data):
     prepared_data -- user's filter criteria after preparation step
 
     Return values:
-    filter_list -- list of filter criteria for each selected benchmark
-    algo_dicts -- dictionary to handle the algorithm level, since that one is not available as a downloadable file
-    python_files_list -- list of all python files needed to generated the algorithm level
+    file_paths -- list of filter criteria for each selected benchmark
     """
 
     if prepared_data:
