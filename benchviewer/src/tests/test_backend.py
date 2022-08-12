@@ -9,10 +9,10 @@ from zipfile import ZipFile, ZIP_DEFLATED
 @pytest.mark.parametrize(
     "filename, expected_res",
     [
-        ("shor_15_4_nativegates_rigetti_opt0_18.qasm", 0),
-        ("dj_mapped_ibm-s_opt3_103.qasm", 3),
-        ("graphstate_nativegates_ibm_opt2_15.qasm", 2),
-        ("grover-noancilla_nativegates_ibm_opt1_8.qasm", 1),
+        ("shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm", 0),
+        ("dj_mapped_ibm_washington_qiskit_opt3_103.qasm", 3),
+        ("graphstate_nativegates_ibm_qiskit_opt2_15.qasm", 2),
+        ("grover-noancilla_nativegates_ibm_qiskit_opt1_8.qasm", 1),
         ("HHL_indep_5.qasm", -1),
     ],
 )
@@ -23,11 +23,11 @@ def test_get_opt_level(filename, expected_res):
 @pytest.mark.parametrize(
     "filename, expected_res",
     [
-        ("shor_15_4_nativegates_rigetti_opt0_18.qasm", 18),
-        ("dj_mapped_ibm-s_opt3_103.qasm", 103),
-        ("graphstate_nativegates_ibm_opt2_15.qasm", 15),
-        ("grover-noancilla_nativegates_ibm_opt1_8.qasm", 8),
-        ("HHL_indep_a.qasm", -1),
+        ("shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm", 18),
+        ("dj_mapped_ibm_washington_qiskit_opt3_103.qasm", 103),
+        ("graphstate_nativegates_ibm_qiskit_opt2_15.qasm", 15),
+        ("grover-noancilla_nativegates_ibm_qiskit_opt1_8.qasm", 8),
+        ("HHL_indep_5.qasm", 5),
     ],
 )
 def test_get_num_qubits(filename, expected_res):
@@ -38,83 +38,78 @@ def test_get_num_qubits(filename, expected_res):
     "filename, expected_res",
     [
         (
-            "shor_15_4_nativegates_rigetti_opt0_18.qasm",
+            "shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
             [
                 "shor",
                 18,
-                "rigetti",
-                False,
                 False,
                 True,
                 False,
-                False,
-                False,
+                "qiskit",
                 0,
-                "shor_15_4_nativegates_rigetti_opt0_18.qasm",
+                "rigetti",
+                None,
+                "shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
             ],
         ),
         (
-            "dj_mapped_ibm-s_opt3_103.qasm",
+            "dj_mapped_ibm_washington_qiskit_opt3_103.qasm",
             [
                 "dj",
                 103,
-                "ibm",
-                False,
                 False,
                 False,
                 True,
-                True,
-                False,
+                "qiskit",
                 3,
-                "dj_mapped_ibm-s_opt3_103.qasm",
+                "ibm",
+                "ibm_washington",
+                "dj_mapped_ibm_washington_qiskit_opt3_103.qasm",
             ],
         ),
         (
-            "dj_mapped_ibm-b_opt3_103.qasm",
+            "pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
             [
-                "dj",
-                103,
-                "ibm",
-                False,
-                False,
-                False,
-                True,
-                False,
-                True,
-                3,
-                "dj_mapped_ibm-b_opt3_103.qasm",
-            ],
-        ),
-        (
-            "grover-noancilla_nativegates_ibm_opt3_8.qasm",
-            [
-                "grover-noancilla",
-                8,
-                "ibm",
-                False,
-                False,
-                True,
-                False,
-                False,
-                False,
-                3,
-                "grover-noancilla_nativegates_ibm_opt3_8.qasm",
-            ],
-        ),
-        (
-            "HHL_indep_5.qasm",
-            [
-                "hhl",
+                "pricingcall",
                 5,
                 False,
                 False,
                 True,
+                "tket",
+                "line",
+                "oqc",
+                "oqc_lucy",
+                "pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
+            ],
+        ),
+        (
+            "portfoliovqe_nativegates_ionq_qiskit_opt1_3.qasm",
+            [
+                "portfoliovqe",
+                3,
+                False,
+                True,
+                False,
+                "qiskit",
+                1,
+                "ionq",
+                None,
+                "portfoliovqe_nativegates_ionq_qiskit_opt1_3.qasm",
+            ],
+        ),
+        (
+            "HHL_indep_qiskit_5.qasm",
+            [
+                "hhl",
+                5,
+                True,
                 False,
                 False,
-                False,
-                False,
+                "qiskit",
                 -1,
-                "HHL_indep_5.qasm",
+                None,
+                None,
+                "HHL_indep_qiskit_5.qasm",
             ],
         ),
     ],
@@ -126,269 +121,115 @@ def test_parse_data(filename, expected_res):
 def test_prepareFormInput():
     form_data = dict(
         [
-            ("selectBench_4", "GHZ State"),
-            ("minQubits_4", "5"),
-            ("maxQubits_4", "10"),
-            ("indepLevel_4", "true"),
+            ("all_benchmarks", "true"),
+            ("minQubits", "75"),
+            ("maxQubits", "110"),
+            ("selectBench_1", "Amplitude Estimation (AE)"),
+            ("selectBench_2", "Deutsch-Jozsa"),
             ("selectBench_3", "Graph State"),
-            ("minQubits_3", "5"),
-            ("maxQubits_3", "20"),
-            ("nativeGatesLevel_3", "true"),
-            ("ibm_3", "ibm"),
-            ("optlevel1_3", "1"),
-            ("optlevel3_3", "3"),
-            ("selectBench_21", "W State"),
-            ("minQubits_21", "10"),
-            ("maxQubits_21", "30"),
-            ("mappedLevel_21", "true"),
-            ("rigetti_21", "rigetti"),
-            ("smallest_arch_21", "True"),
-            ("optlevel0_21", "0"),
-            ("optlevel2_21", "2"),
+            ("selectBench_4", "GHZ State"),
+            ("selectBench_5", "Grover's (no ancilla)"),
+            ("selectBench_6", "Grover's (v-chain)"),
+            ("selectBench_7", "Portfolio Optimization with QAOA"),
+            ("selectBench_8", "Portfolio Optimization with VQE"),
+            ("selectBench_9", "Quantum Approximation Optimization Algorithm (QAOA)"),
             ("selectBench_10", "Quantum Fourier Transformation (QFT)"),
-            ("minQubits_10", "20"),
-            ("maxQubits_10", "120"),
-            ("nativeGatesLevel_10", "true"),
-            ("mappedLevel_10", "true"),
-            ("ibm_10", "ibm"),
-            ("rigetti_10", "rigetti"),
-            ("smallest_arch_10", "True"),
-            ("biggest_arch_10", "True"),
-            ("optlevel0_10", "0"),
-            ("optlevel1_10", "1"),
-            ("optlevel3_10", "3"),
-            ("selectBench_11", "Entangled QFT"),
-            ("minQubits_11", "100"),
-            ("maxQubits_11", "110"),
-            ("indepLevel_11", "true"),
-            ("mappedLevel_11", "true"),
-            ("biggest_arch_11", "True"),
-            ("optlevel2_11", "2"),
+            ("selectBench_11", "QFT Entangled"),
+            ("selectBench_12", "Quantum Generative Adversarial Network"),
             ("selectBench_13", "Quantum Phase Estimation (QPE) exact"),
-            ("minQubits_13", "5"),
-            ("maxQubits_13", "40"),
-            ("algorithmLevel_13", "true"),
+            ("selectBench_14", "Quantum Phase Estimation (QPE) inexact"),
+            ("selectBench_15", "Quantum Walk (no ancilla)"),
+            ("selectBench_16", "Quantum Walk (v-chain)"),
+            ("selectBench_17", "Variational Quantum Eigensolver (VQE)"),
+            ("selectBench_18", "Efficient SU2 ansatz with Random Parameters"),
+            ("selectBench_19", "Real Amplitudes ansatz with Random Parameters"),
+            ("selectBench_20", "Two Local ansatz with Random Parameters"),
+            ("selectBench_21", "W-State"),
+            ("selectBench_22", "Excited State"),
+            ("selectBench_23", "Ground State"),
+            ("selectBench_24", "HHL"),
+            ("selectBench_25", "Pricing Call Option"),
+            ("selectBench_26", "Pricing Put Option"),
+            ("selectBench_27", "Routing"),
+            ("selectBench_28", "Shor's"),
+            ("selectBench_29", "Travelling Salesman"),
+            ("indep_qiskit_compiler", "true"),
+            ("indep_tket_compiler", "true"),
+            ("nativegates_qiskit_compiler", "true"),
+            ("nativegates_qiskit_compiler_opt0", "true"),
+            ("nativegates_qiskit_compiler_opt1", "true"),
+            ("nativegates_qiskit_compiler_opt2", "true"),
+            ("nativegates_qiskit_compiler_opt3", "true"),
+            ("nativegates_tket_compiler value=", "on"),
+            ("nativegates_ibm", "true"),
+            ("nativegates_rigetti", "true"),
+            ("nativegates_oqc", "true"),
+            ("nativegates_ionq", "true"),
+            ("mapped_qiskit_compiler", "true"),
+            ("mapped_qiskit_compiler_opt0", "true"),
+            ("mapped_qiskit_compiler_opt1", "true"),
+            ("mapped_qiskit_compiler_opt2", "true"),
+            ("mapped_qiskit_compiler_opt3", "true"),
+            ("mapped_tket_compiler", "true"),
+            ("mapped_tket_compiler_graph", "true"),
+            ("mapped_tket_compiler_line", "true"),
+            ("device_ibm_washington", "true"),
+            ("device_ibm_montreal", "true"),
+            ("device_rigetti_aspen_m1", "true"),
+            ("device_oqc_lucy", "true"),
+            ("device_ionq_ionq11", "true"),
         ]
     )
-    expected_res = {
-        "3": {
-            "selectBench_3": "Graph State",
-            "minQubits_3": "5",
-            "maxQubits_3": "20",
-            "nativeGatesLevel_3": "true",
-            "ibm_3": "ibm",
-            "optlevel1_3": "1",
-            "optlevel3_3": "3",
-        },
-        "4": {
-            "selectBench_4": "GHZ State",
-            "minQubits_4": "5",
-            "maxQubits_4": "10",
-            "indepLevel_4": "true",
-        },
-        "10": {
-            "selectBench_10": "Quantum Fourier Transformation (QFT)",
-            "minQubits_10": "20",
-            "maxQubits_10": "120",
-            "nativeGatesLevel_10": "true",
-            "mappedLevel_10": "true",
-            "ibm_10": "ibm",
-            "rigetti_10": "rigetti",
-            "smallest_arch_10": "True",
-            "biggest_arch_10": "True",
-            "optlevel0_10": "0",
-            "optlevel1_10": "1",
-            "optlevel3_10": "3",
-        },
-        "11": {
-            "selectBench_11": "Entangled QFT",
-            "minQubits_11": "100",
-            "maxQubits_11": "110",
-            "indepLevel_11": "true",
-            "mappedLevel_11": "true",
-            "biggest_arch_11": "True",
-            "optlevel2_11": "2",
-        },
-        "13": {
-            "selectBench_13": "Quantum Phase Estimation (QPE) exact",
-            "minQubits_13": "5",
-            "maxQubits_13": "40",
-            "algorithmLevel_13": "true",
-        },
-        "21": {
-            "selectBench_21": "W State",
-            "minQubits_21": "10",
-            "maxQubits_21": "30",
-            "mappedLevel_21": "true",
-            "rigetti_21": "rigetti",
-            "smallest_arch_21": "True",
-            "optlevel0_21": "0",
-            "optlevel2_21": "2",
-        },
-    }
-    assert backend.prepareFormInput(form_data) == expected_res
 
-
-def test_parseFilterCriteria():
-    input_data = dict(
-        {
-            "3": {
-                "selectBench_3": "Graph State",
-                "minQubits_3": "5",
-                "maxQubits_3": "20",
-                "nativeGatesLevel_3": "true",
-                "ibm_3": "ibm",
-                "optlevel1_3": "1",
-                "optlevel3_3": "3",
-            },
-            "4": {
-                "selectBench_4": "GHZ State",
-                "minQubits_4": "5",
-                "maxQubits_4": "10",
-                "indepLevel_4": "true",
-            },
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "20",
-                "maxQubits_10": "120",
-                "nativeGatesLevel_10": "true",
-                "mappedLevel_10": "true",
-                "ibm_10": "ibm",
-                "rigetti_10": "rigetti",
-                "smallest_arch_10": "True",
-                "biggest_arch_10": "True",
-                "optlevel0_10": "0",
-                "optlevel1_10": "1",
-                "optlevel3_10": "3",
-            },
-            "11": {
-                "selectBench_11": "Entangled QFT",
-                "minQubits_11": "100",
-                "maxQubits_11": "110",
-                "indepLevel_11": "true",
-                "mappedLevel_11": "true",
-                "biggest_arch_11": "True",
-                "optlevel2_11": "2",
-            },
-            "13": {
-                "selectBench_13": "Quantum Phase Estimation (QPE) exact",
-                "minQubits_13": "5",
-                "maxQubits_13": "40",
-                "algorithmLevel_13": "true",
-            },
-            "21": {
-                "selectBench_21": "W State",
-                "minQubits_21": "10",
-                "maxQubits_21": "30",
-                "mappedLevel_21": "true",
-                "rigetti_21": "rigetti",
-                "smallest_arch_21": "True",
-                "optlevel0_21": "0",
-                "optlevel2_21": "2",
-            },
-            "29": {
-                "selectBench_29": "Travelling Salesman",
-                "minQubits_29": "-1",
-                "maxQubits_29": "-1",
-                "indepLevel_29": "true",
-            },
-        }
-    )
-    expected_filter_criteria = [
+    expected_res = (
+        (75, 110),
         [
-            "graphstate",
+            "1",
+            "2",
+            "3",
+            "4",
             "5",
-            "20",
-            True,
-            False,
-            False,
-            False,
-            True,
-            False,
-            False,
-            False,
-            [1, 3],
-        ],
-        ["ghz", "5", "10", False, False, False, True, False, False, False, False, []],
-        [
-            "qft",
-            "20",
-            "120",
-            True,
-            True,
-            False,
-            False,
-            True,
-            True,
-            True,
-            True,
-            [0, 1, 3],
-        ],
-        [
-            "qftentangled",
-            "100",
-            "110",
-            False,
-            False,
-            False,
-            True,
-            False,
-            True,
-            False,
-            True,
-            [2],
-        ],
-        [
-            "qpeexact",
-            "5",
-            "40",
-            False,
-            False,
-            True,
-            False,
-            False,
-            False,
-            False,
-            False,
-            [],
-        ],
-        [
-            "wstate",
+            "6",
+            "7",
+            "8",
+            "9",
             "10",
-            "30",
-            False,
-            True,
-            False,
-            False,
-            False,
-            True,
-            True,
-            False,
-            [0, 2],
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
         ],
-        [
-            "tsp",
-            "-1",
-            "-1",
-            False,
-            False,
-            False,
-            True,
-            False,
-            False,
-            False,
-            False,
-            [],
-        ],
-    ]
-    expected_algo_dicts = [{"name": "qpeexact", "min_qubits": "5", "max_qubits": "40"}]
-    expected_python_files_list = ["./static/files/algo_level.txt"]
-
-    assert backend.parseFilterCriteria(input_data) == (
-        expected_filter_criteria,
-        expected_algo_dicts,
-        expected_python_files_list,
+        (True, True),
+        ((True, True), [0, 1, 2, 3], ["ibm", "rigetti", "oqc", "ionq"]),
+        (
+            (True, True),
+            ([0, 1, 2, 3], ["graph", "line"]),
+            [
+                "ibm_washington",
+                "ibm_montreal",
+                "rigetti_aspen_m1",
+                "oqc_lucy",
+                "ionq11",
+            ],
+        ),
     )
+
+    assert backend.prepareFormInput(form_data) == expected_res
 
 
 def test_create_database():
@@ -400,158 +241,59 @@ def test_create_database():
         MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
 
     database = backend.createDatabase(MQTBENCH_ALL_ZIP)
-    assert len(database) == 37497
+    assert len(database) > 0
     backend.database = database
 
-    input_data = dict(
-        {
-            "4": {
-                "selectBench_4": "GHZ State",
-                "minQubits_4": "5",
-                "maxQubits_4": "7",
-                "indepLevel_4": "true",
-            }
-        }
+    input_data = (
+        (2, 5),
+        ["4"],
+        (True, False),
+        ((False, False), [], []),
+        ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 3
+    assert len(res[0]) > 3
 
-    input_data = dict(
-        {
-            "3": {
-                "selectBench_3": "Graph State",
-                "minQubits_3": "99",
-                "maxQubits_3": "106",
-                "nativeGatesLevel_3": "true",
-                "ibm_3": "ibm",
-                "optlevel1_3": "1",
-                "optlevel2_3": "2",
-            }
-        }
+    input_data = (
+        (100, 110),
+        ["3"],
+        (False, False),
+        ((False, True), [], ["rigetti", "ionq"]),
+        ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 16
+    assert len(res[0]) > 20
 
-    input_data = dict(
-        {
-            "3": {
-                "selectBench_3": "Graph State",
-                "minQubits_3": "99",
-                "maxQubits_3": "106",
-                "nativeGatesLevel_3": "true",
-                "ibm_3": "ibm",
-                "optlevel1_3": "1",
-            }
-        }
+    input_data = (
+        (75, 110),
+        ["2"],
+        (False, False),
+        ((False, False), [], ["rigetti", "ionq"]),
+        ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m1"]),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 8
+    assert len(res[0]) > 20
 
-    input_data = dict(
-        {
-            "3": {
-                "selectBench_3": "Graph State",
-                "optlevel2_3": "2",
-            }
-        }
+    input_data = (
+        (2, 5),
+        ["24"],
+        (True, True),
+        ((True, False), [1, 3], ["rigetti", "ionq", "oqc", "ibm"]),
+        (
+            (True, True),
+            ([1, 3], ["graph", "line"]),
+            ["ibm_montreal", "rigetti_aspen_m1", "ionq11", "ocq_lucy"],
+        ),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert res == (False, False, False)
+    assert len(res[0]) > 20
 
-    input_data = dict(
-        {
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "5",
-                "maxQubits_10": "6",
-                "mappedLevel_10": "true",
-                "rigetti_10": "rigetti",
-                "optlevel1_10": "1",
-                "biggest_arch_10": "True",
-            }
-        }
+    input_data = (
+        (2, 130),
+        ["1"],
+        (False, False),
+        ((True, True), [], []),
+        ((True, True), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 2
-
-    input_data = dict(
-        {
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "5",
-                "maxQubits_10": "6",
-                "mappedLevel_10": "true",
-                "rigetti_10": "rigetti",
-                "optlevel1_10": "1",
-                "smallest_arch_10": "True",
-                "biggest_arch_10": "True",
-            }
-        }
-    )
-    res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 4
-
-    input_data = dict(
-        {
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "5",
-                "maxQubits_10": "6",
-                "mappedLevel_10": "true",
-                "ibm_10": "ibm",
-                "rigetti_10": "rigetti",
-                "optlevel1_10": "1",
-                "smallest_arch_10": "True",
-                "biggest_arch_10": "True",
-            }
-        }
-    )
-    res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 8
-
-    input_data = dict(
-        {
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "5",
-                "maxQubits_10": "8",
-                "nativeGatesLevel_10": "true",
-                "mappedLevel_10": "true",
-                "ibm_10": "ibm",
-                "rigetti_10": "rigetti",
-                "optlevel1_10": "1",
-                "smallest_arch_10": "True",
-                "biggest_arch_10": "True",
-            }
-        }
-    )
-    res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 24
-
-    input_data = dict(
-        {
-            "21": {
-                "selectBench_21": "W State",
-                "minQubits_21": "5",
-                "maxQubits_21": "10",
-                "mappedLevel_21": "true",
-                "rigetti_21": "rigetti",
-                "smallest_arch_21": "True",
-                "optlevel0_21": "0",
-            },
-            "10": {
-                "selectBench_10": "Quantum Fourier Transformation (QFT)",
-                "minQubits_10": "5",
-                "maxQubits_10": "8",
-                "nativeGatesLevel_10": "true",
-                "mappedLevel_10": "true",
-                "ibm_10": "ibm",
-                "rigetti_10": "rigetti",
-                "optlevel1_10": "1",
-                "smallest_arch_10": "True",
-                "biggest_arch_10": "True",
-            },
-        }
-    )
-    res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) == 30
+    assert res == []
