@@ -72,7 +72,7 @@ def create_benchmarks_from_config(cfg_path: str):
 
     from joblib import Parallel, delayed
 
-    Parallel(n_jobs=-1, verbose=1)(
+    Parallel(n_jobs=-1, verbose=9)(
         delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
     )
     return
@@ -91,6 +91,9 @@ def benchmark_generation_watcher(func, args):
     signal.alarm(timeout)
     try:
         res = func(*args)
+    # except TimeoutException:
+    #     print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+    #     return False
     except Exception as e:
         # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
         print("Exception: ", e, func, args[0].name, args[1:])
