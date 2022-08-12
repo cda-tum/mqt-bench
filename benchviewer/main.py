@@ -123,23 +123,6 @@ def get_num_benchmarks():
         return jsonify(data)
 
 
-def get_num_algo_layer_benchmarks(benchmark_name, config_entry):
-    if (
-        benchmark_name == "groundstate"
-        or benchmark_name == "excitedstate"
-        or benchmark_name == "shor"
-    ):
-        return len(config_entry["instances"])
-    elif benchmark_name == "routing" or benchmark_name == "tsp":
-        return config_entry["max_nodes"] - config_entry["min_nodes"]
-    elif benchmark_name == "pricingcall" or benchmark_name == "pricingput":
-        return config_entry["max_uncertainty"] - config_entry["min_uncertainty"]
-    elif benchmark_name == "hhl":
-        return config_entry["max_index"] - config_entry["min_index"]
-    else:
-        return False
-
-
 def main():
     app.run(debug=True)
 
