@@ -6,6 +6,7 @@ import importlib
 import signal
 import argparse
 import numpy as np
+import multiprocessing
 
 from typing import Union
 from os import path, mkdir, remove
@@ -79,7 +80,6 @@ def create_benchmarks_from_config(cfg_path: str):
 
 
 def benchmark_generation_watcher(func, args):
-    import multiprocessing
 
     p = multiprocessing.Process(target=func(*args))
     p.start()
