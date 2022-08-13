@@ -252,7 +252,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) > 3
+    assert len(res) > 3
 
     input_data = (
         (100, 110),
@@ -262,7 +262,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) > 20
+    assert len(res) > 20
 
     input_data = (
         (75, 110),
@@ -272,7 +272,7 @@ def test_create_database():
         ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m1"]),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) > 20
+    assert len(res) > 20
 
     input_data = (
         (2, 5),
@@ -286,7 +286,7 @@ def test_create_database():
         ),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res[0]) > 20
+    assert len(res) > 20
 
     input_data = (
         (2, 130),
