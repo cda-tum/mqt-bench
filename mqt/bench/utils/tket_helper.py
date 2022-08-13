@@ -15,7 +15,7 @@ from mqt.bench.utils import utils
 from os import path
 from pytket.extensions.qiskit import qiskit_to_tk
 
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 
 
 def get_rebase(gate_set_name: str, get_gatenames: bool = False):
@@ -146,11 +146,20 @@ def get_indep_level(
         #     + ".qasm"
         #     + " does not already exists and is newly created"
         # )
-        qc_tket = qiskit_to_tk(qc)
+        try:
+            qc = transpile(
+                qc,
+                basis_gates=utils.get_openqasm_gates(),
+                seed_transpiler=10,
+                optimization_level=0,
+            )
+            qc_tket = qiskit_to_tk(qc)
+        except Exception as e:
+            print(e)
+            return False
         openqasm_gate_set_rebase = get_rebase("openqasm")
         openqasm_gate_set_rebase.apply(qc_tket)
         FullPeepholeOptimise().apply(qc_tket)
-        print(qc_tket)
         if return_qc:
             return qc_tket
         else:
@@ -183,7 +192,19 @@ def get_native_gates_level(
         #     + " does not already exists and is newly created"
         # )
 
-        qc_tket = qiskit_to_tk(qc)
+        try:
+            qc = transpile(
+                qc,
+                basis_gates=utils.get_openqasm_gates(),
+                seed_transpiler=10,
+                optimization_level=0,
+            )
+
+            qc_tket = qiskit_to_tk(qc)
+        except Exception as e:
+            print(e)
+            return False
+
         native_gatenames = get_rebase(gate_set_name, True)
         native_gate_set_rebase = get_rebase(gate_set_name)
         native_gate_set_rebase.apply(qc_tket)
@@ -231,8 +252,18 @@ def get_mapped_level(
         #     + ".qasm"
         #     + " does not already exists and is newly created"
         # )
+        try:
+            qc = transpile(
+                qc,
+                basis_gates=utils.get_openqasm_gates(),
+                seed_transpiler=10,
+                optimization_level=0,
+            )
 
-        qc_tket = qiskit_to_tk(qc)
+            qc_tket = qiskit_to_tk(qc)
+        except Exception as e:
+            print(e)
+            return False
 
         native_gatenames = get_rebase(gate_set_name, True)
         native_gate_set_rebase = get_rebase(gate_set_name)
