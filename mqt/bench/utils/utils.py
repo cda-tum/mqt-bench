@@ -358,16 +358,11 @@ def create_zip_file():
     zf = ZipFile("MQTBench_all.zip", "w")
     for dirname, subdirs, files in os.walk(get_qasm_output_path()):
         for filename in files:
-            zf.write(
-                os.path.join(dirname, filename),
-                compress_type=ZIP_DEFLATED,
-                compresslevel=3,
-                arcname=filename,
-            )
-        zf.write(
-            "./benchviewer/static/files/algo_level.txt",
-            compress_type=ZIP_DEFLATED,
-            compresslevel=3,
-            arcname="algo_level.txt",
-        )
+            if filename.endswith(".qasm"):
+                zf.write(
+                    os.path.join(dirname, filename),
+                    compress_type=ZIP_DEFLATED,
+                    compresslevel=3,
+                    arcname=filename,
+                )
     zf.close()
