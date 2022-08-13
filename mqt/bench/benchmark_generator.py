@@ -649,5 +649,5 @@ if __name__ == "__main__":
 
     print(args.file_name)
     create_benchmarks_from_config(args.file_name)
-    postprocess_ocr_qasm_files()
+    utils.postprocess_ocr_qasm_files()
     utils.create_zip_file()
