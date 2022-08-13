@@ -79,28 +79,42 @@ def create_benchmarks_from_config(cfg_path: str):
 
 
 def benchmark_generation_watcher(func, args):
-    class TimeoutException(Exception):  # Custom exception class
-        pass
+    import multiprocessing
 
-    def timeout_handler(signum, frame):  # Custom signal handler
-        raise TimeoutException("TimeoutException")
+    p = multiprocessing.Process(target=func(*args))
+    p.start()
 
-    # Change the behavior of SIGALRM
-    signal.signal(signal.SIGALRM, timeout_handler)
+    p.join(timeout)
 
-    signal.alarm(timeout)
-    try:
-        res = func(*args)
+    if p.is_alive():
+        print("still running, time to terminate/kill it")
+        p.terminate()
+        return False
+
+    return True
+
+    # class TimeoutException(Exception):  # Custom exception class
+    #     pass
+    #
+    # def timeout_handler(signum, frame):  # Custom signal handler
+    #     raise TimeoutException("TimeoutException")
+    #
+    # # Change the behavior of SIGALRM
+    # signal.signal(signal.SIGALRM, timeout_handler)
+    #
+    # signal.alarm(timeout)
+    # try:
+    #     res = func(*args)
     # except TimeoutException:
     #     print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
     #     return False
-    except Exception as e:
-        # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-        print("Exception: ", e, func, args[0].name, args[1:])
-        return False
-    else:
-        # Reset the alarm
-        signal.alarm(0)
+    # except Exception as e:
+    #     # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+    #     print("Exception: ", e)#, func, args[0].name, args[1:])
+    #     return False
+    # else:
+    #     # Reset the alarm
+    #     signal.alarm(0)
 
     return res
 
