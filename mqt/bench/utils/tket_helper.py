@@ -8,14 +8,14 @@ from pytket.passes import (
     auto_rebase_pass,
 )
 from pytket.placement import GraphPlacement, LinePlacement
-from pytket.qasm import circuit_to_qasm_str, circuit_to_qasm
+from pytket.qasm import circuit_to_qasm_str, circuit_from_qasm_str
 from pytket import architecture, circuit
 
 from mqt.bench.utils import utils
 from os import path
 from pytket.extensions.qiskit import qiskit_to_tk
 
-from qiskit import transpile
+from qiskit import QuantumCircuit
 
 
 def get_rebase(gate_set_name: str, get_gatenames: bool = False):
@@ -70,7 +70,7 @@ def get_ibm_rebase(get_gatenames: bool = False):
 
 
 def get_indep_level(
-    qc: circuit,
+    qc: QuantumCircuit,
     num_qubits: int,
     file_precheck: bool,
     return_qc: bool = False,
@@ -88,12 +88,9 @@ def get_indep_level(
         #     + ".qasm"
         #     + " does not already exists and is newly created"
         # )
-        openqasm_gates = utils.get_openqasm_gates()
-        target_independent_qiskit = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
-        )
-        qc_tket = qiskit_to_tk(target_independent_qiskit)
+        qc_tket = circuit_from_qasm_str(qc.qasm())
         FullPeepholeOptimise().apply(qc_tket)
+        print(qc_tket)
         if return_qc:
             return qc_tket
         else:
@@ -125,11 +122,8 @@ def get_native_gates_level(
         #     + ".qasm"
         #     + " does not already exists and is newly created"
         # )
-        openqasm_gates = utils.get_openqasm_gates()
-        target_independent_qiskit = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
-        )
-        qc_tket = qiskit_to_tk(target_independent_qiskit)
+
+        qc_tket = qiskit_to_tk(qc)
         native_gatenames = get_rebase(gate_set_name, True)
         native_gate_set_rebase = get_rebase(gate_set_name)
         native_gate_set_rebase.apply(qc_tket)
@@ -177,11 +171,8 @@ def get_mapped_level(
         #     + ".qasm"
         #     + " does not already exists and is newly created"
         # )
-        openqasm_gates = utils.get_openqasm_gates()
-        target_independent_qiskit = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
-        )
-        qc_tket = qiskit_to_tk(target_independent_qiskit)
+
+        qc_tket = qiskit_to_tk(qc)
 
         native_gatenames = get_rebase(gate_set_name, True)
         native_gate_set_rebase = get_rebase(gate_set_name)
