@@ -73,48 +73,35 @@ def create_benchmarks_from_config(cfg_path: str):
 
     from joblib import Parallel, delayed
 
-    Parallel(n_jobs=-1, verbose=9)(
+    Parallel(n_jobs=-1, verbose=100)(
         delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
     )
     return
 
 
 def benchmark_generation_watcher(func, args):
+    class TimeoutException(Exception):  # Custom exception class
+        pass
 
-    p = multiprocessing.Process(target=func(*args))
-    p.start()
+    def timeout_handler(signum, frame):  # Custom signal handler
+        raise TimeoutException("TimeoutException")
 
-    p.join(timeout)
+    # Change the behavior of SIGALRM
+    signal.signal(signal.SIGALRM, timeout_handler)
 
-    if p.is_alive():
-        print("still running, time to terminate/kill it")
-        p.terminate()
+    signal.alarm(timeout)
+    try:
+        res = func(*args)
+    except TimeoutException:
+        print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
         return False
-
-    return True
-
-    # class TimeoutException(Exception):  # Custom exception class
-    #     pass
-    #
-    # def timeout_handler(signum, frame):  # Custom signal handler
-    #     raise TimeoutException("TimeoutException")
-    #
-    # # Change the behavior of SIGALRM
-    # signal.signal(signal.SIGALRM, timeout_handler)
-    #
-    # signal.alarm(timeout)
-    # try:
-    #     res = func(*args)
-    # except TimeoutException:
-    #     print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-    #     return False
-    # except Exception as e:
-    #     # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-    #     print("Exception: ", e)#, func, args[0].name, args[1:])
-    #     return False
-    # else:
-    #     # Reset the alarm
-    #     signal.alarm(0)
+    except Exception as e:
+        # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+        print("Exception: ", e)  # , func, args[0].name, args[1:])
+        return False
+    else:
+        # Reset the alarm
+        signal.alarm(0)
 
     return res
 
