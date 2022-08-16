@@ -419,7 +419,7 @@ def generate_zip_ephemeral_chunks(
                 individualFile.name,
                 data=MQTBENCH_ALL_ZIP.read(individualFile.name),
                 compress_type=ZIP_DEFLATED,
-                compresslevel=1,
+                compresslevel=3,
             )
             fileobj.hidden_seek(0)
             yield fileobj.read()
