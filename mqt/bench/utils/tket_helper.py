@@ -147,18 +147,19 @@ def get_indep_level(
         #     + " does not already exists and is newly created"
         # )
         try:
+            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
                 qc,
-                basis_gates=utils.get_openqasm_gates(),
+                basis_gates=gates,
                 seed_transpiler=10,
                 optimization_level=0,
             )
             qc_tket = qiskit_to_tk(qc)
         except Exception as e:
-            print(e)
+            print("TKET Exception Indep: ", e)
             return False
-        openqasm_gate_set_rebase = get_rebase("openqasm")
-        openqasm_gate_set_rebase.apply(qc_tket)
+        # openqasm_gate_set_rebase = get_rebase("openqasm")
+        # openqasm_gate_set_rebase.apply(qc_tket)
         FullPeepholeOptimise().apply(qc_tket)
         if return_qc:
             return qc_tket
@@ -193,16 +194,17 @@ def get_native_gates_level(
         # )
 
         try:
+            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
                 qc,
-                basis_gates=utils.get_openqasm_gates(),
+                basis_gates=gates,
                 seed_transpiler=10,
                 optimization_level=0,
             )
 
             qc_tket = qiskit_to_tk(qc)
         except Exception as e:
-            print(e)
+            print("TKET Exception NativeGates: ", e)
             return False
 
         native_gatenames = get_rebase(gate_set_name, True)
@@ -253,16 +255,17 @@ def get_mapped_level(
         #     + " does not already exists and is newly created"
         # )
         try:
+            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
                 qc,
-                basis_gates=utils.get_openqasm_gates(),
+                basis_gates=gates,
                 seed_transpiler=10,
                 optimization_level=0,
             )
 
             qc_tket = qiskit_to_tk(qc)
         except Exception as e:
-            print(e)
+            print("TKET Exception Mapped: ", e)
             return False
 
         native_gatenames = get_rebase(gate_set_name, True)
