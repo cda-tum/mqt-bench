@@ -524,17 +524,16 @@ def get_one_benchmark(
 
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
-    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where
+    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" leve
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
-    0 corresponds to "alg" level and 3 to "mapped" level
     compiler -- "qiskit" or "tket"
     compiler_settings -- Optimization level for if compiler is qiskit (0-3), Line Placement or Graph Placement if compiler is tket (True or False)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
     device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
 
     Return values:
-    QuantumCircuit -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object
+    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object
     """
     init_module_paths()
 
@@ -652,7 +651,7 @@ if __name__ == "__main__":
     print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
     print("#### Start preprocessing")
-    # utils.postprocess_ocr_qasm_files()
+    utils.postprocess_ocr_qasm_files()
     print("#### Start zipping")
-    # utils.create_zip_file()
+    utils.create_zip_file()
     print("#### Generation ended")
