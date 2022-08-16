@@ -230,8 +230,6 @@ def generate_benchmark(benchmark):
                 benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]
             ):
 
-                # res_qc_creation == qc, num_qubits, file_precheck
-                # res == filename, depth, num_qubits
                 res_qc_creation = qc_creation_watcher(
                     create_scalable_qc, [benchmark, n]
                 )
@@ -250,6 +248,7 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     num_generated_circuits_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, file_precheck
     )
+
     if not num_generated_circuits_t_indep:
         return False
 
@@ -257,10 +256,12 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
         qc, num_qubits, file_precheck
     )
 
-    if not num_generated_circuits_t_dep and not num_generated_circuits_t_indep:
+    if num_generated_circuits_t_dep and num_generated_circuits_t_indep:
+        return num_generated_circuits_t_indep + num_generated_circuits_t_dep
+    elif num_generated_circuits_t_indep:
+        return num_generated_circuits_t_indep
+    else:
         return False
-
-    return num_generated_circuits_t_indep + num_generated_circuits_t_dep
 
 
 def generate_target_indep_level_circuit(
@@ -649,6 +650,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(args.file_name)
+    print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
-    utils.postprocess_ocr_qasm_files()
-    utils.create_zip_file()
+    print("#### Start preprocessing")
+    # utils.postprocess_ocr_qasm_files()
+    print("#### Start zipping")
+    # utils.create_zip_file()
+    print("#### Generation ended")
