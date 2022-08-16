@@ -6,7 +6,7 @@ from pytket import *
 from datetime import date
 
 
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_LZMA
 
 
 import networkx as nx
@@ -361,7 +361,7 @@ def create_zip_file():
             if filename.endswith(".qasm"):
                 zf.write(
                     os.path.join(dirname, filename),
-                    compress_type=ZIP_DEFLATED,
+                    compress_type=ZIP_LZMA,
                     compresslevel=3,
                     arcname=filename,
                 )
