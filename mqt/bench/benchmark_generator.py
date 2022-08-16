@@ -269,19 +269,18 @@ def generate_target_indep_level_circuit(
 ):
 
     num_generated_circuits = 0
-    res = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
-    if not res:
-        return False
-    else:
+    res_indep_qiskit = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
+    if res_indep_qiskit:
         num_generated_circuits += 1
 
-    res = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
-    if not res:
-        return False
-    else:
+    res_indep_tket = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
+    if res_indep_tket:
         num_generated_circuits += 1
 
-    return num_generated_circuits
+    if not res_indep_qiskit and not res_indep_tket:
+        return False
+    else:
+        return num_generated_circuits
 
 
 def generate_target_dep_level_circuit(
