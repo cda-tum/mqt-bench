@@ -120,7 +120,7 @@ def qc_creation_watcher(func, args):
     try:
         qc, num_qubits, file_precheck = func(*args)
     except TimeoutException:
-        print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+        print("Benchmark Creation exceeded timeout limit for ", func, args[1:])
         return False
     except Exception as e:
         print("Something else went wrong: ", e)
@@ -245,23 +245,17 @@ def generate_benchmark(benchmark):
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 
-    num_generated_circuits_t_indep = generate_target_indep_level_circuit(
+    succes_generated_circuits_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, file_precheck
     )
 
-    if not num_generated_circuits_t_indep:
+    if not succes_generated_circuits_t_indep:
         return False
 
-    num_generated_circuits_t_dep = generate_target_dep_level_circuit(
+    succes_generated_circuits_t_dep = generate_target_dep_level_circuit(
         qc, num_qubits, file_precheck
     )
-
-    if num_generated_circuits_t_dep and num_generated_circuits_t_indep:
-        return num_generated_circuits_t_indep + num_generated_circuits_t_dep
-    elif num_generated_circuits_t_indep:
-        return num_generated_circuits_t_indep
-    else:
-        return False
+    return True
 
 
 def generate_target_indep_level_circuit(
@@ -281,10 +275,10 @@ def generate_target_indep_level_circuit(
     if res_indep_tket:
         num_generated_circuits += 1
 
-    if not res_indep_qiskit and not res_indep_tket:
+    if num_generated_circuits == 0:
         return False
     else:
-        return num_generated_circuits
+        return True
 
 
 def generate_target_dep_level_circuit(
@@ -372,7 +366,8 @@ def generate_target_dep_level_circuit(
                         num_generated_benchmarks += 1
     if num_generated_benchmarks == 0:
         return False
-    return num_generated_benchmarks
+    else:
+        return True
 
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
