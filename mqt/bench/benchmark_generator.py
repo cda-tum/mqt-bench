@@ -269,11 +269,15 @@ def generate_target_indep_level_circuit(
 ):
 
     num_generated_circuits = 0
-    res_indep_qiskit = qiskit_helper.get_indep_level(qc, num_qubits, file_precheck)
+    res_indep_qiskit = benchmark_generation_watcher(
+        qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck]
+    )
     if res_indep_qiskit:
         num_generated_circuits += 1
 
-    res_indep_tket = tket_helper.get_indep_level(qc, num_qubits, file_precheck)
+    res_indep_tket = benchmark_generation_watcher(
+        tket_helper.get_indep_level, [qc, num_qubits, file_precheck]
+    )
     if res_indep_tket:
         num_generated_circuits += 1
 
