@@ -153,6 +153,38 @@ def createDatabase(zip_file: ZipFile):
 def read_mqtbench_all_zip():
     global MQTBENCH_ALL_ZIP
     huge_zip = Path("./static/files/qasm_output/MQTBench_all.zip")
+
+    version_of_suitable_benchmark_zipfile = "v1.0.0"
+    # ask user if suitable file should be downloaded
+    # if yes: download
+    import requests, io, os
+
+    response = input(
+        "Shall the benchmarks file suitable with this MQTBench version be downloaded? (Y/n) "
+    )
+    if response.lower() == "y" or response == "":
+        print("Start downloading benchmarks...")
+
+        url = (
+            "https://api.github.com/repos/nquetschlich/test/releases/tags/"
+            + version_of_suitable_benchmark_zipfile
+        )
+        response = requests.get(url)
+        zip_file_url = response.json()["assets"][0]["browser_download_url"]
+
+        if not os.path.isdir("tmp_download"):
+            os.mkdir("tmp_download")
+        r = requests.get(zip_file_url)
+
+        with open("tmp_download/MQTBench_all.zip", "wb") as f:
+            f.write(r.content)
+        os.replace(
+            "tmp_download/MQTBench_all.zip",
+            "static/files/test_automatic_download/MQTBench_all.zip",
+        )
+        os.rmdir("tmp_download")
+        print("...completed!")
+
     print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
     with huge_zip.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
