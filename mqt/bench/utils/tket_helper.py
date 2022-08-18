@@ -27,65 +27,65 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
         return get_ibm_rebase(get_gatenames)
     elif gate_set_name == "rigetti":
         return get_rigetti_rebase(get_gatenames)
-    elif gate_set_name == "openqasm":
-        return get_openqasm_rebase(get_gatenames)
+    #elif gate_set_name == "openqasm":
+        #return get_openqasm_rebase(get_gatenames)
 
-
-def get_openqasm_rebase(get_gatenames: bool = False):
-    if get_gatenames:
-        return utils.get_openqasm_gates()
-    else:
-        openqasm_rebase = auto_rebase_pass(
-            {
-                OpType.U3,
-                OpType.U2,
-                OpType.U1,
-                OpType.CX,
-                OpType.noop,
-                # "u0",
-                # u",
-                # "p",
-                OpType.X,
-                OpType.Y,
-                OpType.Z,
-                OpType.H,
-                OpType.S,
-                OpType.Sdg,
-                OpType.T,
-                OpType.Tdg,
-                OpType.Rx,
-                OpType.Ry,
-                OpType.Rz,
-                OpType.SX,
-                OpType.SXdg,
-                OpType.CX,
-                OpType.CZ,
-                OpType.CY,
-                OpType.SWAP,
-                OpType.CH,
-                OpType.CCX,
-                OpType.CSWAP,
-                OpType.CRx,
-                OpType.CRy,
-                OpType.CRz,
-                OpType.CU1,
-                # OpType.CPhase,
-                OpType.CU3,
-                OpType.CSX,
-                # "cu",
-                OpType.XXPhase,
-                OpType.ZZPhase,
-                # "rccx",
-                # "rc3x",
-                # "c3x",
-                # "c3sqrtx",
-                # "c4x",
-                OpType.Measure,
-            }
-        )
-
-        return openqasm_rebase
-
+#
+# def get_openqasm_rebase(get_gatenames: bool = False):
+#     if get_gatenames:
+#         return utils.get_openqasm_gates()
+#     else:
+#         openqasm_rebase = auto_rebase_pass(
+#             {
+#                 OpType.U3,
+#                 OpType.U2,
+#                 OpType.U1,
+#                 OpType.CX,
+#                 OpType.noop,
+#                 # "u0",
+#                 # u",
+#                 # "p",
+#                 OpType.X,
+#                 OpType.Y,
+#                 OpType.Z,
+#                 OpType.H,
+#                 OpType.S,
+#                 OpType.Sdg,
+#                 OpType.T,
+#                 OpType.Tdg,
+#                 OpType.Rx,
+#                 OpType.Ry,
+#                 OpType.Rz,
+#                 OpType.SX,
+#                 OpType.SXdg,
+#                 OpType.CX,
+#                 OpType.CZ,
+#                 OpType.CY,
+#                 OpType.SWAP,
+#                 OpType.CH,
+#                 OpType.CCX,
+#                 OpType.CSWAP,
+#                 OpType.CRx,
+#                 OpType.CRy,
+#                 OpType.CRz,
+#                 OpType.CU1,
+#                 # OpType.CPhase,
+#                 OpType.CU3,
+#                 OpType.CSX,
+#                 # "cu",
+#                 OpType.XXPhase,
+#                 OpType.ZZPhase,
+#                 # "rccx",
+#                 # "rc3x",
+#                 # "c3x",
+#                 # "c3sqrtx",
+#                 # "c4x",
+#                 OpType.Measure,
+#             }
+#         )
+#
+#         return openqasm_rebase
+#
 
 def get_ionq_rebase(get_gatenames: bool = False):
     if get_gatenames:
