@@ -28,7 +28,7 @@ setup(
     url="https://github.com/cda-tum/mqtbench",
     keywords="mqt quantum benchmarking performance testing",
     install_requires=[
-        "qiskit~=0.35.0",
+        "qiskit~=0.36.0",
         "pytket~=1.2.2",
         "pytket-qiskit~=0.25.0",
         "pandas~=1.3.5",
