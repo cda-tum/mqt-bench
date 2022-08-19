@@ -6,9 +6,7 @@ jobs:
   Black:
     runs-on: ubuntu-latest
     steps:
-      - uses: snow-actions/sparse-checkout@v1.1.0
-        with:
-          patterns: "mqt"
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v2
       - name: Black
         uses: psf/black@stable
