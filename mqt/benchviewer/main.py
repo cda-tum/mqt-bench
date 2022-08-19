@@ -23,14 +23,13 @@ def init():
 
 
 def start_server():
+    init()
+    print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
     app.run(debug=False)
 
 
 if __name__ == "__main__":
     start_server()
-
-
-init()
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
