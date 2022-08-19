@@ -16,7 +16,7 @@ PREFIX = "/mqtbench/"
 def init(
     skip_question=False,
     activate_logging=False,
-    target_location: str = "/mqt/benchviewer/static/files/qasm_output",
+    target_location: str = "mqt/benchviewer/static/files/qasm_output",
 ):
     read_mqtbench_all_zip(skip_question, target_location)
     init_database()
