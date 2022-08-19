@@ -19,11 +19,17 @@ PREFIX = "/mqtbench/"
 def init(skip_question=False):
     read_mqtbench_all_zip(skip_question)
     init_database()
-    # logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
+    if ACTIVATE_LOGGING:
+        logging.basicConfig(
+            filename="/local/mqtbench/downloads.log", level=logging.INFO
+        )
 
 
-def start_server(skip_question=False):
-    init(skip_question)
+def start_server(skip_question=False, activate_logging=False):
+    global ACTIVATE_LOGGING
+    ACTIVATE_LOGGING = activate_logging
+
+    init(skip_question=skip_question)
     print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
     app.run(debug=False)
 
@@ -48,7 +54,14 @@ def index():
 def download_pre_gen_zip():
     directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
-    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+    if ACTIVATE_LOGGING:
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        app.logger.info("###### Start ######")
+        app.logger.info("Timestamp: %s", timestamp)
+        app.logger.info("Headers: %s", request.headers)
+        app.logger.info("Download of pre-generated zip")
+        app.logger.info("###### End ######")
 
     return send_from_directory(
         directory=directory,
@@ -69,6 +82,14 @@ def download_data():
         print("prepared input data :", prepared_data)
         file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+        if ACTIVATE_LOGGING:
+            app.logger.info("###### Start ######")
+            app.logger.info("Timestamp: %s", timestamp)
+            app.logger.info("Headers: %s", request.headers)
+            app.logger.info("Prepared_data: %s", prepared_data)
+            app.logger.info("Download started: %s", len(file_paths))
+            app.logger.info("###### End ######")
 
         if file_paths:
             return app.response_class(
