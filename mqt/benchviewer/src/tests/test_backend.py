@@ -236,6 +236,12 @@ def test_read_mqtbench_all_zip():
     assert backend.read_mqtbench_all_zip(skip_question=True)
 
 
+def test_handle_downloading_benchmarks():
+    backend.handle_downloading_benchmarks(
+        "v1.0.0", "mqt/benchviewer/static/files/qasm_output"
+    )
+
+
 def test_create_database():
     huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
     MQTBENCH_ALL_ZIP = None
