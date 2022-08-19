@@ -1,6 +1,3 @@
-import os.path
-import json
-
 from flask import (
     Flask,
     jsonify,
@@ -16,26 +13,17 @@ app = Flask(__name__)
 PREFIX = "/mqtbench/"
 
 
-def init(skip_question=False):
+def init(skip_question=False, activate_logging=False):
     read_mqtbench_all_zip(skip_question)
     init_database()
+
+    global ACTIVATE_LOGGING
+    ACTIVATE_LOGGING = activate_logging
+
     if ACTIVATE_LOGGING:
         logging.basicConfig(
             filename="/local/mqtbench/downloads.log", level=logging.INFO
         )
-
-
-def start_server(skip_question=False, activate_logging=False):
-    global ACTIVATE_LOGGING
-    ACTIVATE_LOGGING = activate_logging
-
-    init(skip_question=skip_question)
-    print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
-    app.run(debug=False)
-
-
-if __name__ == "__main__":
-    start_server()
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
@@ -48,6 +36,16 @@ def index():
         benchmarks=benchmarks,
         nonscalable_benchmarks=nonscalable_benchmarks,
     )
+
+
+@app.route("/help", methods=["GET"])
+def help():
+    """Print available functions."""
+    func_list = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != "static":
+            func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
+    return jsonify(func_list)
 
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
@@ -148,3 +146,13 @@ def get_num_benchmarks():
         data = {"num_selected": 0}
 
         return jsonify(data)
+
+
+def start_server(skip_question=False, activate_logging=False):
+    init(skip_question=skip_question, activate_logging=activate_logging)
+    print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
+    app.run(debug=False)
+
+
+if __name__ == "__main__":
+    start_server()
