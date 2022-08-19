@@ -42,16 +42,6 @@ def index():
     )
 
 
-@app.route("/help", methods=["GET"])
-def help():
-    """Print available functions."""
-    func_list = {}
-    for rule in app.url_map.iter_rules():
-        if rule.endpoint != "static":
-            func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
-    return jsonify(func_list)
-
-
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip():
     directory = "./static/files/qasm_output/"
