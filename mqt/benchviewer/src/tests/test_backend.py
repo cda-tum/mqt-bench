@@ -118,6 +118,10 @@ def test_parse_data(filename, expected_res):
     assert backend.parse_data(filename) == expected_res
 
 
+def test_read_mqtbench_all_zip():
+    assert backend.read_mqtbench_all_zip(True)
+
+
 def test_prepareFormInput():
     form_data = dict(
         [
