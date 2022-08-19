@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 import re
-import json
 import io
+import requests
 from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 from typing import List, Iterable
@@ -150,14 +150,10 @@ def createDatabase(zip_file: ZipFile):
     return database
 
 
-def read_mqtbench_all_zip():
+def read_mqtbench_all_zip(skip_question: bool = False):
     global MQTBENCH_ALL_ZIP
     huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
-
     version_of_suitable_benchmark_zipfile = "v1.0.0"
-    # ask user if suitable file should be downloaded
-    # if yes: download
-    import requests, io, os
 
     url = (
         "https://api.github.com/repos/nquetschlich/test/releases/tags/"
@@ -167,40 +163,43 @@ def read_mqtbench_all_zip():
     if not response:
         print("Suitable benchmarks cannot be downloaded, URL is faulty.")
     else:
-        file_size = int((response.json()["assets"][0]["size"])) / 10e6
-        response = input(
-            "Shall the benchmarks file suitable with this MQTBench ({} MB) version be downloaded? (Y/n)".format(
-                file_size
+        if not skip_question:
+            file_size = int((response.json()["assets"][0]["size"])) / 10e6
+            response = input(
+                "Shall the benchmarks file suitable with this MQTBench ({} MB) version be downloaded? (Y/n)".format(
+                    file_size
+                )
             )
-        )
-        if response.lower() == "y" or response == "":
-            print("Start downloading benchmarks...")
-
-            url = (
-                "https://api.github.com/repos/nquetschlich/test/releases/tags/"
-                + version_of_suitable_benchmark_zipfile
-            )
-            response = requests.get(url)
-            zip_file_url = response.json()["assets"][0]["browser_download_url"]
-
-            if not os.path.isdir("mqt/benchviewer/tmp_download"):
-                os.mkdir("mqt/benchviewer/tmp_download")
-            r = requests.get(zip_file_url)
-
-            with open("mqt/benchviewer/tmp_download/MQTBench_all.zip", "wb") as f:
-                f.write(r.content)
-            os.replace(
-                "mqt/benchviewer/tmp_download/MQTBench_all.zip",
-                "mqt/benchviewer/static/files/test_automatic_download/MQTBench_all.zip",
-            )
-            os.rmdir("mqt/benchviewer/tmp_download")
-            print("...completed!")
+        if skip_question or response.lower() == "y" or response == "":
+            handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile)
 
     print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
     with huge_zip.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
         MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
     print("files: {}".format(len(MQTBENCH_ALL_ZIP.namelist())))
+    return True
+
+
+def handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile):
+    print("Start downloading benchmarks...")
+    url = (
+        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
+        + version_of_suitable_benchmark_zipfile
+    )
+    response = requests.get(url)
+    zip_file_url = response.json()["assets"][0]["browser_download_url"]
+    if not os.path.isdir("mqt/benchviewer/tmp_download"):
+        os.mkdir("mqt/benchviewer/tmp_download")
+    r = requests.get(zip_file_url)
+    with open("mqt/benchviewer/tmp_download/MQTBench_all.zip", "wb") as f:
+        f.write(r.content)
+    os.replace(
+        "mqt/benchviewer/tmp_download/MQTBench_all.zip",
+        "mqt/benchviewer/static/files/test_automatic_download/MQTBench_all.zip",
+    )
+    os.rmdir("mqt/benchviewer/tmp_download")
+    print("...completed!")
 
 
 def get_tket_settings(filename: str):
