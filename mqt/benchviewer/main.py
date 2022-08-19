@@ -16,14 +16,14 @@ app = Flask(__name__)
 PREFIX = "/mqtbench/"
 
 
-def init():
-    read_mqtbench_all_zip()
+def init(skip_question=False):
+    read_mqtbench_all_zip(skip_question)
     init_database()
     # logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
 
-def start_server():
-    init()
+def start_server(skip_question=False):
+    init(skip_question)
     print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
     app.run(debug=False)
 
