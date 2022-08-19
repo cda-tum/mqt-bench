@@ -26,7 +26,7 @@ from mqt.bench.benchmarks.qiskit_application_finance import (
     portfolioqaoa,
 )
 from mqt.bench.benchmarks.qiskit_application_ml import qgan
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
+from mqt.bench.benchmarks.qiskit_application_nature import groundstate
 from mqt.bench.benchmarks.qiskit_application_optimization import tsp, routing
 from qiskit_nature.drivers import Molecule
 from qiskit import QuantumCircuit
@@ -237,16 +237,13 @@ def test_dj_constant_oracle():
 
 
 @pytest.mark.skip(reason="Takes really long")
-def test_ground_and_excited_state():
+def test_groundstate():
     m_1 = Molecule(
         geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
         charge=0,
         multiplicity=1,
     )
     qc = groundstate.create_circuit(m_1)
-    assert qc.depth() > 0
-
-    qc = excitedstate.create_circuit(m_1)
     assert qc.depth() > 0
 
 
