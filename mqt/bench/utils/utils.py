@@ -18,10 +18,10 @@ from qiskit.test.mock import (
     FakeWashington,
 )
 
-qasm_path = "./benchviewer/static/files/qasm_output/"
+qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
 
-def set_qasm_output_path(new_path: str = "./benchviewer/static/files/qasm_output/"):
+def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
     global qasm_path
     qasm_path = new_path
 
