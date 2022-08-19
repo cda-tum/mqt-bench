@@ -196,7 +196,7 @@ def handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile):
         f.write(r.content)
     os.replace(
         "mqt/benchviewer/tmp_download/MQTBench_all.zip",
-        "mqt/benchviewer/static/files/test_automatic_download/MQTBench_all.zip",
+        "mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip",
     )
     os.rmdir("mqt/benchviewer/tmp_download")
     print("...completed!")
