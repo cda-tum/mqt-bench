@@ -329,22 +329,3 @@ def test_configure_end():
         os.remove(os.path.join(test_qasm_output_path, f))
     os.rmdir(test_qasm_output_path)
     utils.set_qasm_output_path()
-
-
-def test_generated_files():
-    directory = utils.get_qasm_output_path()
-
-    failed_files = []
-    for f in os.listdir(directory):
-        if f.endswith(".qasm"):
-            path = os.path.join(directory, f)
-            try:
-                qc = QuantumCircuit.from_qasm_file(path)
-            except:
-                failed_files.append(path)
-
-    with open("failed_files.txt", "w") as f:
-        for fail in failed_files:
-            f.write(str(fail) + "\n")
-
-    assert len(failed_files) == 0
