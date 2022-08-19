@@ -19,7 +19,7 @@ from mqt.bench.benchmarks.qiskit_application_finance import (
     pricingcall,
     pricingput,
 )
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
+from mqt.bench.benchmarks.qiskit_application_nature import groundstate
 
 
 from mqt.bench.utils import qiskit_helper, tket_helper, utils
@@ -188,15 +188,6 @@ def generate_benchmark(benchmark):
         elif benchmark["name"] == "groundstate":
             for choice in benchmark["instances"]:
                 res_qc_creation = qc_creation_watcher(create_groundstate_qc, [choice])
-                if not res_qc_creation:
-                    break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
-                if not res:
-                    break
-
-        elif benchmark["name"] == "excitedstate":
-            for choice in benchmark["instances"]:
-                res_qc_creation = qc_creation_watcher(create_excitedstate_qc, [choice])
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
@@ -458,24 +449,6 @@ def create_groundstate_qc(choice: str):
         )
 
 
-def create_excitedstate_qc(choice: str):
-    molecule = utils.get_molecule(choice)
-
-    try:
-        qc = excitedstate.create_circuit(molecule)
-        qc.name = qc.name + "_" + choice
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(
-            "\n Problem occured in outer loop: ",
-            "create_excitedstate_benchmarks",
-            choice,
-            e,
-        )
-        return False
-
-
 def create_pricingcall_qc(num_uncertainty: int):
     # num_options is not the number of qubits in this case
     try:
@@ -524,7 +497,7 @@ def get_one_benchmark(
     benchmark_name -- name of the to be generated benchmark
     level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" leve
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
-    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate", "excitedstate" and "shor"
+    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
     compiler -- "qiskit" or "tket"
     compiler_settings -- Optimization level for if compiler is qiskit (0-3), Line Placement or Graph Placement if compiler is tket (True or False)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
@@ -569,10 +542,6 @@ def get_one_benchmark(
     elif benchmark_name == "groundstate":
         molecule = utils.get_molecule(benchmark_instance_name)
         qc = groundstate.create_circuit(molecule)
-
-    elif benchmark_name == "excitedstate":
-        molecule = utils.get_molecule(benchmark_instance_name)
-        qc = excitedstate.create_circuit(molecule)
 
     elif benchmark_name == "pricingcall":
         qc = pricingcall.create_circuit(circuit_size)
