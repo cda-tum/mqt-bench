@@ -33,15 +33,11 @@ setup(
         "flask~=2.1.2",
         "networkx~=2.8.3",
         "pytest~=7.1.1",
+        "qiskit_finance~=0.3.1",
+        "qiskit_machine-learning~=0.4.0",
+        "qiskit_nature~=0.3.1",
+        "qiskit_optimization~=0.3.2",
     ],
-    extras_require={
-        "all": [
-            "qiskit_finance~=0.3.1",
-            "qiskit_machine-learning~=0.4.0",
-            "qiskit_nature~=0.3.1",
-            "qiskit_optimization~=0.3.2",
-        ],
-    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

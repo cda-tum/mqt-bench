@@ -4,7 +4,7 @@ on:
   release:
     types: [ published ]
   push:
-    branches: [ main, master ]
+    branches: [ main, master, packaging_and_versioning ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
@@ -14,9 +14,7 @@ jobs:
     name:    Build wheel
     runs-on: ubuntu-latest
     steps:
-      - uses: snow-actions/sparse-checkout@v1.1.0
-        with:
-          patterns: "mqt"
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         name: Install Python
       - name: Install dependencies
@@ -33,9 +31,7 @@ jobs:
     name:    Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: snow-actions/sparse-checkout@v1.1.0
-        with:
-          patterns: "mqt"
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         name: Install Python
       - name: Install dependencies
