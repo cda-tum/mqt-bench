@@ -8,7 +8,7 @@ with open(README_PATH) as readme_file:
 setup(
     name="mqt.bench",
     packages=[
-        "benchviewer",
+        "mqt.benchviewer",
         "mqt.bench",
         "mqt.bench.utils",
         "mqt.bench.benchmarks",
