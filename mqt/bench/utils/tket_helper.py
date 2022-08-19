@@ -27,8 +27,9 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
         return get_ibm_rebase(get_gatenames)
     elif gate_set_name == "rigetti":
         return get_rigetti_rebase(get_gatenames)
-    #elif gate_set_name == "openqasm":
-        #return get_openqasm_rebase(get_gatenames)
+    # elif gate_set_name == "openqasm":
+    # return get_openqasm_rebase(get_gatenames)
+
 
 #
 # def get_openqasm_rebase(get_gatenames: bool = False):
@@ -86,6 +87,7 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
 #
 #         return openqasm_rebase
 #
+
 
 def get_ionq_rebase(get_gatenames: bool = False):
     if get_gatenames:
