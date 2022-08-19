@@ -118,10 +118,6 @@ def test_parse_data(filename, expected_res):
     assert backend.parse_data(filename) == expected_res
 
 
-def test_read_mqtbench_all_zip():
-    assert backend.read_mqtbench_all_zip(True)
-
-
 def test_prepareFormInput():
     form_data = dict(
         [
@@ -236,8 +232,11 @@ def test_prepareFormInput():
     assert backend.prepareFormInput(form_data) == expected_res
 
 
-def test_create_database():
+def test_read_mqtbench_all_zip():
+    assert backend.read_mqtbench_all_zip(True)
 
+
+def test_create_database():
     huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
     MQTBENCH_ALL_ZIP = None
     with huge_zip.open("rb") as zf:
