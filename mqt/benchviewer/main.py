@@ -8,22 +8,29 @@ from flask import (
     request,
     send_from_directory,
 )
-from src.backend import *
+from mqt.benchviewer.src.backend import *
 from datetime import datetime
 import logging
+
+app = Flask(__name__)
+PREFIX = "/mqtbench/"
 
 
 def init():
     read_mqtbench_all_zip()
     init_database()
-
     # logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
 
-init()
-app = Flask(__name__)
+def start_server():
+    app.run(debug=False)
 
-PREFIX = "/mqtbench/"
+
+if __name__ == "__main__":
+    start_server()
+
+
+init()
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
@@ -121,11 +128,3 @@ def get_num_benchmarks():
         data = {"num_selected": 0}
 
         return jsonify(data)
-
-
-def main():
-    app.run(debug=True)
-
-
-if __name__ == "__main__":
-    main()

@@ -152,38 +152,49 @@ def createDatabase(zip_file: ZipFile):
 
 def read_mqtbench_all_zip():
     global MQTBENCH_ALL_ZIP
-    huge_zip = Path("./static/files/qasm_output/MQTBench_all.zip")
+    huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
 
     version_of_suitable_benchmark_zipfile = "v1.0.0"
     # ask user if suitable file should be downloaded
     # if yes: download
     import requests, io, os
 
-    response = input(
-        "Shall the benchmarks file suitable with this MQTBench version be downloaded? (Y/n) "
+    url = (
+        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
+        + version_of_suitable_benchmark_zipfile
     )
-    if response.lower() == "y" or response == "":
-        print("Start downloading benchmarks...")
-
-        url = (
-            "https://api.github.com/repos/nquetschlich/test/releases/tags/"
-            + version_of_suitable_benchmark_zipfile
+    response = requests.get(url)
+    if not response:
+        print("Suitable benchmarks cannot be downloaded, URL is faulty.")
+    else:
+        file_size = int((response.json()["assets"][0]["size"])) / 10e6
+        response = input(
+            "Shall the benchmarks file suitable with this MQTBench ({} MB) version be downloaded? (Y/n)".format(
+                file_size
+            )
         )
-        response = requests.get(url)
-        zip_file_url = response.json()["assets"][0]["browser_download_url"]
+        if response.lower() == "y" or response == "":
+            print("Start downloading benchmarks...")
 
-        if not os.path.isdir("tmp_download"):
-            os.mkdir("tmp_download")
-        r = requests.get(zip_file_url)
+            url = (
+                "https://api.github.com/repos/nquetschlich/test/releases/tags/"
+                + version_of_suitable_benchmark_zipfile
+            )
+            response = requests.get(url)
+            zip_file_url = response.json()["assets"][0]["browser_download_url"]
 
-        with open("tmp_download/MQTBench_all.zip", "wb") as f:
-            f.write(r.content)
-        os.replace(
-            "tmp_download/MQTBench_all.zip",
-            "static/files/test_automatic_download/MQTBench_all.zip",
-        )
-        os.rmdir("tmp_download")
-        print("...completed!")
+            if not os.path.isdir("mqt/benchviewer/tmp_download"):
+                os.mkdir("mqt/benchviewer/tmp_download")
+            r = requests.get(zip_file_url)
+
+            with open("mqt/benchviewer/tmp_download/MQTBench_all.zip", "wb") as f:
+                f.write(r.content)
+            os.replace(
+                "mqt/benchviewer/tmp_download/MQTBench_all.zip",
+                "mqt/benchviewer/static/files/test_automatic_download/MQTBench_all.zip",
+            )
+            os.rmdir("mqt/benchviewer/tmp_download")
+            print("...completed!")
 
     print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
     with huge_zip.open("rb") as zf:
