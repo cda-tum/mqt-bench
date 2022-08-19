@@ -233,7 +233,7 @@ def test_prepareFormInput():
 
 
 def test_read_mqtbench_all_zip():
-    assert backend.read_mqtbench_all_zip(True)
+    assert backend.read_mqtbench_all_zip(skip_question=True)
 
 
 def test_create_database():
@@ -258,14 +258,14 @@ def test_create_database():
     assert len(res) > 3
 
     input_data = (
-        (100, 110),
+        (110, 120),
         ["3"],
         (False, False),
         ((False, True), [], ["rigetti", "ionq"]),
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20
+    assert len(res) > 15
 
     input_data = (
         (75, 110),
