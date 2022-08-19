@@ -142,8 +142,16 @@ def get_num_benchmarks():
         return jsonify(data)
 
 
-def start_server(skip_question=False, activate_logging=False):
-    init(skip_question=skip_question, activate_logging=activate_logging)
+def start_server(
+    skip_question=False,
+    activate_logging=False,
+    target_location: str = "mqt/benchviewer/static/files/qasm_output",
+):
+    init(
+        skip_question=skip_question,
+        activate_logging=activate_logging,
+        target_location=target_location,
+    )
     print("Server is hosted at: ", "http://127.0.0.1:5000" + PREFIX)
     app.run(debug=False)
 
