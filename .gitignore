@@ -6,6 +6,8 @@
 /hist_output/*
 /qasm_output/*
 
+*.qasm
+
 .idea/*
 *.DS_Store
 *hist_output/*png
