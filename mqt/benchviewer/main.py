@@ -13,8 +13,12 @@ app = Flask(__name__)
 PREFIX = "/mqtbench/"
 
 
-def init(skip_question=False, activate_logging=False):
-    read_mqtbench_all_zip(skip_question)
+def init(
+    skip_question=False,
+    activate_logging=False,
+    target_location: str = "/mqt/benchviewer/static/files/qasm_output",
+):
+    read_mqtbench_all_zip(skip_question, target_location)
     init_database()
 
     global ACTIVATE_LOGGING

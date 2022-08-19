@@ -150,9 +150,12 @@ def createDatabase(zip_file: ZipFile):
     return database
 
 
-def read_mqtbench_all_zip(skip_question: bool = False):
+def read_mqtbench_all_zip(
+    skip_question: bool = False,
+    target_location: str = "/mqt/benchviewer/static/files/qasm_output",
+):
     global MQTBENCH_ALL_ZIP
-    huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
+    huge_zip = Path(target_location + "/MQTBench_all.zip")
     version_of_suitable_benchmark_zipfile = "v1.0.0"
 
     url = (
@@ -171,7 +174,9 @@ def read_mqtbench_all_zip(skip_question: bool = False):
                 )
             )
         if skip_question or response.lower() == "y" or response == "":
-            handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile)
+            handle_downloading_benchmarks(
+                version_of_suitable_benchmark_zipfile, target_location
+            )
 
     print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
     with huge_zip.open("rb") as zf:
@@ -181,7 +186,9 @@ def read_mqtbench_all_zip(skip_question: bool = False):
     return True
 
 
-def handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile):
+def handle_downloading_benchmarks(
+    version_of_suitable_benchmark_zipfile, target_location: str
+):
     print("Start downloading benchmarks...")
     url = (
         "https://api.github.com/repos/nquetschlich/test/releases/tags/"
@@ -196,7 +203,7 @@ def handle_downloading_benchmarks(version_of_suitable_benchmark_zipfile):
         f.write(r.content)
     os.replace(
         "mqt/benchviewer/tmp_download/MQTBench_all.zip",
-        "mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip",
+        target_location + "/MQTBench_all.zip",
     )
     os.rmdir("mqt/benchviewer/tmp_download")
     print("...completed!")
