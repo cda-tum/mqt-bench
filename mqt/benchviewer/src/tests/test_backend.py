@@ -1,9 +1,9 @@
-from benchviewer.src import backend
+from mqt.benchviewer.src import backend
 
 import pytest
 from pathlib import Path
 import io
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
 
 
 @pytest.mark.parametrize(
@@ -234,7 +234,7 @@ def test_prepareFormInput():
 
 def test_create_database():
 
-    huge_zip = Path("./benchviewer/static/files/qasm_output/MQTBench_all.zip")
+    huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
     MQTBENCH_ALL_ZIP = None
     with huge_zip.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
