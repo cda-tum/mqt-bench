@@ -152,7 +152,7 @@ def createDatabase(zip_file: ZipFile):
 
 def read_mqtbench_all_zip(
     skip_question: bool = False,
-    target_location: str = "/mqt/benchviewer/static/files/qasm_output",
+    target_location: str = "mqt/benchviewer/static/files/qasm_output",
 ):
     global MQTBENCH_ALL_ZIP
     huge_zip = Path(target_location + "/MQTBench_all.zip")
@@ -201,6 +201,9 @@ def handle_downloading_benchmarks(
     r = requests.get(zip_file_url)
     with open("mqt/benchviewer/tmp_download/MQTBench_all.zip", "wb") as f:
         f.write(r.content)
+
+    if not os.path.isdir(target_location):
+        os.mkdir(target_location)
     os.replace(
         "mqt/benchviewer/tmp_download/MQTBench_all.zip",
         target_location + "/MQTBench_all.zip",
