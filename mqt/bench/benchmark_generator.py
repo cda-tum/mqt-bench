@@ -1,6 +1,5 @@
 from qiskit import QuantumCircuit, transpile
 
-import matplotlib.pyplot as plt
 import json
 import importlib
 import signal
