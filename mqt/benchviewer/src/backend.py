@@ -195,9 +195,9 @@ def read_mqtbench_all_zip(
                             version_found = True
 
                         if version_found:
+                            download_url = asset["browser_download_url"]
                             if not skip_question:
                                 file_size = round((asset["size"]) / 2**20, 2)
-                                download_url = asset["browser_download_url"]
                                 print(
                                     "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
                                         possible_version,
