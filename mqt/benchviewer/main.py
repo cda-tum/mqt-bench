@@ -146,6 +146,7 @@ def start_server(
     skip_question=False,
     activate_logging=False,
     target_location: str = "mqt/benchviewer/static/files/qasm_output",
+    debug_flag=False,
 ):
     init(
         skip_question=skip_question,
@@ -161,7 +162,7 @@ def start_server(
         log = logging.getLogger("werkzeug")
         log.setLevel(logging.ERROR)
 
-    app.run(debug=False)
+    app.run(debug=debug_flag)
 
 
 if __name__ == "__main__":
