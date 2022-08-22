@@ -1,11 +1,13 @@
-import pandas as pd
+import io
 import os
 import re
-import io
-import requests
-from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 from typing import List, Iterable
+from zipfile import ZipFile, ZIP_DEFLATED
+
+import pandas as pd
+import requests
+import pkg_resources
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -154,52 +156,94 @@ def read_mqtbench_all_zip(
     target_location: str = "mqt/benchviewer/static/files/qasm_output",
 ):
     global MQTBENCH_ALL_ZIP
-    huge_zip = Path(target_location + "/MQTBench_all.zip")
-    version_of_suitable_benchmark_zipfile = "v1.0.0"
+    huge_zip_path = Path(target_location + "/MQTBench_all.zip")
+    version = pkg_resources.require("mqt.bench")[0].version
 
-    url = (
-        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
-        + version_of_suitable_benchmark_zipfile
-    )
-    response = requests.get(url)
-    if not response:
-        print("Suitable benchmarks cannot be downloaded, URL is faulty.")
+    print("Searching for local benchmarks...")
+    if os.path.isfile(huge_zip_path):
+        print("Benchmarks found.")
     else:
-        if not skip_question:
-            file_size = int((response.json()["assets"][0]["size"])) / 10e6
-            response = input(
-                "Shall the benchmarks file suitable with this MQTBench ({} MB) version be downloaded? (Y/n)".format(
-                    file_size
-                )
-            )
-        if skip_question or response.lower() == "y" or response == "":
-            handle_downloading_benchmarks(
-                version_of_suitable_benchmark_zipfile, target_location
-            )
+        print("No benchmarks found. Querying GitHub...")
 
-    print("Reading in {} ({} bytes) ...".format(huge_zip.name, huge_zip.stat().st_size))
-    with huge_zip.open("rb") as zf:
+        major, minor, patch = version.split(".")
+
+        version_found = False
+        for i in range(int(major), -1, -1):
+            for j in range(int(minor), -1, -1):
+                for k in range(int(patch), -1, -1):
+                    tmp_version = "v" + major + "." + minor + "." + patch
+                    url = (
+                        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
+                        + tmp_version
+                    )
+                    response = requests.get(url)
+                    if not response:
+                        print(
+                            "Suitable benchmarks cannot be downloaded since the GitHub API failed. "
+                            "One reasons could be that the limit of 60 API calls per hour and IP address is exceeded."
+                        )
+                        return False
+                    if "asset" in response.json():
+                        for asset in response.json()["assets"]:
+                            if asset["name"] == "MQTBench_all.zip":
+                                version_found = True
+
+                            if version_found:
+                                if not skip_question:
+                                    file_size = round((asset["size"]) / 2**20, 2)
+                                    download_url = asset["browser_download_url"]
+                                    print(
+                                        "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
+                                            version,
+                                            file_size,
+                                            download_url,
+                                        )
+                                    )
+                                    response = input(
+                                        "Would you like to downloaded the file?"
+                                    )
+                                if (
+                                    skip_question
+                                    or response.lower() == "y"
+                                    or response == ""
+                                ):
+                                    handle_downloading_benchmarks(
+                                        target_location, download_url
+                                    )
+                                    break
+
+        if not version_found:
+            print("No suitable benchmarks found.")
+            return False
+
+    with huge_zip_path.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
         MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
-    print("files: {}".format(len(MQTBENCH_ALL_ZIP.namelist())))
     return True
 
 
-def handle_downloading_benchmarks(
-    version_of_suitable_benchmark_zipfile, target_location: str
-):
+def handle_downloading_benchmarks(target_location: str, download_url: str):
     print("Start downloading benchmarks...")
-    url = (
-        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
-        + version_of_suitable_benchmark_zipfile
-    )
-    response = requests.get(url)
-    zip_file_url = response.json()["assets"][0]["browser_download_url"]
     if not os.path.isdir("mqt/benchviewer/tmp_download"):
         os.mkdir("mqt/benchviewer/tmp_download")
-    r = requests.get(zip_file_url)
-    with open("mqt/benchviewer/tmp_download/MQTBench_all.zip", "wb") as f:
-        f.write(r.content)
+    r = requests.get(download_url)
+
+    total_length = r.headers.get("content-length")
+    total_length = int(total_length)
+    fname = "mqt/benchviewer/tmp_download/MQTBench_all.zip"
+    from tqdm import tqdm
+
+    with open(fname, "wb") as f, tqdm(
+        desc=fname,
+        total=total_length,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for data in r.iter_content(chunk_size=1024):
+            size = f.write(data)
+            bar.update(size)
+    print("Download completed.")
 
     if not os.path.isdir(target_location):
         os.mkdir(target_location)
@@ -208,7 +252,7 @@ def handle_downloading_benchmarks(
         target_location + "/MQTBench_all.zip",
     )
     os.rmdir("mqt/benchviewer/tmp_download")
-    print("...completed!")
+    print("Server is starting now.")
 
 
 def get_tket_settings(filename: str):
@@ -504,10 +548,9 @@ def init_database():
 
     assert MQTBENCH_ALL_ZIP is not None
 
-    print("Creating data base...")
+    print("Initiating database...")
     database = createDatabase(MQTBENCH_ALL_ZIP)
-    print("rows: {}".format(len(database)))
-    print("... done")
+    print("... done: {} benchmarks found.".format(len(database)))
 
 
 def prepareFormInput(formData):
