@@ -30,7 +30,7 @@ setup(
         "qiskit[visualization]==0.35.0",
         "pandas==1.3.5",
         "flask==2.2.2",
-        "networkx==2.8.5",
+        "networkx==2.8.6",
         "pytest==7.1.2",
     ],
     extras_require={
