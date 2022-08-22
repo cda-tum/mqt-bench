@@ -39,6 +39,7 @@ setup(
         "qiskit_machine-learning~=0.4.0",
         "qiskit-nature[pyscf]~=0.3.1",
         "qiskit_optimization~=0.3.2",
+        "packaging~=21.3",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
