@@ -559,9 +559,6 @@ def init_database():
     print("... done: {} benchmarks.".format(len(database)))
 
 
-q
-
-
 def prepareFormInput(formData):
     """Formats the formData extracted from the user's inputs."""
 
