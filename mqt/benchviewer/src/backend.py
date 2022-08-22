@@ -162,7 +162,7 @@ def read_mqtbench_all_zip(
 
     print("Searching for local benchmarks...")
     if os.path.isfile(huge_zip_path):
-        print("Benchmarks found.")
+        print("... found.")
     else:
         print("No benchmarks found. Querying GitHub...")
 
@@ -556,7 +556,10 @@ def init_database():
 
     print("Initiating database...")
     database = createDatabase(MQTBENCH_ALL_ZIP)
-    print("... done: {} benchmarks found.".format(len(database)))
+    print("... done: {} benchmarks.".format(len(database)))
+
+
+q
 
 
 def prepareFormInput(formData):

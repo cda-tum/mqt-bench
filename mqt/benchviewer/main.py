@@ -153,8 +153,7 @@ def start_server(
         target_location=target_location,
     )
     print(
-        "Server is hosted at: ",
-        "http://127.0.0.1:5000" + PREFIX + ".",
+        "Server is hosted at: " + "http://127.0.0.1:5000" + PREFIX + ".",
         "To stop it, interrupt the process (e.g., via CTRL+C). \n",
     )
 
