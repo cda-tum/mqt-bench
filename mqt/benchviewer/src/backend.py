@@ -157,7 +157,8 @@ def read_mqtbench_all_zip(
 ):
     global MQTBENCH_ALL_ZIP
     huge_zip_path = Path(target_location + "/MQTBench_all.zip")
-    version = pkg_resources.require("mqt.bench")[0].version
+    # version = pkg_resources.require("mqt.bench")[0].version
+    package_version = "1.0.2"
 
     print("Searching for local benchmarks...")
     if os.path.isfile(huge_zip_path):
@@ -165,52 +166,57 @@ def read_mqtbench_all_zip(
     else:
         print("No benchmarks found. Querying GitHub...")
 
-        major, minor, patch = version.split(".")
-
         version_found = False
-        for i in range(int(major), -1, -1):
-            for j in range(int(minor), -1, -1):
-                for k in range(int(patch), -1, -1):
-                    tmp_version = "v" + major + "." + minor + "." + patch
-                    url = (
-                        "https://api.github.com/repos/nquetschlich/test/releases/tags/"
-                        + tmp_version
-                    )
-                    response = requests.get(url)
-                    if not response:
-                        print(
-                            "Suitable benchmarks cannot be downloaded since the GitHub API failed. "
-                            "One reasons could be that the limit of 60 API calls per hour and IP address is exceeded."
-                        )
-                        return False
-                    if "asset" in response.json():
-                        for asset in response.json()["assets"]:
-                            if asset["name"] == "MQTBench_all.zip":
-                                version_found = True
+        response = requests.get("https://api.github.com/repos/cda-tum/mqtbench/tags")
+        available_versions = []
+        for elem in response.json():
+            available_versions.append(elem["name"])
 
-                            if version_found:
-                                if not skip_question:
-                                    file_size = round((asset["size"]) / 2**20, 2)
-                                    download_url = asset["browser_download_url"]
-                                    print(
-                                        "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
-                                            version,
-                                            file_size,
-                                            download_url,
-                                        )
+        from packaging import version
+
+        for possible_version in available_versions:
+            if version.parse(package_version) > version.parse(possible_version):
+                url = (
+                    "https://api.github.com/repos/cda-tum/mqtbench/releases/tags/"
+                    + possible_version
+                )
+
+                response = requests.get(url)
+                if not response:
+                    print(
+                        "Suitable benchmarks cannot be downloaded since the GitHub API failed. "
+                        "One reasons could be that the limit of 60 API calls per hour and IP address is exceeded."
+                    )
+                    return False
+
+                if "asset" in response.json() or "assets" in response.json():
+                    for asset in response.json()["assets"]:
+                        if asset["name"] == "MQTBench_all.zip":
+                            version_found = True
+
+                        if version_found:
+                            if not skip_question:
+                                file_size = round((asset["size"]) / 2**20, 2)
+                                download_url = asset["browser_download_url"]
+                                print(
+                                    "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
+                                        possible_version,
+                                        file_size,
+                                        download_url,
                                     )
-                                    response = input(
-                                        "Would you like to downloaded the file?"
-                                    )
-                                if (
-                                    skip_question
-                                    or response.lower() == "y"
-                                    or response == ""
-                                ):
-                                    handle_downloading_benchmarks(
-                                        target_location, download_url
-                                    )
-                                    break
+                                )
+                                response = input(
+                                    "Would you like to downloaded the file?"
+                                )
+                            if (
+                                skip_question
+                                or response.lower() == "y"
+                                or response == ""
+                            ):
+                                handle_downloading_benchmarks(
+                                    target_location, download_url
+                                )
+                                break
 
         if not version_found:
             print("No suitable benchmarks found.")
