@@ -4,7 +4,7 @@ on:
   release:
     types: [ published ]
   push:
-    branches: [ main, master, packaging_and_versioning ]
+    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
