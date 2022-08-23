@@ -11,7 +11,7 @@ PREFIX = "/mqtbench/"
 def init(
     skip_question: bool = False,
     activate_logging: bool = False,
-    target_location: str = "mqt/benchviewer/static/files/qasm_output",
+    target_location: str = None,
 ):
 
     read_mqtbench_all_zip(skip_question, target_location)
@@ -19,6 +19,8 @@ def init(
 
     global ACTIVATE_LOGGING
     ACTIVATE_LOGGING = activate_logging
+    global TARGET_LOCATION
+    TARGET_LOCATION = target_location
 
     if ACTIVATE_LOGGING:
         logging.basicConfig(
@@ -52,7 +54,7 @@ def download_pre_gen_zip():
         app.logger.info("###### End ######")
 
     return send_from_directory(
-        directory=directory,
+        directory=TARGET_LOCATION,
         path=filename,
         as_attachment=True,
         mimetype="application/zip",
