@@ -21,6 +21,9 @@ def init(
     ACTIVATE_LOGGING = activate_logging
     global TARGET_LOCATION
     TARGET_LOCATION = target_location
+    if not os.access(TARGET_LOCATION, os.W_OK):
+        print("target_location is not writable. Please specify a different path.")
+        return False
 
     if ACTIVATE_LOGGING:
         logging.basicConfig(
