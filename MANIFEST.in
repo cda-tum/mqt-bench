@@ -1,0 +1,2 @@
+include mqt/benchviewer/static/files/MQTBench_all.zip
+include mqt/benchviewer/templates/*

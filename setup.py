@@ -11,6 +11,7 @@ setup(
         "mqt.benchviewer",
         "mqt.benchviewer.src",
         "mqt.benchviewer.static",
+        "mqt.benchviewer.static.files",
         "mqt.benchviewer.templates",
         "mqt.bench",
         "mqt.bench.utils",
@@ -33,7 +34,6 @@ setup(
     entry_points={
         "console_scripts": ["mqt.bench=mqt.benchviewer.main:start_server"],
     },
-    setup_requires=["setuptools_scm"],
     include_package_data=True,
     install_requires=[
         "qiskit~=0.36.0",
