@@ -167,7 +167,6 @@ def read_mqtbench_all_zip(
         )
         return False
 
-
     print("Searching for local benchmarks...")
     if os.path.isfile(huge_zip_path):
         print("... found.")
