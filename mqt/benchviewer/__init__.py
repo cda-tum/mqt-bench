@@ -1,1 +1,1 @@
-from .main import start_server
+from mqt.benchviewer.main import start_server
