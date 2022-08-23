@@ -8,8 +8,8 @@ PREFIX = "/mqtbench/"
 
 
 def init(
-    skip_question=False,
-    activate_logging=False,
+    skip_question: bool = False,
+    activate_logging: bool = False,
     target_location: str = "mqt/benchviewer/static/files/qasm_output",
 ):
     read_mqtbench_all_zip(skip_question, target_location)
@@ -64,8 +64,8 @@ def download_data():
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
-        print("raw data :", data)
-        print("prepared input data :", prepared_data)
+        # print("raw data :", data)
+        # print("prepared input data :", prepared_data)
         file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -127,7 +127,6 @@ def get_num_benchmarks():
         prepared_data = prepareFormInput(data)
         file_paths = get_selected_file_paths(prepared_data)
         num = len(file_paths)
-        print("Num benchmarks: ", num)
         data = {"num_selected": num}
         return jsonify(data)
     else:
@@ -137,10 +136,10 @@ def get_num_benchmarks():
 
 
 def start_server(
-    skip_question=False,
-    activate_logging=False,
+    skip_question: bool = False,
+    activate_logging: bool = False,
     target_location: str = "mqt/benchviewer/static/files/qasm_output",
-    debug_flag=False,
+    debug_flag: bool = False,
 ):
     init(
         skip_question=skip_question,

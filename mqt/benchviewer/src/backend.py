@@ -331,7 +331,7 @@ def parse_data(filename: str):
     return parsed_data
 
 
-def filterDatabase(filterCriteria, database):
+def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
     """Filters the database according to the filter criteria.
 
     Keyword arguments:
@@ -529,7 +529,7 @@ def generate_zip_ephemeral_chunks(
     fileobj.close()
 
 
-def get_selected_file_paths(prepared_data):
+def get_selected_file_paths(prepared_data: tuple):
     """Extracts all file paths according to the prepared user's filter criteria.
 
     Keyword arguments:
@@ -557,7 +557,7 @@ def init_database():
     print("... done: {} benchmarks.".format(len(database)))
 
 
-def prepareFormInput(formData):
+def prepareFormInput(formData: list):
     """Formats the formData extracted from the user's inputs."""
 
     min_qubits = -1
