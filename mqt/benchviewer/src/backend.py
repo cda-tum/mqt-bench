@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import pandas as pd
 import requests
-import pkg_resources
+from importlib import metadata, util
 from tqdm import tqdm
 
 # All available benchmarks shown on our webpage are defined here
@@ -158,8 +158,15 @@ def read_mqtbench_all_zip(
 ):
     global MQTBENCH_ALL_ZIP
     huge_zip_path = Path(target_location + "/MQTBench_all.zip")
-    # version = pkg_resources.require("mqt.bench")[0].version
-    package_version = "1.0.2"
+
+    try:
+        mqtbench_module_version = metadata.version("mqt.bench")
+    except Exception as e:
+        print(
+            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
+        )
+        return False
+
 
     print("Searching for local benchmarks...")
     if os.path.isfile(huge_zip_path):
@@ -176,7 +183,7 @@ def read_mqtbench_all_zip(
         from packaging import version
 
         for possible_version in available_versions:
-            if version.parse(package_version) > version.parse(possible_version):
+            if version.parse(mqtbench_module_version) > version.parse(possible_version):
                 url = (
                     "https://api.github.com/repos/cda-tum/mqtbench/releases/tags/"
                     + possible_version
