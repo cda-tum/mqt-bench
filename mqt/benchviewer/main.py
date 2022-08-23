@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request, send_from_directory,
 from mqt.benchviewer.src.backend import *
 from datetime import datetime
 import logging
+import importlib
 
 app = Flask(__name__)
 PREFIX = "/mqtbench/"
@@ -12,6 +13,7 @@ def init(
     activate_logging: bool = False,
     target_location: str = "mqt/benchviewer/static/files/qasm_output",
 ):
+
     read_mqtbench_all_zip(skip_question, target_location)
     init_database()
 
@@ -138,9 +140,16 @@ def get_num_benchmarks():
 def start_server(
     skip_question: bool = False,
     activate_logging: bool = False,
-    target_location: str = "mqt/benchviewer/static/files/qasm_output",
+    target_location: str = None,
     debug_flag: bool = False,
 ):
+
+    if not target_location:
+        package_path = importlib.util.find_spec("mqt.bench").origin
+        target_location = (
+            package_path.split("bench/__init__.py")[0] + "benchviewer/static/files/"
+        )
+
     init(
         skip_question=skip_question,
         activate_logging=activate_logging,
