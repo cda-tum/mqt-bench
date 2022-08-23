@@ -154,6 +154,10 @@ def start_server(
     # This line avoid the startup-message from flask
     cli.show_server_banner = lambda *args: None
 
+    if not activate_logging:
+        log = logging.getLogger("werkzeug")
+        log.disabled = True
+
     app.run(debug=debug_flag)
 
 
