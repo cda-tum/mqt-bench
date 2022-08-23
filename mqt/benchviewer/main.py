@@ -1,10 +1,4 @@
-from flask import (
-    Flask,
-    jsonify,
-    render_template,
-    request,
-    send_from_directory,
-)
+from flask import Flask, jsonify, render_template, request, send_from_directory, cli
 from mqt.benchviewer.src.backend import *
 from datetime import datetime
 import logging
@@ -158,9 +152,8 @@ def start_server(
         "To stop it, interrupt the process (e.g., via CTRL+C). \n",
     )
 
-    if not activate_logging:
-        log = logging.getLogger("werkzeug")
-        log.setLevel(logging.ERROR)
+    # This line avoid the startup-message from flask
+    cli.show_server_banner = lambda *args: None
 
     app.run(debug=debug_flag)
 
