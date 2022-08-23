@@ -8,6 +8,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 import pandas as pd
 import requests
 import pkg_resources
+from tqdm import tqdm
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -206,7 +207,7 @@ def read_mqtbench_all_zip(
                                     )
                                 )
                                 response = input(
-                                    "Would you like to downloaded the file?"
+                                    "Would you like to downloaded the file? (Y/n)"
                                 )
                             if (
                                 skip_question
@@ -230,14 +231,14 @@ def read_mqtbench_all_zip(
 
 def handle_downloading_benchmarks(target_location: str, download_url: str):
     print("Start downloading benchmarks...")
-    if not os.path.isdir("mqt/benchviewer/tmp_download"):
-        os.mkdir("mqt/benchviewer/tmp_download")
-    r = requests.get(download_url)
 
+    r = requests.get(download_url)
     total_length = r.headers.get("content-length")
     total_length = int(total_length)
-    fname = "mqt/benchviewer/tmp_download/MQTBench_all.zip"
-    from tqdm import tqdm
+    fname = target_location + "/MQTBench_all.zip"
+
+    if not os.path.isdir(target_location):
+        os.mkdir(target_location)
 
     with open(fname, "wb") as f, tqdm(
         desc=fname,
@@ -249,16 +250,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
-    print("Download completed.")
-
-    if not os.path.isdir(target_location):
-        os.mkdir(target_location)
-    os.replace(
-        "mqt/benchviewer/tmp_download/MQTBench_all.zip",
-        target_location + "/MQTBench_all.zip",
-    )
-    os.rmdir("mqt/benchviewer/tmp_download")
-    print("Server is starting now.")
+    print("Download completed. Server is starting now.")
 
 
 def get_tket_settings(filename: str):
@@ -643,16 +635,6 @@ def prepareFormInput(formData):
             mapped_devices.append("oqc_lucy")
         if "device_ionq_ionq11" in k:
             mapped_devices.append("ionq11")
-
-    # print("benchmarks: ", num_benchmarks)
-    # print("indep compiler: ", indep_qiskit_compiler, indep_tket_compiler)
-    # print("native compiler: ", nativegates_qiskit_compiler, nativegates_tket_compiler)
-    # print("native compiler settings qiskit: ", native_qiskit_opt_lvls)
-    # print("native compiler gatesets: ", native_gatesets)
-    # print("mapped compiler: ", mapped_qiskit_compiler, mapped_tket_compiler)
-    # print("mapped compiler settings qiskit: ", mapped_qiskit_opt_lvls)
-    # print("mapped compiler settings tket: ", mapped_tket_placements)
-    # print("mapped devices: ", mapped_devices)
 
     res = (
         (int(min_qubits), int(max_qubits)),
