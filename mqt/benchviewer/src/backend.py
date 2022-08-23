@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import pandas as pd
 import requests
-from importlib import metadata, util
+from importlib import metadata
 from tqdm import tqdm
 
 # All available benchmarks shown on our webpage are defined here
