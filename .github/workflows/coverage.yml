@@ -15,7 +15,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.8'
     - name: Install MQT Bench
       run: pip install .
     - name: Generate Report
