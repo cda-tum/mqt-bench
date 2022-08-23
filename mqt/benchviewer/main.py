@@ -42,7 +42,6 @@ def index():
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip():
-    directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
 
     if ACTIVATE_LOGGING:
