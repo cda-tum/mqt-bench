@@ -231,11 +231,14 @@ def test_prepareFormInput():
 
 
 def test_read_mqtbench_all_zip():
-    assert backend.read_mqtbench_all_zip(skip_question=True)
+    target_location = "mqt/benchviewer/static/files"
+    assert backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=target_location
+    )
 
 
 def test_create_database():
-    huge_zip = Path("mqt/benchviewer/static/files/qasm_output/MQTBench_all.zip")
+    huge_zip = Path("mqt/benchviewer/static/files/MQTBench_all.zip")
     MQTBENCH_ALL_ZIP = None
     with huge_zip.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
