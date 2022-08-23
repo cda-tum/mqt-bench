@@ -9,6 +9,7 @@ import pandas as pd
 import requests
 from importlib import metadata
 from tqdm import tqdm
+from packaging import version
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -154,7 +155,7 @@ def createDatabase(zip_file: ZipFile):
 
 def read_mqtbench_all_zip(
     skip_question: bool = False,
-    target_location: str = "mqt/benchviewer/static/files/qasm_output",
+    target_location: str = None,
 ):
     global MQTBENCH_ALL_ZIP
     huge_zip_path = Path(target_location + "/MQTBench_all.zip")
@@ -179,10 +180,10 @@ def read_mqtbench_all_zip(
         for elem in response.json():
             available_versions.append(elem["name"])
 
-        from packaging import version
-
         for possible_version in available_versions:
-            if version.parse(mqtbench_module_version) > version.parse(possible_version):
+            if version.parse(mqtbench_module_version) >= version.parse(
+                possible_version
+            ):
                 url = (
                     "https://api.github.com/repos/cda-tum/mqtbench/releases/tags/"
                     + possible_version
@@ -244,7 +245,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
     fname = target_location + "/MQTBench_all.zip"
 
     if not os.path.isdir(target_location):
-        os.mkdir(target_location)
+        os.makedirs(target_location)
 
     with open(fname, "wb") as f, tqdm(
         desc=fname,
@@ -256,7 +257,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
-    print("Download completed. Server is starting now.")
+    print("Download completed to {}. Server is starting now.".format(fname))
 
 
 def get_tket_settings(filename: str):
@@ -503,8 +504,6 @@ def generate_zip_ephemeral_chunks(
     fileobj = NoSeekBytesIO(io.BytesIO())
 
     paths: List[Path] = [Path(name) for name in filenames]
-    # if python_files_list:
-    # paths.append(Path("./static/files/algo_level.txt"))
 
     with ZipFile(fileobj, mode="w") as zf:
         for individualFile in paths:
