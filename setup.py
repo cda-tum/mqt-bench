@@ -9,6 +9,7 @@ setup(
     name="mqt.bench",
     packages=[
         "mqt.benchviewer",
+        "mqt.benchviewer.src",
         "mqt.bench",
         "mqt.bench.utils",
         "mqt.bench.benchmarks",
@@ -27,6 +28,9 @@ setup(
     author_email="nils.quetschlich@tum.de",
     url="https://github.com/cda-tum/mqtbench",
     keywords="mqt quantum benchmarking performance testing",
+    entry_points={
+        "console_scripts": ["mqt.bench=mqt.benchviewer.main:start_server"],
+    },
     install_requires=[
         "qiskit~=0.36.0",
         "pytket~=1.2.2",
