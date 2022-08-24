@@ -13,22 +13,29 @@ def init(
     activate_logging: bool = False,
     target_location: str = None,
 ):
-
-    read_mqtbench_all_zip(skip_question, target_location)
-    init_database()
-
-    global ACTIVATE_LOGGING
-    ACTIVATE_LOGGING = activate_logging
     global TARGET_LOCATION
     TARGET_LOCATION = target_location
     if not os.access(TARGET_LOCATION, os.W_OK):
         print("target_location is not writable. Please specify a different path.")
         return False
 
+    res_zip = read_mqtbench_all_zip(skip_question, target_location)
+    if not res_zip:
+        return False
+
+    res_db = init_database()
+    if not res_db:
+        return False
+
+    global ACTIVATE_LOGGING
+    ACTIVATE_LOGGING = activate_logging
+
     if ACTIVATE_LOGGING:
         logging.basicConfig(
             filename="/local/mqtbench/downloads.log", level=logging.INFO
         )
+
+    return True
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
@@ -55,6 +62,10 @@ def download_pre_gen_zip():
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
+    print(
+        TARGET_LOCATION + filename,
+        os.path.isfile(os.path.join(TARGET_LOCATION, filename)),
+    )
     return send_from_directory(
         directory=TARGET_LOCATION,
         path=filename,
