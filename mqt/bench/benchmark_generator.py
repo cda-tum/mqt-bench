@@ -504,7 +504,7 @@ def get_one_benchmark(
     device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
 
     Return values:
-    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object
+    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
     init_module_paths()
 
