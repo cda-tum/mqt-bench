@@ -245,6 +245,7 @@ Additionally, this python package includes the same webserver used for the hosti
 By this, we provide means to filter all available benchmarks locally. 
 For that, the user is prompted to download all benchmarks corresponding to the chosen version of MQT Bench.
 Afterwards, a `.zip` file containing all benchmarks is downloaded. 
+
 The local server is started by:
 ```python
 from mqt.benchviewer import start_server
@@ -252,7 +253,26 @@ from mqt.benchviewer import start_server
 start_server()
 ```
 
-More details on how to use the local webserver can be found in the [respective README.md file](mqt/benchviewer/README.md).
+That method comes with four parameters:
+```python
+# skips the questions whether benchmarks shall be downloaded and directly starts with that
+- skip_question: bool = False 
+# the webserver available on https://www.cda.cit.tum.de/mqtbench/ needs this flag to be True, should be False 
+# for runnung locally
+- activate_logging: bool = False
+# location of the to be downloaded benchmarks can be defined here, if not specified, benchmarks will be stored within
+# the installed package directory
+- target_location: str = None
+# this flag should be False
+- debug_flag: bool = False
+```
+
+The local server is also provided as a python CLI entry point such that it can be started 
+after the package installation with:
+
+```console
+(venv) $ mqt.bench
+```
 
 ## Usage directly via this repository
 For that, the repository must be cloned and installed:
