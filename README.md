@@ -252,7 +252,7 @@ from mqt.benchviewer import start_server
 start_server()
 ```
 
-More details on how to use the local webserver can be found in the [respective README.md file](benchviewer/README.md).
+More details on how to use the local webserver can be found in the [respective README.md file](mqt/benchviewer/README.md).
 
 ## Usage directly via this repository
 For that, the repository must be cloned and installed:
