@@ -306,9 +306,15 @@ def test_create_database():
 
 
 def test_flask_server():
-    assert init(skip_question=True, activate_logging=False, target_location="mqt/benchviewer/static/files")
+    assert init(
+        skip_question=True,
+        activate_logging=False,
+        target_location="mqt/benchviewer/static/files",
+    )
 
-    assert os.path.isfile(os.path.join("mqt/benchviewer/static/files", "MQTBench_all.zip"))
+    assert os.path.isfile(
+        os.path.join("mqt/benchviewer/static/files", "MQTBench_all.zip")
+    )
     assert os.path.isfile("./mqt/benchviewer/templates/benchmark_description.html")
     assert os.path.isfile("./mqt/benchviewer/templates/index.html")
     assert os.path.isfile("./mqt/benchviewer/templates/legal.html")
