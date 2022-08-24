@@ -14,6 +14,8 @@ MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair fo
 
 [<img src="img/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
 
+This documentation explains how to use MQT Bench to create and filter benchmarks.
+
 ## Abstraction Levels
 It uses the structure proposed by the openQASM 3.0 specification [[1]](https://arxiv.org/abs/2104.14722) and offers benchmarks
 on four different abstraction levels:
@@ -73,7 +75,6 @@ This circuit is now executable on the IBMQ Manila device, since all hardware ind
 So far, the following benchmarks are implemented and provided:
 - Amplitude Estimation
 - Deutsch-Jozsa
-- Excited State
 - GHZ State
 - Graph State
 - Ground State
@@ -102,23 +103,31 @@ So far, the following benchmarks are implemented and provided:
 - W-State
 
 See the [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description) for further details on the individual benchmarks.
+## Compiler Support
+At the moment, two compilers are supported:
+1) Qiskit with the compiler settings: Optimization level 0 to 3
+2) TKET with the compiler settings: Line placement and graph placement
 
 ## Native Gate-Set Support
 So far, MQT Bench supports the following native gate-sets:
-1) IBMQ gate-set: *\['id', 'rz', 'sx', 'x', 'cx', 'reset'\]*
-2) Rigetti gate-set: *\['id, 'rx', 'rz', 'cz', 'reset'\]*
+1) IBMQ gate-set: *\['rz', 'sx', 'x', 'cx', 'measure'\]*
+2) Rigetti gate-set: *\['rx', 'rz', 'cz', 'measure'\]*
+3) IonQ gate-set: *\['rxx', 'rz', 'ry', 'rx', 'measure'\]*
+4) OQC gate-set: *\['rz', 'sx', 'x', 'ecr', 'measure'\]*
 
-## Mapping Scheme Support
-Currently, MQT Bench supports two mapping schemes:
-1) Smallest Fitting Architecture Mapping: Maps quantum circuits to the smallest architecture with a sufficient number of physical qubits
-2) Biggest Architecture Mapping: Always use the biggest available hardware architecture
+## Device Support
+So far, MQT Bench supports the following native gate-sets:
+1) IBMQ Washington with 127 qubits, IBMQ Montreal with 27 qubits
+2) Rigetti Aspen-M1 with 80 qubits
+3) IonQ with 11 qubits
+4) OQC Lucy with 8 qubits
 
 # Repository Structure
 - mqt/bench/utils: Directory for the utils.py file 
 - mqt/bench/tests: Directory for the tests for MQT Bench
 - mqt/bench/benchmarks: On the top-level, each benchmark algorithm is included as a separate file. 
   - Additionally, folders for each IBM Qiskit application module and their respective benchmarks are listed.
-- benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
+- mqt/benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
 ```
 MQTBench/
@@ -143,7 +152,9 @@ MQTBench/
 │       └─── qiskit_application_optimization
 │       │       ...
 │
-│───benchviewer/
+│───────benchviewer/
+        │ - main.py
+        │   ...
 ```
 
 # Repository Usage
@@ -167,48 +178,90 @@ get_one_benchmark(
     level: Union[str, int],
     circuit_size: int = None,
     benchmark_instance_name: str = None,
-    opt_level: int = None,
-    gate_set_name: str = None,
-    smallest_fitting_arch: bool = None,
-)
+    compiler: str = "qiskit",
+    compiler_settings: Union[str, int] = 0,
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
+):
 ```
 The available parameters are:
   - `benchmark_name`: `"ae"`, `"dj"`, `"grover-noancilla"`, `"grover-v-chain"`, `"ghz"`, `"graphstate"`, `"portfolioqaoa"`,
                         `"portfoliovqe"`, `"qaoa"`, `"qft"`, `"qftentangled"`, `"qgan"`, `"qpeexact"`, `"qpeinexact"`,
                         `"qwalk-noancilla"`, `"qwalk-v-chain"`, `"realamprandom"`, `"su2random"`, `"twolocalrandom"`, `"vqe"`,
-                        `"wstate"`, `"shor"`, `"hhl"`, `"pricingcall"`, `"pricingput"`, `"groundstate"`, `"excitedstate"`, `"routing"`,
+                        `"wstate"`, `"shor"`, `"hhl"`, `"pricingcall"`, `"pricingput"`, `"groundstate"`, `"routing"`,
                         `"tsp"`
   - `level`: `0` or `"alg"`, `1` or `"indep"`, `2` or `"nativegates"`, `3` or `"mapped"`
-  - `circuit_size`: most of the cases this is equal to number of qubits (for some benchmarks the number of qubits is higher)
-  - `benchmark_instance_name`: `"xsmall"`, `"small"`, `"medium"`, `"large"`, `"xlarge"` (not all instances are available for each benchmark)
-  - `opt_level`: `0`, `1`, `2`, `3`
-  - `gate_set_name`: `"ibm"`, `"rigetti"`
-  - `smallest_fitting_arch`: `False`, `True`
+  - `circuit_size`: for most of the cases this is equal to number of qubits 
+(all scalable benchmarks but `"qwalk-v-chain"` and `"grover-v-chain"`) while for all other the qubit number is higher
+  - `compiler`: -- `"qiskit"` or `"tket"`
+  - `compiler_settings`: Optimization level for if compiler is qiskit (`0`-`3`), Line Placement or Graph Placement if compiler is tket (`True` or `False`)
+  - `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
+  - `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"aspen_m1"`, `"ionq11"`, `"lucy"`
 
-For example, in order to obtain the *5*-qubit Deutsch-Josza algorithm, use the following:
+Hereby, the mappings between shortened `benchmark_name` and actual benchmarks are:
+
+| `benchmark_name`   | Actual Benchmark                                   |
+|--------------------|----------------------------------------------------|
+| `"ae"`             | Amplitude Estimation (AE)                          |
+| `"dj"`             | Deutsch-Jozsa                                      |
+| `"grover-noancilla"` | Grover's (no ancilla)                              |
+| `"grover-v-chain"` | Grover's (v-chain)                                 |
+| `"ghz"`            | GHZ State                                          |
+| `"graphstate"`     | Graph State                                        |
+| `"portfolioqaoa"`  | Portfolio Optimization with QAOA                   |
+| `"portfoliovqe"`   | Portfolio Optimization with VQE                    |
+| `"qaoa"`           | Quantum Approximation Optimization Algorithm (QAOA) |
+| `"qft"`            | Quantum Fourier Transformation (QFT)               |
+| `"qftentangled"`   | QFT Entangled                                      |
+| `"qgan"`           | Quantum Generative Adversarial Network             |
+| `"qpeexact"`       | Quantum Phase Estimation (QPE) exact               |
+| `"qpeinexact"`     | Quantum Phase Estimation (QPE) inexact             |
+| `"qwalk-noancilla"` | Quantum Walk (no ancilla)                          |
+| `"qwalk-v-chain"`  | Quantum Walk (v-chain)                             |
+| `"realamprandom"`  | Real Amplitudes ansatz with Random Parameters      |
+| `"su2random"`      | Efficient SU2 ansatz with Random Parameters        |
+| `"twolocalrandom"` | Two Local ansatz with Random Parameters            |
+| `"vqe"`            | Variational Quantum Eigensolver (VQE)              |
+| `"wstate"`         | W-State                                            |
+| `"shor"`            | Shor's                                             |
+| `"hhl"`            | HHL                                                |
+| `"pricingcall"`          | Pricing Call Option                                |
+| `"pricingput"`          | Pricing Put Option                                 |
+| `"groundstate"`          | Ground State                                       |
+| `"routing"`          | Routing                                            |
+| `"tsp"`          | Travelling Salesman                                |
+
+
+
+For example, in order to obtain the *5*-qubit Deutsch-Josza benchmark on algorithm level, use the following:
 ```python
 from mqt.bench import get_one_benchmark
 
 qc = get_one_benchmark("dj", "alg", 5)
 ```
 
-In order to get access to all benchmarks, including the Qiskit application module algorithms, some addtional dependencies are required. 
-These can be installed via pip as follows:
-```console
-(venv) $ pip install mqt.bench[all]
+Additionally, this python package includes the same webserver used for the hosting of the 
+[MQT Bench webpage](https://www.cda.cit.tum.de/mqtbench).
+By this, we provide means to filter all available benchmarks locally. 
+For that, the user is prompted to download all benchmarks corresponding to the chosen version of MQT Bench.
+Afterwards, a `.zip` file containing all benchmarks is downloaded. 
+The local server is started by:
+```python
+from mqt.benchviewer import start_server
+
+start_server()
 ```
 
+More details on how to use the local webserver can be found in the [respective README.md file](benchviewer/README.md).
+
 ## Usage directly via this repository
-Since all generated benchmarks hosted on our website are included in this repository, 
-the repository is very large (`>25 GB`). Therefore, please do a sparse-checkout if you want to 
-directly access the repository itself:
+For that, the repository must be cloned and installed:
 ```
-git clone --filter=blob:none --no-checkout  https://github.com/cda-tum/MQTBench.git
+git clone https://github.com/cda-tum/MQTBench.git
 cd MQTBench
-git sparse-checkout init --cone
-git sparse-checkout set mqt img
-git checkout main
+pip install .
 ```
+Afterwards, the package can be used as described [above](#Usage via pip package).
 
 # References:
 In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
