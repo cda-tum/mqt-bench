@@ -62,10 +62,6 @@ def download_pre_gen_zip():
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
-    print(
-        TARGET_LOCATION + filename,
-        os.path.isfile(os.path.join(TARGET_LOCATION, filename)),
-    )
     return send_from_directory(
         directory=TARGET_LOCATION,
         path=filename,
