@@ -28,6 +28,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*.whl
+      - name: Run tests
+        run: |
+          pip install pytest
+          pytest mqt/benchviewer/src/tests/test_backend.py -k 'test_flask_server'
 
   build_sdist:
     name:    Build source distribution
@@ -47,6 +51,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
+      - name: Run tests
+        run: |
+          pip install pytest
+          pytest mqt/benchviewer/src/tests/test_backend.py -k 'test_flask_server'
 
   upload_pypi:
     needs: [ build_wheel, build_sdist ]
