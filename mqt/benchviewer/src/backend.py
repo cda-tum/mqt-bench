@@ -558,6 +558,12 @@ def init_database():
     database = createDatabase(MQTBENCH_ALL_ZIP)
     print("... done: {} benchmarks.".format(len(database)))
 
+    if not database.empty:
+        return True
+    else:
+        print("Database initialization failed.")
+        return False
+
 
 def prepareFormInput(formData: list):
     """Formats the formData extracted from the user's inputs."""
