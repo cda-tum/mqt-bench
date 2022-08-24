@@ -10,11 +10,13 @@ setup(
     packages=[
         "mqt.benchviewer",
         "mqt.benchviewer.src",
+        "mqt.benchviewer.src.tests",
         "mqt.benchviewer.static",
         "mqt.benchviewer.static.files",
         "mqt.benchviewer.templates",
         "mqt.bench",
         "mqt.bench.utils",
+        "mqt.bench.tests",
         "mqt.bench.benchmarks",
         "mqt.bench.benchmarks.qiskit_application_finance",
         "mqt.bench.benchmarks.qiskit_application_ml",
