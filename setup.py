@@ -11,8 +11,6 @@ setup(
         "mqt.benchviewer",
         "mqt.benchviewer.src",
         "mqt.benchviewer.src.tests",
-        "mqt.benchviewer.static",
-        "mqt.benchviewer.static.files",
         "mqt.benchviewer.templates",
         "mqt.bench",
         "mqt.bench.utils",
