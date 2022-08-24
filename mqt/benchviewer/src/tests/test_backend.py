@@ -1,9 +1,11 @@
 from mqt.benchviewer.src import backend
+from mqt.benchviewer.main import app, init
 
 import pytest
 from pathlib import Path
 import io
 from zipfile import ZipFile
+import os
 
 
 @pytest.mark.parametrize(
@@ -301,3 +303,20 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert res == []
+
+
+def test_flask_server():
+    assert init(skip_question=True, activate_logging=False, target_location=".")
+
+    assert os.path.isfile(os.path.join("./", "MQTBench_all.zip"))
+    assert os.path.isfile("./mqt/benchviewer/templates/benchmark_description.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/index.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/legal.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/description.html")
+
+    with app.test_client() as c:
+        assert c.get("/mqtbench/index").status_code == 200
+        assert c.get("/mqtbench/download").status_code == 200
+        assert c.get("/mqtbench/legal").status_code == 200
+        assert c.get("/mqtbench/description").status_code == 200
+        assert c.get("/mqtbench/benchmark_description").status_code == 200
