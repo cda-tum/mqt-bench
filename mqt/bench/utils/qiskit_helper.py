@@ -42,6 +42,8 @@ def get_indep_level(
     num_qubits: int,
     file_precheck: bool,
     return_qc: bool = False,
+    target_directory: str = "",
+    target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -49,17 +51,25 @@ def get_indep_level(
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
+    return_qc -- flag if the actual circuit shall be returned
+    target_directory -- alternative directory to the default one to store the created circuit
+    target_filename -- alternative filename to the default one
 
     Return values:
-    filename_indep -- the filename of the created and saved benchmark
-    depth -- circuit depth of created benchmark
-    num_qubits -- number of qubits of generated circuit
+    if return_qc == True -- quantum circuit object
+    else -- True/False indicating whether the function call was successful or not
     """
 
-    filename_indep = qc.name + "_indep_qiskit_" + str(num_qubits)
-    qasm_output_folder = utils.get_qasm_output_path()
-    filepath = qasm_output_folder + filename_indep + ".qasm"
-    if not (path.isfile(filepath) and file_precheck):
+    if not target_filename:
+        filename_indep = qc.name + "_indep_qiskit_" + str(num_qubits)
+        target_directory = utils.get_qasm_output_path()
+    else:
+        filename_indep = target_filename
+
+    if not (
+        path.isfile(path.join(target_directory, filename_indep) + ".qasm")
+        and file_precheck
+    ):
         # print(filepath + " does not already exists and is newly created")
         openqasm_gates = utils.get_openqasm_gates()
         target_independent = transpile(
@@ -69,7 +79,11 @@ def get_indep_level(
         if return_qc:
             return target_independent
         else:
-            res = utils.save_as_qasm(target_independent.qasm(), filename_indep)
+            res = utils.save_as_qasm(
+                target_independent.qasm(),
+                filename_indep,
+                target_directory=target_directory,
+            )
             return res
     else:
         return True
@@ -82,38 +96,47 @@ def get_native_gates_level(
     opt_level: int,
     file_precheck: bool,
     return_qc: bool = False,
+    target_directory: str = "",
+    target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     gate_set_name -- name of this gate set
-    opt_level -- optimization level
     num_qubits -- number of qubits
+    opt_level -- optimization level
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
+    return_qc -- flag if the actual circuit shall be returned
+    target_directory -- alternative directory to the default one to store the created circuit
+    target_filename -- alternative filename to the default one
+
+    Return values:
+    if return_qc == True -- quantum circuit object
+    else -- True/False indicating whether the function call was successful or not
     """
 
-    filename_nativegates = (
-        qc.name
-        + "_nativegates_"
-        + gate_set_name
-        + "_qiskit_opt"
-        + str(opt_level)
-        + "_"
-        + str(num_qubits)
-    )
     gate_set = get_native_gates(gate_set_name)
-    qasm_output_folder = utils.get_qasm_output_path()
+
+    if not target_filename:
+        filename_native = (
+            qc.name
+            + "_nativegates_"
+            + gate_set_name
+            + "_qiskit_opt"
+            + str(opt_level)
+            + "_"
+            + str(num_qubits)
+        )
+        target_directory = utils.get_qasm_output_path()
+    else:
+        filename_native = target_filename
+
     if not (
-        path.isfile(qasm_output_folder + filename_nativegates + ".qasm")
+        path.isfile(path.join(target_directory, filename_native) + ".qasm")
         and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_nativegates
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
+
         compiled_without_architecture = transpile(
             qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
         )
@@ -135,6 +158,7 @@ def get_native_gates_level(
                 compiled_without_architecture.qasm(),
                 filename_nativegates,
                 gate_set,
+                target_directory=target_directory,
             )
             return res
     else:
@@ -149,6 +173,8 @@ def get_mapped_level(
     opt_level: int,
     file_precheck: bool,
     return_qc: bool = False,
+    target_directory: str = "",
+    target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -158,9 +184,10 @@ def get_mapped_level(
     num_qubits -- number of qubits
     device_name -- -- name of the target device
     opt_level -- optimization level
-    num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
-    return_qc -- flag indicating whether the actual circuit object is returned
+    return_qc -- flag if the actual circuit shall be returned
+    target_directory -- alternative directory to the default one to store the created circuit
+    target_filename -- alternative filename to the default one
 
     Return values:
     if return_qc == True -- quantum circuit object
@@ -170,25 +197,25 @@ def get_mapped_level(
     gate_set = get_native_gates(gate_set_name)
     c_map = utils.get_cmap_from_devicename(device_name)
 
-    filename_mapped = (
-        qc.name
-        + "_mapped_"
-        + device_name
-        + "_qiskit_opt"
-        + str(opt_level)
-        + "_"
-        + str(num_qubits)
-    )
-    qasm_output_folder = utils.get_qasm_output_path()
+    if not target_filename:
+        filename_mapped = (
+            qc.name
+            + "_mapped_"
+            + device_name
+            + "_qiskit_opt"
+            + str(opt_level)
+            + "_"
+            + str(num_qubits)
+        )
+        target_directory = utils.get_qasm_output_path()
+    else:
+        filename_mapped = target_filename
+
     if not (
-        path.isfile(qasm_output_folder + filename_mapped + ".qasm") and file_precheck
+        path.isfile(path.join(target_directory, target_filename) + ".qasm")
+        and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_mapped
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
+
         compiled_with_architecture = transpile(
             qc,
             optimization_level=opt_level,
@@ -205,6 +232,7 @@ def get_mapped_level(
                 gate_set,
                 True,
                 c_map,
+                target_directory,
             )
             return res
     else:
