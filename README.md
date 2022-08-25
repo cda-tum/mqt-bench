@@ -183,7 +183,7 @@ get_one_benchmark(
     circuit_size: int = None,
     benchmark_instance_name: str = None,
     compiler: str = "qiskit",
-    compiler_settings: Union[str, int] = 0,
+    compiler_settings: dict[str, dict[str, any]] = None,
     gate_set_name: str = "ibm",
     device_name: str = "ibm_washington",
 ):
@@ -198,7 +198,14 @@ The available parameters are:
   - `circuit_size`: for most of the cases this is equal to number of qubits 
 (all scalable benchmarks except `"qwalk-v-chain"` and `"grover-v-chain"`) while for all other the qubit number is higher
   - `compiler`: `"qiskit"` or `"tket"`
-  - `compiler_settings`: Optimization level for if compiler is qiskit (`0`-`3`), Line Placement or Graph Placement if compiler is tket (`True` or `False`)
+  - `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), e.g.,
+```python
+compiler_settings = {
+            "qiskit": {"optimization_level": 1},
+            "tket": {"placement": "lineplacement"},
+        }
+```
+
   - `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
   - `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"aspen_m1"`, `"ionq11"`, `"lucy"`
 
