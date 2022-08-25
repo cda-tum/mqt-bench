@@ -77,8 +77,6 @@ def download_data():
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
-        # print("raw data :", data)
-        # print("prepared input data :", prepared_data)
         file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
