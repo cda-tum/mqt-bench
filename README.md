@@ -103,6 +103,7 @@ So far, the following benchmarks are implemented and provided:
 - W-State
 
 See the [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description) for further details on the individual benchmarks.
+
 ## Quantum Circuit Compiler Support
 At the moment, two compilers are supported:
 1) [Qiskit](https://qiskit.org/documentation/) with the compiler settings: Optimization level 0 to 3
@@ -243,39 +244,21 @@ from mqt.bench import get_one_benchmark
 qc = get_one_benchmark("dj", "alg", 5)
 ```
 
+### Locally hosting the MQT Bench Viewer
 Additionally, this python package includes the same webserver used for the hosting of the 
 [MQT Bench webpage](https://www.cda.cit.tum.de/mqtbench).
-By this, we provide means to filter all available benchmarks locally. 
-For that, the user is prompted to download all benchmarks corresponding to the chosen version of MQT Bench.
-Afterwards, a `.zip` file containing all benchmarks is downloaded. 
 
-The local server is started by:
-```python
-from mqt.benchviewer import start_server
-
-start_server()
+After the `mqt.bench` Python package is installed via 
+```console
+(venv) $ pip install mqt.bench
 ```
-
-That method comes with four parameters:
-```python
-# skips the questions whether benchmarks shall be downloaded and directly starts with that
-- skip_question: bool = False 
-# the webserver available on https://www.cda.cit.tum.de/mqtbench/ needs this flag to be True, should be False 
-# for runnung locally
-- activate_logging: bool = False
-# location of the to be downloaded benchmarks can be defined here, if not specified, benchmarks will be stored within
-# the installed package directory
-- target_location: str = None
-# this flag should be False
-- debug_flag: bool = False
-```
-
-The local server is also provided as a python CLI entry point such that it can be started 
-after the package installation with:
-
+the MQT Bench Viewer can be started from the terminal via
 ```console
 (venv) $ mqt.bench
 ```
+
+This first searches for the most recent version of the benchmark files on GitHub and offers to download them.
+Afterwards, the webserver is started locally.
 
 ## Usage directly via this repository
 For that, the repository must be cloned and installed:
