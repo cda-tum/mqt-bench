@@ -103,10 +103,10 @@ So far, the following benchmarks are implemented and provided:
 - W-State
 
 See the [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description) for further details on the individual benchmarks.
-## Compiler Support
+## Quantum Circuit Compiler Support
 At the moment, two compilers are supported:
-1) Qiskit with the compiler settings: Optimization level 0 to 3
-2) TKET with the compiler settings: Line placement and graph placement
+1) [Qiskit](https://qiskit.org/documentation/) with the compiler settings: Optimization level 0 to 3
+2) [TKET](https://cqcl.github.io/tket/pytket/api/) with the compiler settings: Line placement and graph placement
 
 ## Native Gate-Set Support
 So far, MQT Bench supports the following native gate-sets:
@@ -116,18 +116,21 @@ So far, MQT Bench supports the following native gate-sets:
 4) OQC gate-set: *\['rz', 'sx', 'x', 'ecr', 'measure'\]*
 
 ## Device Support
-So far, MQT Bench supports the following native gate-sets:
-1) IBMQ Washington with 127 qubits, IBMQ Montreal with 27 qubits
-2) Rigetti Aspen-M1 with 80 qubits
-3) IonQ with 11 qubits
-4) OQC Lucy with 8 qubits
+So far, MQT Bench supports the following devices:
+1) IBMQ Washington with 127 qubits
+2) IBMQ Montreal with 27 qubits
+3) Rigetti Aspen-M1 with 80 qubits
+4) IonQ with 11 qubits
+5) OQC Lucy with 8 qubits
 
 # Repository Structure
 - mqt/bench/utils: Directory for the utils.py file 
 - mqt/bench/tests: Directory for the tests for MQT Bench
 - mqt/bench/benchmarks: On the top-level, each benchmark algorithm is included as a separate file. 
   - Additionally, folders for each IBM Qiskit application module and their respective benchmarks are listed.
-- mqt/benchviewer: This is the folder for our webpage hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
+- mqt/benchviewer: This is the folder for the webpage 
+(which can be started locally and is also hosted at 
+[https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/)).
 
 ```
 MQTBench/
@@ -159,8 +162,8 @@ MQTBench/
 
 # Repository Usage
 There are three ways how to use this benchmark suite:
-1) Via our web-interface hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/)
-2) Via our pip package `mqt.bench`
+1) Via the webpage hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/)
+2) Via the pip package `mqt.bench`
 3) Directly via this repository
 
 Since the first way is rather self-explanatory, the other two ways are explained in more detail in the following.
@@ -192,8 +195,8 @@ The available parameters are:
                         `"tsp"`
   - `level`: `0` or `"alg"`, `1` or `"indep"`, `2` or `"nativegates"`, `3` or `"mapped"`
   - `circuit_size`: for most of the cases this is equal to number of qubits 
-(all scalable benchmarks but `"qwalk-v-chain"` and `"grover-v-chain"`) while for all other the qubit number is higher
-  - `compiler`: -- `"qiskit"` or `"tket"`
+(all scalable benchmarks except `"qwalk-v-chain"` and `"grover-v-chain"`) while for all other the qubit number is higher
+  - `compiler`: `"qiskit"` or `"tket"`
   - `compiler_settings`: Optimization level for if compiler is qiskit (`0`-`3`), Line Placement or Graph Placement if compiler is tket (`True` or `False`)
   - `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
   - `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"aspen_m1"`, `"ionq11"`, `"lucy"`
