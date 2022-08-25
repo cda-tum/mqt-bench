@@ -326,3 +326,39 @@ def test_configure_end():
         os.remove(os.path.join(test_qasm_output_path, f))
     os.rmdir(test_qasm_output_path)
     utils.set_qasm_output_path()
+
+
+@pytest.mark.parametrize(
+    "abstraction_level",
+    [
+        (1),
+        (2),
+        (3),
+    ],
+)
+def test_saving_qasm_to_alternative_location_with_alternative_filename(
+    abstraction_level: int,
+):
+    directory = "."
+    filename = "ae_test_qiskit"
+    qc = get_one_benchmark("ae", abstraction_level, 5)
+    assert qc
+    res = qiskit_helper.get_mapped_level(
+        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+    )
+    assert res
+    path = os.path.join(directory, filename) + ".qasm"
+    assert os.path.isfile(path)
+    os.remove(path)
+
+    directory = "."
+    filename = "ae_test_tket"
+    qc = get_one_benchmark("ae", abstraction_level, 7)
+    assert qc
+    res = qiskit_helper.get_mapped_level(
+        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+    )
+    assert res
+    path = os.path.join(directory, filename) + ".qasm"
+    assert os.path.isfile(path)
+    os.remove(path)
