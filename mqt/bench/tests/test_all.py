@@ -236,14 +236,9 @@ def test_dj_constant_oracle():
     assert qc.depth() > 0
 
 
-@pytest.mark.skip(reason="Takes really long")
 def test_groundstate():
-    m_1 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    qc = groundstate.create_circuit(m_1)
+    m = utils.get_molecule("small")
+    qc = groundstate.create_circuit(m)
     assert qc.depth() > 0
 
 
