@@ -82,12 +82,6 @@ def get_indep_level(
     if not (
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_native
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
         try:
             gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
@@ -128,13 +122,6 @@ def get_native_gates_level(
     if not (
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_native
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
-
         try:
             gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
@@ -190,12 +177,6 @@ def get_mapped_level(
         path.isfile(qasm_output_folder + filename_mapped + ".qasm") and file_precheck
     ):
         cmap = utils.get_cmap_from_devicename(device)
-        # print(
-        #     qasm_output_folder
-        #     + filename_mapped
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
         try:
             gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
             qc = transpile(
