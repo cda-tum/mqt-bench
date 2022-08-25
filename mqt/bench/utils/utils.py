@@ -236,7 +236,6 @@ def save_as_qasm(
         qasm_output_folder = get_qasm_output_path()
 
     filename = os.path.join(qasm_output_folder, filename) + ".qasm"
-    print(filename)
     with open(filename, "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
