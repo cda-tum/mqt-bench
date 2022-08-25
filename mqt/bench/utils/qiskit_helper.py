@@ -60,7 +60,6 @@ def get_indep_level(
     qasm_output_folder = utils.get_qasm_output_path()
     filepath = qasm_output_folder + filename_indep + ".qasm"
     if not (path.isfile(filepath) and file_precheck):
-        # print(filepath + " does not already exists and is newly created")
         openqasm_gates = utils.get_openqasm_gates()
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
@@ -108,12 +107,7 @@ def get_native_gates_level(
         path.isfile(qasm_output_folder + filename_nativegates + ".qasm")
         and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_nativegates
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
+
         compiled_without_architecture = transpile(
             qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
         )
@@ -183,12 +177,7 @@ def get_mapped_level(
     if not (
         path.isfile(qasm_output_folder + filename_mapped + ".qasm") and file_precheck
     ):
-        # print(
-        #     qasm_output_folder
-        #     + filename_mapped
-        #     + ".qasm"
-        #     + " does not already exists and is newly created"
-        # )
+
         compiled_with_architecture = transpile(
             qc,
             optimization_level=opt_level,
