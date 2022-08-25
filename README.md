@@ -198,10 +198,15 @@ The available parameters are:
   - `circuit_size`: for most of the cases this is equal to number of qubits 
 (all scalable benchmarks except `"qwalk-v-chain"` and `"grover-v-chain"`) while for all other the qubit number is higher
   - `compiler`: `"qiskit"` or `"tket"`
-  - `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), e.g.,
+  - `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), exemplary shown:
 ```python
 compiler_settings = {
             "qiskit": {"optimization_level": 1},
+        }
+```
+or 
+```python
+compiler_settings = {
             "tket": {"placement": "lineplacement"},
         }
 ```
