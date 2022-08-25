@@ -207,7 +207,7 @@ def read_mqtbench_all_zip(
                 response_json = response.json()
                 if "assets" in response_json:
                     assets = response_json["assets"]
-                elif "asset"in response_json:
+                elif "asset" in response_json:
                     assets = [response_json["asset"]]
                 else:
                     assets = []
@@ -230,14 +230,8 @@ def read_mqtbench_all_zip(
                             response = input(
                                 "Would you like to downloaded the file? (Y/n)"
                             )
-                        if (
-                            skip_question
-                            or response.lower() == "y"
-                            or response == ""
-                        ):
-                            handle_downloading_benchmarks(
-                                target_location, download_url
-                            )
+                        if skip_question or response.lower() == "y" or response == "":
+                            handle_downloading_benchmarks(target_location, download_url)
                             break
 
         if not version_found:
