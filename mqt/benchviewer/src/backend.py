@@ -7,9 +7,13 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import pandas as pd
 import requests
-from importlib import metadata
 from tqdm import tqdm
 from packaging import version
+
+try:
+    from importlib import metadata
+except ImportError:
+    import importlib_metadata as metadata
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
@@ -200,34 +204,41 @@ def read_mqtbench_all_zip(
                     )
                     return False
 
-                if "asset" in response.json() or "assets" in response.json():
-                    for asset in response.json()["assets"]:
-                        if asset["name"] == "MQTBench_all.zip":
-                            version_found = True
+                response_json = response.json()
+                if "assets" in response_json:
+                    assets = response_json["assets"]
+                elif "asset"in response_json:
+                    assets = [response_json["asset"]]
+                else:
+                    assets = []
 
-                        if version_found:
-                            download_url = asset["browser_download_url"]
-                            if not skip_question:
-                                file_size = round((asset["size"]) / 2**20, 2)
-                                print(
-                                    "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
-                                        possible_version,
-                                        file_size,
-                                        download_url,
-                                    )
+                for asset in assets:
+                    if asset["name"] == "MQTBench_all.zip":
+                        version_found = True
+
+                    if version_found:
+                        download_url = asset["browser_download_url"]
+                        if not skip_question:
+                            file_size = round((asset["size"]) / 2**20, 2)
+                            print(
+                                "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
+                                    possible_version,
+                                    file_size,
+                                    download_url,
                                 )
-                                response = input(
-                                    "Would you like to downloaded the file? (Y/n)"
-                                )
-                            if (
-                                skip_question
-                                or response.lower() == "y"
-                                or response == ""
-                            ):
-                                handle_downloading_benchmarks(
-                                    target_location, download_url
-                                )
-                                break
+                            )
+                            response = input(
+                                "Would you like to downloaded the file? (Y/n)"
+                            )
+                        if (
+                            skip_question
+                            or response.lower() == "y"
+                            or response == ""
+                        ):
+                            handle_downloading_benchmarks(
+                                target_location, download_url
+                            )
+                            break
 
         if not version_found:
             print("No suitable benchmarks found.")
