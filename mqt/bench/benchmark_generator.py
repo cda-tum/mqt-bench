@@ -487,7 +487,7 @@ def get_one_benchmark(
     circuit_size: int = None,
     benchmark_instance_name: str = None,
     compiler: str = "qiskit",
-    compiler_settings: Union[str, int] = 0,
+    compiler_settings: dict[str, dict[str, any]] = None,
     gate_set_name: str = "ibm",
     device_name: str = "ibm_washington",
 ):
@@ -499,7 +499,7 @@ def get_one_benchmark(
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
     compiler -- "qiskit" or "tket"
-    compiler_settings -- Optimization level for if compiler is qiskit (0-3), Line Placement or Graph Placement if compiler is tket (True or False)
+    compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
     device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
 
@@ -553,6 +553,12 @@ def get_one_benchmark(
         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
+    if compiler_settings == None:
+        compiler_settings = {
+            "qiskit": {"optimization_level": 1},
+            "tket": {"placement": "lineplacement"},
+        }
+
     if level == "alg" or level == 0:
         return qc
 
@@ -568,8 +574,9 @@ def get_one_benchmark(
     elif level == "nativegates" or level == 2:
 
         if compiler == "qiskit":
+            opt_level = compiler_settings["qiskit"]["optimization_level"]
             qc_gates = qiskit_helper.get_native_gates_level(
-                qc, gate_set_name, circuit_size, compiler_settings, False, True
+                qc, gate_set_name, circuit_size, opt_level, False, True
             )
         elif compiler == "tket":
             qc_gates = tket_helper.get_native_gates_level(
@@ -580,22 +587,28 @@ def get_one_benchmark(
 
     elif level == "mapped" or level == 3:
         if compiler == "qiskit":
+            opt_level = compiler_settings["qiskit"]["optimization_level"]
             qc_mapped = qiskit_helper.get_mapped_level(
                 qc,
                 gate_set_name,
                 circuit_size,
                 device_name,
-                compiler_settings,
+                opt_level,
                 False,
                 True,
             )
         elif compiler == "tket":
+            placement = compiler_settings["tket"]["placement"].lower()
+            if placement == "lineplacement":
+                lineplacement = True
+            else:
+                lineplacement = False
             qc_mapped = tket_helper.get_mapped_level(
                 qc,
                 gate_set_name,
                 circuit_size,
                 device_name,
-                compiler_settings,
+                lineplacement,
                 False,
                 True,
             )
