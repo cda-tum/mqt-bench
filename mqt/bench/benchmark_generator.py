@@ -599,10 +599,7 @@ def get_one_benchmark(
             )
         elif compiler == "tket":
             placement = compiler_settings["tket"]["placement"].lower()
-            if placement == "lineplacement":
-                lineplacement = True
-            else:
-                lineplacement = False
+            lineplacement = placement == "lineplacement"
             qc_mapped = tket_helper.get_mapped_level(
                 qc,
                 gate_set_name,
@@ -627,7 +624,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(args.file_name)
+    # print(args.file_name)
     print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
     print("#### Start preprocessing")
