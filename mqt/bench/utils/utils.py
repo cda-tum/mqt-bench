@@ -354,15 +354,14 @@ def postprocess_ocr_qasm_files():
             print("New qasm file for: ", new_name)
 
 
-def create_zip_file():
+def create_zip_file(directory: str = get_qasm_output_path()):
     zf = ZipFile("MQTBench_all.zip", "w")
-    for dirname, subdirs, files in os.walk(get_qasm_output_path()):
-        for filename in files:
-            if filename.endswith(".qasm"):
-                zf.write(
-                    os.path.join(dirname, filename),
-                    compress_type=ZIP_LZMA,
-                    compresslevel=3,
-                    arcname=filename,
-                )
+    for filename in os.listdir(directory):
+        if filename.endswith(".qasm"):
+            zf.write(
+                os.path.join(directory, filename),
+                compress_type=ZIP_LZMA,
+                compresslevel=3,
+                arcname=filename,
+            )
     zf.close()
