@@ -7,13 +7,15 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import pandas as pd
 import requests
+import sys
 from tqdm import tqdm
 from packaging import version
 
-try:
-    from importlib import metadata
-except ImportError:
+if sys.version_info < (3, 10, 0):
     import importlib_metadata as metadata
+else:
+    from importlib import metadata
+
 
 # All available benchmarks shown on our webpage are defined here
 benchmarks = [
