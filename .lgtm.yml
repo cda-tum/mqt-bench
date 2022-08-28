@@ -2,4 +2,3 @@ path_classifiers:
   test:
     - test
     - scripts
-  library:
