@@ -49,6 +49,8 @@ setup(
         "qiskit_optimization==0.3.2",
         "packaging==21.3",
         "tqdm==4.64.0",
+        "importlib_metadata>=3.6; python_version < '3.10'",
+        "importlib_resources>=5.9; python_version < '3.10'",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

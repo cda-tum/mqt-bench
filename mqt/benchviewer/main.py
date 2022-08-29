@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, request, send_from_directory,
 from mqt.benchviewer.src.backend import *
 from datetime import datetime
 import logging
-import importlib
+import sys
 
 app = Flask(__name__)
 PREFIX = "/mqtbench/"
@@ -77,8 +77,6 @@ def download_data():
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
-        # print("raw data :", data)
-        # print("prepared input data :", prepared_data)
         file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -156,10 +154,11 @@ def start_server(
 ):
 
     if not target_location:
-        package_path = importlib.util.find_spec("mqt.bench").origin
-        target_location = (
-            package_path.split("bench/__init__.py")[0] + "benchviewer/static/files/"
-        )
+        if sys.version_info < (3, 10, 0):
+            import importlib_resources as resources
+        else:
+            from importlib import resources
+        target_location = str(resources.files("mqt.benchviewer") / "static" / "files")
 
     init(
         skip_question=skip_question,
