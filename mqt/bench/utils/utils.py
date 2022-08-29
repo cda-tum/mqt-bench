@@ -12,6 +12,7 @@ from zipfile import ZipFile, ZIP_LZMA
 import networkx as nx
 import numpy as np
 import os
+import subprocess
 
 from qiskit.test.mock import (
     FakeMontreal,
@@ -354,14 +355,8 @@ def postprocess_ocr_qasm_files():
             print("New qasm file for: ", new_name)
 
 
-def create_zip_file(directory: str = get_qasm_output_path()):
-    zf = ZipFile("MQTBench_all.zip", "w")
-    for filename in os.listdir(directory):
-        if filename.endswith(".qasm"):
-            zf.write(
-                os.path.join(directory, filename),
-                compress_type=ZIP_LZMA,
-                compresslevel=3,
-                arcname=filename,
-            )
-    zf.close()
+def create_zip_file():
+    return subprocess.call(
+        "zip -rj ./mqt/benchviewer/static/files/MQTBench_all.zip ./mqt/benchviewer/static/files/qasm_output/",
+        shell=True,
+    )
