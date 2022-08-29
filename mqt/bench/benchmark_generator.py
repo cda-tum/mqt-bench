@@ -9,6 +9,7 @@ import multiprocessing
 
 from typing import Union
 from os import path, mkdir, remove
+from joblib import Parallel, delayed
 
 from mqt.bench.benchmarks import (
     shor,
@@ -57,7 +58,6 @@ def create_benchmarks_from_config(cfg_path: str):
         cfg = json.load(jsonfile)
         print("Read config successful")
 
-    # global seetings
     global timeout
     timeout = cfg["timeout"]
 
@@ -65,12 +65,6 @@ def create_benchmarks_from_config(cfg_path: str):
     qasm_output_folder = utils.get_qasm_output_path()
     if not path.isdir(qasm_output_folder):
         mkdir(qasm_output_folder)
-
-    # for benchmark in cfg["benchmarks"]:
-    #     print(benchmark["name"])
-    #     generate_benchmark(benchmark)
-
-    from joblib import Parallel, delayed
 
     Parallel(n_jobs=-1, verbose=100)(
         delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
@@ -238,7 +232,6 @@ def generate_benchmark(benchmark):
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
                 if not res:
-                    print("####### FAIL")
                     break
 
     return
