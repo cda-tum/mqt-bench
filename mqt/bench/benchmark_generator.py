@@ -67,15 +67,15 @@ def create_benchmarks_from_config(cfg_path: str):
         mkdir(qasm_output_folder)
 
     # for benchmark in cfg["benchmarks"]:
-    # print(benchmark["name"])
-    # generate_benchmark(benchmark)
+    #     print(benchmark["name"])
+    #     generate_benchmark(benchmark)
 
     from joblib import Parallel, delayed
 
     Parallel(n_jobs=-1, verbose=100)(
         delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
     )
-    return
+    return True
 
 
 def benchmark_generation_watcher(func, args):
@@ -87,16 +87,27 @@ def benchmark_generation_watcher(func, args):
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)
-
     signal.alarm(timeout)
     try:
         res = func(*args)
     except TimeoutException:
-        print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
+        print(
+            "Calculation/Generation exceeded timeout limit for ",
+            func.__name__,
+            func.__module__.split(".")[-1],
+            args[0].name,
+            args[1:],
+        )
         return False
     except Exception as e:
-        # print("Calculation/Generation exceeded timeout limit for ", func, args[1:])
-        print("Exception: ", e)  # , func, args[0].name, args[1:])
+        print(
+            "Exception: ",
+            e,
+            func.__name__,
+            func.__module__.split(".")[-1],
+            args[0].name,
+            args[1:],
+        )
         return False
     else:
         # Reset the alarm
@@ -624,7 +635,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # print(args.file_name)
     print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
     print("#### Start preprocessing")
