@@ -10,24 +10,18 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <style>
-        div {
-            font-size: 0.8vw;
-        }
 
-        h1 {
-            font-size: 2.2vw;
-        }
     </style>
 
     <title>MQT Bench</title>
-    <link rel="shortcut icon" href="/app/mqtbench/benchviewer/static/favicon.ico">
+    <link rel="shortcut icon" href="../static/favicon.ico">
 </head>
 <body>
 <!-- Image and text -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="/mqtbench">
 
-        <img src="/app/mqtbench/benchviewer/static/TUM_Logo_blau_rgb_s.svg" alt="" width="50" height="24"
+        <img src="../static/TUM_Logo_blau_rgb_s.svg" alt="" width="50" height="24"
              class="d-inline-block align-text-top">
         MQT Bench
     </a>
@@ -37,7 +31,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link " href=".">Benchmarks</span></a>
+            <a class="nav-item nav-link " href="index">Benchmarks</span></a>
             <a class="nav-item nav-link active" href="description ">Level and File Descriptions</a>
             <a class="nav-item nav-link " href="benchmark_description ">Benchmark Description</a>
             <a class="nav-item nav-link " href="https://www.cda.cit.tum.de/research/quantum/" target="_blank">More on
@@ -48,7 +42,7 @@
 </nav>
 <div class="col-xs-12" style="height:80px;"></div>
 
-<div class="container-fluid">
+<div class="container">
     <h1>MQT Bench: Level Description and File Format</h1>
     <p>
         Benchmarks are provided on four different abstraction levels:
@@ -94,7 +88,7 @@
 
 
 
-<div class="container-fluid">
+<div class="container">
     <table class="table-sm">
         <thead>
         <tr>
@@ -115,18 +109,18 @@
         </tr>
         <tr>
             <td style="vertical-align:top">Target-independent Level</td>
-            <td style="vertical-align:top">&lt;benchmark_identifier&gt;_nativegates_&lt;number_of_qubits&gt;.qasm</td>
-            <td style="vertical-align:top">qft_t-indep_5.qasm</td>
+            <td style="vertical-align:top">&lt;benchmark_identifier&gt;_indep_&lt;compiler&gt;_&lt;number_of_qubits&gt;.qasm</td>
+            <td style="vertical-align:top">qft_indep_tket_5.qasm</td>
         </tr>
         <tr>
             <td style="vertical-align:top">Target-dependent Native Gates Level</td>
-            <td style="vertical-align:top">&lt;benchmark_identifier&gt;_nativegates_&lt;native_gate_set&gt;_&lt;optimization_level&gt;_&lt;number_of_qubits&gt;.qasm</td>
-            <td style="vertical-align:top">qft_nativegates_ibm_opt3_5.qasm</td>
+            <td style="vertical-align:top">&lt;benchmark_identifier&gt;_nativegates_&lt;native_gate_set&gt;_&lt;compiler&gt;_&lt;optional: compiler settings&gt;_&lt;number_of_qubits&gt;.qasm</td>
+            <td style="vertical-align:top">qft_nativegates_ibm_qiskit_opt3_5.qasm</td>
         </tr>
         <tr>
             <td style="vertical-align:top">Target-dependent Mapped Level</td>
-            <td style="vertical-align:top">benchmark_identifier&gt;_mapped_&lt;native_gate_set&gt;-&lt;mapping scheme&gt;_&lt;optimization_level&gt;_&lt;number_of_qubits&gt;.qasm</td>
-            <td style="vertical-align:top">qft_mapped_ibm-s_opt3_5.qasm</td>
+            <td style="vertical-align:top">&lt;benchmark_identifier&gt;_mapped_&lt;device&gt;_&lt;compiler&gt;_&lt;compiler settings>_&lt;number_of_qubits&gt;.qasm</td>
+            <td style="vertical-align:top">qft_nativegates_rigetti_aspen_m1_qiskit_opt3_5.qasm</td>
         </tr>
         </tbody>
     </table>

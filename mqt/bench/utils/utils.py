@@ -12,16 +12,17 @@ from zipfile import ZipFile, ZIP_LZMA
 import networkx as nx
 import numpy as np
 import os
+import subprocess
 
 from qiskit.test.mock import (
     FakeMontreal,
     FakeWashington,
 )
 
-qasm_path = "./benchviewer/static/files/qasm_output/"
+qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
 
-def set_qasm_output_path(new_path: str = "./benchviewer/static/files/qasm_output/"):
+def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
     global qasm_path
     qasm_path = new_path
 
@@ -355,14 +356,7 @@ def postprocess_ocr_qasm_files():
 
 
 def create_zip_file():
-    zf = ZipFile("MQTBench_all.zip", "w")
-    for dirname, subdirs, files in os.walk(get_qasm_output_path()):
-        for filename in files:
-            if filename.endswith(".qasm"):
-                zf.write(
-                    os.path.join(dirname, filename),
-                    compress_type=ZIP_LZMA,
-                    compresslevel=3,
-                    arcname=filename,
-                )
-    zf.close()
+    return subprocess.call(
+        "zip -rj ./mqt/benchviewer/static/files/MQTBench_all.zip ./mqt/benchviewer/static/files/qasm_output/",
+        shell=True,
+    )

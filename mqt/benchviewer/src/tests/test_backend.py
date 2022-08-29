@@ -1,9 +1,11 @@
-from benchviewer.src import backend
+from mqt.benchviewer.src import backend
+from mqt.benchviewer.main import app, init
 
 import pytest
 from pathlib import Path
 import io
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
+import os
 
 
 @pytest.mark.parametrize(
@@ -145,14 +147,13 @@ def test_prepareFormInput():
             ("selectBench_19", "Real Amplitudes ansatz with Random Parameters"),
             ("selectBench_20", "Two Local ansatz with Random Parameters"),
             ("selectBench_21", "W-State"),
-            ("selectBench_22", "Excited State"),
-            ("selectBench_23", "Ground State"),
-            ("selectBench_24", "HHL"),
-            ("selectBench_25", "Pricing Call Option"),
-            ("selectBench_26", "Pricing Put Option"),
-            ("selectBench_27", "Routing"),
-            ("selectBench_28", "Shor's"),
-            ("selectBench_29", "Travelling Salesman"),
+            ("selectBench_22", "Ground State"),
+            ("selectBench_23", "HHL"),
+            ("selectBench_24", "Pricing Call Option"),
+            ("selectBench_25", "Pricing Put Option"),
+            ("selectBench_26", "Routing"),
+            ("selectBench_27", "Shor's"),
+            ("selectBench_28", "Travelling Salesman"),
             ("indep_qiskit_compiler", "true"),
             ("indep_tket_compiler", "true"),
             ("nativegates_qiskit_compiler", "true"),
@@ -212,7 +213,6 @@ def test_prepareFormInput():
             "26",
             "27",
             "28",
-            "29",
         ],
         (True, True),
         ((True, True), [0, 1, 2, 3], ["ibm", "rigetti", "oqc", "ionq"]),
@@ -232,9 +232,15 @@ def test_prepareFormInput():
     assert backend.prepareFormInput(form_data) == expected_res
 
 
-def test_create_database():
+def test_read_mqtbench_all_zip():
+    target_location = "mqt/benchviewer/static/files"
+    assert backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=target_location
+    )
 
-    huge_zip = Path("./benchviewer/static/files/qasm_output/MQTBench_all.zip")
+
+def test_create_database():
+    huge_zip = Path("mqt/benchviewer/static/files/MQTBench_all.zip")
     MQTBENCH_ALL_ZIP = None
     with huge_zip.open("rb") as zf:
         bytes = io.BytesIO(zf.read())
@@ -255,14 +261,14 @@ def test_create_database():
     assert len(res) > 3
 
     input_data = (
-        (100, 110),
+        (110, 120),
         ["3"],
         (False, False),
         ((False, True), [], ["rigetti", "ionq"]),
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20
+    assert len(res) > 15
 
     input_data = (
         (75, 110),
@@ -276,7 +282,7 @@ def test_create_database():
 
     input_data = (
         (2, 5),
-        ["24"],
+        ["23"],
         (True, True),
         ((True, False), [1, 3], ["rigetti", "ionq", "oqc", "ibm"]),
         (
@@ -297,3 +303,26 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert res == []
+
+
+def test_flask_server():
+    assert init(
+        skip_question=True,
+        activate_logging=False,
+        target_location="mqt/benchviewer/static/files",
+    )
+
+    assert os.path.isfile(
+        os.path.join("mqt/benchviewer/static/files", "MQTBench_all.zip")
+    )
+    assert os.path.isfile("./mqt/benchviewer/templates/benchmark_description.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/index.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/legal.html")
+    assert os.path.isfile("./mqt/benchviewer/templates/description.html")
+
+    with app.test_client() as c:
+        assert c.get("/mqtbench/index").status_code == 200
+        assert c.get("/mqtbench/download").status_code == 200
+        assert c.get("/mqtbench/legal").status_code == 200
+        assert c.get("/mqtbench/description").status_code == 200
+        assert c.get("/mqtbench/benchmark_description").status_code == 200

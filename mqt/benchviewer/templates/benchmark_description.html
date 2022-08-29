@@ -10,24 +10,18 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <style>
-        div {
-            font-size: 0.8vw;
-        }
 
-        h1 {
-            font-size: 2.2vw;
-        }
     </style>
 
     <title>MQT Bench</title>
-    <link rel="shortcut icon" href="/app/mqtbench/benchviewer/static/favicon.ico">
+    <link rel="shortcut icon" href="../static/favicon.ico">
 </head>
 <body>
 <!-- Image and text -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <a class="navbar-brand" href="/mqtbench">
 
-        <img src="/app/mqtbench/benchviewer/static/TUM_Logo_blau_rgb_s.svg" alt="" width="50" height="24"
+        <img src="../static/TUM_Logo_blau_rgb_s.svg" alt="" width="50" height="24"
              class="d-inline-block align-text-top">
         MQT Bench
     </a>
@@ -37,7 +31,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link " href=".">Benchmarks</span></a>
+            <a class="nav-item nav-link " href="index">Benchmarks</span></a>
             <a class="nav-item nav-link " href="description ">Level and File Descriptions</a>
             <a class="nav-item nav-link active" href="benchmark_description ">Benchmark Description</a>
             <a class="nav-item nav-link " href="https://www.cda.cit.tum.de/research/quantum/" target="_blank">More on
@@ -49,7 +43,7 @@
 
 <div class="col-xs-12" style="height:80px;"></div>
 
-<div class="container-fluid">
+<div class="container">
     <h1>MQT Bench: Brief Description of Benchmarks</h1>
 
 
@@ -76,16 +70,6 @@
                 or balanced (both outputs are equally likely).
             </td>
             <td style="vertical-align:top">2 -> 130</td>
-        </tr>
-        <tr>
-            <td style="vertical-align:top">Excited State</td>
-            <td style="vertical-align:top">This algorithms estimates the excited state of the H2
-                molecule ("small") using VQE with a TwoLocal ansatz.
-                The source code for the algorithmic level originates from
-                <a href="https://qiskit.org/documentation/nature/tutorials/04_excited_states_solvers.html"
-                   target="_blank">this page</a>.
-            </td>
-            <td style="vertical-align:top">4</td>
         </tr>
         <tr>
             <td style="vertical-align:top">GHZ State</td>
@@ -324,34 +308,6 @@
         </tbody>
     </table>
     <div class="col-xs-12" style="height:50px;"></div>
-
-
-    <!--            {"name": "GHZ State", "id": "1", "filename":"ghz"},
-                  {"name": "Graph State", "id": "2", "filename":"graphstate"},
-                  {"name": "W State", "id": "3", "filename":"wstate"},
-                  {"name": "Quantum Amplitude Estimation (QAE)", "id": "4", "filename":"ae"},
-                  {"name": "Quantum Fourier Transformation (QFT)", "id": "5", "filename":"qft"},
-                  {"name": "Entangled QFT", "id": "6", "filename":"qftentangled"},
-                  {"name": "Quantum Phase Estimation (QPE) exact", "id": "7", "filename":"qpeexact"},
-                  {"name": "Quantum Phase Estimation (QPE) inexact", "id": "8", "filename":"qpeinexact"},
-                  {"name": "Deutsch-Jozsa", "id": "9", "filename":"dj"},
-                  {"name": "Grover's (no ancilla)", "id": "10", "filename":"grover-noancilla"},
-                  {"name": "Grover's (v-chain)", "id": "11", "filename":"grover-vchain"},
-                  {"name": "Quantum Walk (no ancilla)", "id": "12", "filename":"qwalk-noancilla"},
-                  {"name": "Quantum Walk (v-chain", "id": "13", "filename":"qwalk-vchain"},
-                  {"name": "Quantum Approximation Optimization Algorithm (QAOA)", "id": "14", "filename":"qaoa"},
-                  {"name": "Variational Quantum Eigensolver (VQE)", "id": "15", "filename":"vqe"},
-                  {"name": "Portfolio Optimization with QAOA", "id": "16", "filename":"portfolioqaoa"},
-                  {"name": "Portfolio Optimization with VQE", "id": "17", "filename":"portfoliovqe"},
-                  {"name": "Ground State", "id": "18", "filename":"groundstate"},
-                  {"name": "Excited State", "id": "19", "filename":"excitedstate"},
-                  {"name": "Routing", "id": "20", "filename":"routing"},
-                  {"name": "Travelling Salesman", "id": "21", "filename":"tsp"},
-                  {"name": "Pricing Call Option", "id": "22", "filename":"pricingcall"},
-                  {"name": "Pricing Put Option", "id": "23", "filename":"pricingput"},
-                  {"name": "Quantum Generative Adversarial Network", "id": "23", "filename":"qgan"},
-                  {"name": "Shor's", "id": "24", "filename":"shor"},
-                  {"name": "HHL", "id": "25", "filename":"HHL"}]-->
 
 
     <!-- Optional JavaScript -->

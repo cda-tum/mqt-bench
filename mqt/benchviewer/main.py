@@ -1,29 +1,41 @@
-import os.path
-import json
-
-from flask import (
-    Flask,
-    jsonify,
-    render_template,
-    request,
-    send_from_directory,
-)
-from src.backend import *
+from flask import Flask, jsonify, render_template, request, send_from_directory, cli
+from mqt.benchviewer.src.backend import *
 from datetime import datetime
 import logging
+import sys
 
-
-def init():
-    read_mqtbench_all_zip()
-    init_database()
-
-    # logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
-
-
-init()
 app = Flask(__name__)
-
 PREFIX = "/mqtbench/"
+
+
+def init(
+    skip_question: bool = False,
+    activate_logging: bool = False,
+    target_location: str = None,
+):
+    global TARGET_LOCATION
+    TARGET_LOCATION = target_location
+    if not os.access(TARGET_LOCATION, os.W_OK):
+        print("target_location is not writable. Please specify a different path.")
+        return False
+
+    res_zip = read_mqtbench_all_zip(skip_question, target_location)
+    if not res_zip:
+        return False
+
+    res_db = init_database()
+    if not res_db:
+        return False
+
+    global ACTIVATE_LOGGING
+    ACTIVATE_LOGGING = activate_logging
+
+    if ACTIVATE_LOGGING:
+        logging.basicConfig(
+            filename="/local/mqtbench/downloads.log", level=logging.INFO
+        )
+
+    return True
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
@@ -40,12 +52,18 @@ def index():
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip():
-    directory = "./static/files/qasm_output/"
     filename = "MQTBench_all.zip"
-    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+    if ACTIVATE_LOGGING:
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        app.logger.info("###### Start ######")
+        app.logger.info("Timestamp: %s", timestamp)
+        app.logger.info("Headers: %s", request.headers)
+        app.logger.info("Download of pre-generated zip")
+        app.logger.info("###### End ######")
 
     return send_from_directory(
-        directory=directory,
+        directory=TARGET_LOCATION,
         path=filename,
         as_attachment=True,
         mimetype="application/zip",
@@ -59,10 +77,16 @@ def download_data():
     if request.method == "POST":
         data = request.form
         prepared_data = prepareFormInput(data)
-        print("raw data :", data)
-        print("prepared input data :", prepared_data)
         file_paths = get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+        if ACTIVATE_LOGGING:
+            app.logger.info("###### Start ######")
+            app.logger.info("Timestamp: %s", timestamp)
+            app.logger.info("Headers: %s", request.headers)
+            app.logger.info("Prepared_data: %s", prepared_data)
+            app.logger.info("Download started: %s", len(file_paths))
+            app.logger.info("###### End ######")
 
         if file_paths:
             return app.response_class(
@@ -114,7 +138,6 @@ def get_num_benchmarks():
         prepared_data = prepareFormInput(data)
         file_paths = get_selected_file_paths(prepared_data)
         num = len(file_paths)
-        print("Num benchmarks: ", num)
         data = {"num_selected": num}
         return jsonify(data)
     else:
@@ -123,9 +146,39 @@ def get_num_benchmarks():
         return jsonify(data)
 
 
-def main():
-    app.run(debug=True)
+def start_server(
+    skip_question: bool = False,
+    activate_logging: bool = False,
+    target_location: str = None,
+    debug_flag: bool = False,
+):
+
+    if not target_location:
+        if sys.version_info < (3, 10, 0):
+            import importlib_resources as resources
+        else:
+            from importlib import resources
+        target_location = str(resources.files("mqt.benchviewer") / "static" / "files")
+
+    init(
+        skip_question=skip_question,
+        activate_logging=activate_logging,
+        target_location=target_location,
+    )
+    print(
+        "Server is hosted at: " + "http://127.0.0.1:5000" + PREFIX + ".",
+        "To stop it, interrupt the process (e.g., via CTRL+C). \n",
+    )
+
+    # This line avoid the startup-message from flask
+    cli.show_server_banner = lambda *args: None
+
+    if not activate_logging:
+        log = logging.getLogger("werkzeug")
+        log.disabled = True
+
+    app.run(debug=debug_flag)
 
 
 if __name__ == "__main__":
-    main()
+    start_server()

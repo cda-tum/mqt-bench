@@ -5,8 +5,9 @@
 ### Manually added
 /hist_output/*
 /qasm_output/*
-/benchviewer/static/files/qasm_output_big
-/benchviewer/static/files/qasm_output_small
+
+*.qasm
+
 .idea/*
 *.DS_Store
 *hist_output/*png
