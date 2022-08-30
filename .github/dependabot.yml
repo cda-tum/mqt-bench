@@ -14,10 +14,10 @@ updates:
     reviewers:
       - "nquetschlich"
   - package-ecosystem: "github-actions"
-    directory:         "/"
+    directory: "/"
     schedule:
       interval: "weekly"
-      day:      "friday"
-      time:     "06:00"
+      day: "friday"
+      time: "06:00"
     assignees:
       - "nquetschlich"
