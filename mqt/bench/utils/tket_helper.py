@@ -2,12 +2,8 @@ from os import path
 
 from pytket import OpType, architecture, circuit
 from pytket.extensions.qiskit import qiskit_to_tk
-from pytket.passes import (
-    FullPeepholeOptimise,
-    PlacementPass,
-    RoutingPass,
-    auto_rebase_pass,
-)
+from pytket.passes import (FullPeepholeOptimise, PlacementPass, RoutingPass,
+                           auto_rebase_pass)
 from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_from_qasm_str, circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
