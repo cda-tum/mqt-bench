@@ -1,23 +1,14 @@
-from qiskit import QuantumCircuit, __qiskit_version__
-from qiskit.algorithms import EstimationProblem
-
-from pytket import *
-
+import os
+import subprocess
 from datetime import date
-
-
-from zipfile import ZipFile, ZIP_LZMA
-
+from zipfile import ZIP_LZMA, ZipFile
 
 import networkx as nx
 import numpy as np
-import os
-import subprocess
-
-from qiskit.test.mock import (
-    FakeMontreal,
-    FakeWashington,
-)
+from pytket import *
+from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit.algorithms import EstimationProblem
+from qiskit.test.mock import FakeMontreal, FakeWashington
 
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
@@ -315,7 +306,7 @@ def postprocess_ocr_qasm_files():
         f = os.path.join(directory, filename)
         # checking if it is a file
         if "oqc_lucy_qiskit" in f or "oqc_qiskit" in f:
-            with open(f, "r") as f:
+            with open(f) as f:
                 lines = f.readlines()
             new_name = os.path.join(directory, filename)
             with open(new_name, "w") as f:
@@ -336,7 +327,7 @@ def postprocess_ocr_qasm_files():
             print("New qasm file for: ", new_name)
 
         elif "oqc_lucy_tket" in f or "oqc_tket" in f:
-            with open(f, "r") as f:
+            with open(f) as f:
                 lines = f.readlines()
             new_name = os.path.join(directory, filename)
             with open(new_name, "w") as f:

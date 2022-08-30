@@ -1,8 +1,10 @@
-from flask import Flask, jsonify, render_template, request, send_from_directory, cli
-from mqt.benchviewer.src.backend import *
-from datetime import datetime
 import logging
 import sys
+from datetime import datetime
+
+from flask import Flask, cli, jsonify, render_template, request, send_from_directory
+
+from mqt.benchviewer.src.backend import *
 
 app = Flask(__name__)
 PREFIX = "/mqtbench/"

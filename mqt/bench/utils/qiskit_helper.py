@@ -1,7 +1,7 @@
+from os import path
+
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.compiler import transpile
-
-from os import path
 
 from mqt.bench.utils import utils
 

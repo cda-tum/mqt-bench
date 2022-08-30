@@ -1,21 +1,18 @@
-from pytket.passes import auto_rebase_pass
+from os import path
 
-from pytket import OpType
+from pytket import OpType, architecture, circuit
+from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (
+    FullPeepholeOptimise,
     PlacementPass,
     RoutingPass,
-    FullPeepholeOptimise,
     auto_rebase_pass,
 )
 from pytket.placement import GraphPlacement, LinePlacement
-from pytket.qasm import circuit_to_qasm_str, circuit_from_qasm_str
-from pytket import architecture, circuit
+from pytket.qasm import circuit_from_qasm_str, circuit_to_qasm_str
+from qiskit import QuantumCircuit, transpile
 
 from mqt.bench.utils import utils
-from os import path
-from pytket.extensions.qiskit import qiskit_to_tk
-
-from qiskit import QuantumCircuit, transpile
 
 
 def get_rebase(gate_set_name: str, get_gatenames: bool = False):
@@ -83,7 +80,7 @@ def get_indep_level(
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
         try:
-            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
+            gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
             qc = transpile(
                 qc,
                 basis_gates=gates,
@@ -123,7 +120,7 @@ def get_native_gates_level(
         path.isfile(qasm_output_folder + filename_native + ".qasm") and file_precheck
     ):
         try:
-            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
+            gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
             qc = transpile(
                 qc,
                 basis_gates=gates,
@@ -178,7 +175,7 @@ def get_mapped_level(
     ):
         cmap = utils.get_cmap_from_devicename(device)
         try:
-            gates = list(set(utils.get_openqasm_gates()) - set(["rccx"]))
+            gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
             qc = transpile(
                 qc,
                 basis_gates=gates,

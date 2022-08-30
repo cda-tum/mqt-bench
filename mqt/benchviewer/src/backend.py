@@ -1,15 +1,15 @@
 import io
 import os
 import re
+import sys
 from pathlib import Path
-from typing import List, Iterable
-from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Iterable, List
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
 import requests
-import sys
-from tqdm import tqdm
 from packaging import version
+from tqdm import tqdm
 
 if sys.version_info < (3, 10, 0):
     import importlib_metadata as metadata
@@ -267,7 +267,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
-    print("Download completed to {}. Server is starting now.".format(fname))
+    print(f"Download completed to {fname}. Server is starting now.")
 
 
 def get_tket_settings(filename: str):
@@ -563,7 +563,7 @@ def init_database():
 
     print("Initiating database...")
     database = createDatabase(MQTBENCH_ALL_ZIP)
-    print("... done: {} benchmarks.".format(len(database)))
+    print(f"... done: {len(database)} benchmarks.")
 
     if not database.empty:
         return True
