@@ -2,8 +2,9 @@
 
 import numpy as np
 from qiskit.algorithms.linear_solvers.hhl import HHL
-from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import \
-    TridiagonalToeplitz
+from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import (
+    TridiagonalToeplitz,
+)
 
 
 def create_circuit(num_qubits: int):

@@ -2,8 +2,7 @@ import logging
 import sys
 from datetime import datetime
 
-from flask import (Flask, cli, jsonify, render_template, request,
-                   send_from_directory)
+from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 
 from mqt.benchviewer.src.backend import *
 
