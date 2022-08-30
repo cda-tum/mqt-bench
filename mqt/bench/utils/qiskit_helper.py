@@ -70,7 +70,6 @@ def get_indep_level(
         path.isfile(path.join(target_directory, filename_indep) + ".qasm")
         and file_precheck
     ):
-        # print(filepath + " does not already exists and is newly created")
         openqasm_gates = utils.get_openqasm_gates()
         target_independent = transpile(
             qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
