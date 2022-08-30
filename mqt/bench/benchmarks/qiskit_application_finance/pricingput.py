@@ -14,7 +14,7 @@ def create_circuit(num_uncertainty_qubits: int = 5):
 
     try:
         from qiskit_finance.circuit.library import LogNormalDistribution
-    except:
+    except Exception:
         print("Please install qiskit_finance.")
         return None
 

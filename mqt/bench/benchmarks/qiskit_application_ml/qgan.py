@@ -14,13 +14,13 @@ def create_circuit(num_qubits: int):
     """
     try:
         from qiskit_finance.circuit.library import UniformDistribution
-    except:
+    except Exception:
         print("Please install qiskit_finance.")
         return None
 
     try:
         from qiskit_machine_learning.algorithms import QGAN, NumPyDiscriminator
-    except:
+    except Exception:
         print("Please install qiskit_machine_learning.")
         return None
 
@@ -86,7 +86,7 @@ def create_circuit(num_qubits: int):
     discriminator = NumPyDiscriminator(len(num_qubits))
     qgan.set_discriminator(discriminator)
 
-    result = qgan.run(quantum_instance)
+    qgan.run(quantum_instance)
 
     param_values = qgan.generator.parameter_values
     qc = qgan.generator.construct_circuit(params=param_values)

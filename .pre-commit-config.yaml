@@ -28,21 +28,21 @@ repos:
       - id: mixed-line-ending
       - id: requirements-txt-fixer
       - id: trailing-whitespace
-#
-#  # Handling unwanted unicode characters
-#  - repo: https://github.com/sirosen/texthooks
-#    rev: "0.3.1"
-#    hooks:
-#      - id: fix-ligatures
-#      - id: fix-smartquotes
-#
-#  # Upgrade old Python syntax
-#  - repo: https://github.com/asottile/pyupgrade
-#    rev: "v2.37.3"
-#    hooks:
-#      - id: pyupgrade
-#        args: ["--py37-plus"]
-#
+
+  # Handling unwanted unicode characters
+  - repo: https://github.com/sirosen/texthooks
+    rev: "0.3.1"
+    hooks:
+      - id: fix-ligatures
+      - id: fix-smartquotes
+
+  # Upgrade old Python syntax
+  - repo: https://github.com/asottile/pyupgrade
+    rev: "v2.37.3"
+    hooks:
+      - id: pyupgrade
+        args: ["--py37-plus"]
+
   # Sort includes
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
@@ -54,23 +54,38 @@ repos:
     rev: "22.6.0" # Keep in sync with blacken-docs
     hooks:
       - id: black
-#
-#  # Check for common mistakes
-#  - repo: https://github.com/pre-commit/pygrep-hooks
-#    rev: "v1.9.0"
-#    hooks:
-#      - id: python-check-blanket-noqa
-#      - id: python-check-blanket-type-ignore
-#      - id: python-no-log-warn
-#      - id: python-no-eval
-#      - id: python-use-type-annotations
-#      - id: rst-backticks
-#      - id: rst-directive-colons
-#      - id: rst-inline-touching-normal
-#
-#  # Run Flake8 checks
-#  - repo: https://github.com/PyCQA/flake8
-#    rev: "5.0.4"
-#    hooks:
-#      - id: flake8
-#        additional_dependencies: [flake8-bugbear]
+
+  # Check for common mistakes
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: "v1.9.0"
+    hooks:
+      - id: python-check-blanket-noqa
+      - id: python-check-blanket-type-ignore
+      - id: python-no-log-warn
+      - id: python-no-eval
+      - id: python-use-type-annotations
+      - id: rst-backticks
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+
+  # Run Flake8 checks
+  - repo: https://github.com/PyCQA/flake8
+    rev: "5.0.4"
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-bugbear]
+
+  # Check for spelling
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.2.1"
+    hooks:
+      - id: codespell
+        args: ["-L", "wille,linz"]
+        exclude: "mqt/benchviewer/templates/legal.html"
+
+  # Format configuration files with prettier
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v3.0.0-alpha.0"
+    hooks:
+      - id: prettier
+        types_or: [yaml, markdown, javascript, json]

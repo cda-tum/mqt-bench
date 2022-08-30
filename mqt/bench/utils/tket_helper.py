@@ -9,7 +9,7 @@ from pytket.passes import (
     auto_rebase_pass,
 )
 from pytket.placement import GraphPlacement, LinePlacement
-from pytket.qasm import circuit_from_qasm_str, circuit_to_qasm_str
+from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
 from mqt.bench.utils import utils

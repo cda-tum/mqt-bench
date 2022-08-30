@@ -68,7 +68,7 @@ def test_configure_begin():
         (twolocalrandom, 8, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        # (shor, 15, False),
+        (shor, 9, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -591,7 +591,7 @@ def test_get_one_benchmark(
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
             qc = QuantumCircuit.from_qasm_str(circuit_to_qasm_str(qc))
-        for instruction, qargs, cargs in qc.data:
+        for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
             assert (
                 gate_type in qiskit_helper.get_native_gates(gate_set_name)

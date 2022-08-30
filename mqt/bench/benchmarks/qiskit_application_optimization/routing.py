@@ -91,7 +91,7 @@ class QuantumOptimizer:
                 + c
             )
             cost = fun(x_sol)
-        except:
+        except Exception:
             cost = 0
 
         return q, g, c, cost
@@ -99,7 +99,7 @@ class QuantumOptimizer:
     def construct_problem(self, q, g, c):
         try:
             from qiskit_optimization import QuadraticProgram
-        except:
+        except Exception:
             print("Please install qiskit_optimization.")
             return None
 
@@ -115,7 +115,7 @@ class QuantumOptimizer:
 
         try:
             from qiskit_optimization.algorithms import MinimumEigenOptimizer
-        except:
+        except Exception:
             print("Please install qiskit_optimization.")
             return None
 

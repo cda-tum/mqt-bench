@@ -16,9 +16,7 @@ def create_circuit(molecule, basis: str = "sto3g"):
     """
 
     try:
-        from qiskit_nature.algorithms import GroundStateEigensolver
         from qiskit_nature.converters.second_quantization import QubitConverter
-        from qiskit_nature.drivers import Molecule
         from qiskit_nature.drivers.second_quantization import (
             ElectronicStructureDriverType,
             ElectronicStructureMoleculeDriver,
@@ -27,7 +25,7 @@ def create_circuit(molecule, basis: str = "sto3g"):
         from qiskit_nature.problems.second_quantization import (
             ElectronicStructureProblem,
         )
-    except:
+    except Exception:
         print("Please install qiskit_nature.")
         return None
 

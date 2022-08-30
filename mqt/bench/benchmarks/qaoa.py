@@ -4,7 +4,6 @@ from qiskit import Aer
 from qiskit.algorithms import QAOA
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.utils import QuantumInstance
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
 
 from mqt.bench.utils.utils import get_examplary_max_cut_qp
 

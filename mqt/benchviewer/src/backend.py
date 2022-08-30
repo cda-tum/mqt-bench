@@ -168,7 +168,7 @@ def read_mqtbench_all_zip(
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
-    except Exception as e:
+    except Exception:
         print(
             "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
         )
@@ -406,13 +406,13 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
 
         if indep_qiskit_compiler:
             db_tmp1 = db_tmp.loc[
-                (db_tmp["indep_flag"] == True) & (db_tmp["compiler"] == "qiskit")
+                (db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp1])
 
         if indep_tket_compiler:
             db_tmp2 = db_tmp.loc[
-                (db_tmp["indep_flag"] == True) & (db_tmp["compiler"] == "tket")
+                (db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp2])
 
@@ -420,7 +420,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for gate_set in native_gatesets:
                 for opt_lvl in native_qiskit_opt_lvls:
                     db_tmp3 = db_tmp.loc[
-                        (db_tmp["nativegates_flag"] == True)
+                        (db_tmp["nativegates_flag"])
                         & (db_tmp["gate_set"] == gate_set)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
@@ -430,7 +430,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
         if nativegates_tket_compiler:
             for gate_set in native_gatesets:
                 db_tmp4 = db_tmp.loc[
-                    (db_tmp["nativegates_flag"] == True)
+                    (db_tmp["nativegates_flag"])
                     & (db_tmp["gate_set"] == gate_set)
                     & (db_tmp["compiler"] == "tket")
                 ]
@@ -440,7 +440,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for opt_lvl in mapped_qiskit_opt_lvls:
                 for device in mapped_devices:
                     db_tmp5 = db_tmp.loc[
-                        (db_tmp["mapped_flag"] == True)
+                        (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
@@ -451,7 +451,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for placement in mapped_tket_placements:
                 for device in mapped_devices:
                     db_tmp6 = db_tmp.loc[
-                        (db_tmp["mapped_flag"] == True)
+                        (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "tket")
                         & (db_tmp["compiler_settings"] == placement)

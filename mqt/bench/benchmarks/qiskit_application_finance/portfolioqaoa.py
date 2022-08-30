@@ -18,13 +18,13 @@ def create_circuit(num_qubits: int):
         from qiskit_finance.applications import PortfolioOptimization
         from qiskit_finance.data_providers import RandomDataProvider
 
-    except:
+    except Exception:
         print("Please install qiskit_finance.")
         return None
 
     try:
         from qiskit_optimization.converters import QuadraticProgramToQubo
-    except:
+    except Exception:
         print("Please install qiskit_optimization.")
         return None
 
@@ -44,7 +44,6 @@ def create_circuit(num_qubits: int):
 
     q = 0.5  # set risk factor
     budget = num_assets // 2  # set budget
-    penalty = num_assets  # set parameter to scale the budget penalty term
 
     portfolio = PortfolioOptimization(
         expected_returns=mu, covariances=sigma, risk_factor=q, budget=budget
