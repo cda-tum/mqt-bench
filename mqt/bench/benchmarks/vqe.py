@@ -5,7 +5,6 @@ from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.utils import QuantumInstance
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
 
 from mqt.bench.utils.utils import get_examplary_max_cut_qp
 

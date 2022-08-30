@@ -15,10 +15,9 @@ def create_circuit(num_nodes: int):
     """
 
     try:
-        from qiskit_optimization.algorithms import MinimumEigenOptimizer
         from qiskit_optimization.applications import Tsp
         from qiskit_optimization.converters import QuadraticProgramToQubo
-    except:
+    except Exception:
         print("Please install qiskit_optimization.")
         return None
 

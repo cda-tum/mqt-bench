@@ -1,10 +1,11 @@
 import logging
+import os
 import sys
 from datetime import datetime
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 
-from mqt.benchviewer.src.backend import *
+from mqt.benchviewer.src import backend
 
 app = Flask(__name__)
 PREFIX = "/mqtbench/"
@@ -21,11 +22,11 @@ def init(
         print("target_location is not writable. Please specify a different path.")
         return False
 
-    res_zip = read_mqtbench_all_zip(skip_question, target_location)
+    res_zip = backend.read_mqtbench_all_zip(skip_question, target_location)
     if not res_zip:
         return False
 
-    res_db = init_database()
+    res_db = backend.init_database()
     if not res_db:
         return False
 
@@ -47,8 +48,8 @@ def index():
 
     return render_template(
         "index.html",
-        benchmarks=benchmarks,
-        nonscalable_benchmarks=nonscalable_benchmarks,
+        benchmarks=backend.benchmarks,
+        nonscalable_benchmarks=backend.nonscalable_benchmarks,
     )
 
 
@@ -78,8 +79,8 @@ def download_data():
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
-        prepared_data = prepareFormInput(data)
-        file_paths = get_selected_file_paths(prepared_data)
+        prepared_data = backend.prepareFormInput(data)
+        file_paths = backend.get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
         if ACTIVATE_LOGGING:
@@ -92,7 +93,7 @@ def download_data():
 
         if file_paths:
             return app.response_class(
-                generate_zip_ephemeral_chunks(file_paths),
+                backend.generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
                 headers={
                     "Content-Disposition": 'attachment; filename="MQTBench_{}.zip"'.format(
@@ -104,8 +105,8 @@ def download_data():
 
     return render_template(
         "index.html",
-        benchmarks=benchmarks,
-        nonscalable_benchmarks=nonscalable_benchmarks,
+        benchmarks=backend.benchmarks,
+        nonscalable_benchmarks=backend.nonscalable_benchmarks,
     )
 
 
@@ -137,8 +138,8 @@ def get_num_benchmarks():
 
     if request.method == "POST":
         data = request.form
-        prepared_data = prepareFormInput(data)
-        file_paths = get_selected_file_paths(prepared_data)
+        prepared_data = backend.prepareFormInput(data)
+        file_paths = backend.get_selected_file_paths(prepared_data)
         num = len(file_paths)
         data = {"num_selected": num}
         return jsonify(data)

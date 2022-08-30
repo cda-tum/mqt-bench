@@ -1,11 +1,10 @@
 import os
 import subprocess
 from datetime import date
-from zipfile import ZIP_LZMA, ZipFile
 
 import networkx as nx
 import numpy as np
-from pytket import *
+from pytket import __version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.test.mock import FakeMontreal, FakeWashington
@@ -32,7 +31,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     """
     try:
         from qiskit_optimization.applications import Maxcut
-    except:
+    except Exception:
 
         print("Please install qiskit_optimization.")
         return None
@@ -232,7 +231,7 @@ def save_as_qasm(
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
-            f.write("// TKET version: " + str(pytket.__version__) + "\n")
+            f.write("// TKET version: " + str(__version__) + "\n")
 
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
@@ -273,7 +272,7 @@ def get_molecule(benchmark_instance_name: str):
     """Returns a Molecule object depending on the parameter value."""
     try:
         from qiskit_nature.drivers import Molecule
-    except:
+    except Exception:
         print("Please install qiskit_nature.")
         return None
     m_1 = Molecule(
@@ -323,7 +322,7 @@ def postprocess_ocr_qasm_files():
                             "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
                         )
 
-            qc = QuantumCircuit.from_qasm_file(new_name)
+            assert QuantumCircuit.from_qasm_file(new_name)
             print("New qasm file for: ", new_name)
 
         elif "oqc_lucy_tket" in f or "oqc_tket" in f:
@@ -342,7 +341,7 @@ def postprocess_ocr_qasm_files():
                         f.write(
                             "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
                         )
-            qc = QuantumCircuit.from_qasm_file(new_name)
+            assert QuantumCircuit.from_qasm_file(new_name)
             print("New qasm file for: ", new_name)
 
 
