@@ -11,7 +11,8 @@ from joblib import Parallel, delayed
 from qiskit import QuantumCircuit, transpile
 
 from mqt.bench.benchmarks import hhl, shor
-from mqt.bench.benchmarks.qiskit_application_finance import pricingcall, pricingput
+from mqt.bench.benchmarks.qiskit_application_finance import (pricingcall,
+                                                             pricingput)
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate
 from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
 from mqt.bench.utils import qiskit_helper, tket_helper, utils

@@ -6,32 +6,14 @@ from qiskit import QuantumCircuit
 from qiskit_nature.drivers import Molecule
 
 from mqt.bench.benchmark_generator import get_one_benchmark
-from mqt.bench.benchmarks import (
-    ae,
-    dj,
-    ghz,
-    graphstate,
-    grover,
-    hhl,
-    qaoa,
-    qft,
-    qftentangled,
-    qpeexact,
-    qpeinexact,
-    qwalk,
-    realamprandom,
-    shor,
-    su2random,
-    twolocalrandom,
-    vqe,
-    wstate,
-)
-from mqt.bench.benchmarks.qiskit_application_finance import (
-    portfolioqaoa,
-    portfoliovqe,
-    pricingcall,
-    pricingput,
-)
+from mqt.bench.benchmarks import (ae, dj, ghz, graphstate, grover, hhl, qaoa,
+                                  qft, qftentangled, qpeexact, qpeinexact,
+                                  qwalk, realamprandom, shor, su2random,
+                                  twolocalrandom, vqe, wstate)
+from mqt.bench.benchmarks.qiskit_application_finance import (portfolioqaoa,
+                                                             portfoliovqe,
+                                                             pricingcall,
+                                                             pricingput)
 from mqt.bench.benchmarks.qiskit_application_ml import qgan
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate
 from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
