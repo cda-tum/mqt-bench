@@ -1,28 +1,19 @@
+import argparse
+import importlib
+import json
+import multiprocessing
+import signal
+from os import mkdir, path, remove
+from typing import Union
+
+import numpy as np
+from joblib import Parallel, delayed
 from qiskit import QuantumCircuit, transpile
 
-import json
-import importlib
-import signal
-import argparse
-import numpy as np
-import multiprocessing
-
-from typing import Union
-from os import path, mkdir, remove
-from joblib import Parallel, delayed
-
-from mqt.bench.benchmarks import (
-    shor,
-    hhl,
-)
-from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
-from mqt.bench.benchmarks.qiskit_application_finance import (
-    pricingcall,
-    pricingput,
-)
+from mqt.bench.benchmarks import hhl, shor
+from mqt.bench.benchmarks.qiskit_application_finance import pricingcall, pricingput
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate
-
-
+from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
 from mqt.bench.utils import qiskit_helper, tket_helper, utils
 
 
@@ -54,7 +45,7 @@ def init_module_paths():
 def create_benchmarks_from_config(cfg_path: str):
     init_module_paths()
 
-    with open(cfg_path, "r") as jsonfile:
+    with open(cfg_path) as jsonfile:
         cfg = json.load(jsonfile)
         print("Read config successful")
 
