@@ -1,5 +1,5 @@
-from qiskit.circuit.library import EfficientSU2
 import numpy as np
+from qiskit.circuit.library import EfficientSU2
 
 
 def create_circuit(num_qubits: int):

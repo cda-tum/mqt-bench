@@ -1,10 +1,10 @@
 # Code from https://github.com/qiskit-community/qiskit-application-modules-demo-sessions/blob/main/qiskit-optimization/qiskit-optimization-demo.ipynb
 
 from qiskit import Aer
-from qiskit.utils import QuantumInstance
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit.algorithms import QAOA
 from qiskit.algorithms.optimizers import SLSQP
+from qiskit.utils import QuantumInstance
+from qiskit_optimization.algorithms import MinimumEigenOptimizer
 
 from mqt.bench.utils.utils import get_examplary_max_cut_qp
 

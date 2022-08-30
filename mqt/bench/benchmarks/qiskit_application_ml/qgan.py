@@ -19,7 +19,7 @@ def create_circuit(num_qubits: int):
         return None
 
     try:
-        from qiskit_machine_learning.algorithms import NumPyDiscriminator, QGAN
+        from qiskit_machine_learning.algorithms import QGAN, NumPyDiscriminator
     except:
         print("Please install qiskit_machine_learning.")
         return None

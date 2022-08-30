@@ -1,10 +1,10 @@
 # Code based on https://qiskit.org/documentation/optimization/tutorials/06_examples_max_cut_and_tsp.html
 
 from qiskit import Aer
-from qiskit.circuit.library import TwoLocal
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SPSA
-from qiskit.utils import algorithm_globals, QuantumInstance
+from qiskit.circuit.library import TwoLocal
+from qiskit.utils import QuantumInstance, algorithm_globals
 
 
 def create_circuit(num_nodes: int):
@@ -16,8 +16,8 @@ def create_circuit(num_nodes: int):
 
     try:
         from qiskit_optimization.algorithms import MinimumEigenOptimizer
-        from qiskit_optimization.converters import QuadraticProgramToQubo
         from qiskit_optimization.applications import Tsp
+        from qiskit_optimization.converters import QuadraticProgramToQubo
     except:
         print("Please install qiskit_optimization.")
         return None
