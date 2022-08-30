@@ -628,7 +628,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     filename = "ae_test_tket"
     qc = get_one_benchmark("ae", abstraction_level, 7)
     assert qc
-    res = qiskit_helper.get_mapped_level(
+    res = tket_helper.get_mapped_level(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
     )
     assert res
