@@ -44,16 +44,16 @@ repos:
 #        args: ["--py37-plus"]
 #
   # Sort includes
-  - repo: https://github.com/PyCQA/isort
-    rev: "5.10.1"
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
     hooks:
       - id: isort
-#
-#  # Run code formatting with Black
-#  - repo: https://github.com/psf/black
-#    rev: "22.6.0" # Keep in sync with blacken-docs
-#    hooks:
-#      - id: black
+        args: ["--profile", "black", "--filter-files"]
+  # Run code formatting with Black
+  - repo: https://github.com/psf/black
+    rev: "22.6.0" # Keep in sync with blacken-docs
+    hooks:
+      - id: black
 #
 #  # Check for common mistakes
 #  - repo: https://github.com/pre-commit/pygrep-hooks
