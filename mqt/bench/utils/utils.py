@@ -4,7 +4,7 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
-from pytket import __version__
+from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.test.mock import FakeMontreal, FakeWashington
@@ -231,7 +231,7 @@ def save_as_qasm(
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
-            f.write("// TKET version: " + str(__version__) + "\n")
+            f.write("// TKET version: " + str(__tket_version__) + "\n")
 
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
