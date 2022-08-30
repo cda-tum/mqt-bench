@@ -1,5 +1,5 @@
-from qiskit.circuit.library import RealAmplitudes
 import numpy as np
+from qiskit.circuit.library import RealAmplitudes
 
 
 def create_circuit(num_qubits: int):

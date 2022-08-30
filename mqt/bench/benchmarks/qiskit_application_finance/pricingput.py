@@ -1,7 +1,7 @@
 # Code based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
 
 import numpy as np
-from qiskit.algorithms import IterativeAmplitudeEstimation, EstimationProblem
+from qiskit.algorithms import EstimationProblem, IterativeAmplitudeEstimation
 from qiskit.circuit.library import LinearAmplitudeFunction
 
 

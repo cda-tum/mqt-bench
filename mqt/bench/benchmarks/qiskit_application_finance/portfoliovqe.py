@@ -1,12 +1,12 @@
 # Code based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
 
+import datetime
+
 from qiskit import Aer
-from qiskit.circuit.library import TwoLocal
-from qiskit.utils import QuantumInstance
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA
-
-import datetime
+from qiskit.circuit.library import TwoLocal
+from qiskit.utils import QuantumInstance
 
 
 def create_circuit(num_qubits: int):
