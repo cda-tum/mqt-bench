@@ -6,6 +6,13 @@ from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
 from qiskit.utils import QuantumInstance
+from qiskit_nature.converters.second_quantization import QubitConverter
+from qiskit_nature.drivers.second_quantization import (
+    ElectronicStructureDriverType,
+    ElectronicStructureMoleculeDriver,
+)
+from qiskit_nature.mappers.second_quantization import JordanWignerMapper
+from qiskit_nature.problems.second_quantization import ElectronicStructureProblem
 
 
 def create_circuit(molecule, basis: str = "sto3g"):
@@ -14,20 +21,6 @@ def create_circuit(molecule, basis: str = "sto3g"):
     Keyword arguments:
     molecule -- Molecule for which the ground state shall be estimated.
     """
-
-    try:
-        from qiskit_nature.converters.second_quantization import QubitConverter
-        from qiskit_nature.drivers.second_quantization import (
-            ElectronicStructureDriverType,
-            ElectronicStructureMoleculeDriver,
-        )
-        from qiskit_nature.mappers.second_quantization import JordanWignerMapper
-        from qiskit_nature.problems.second_quantization import (
-            ElectronicStructureProblem,
-        )
-    except Exception:
-        print("Please install qiskit_nature.")
-        return None
 
     driver = ElectronicStructureMoleculeDriver(
         molecule, basis=basis, driver_type=ElectronicStructureDriverType.PYSCF

@@ -2,6 +2,8 @@
 
 import numpy as np
 from qiskit.algorithms import IterativeAmplitudeEstimation
+from qiskit_finance.applications.estimation import EuropeanCallPricing
+from qiskit_finance.circuit.library import LogNormalDistribution
 
 
 def create_circuit(num_uncertainty_qubits: int = 5):
@@ -11,13 +13,6 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     Keyword arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
-    try:
-        from qiskit_finance.applications.estimation import EuropeanCallPricing
-        from qiskit_finance.circuit.library import LogNormalDistribution
-
-    except Exception:
-        print("Please install qiskit_finance.")
-        return None
 
     num_uncertainty_qubits = num_uncertainty_qubits
 

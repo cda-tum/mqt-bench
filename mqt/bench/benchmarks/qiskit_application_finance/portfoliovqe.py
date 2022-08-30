@@ -7,6 +7,9 @@ from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
 from qiskit.utils import QuantumInstance
+from qiskit_finance.applications import PortfolioOptimization
+from qiskit_finance.data_providers import RandomDataProvider
+from qiskit_optimization.converters import QuadraticProgramToQubo
 
 
 def create_circuit(num_qubits: int):
@@ -15,19 +18,6 @@ def create_circuit(num_qubits: int):
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-    try:
-        from qiskit_finance.applications import PortfolioOptimization
-        from qiskit_finance.data_providers import RandomDataProvider
-
-    except Exception:
-        print("Please install qiskit_finance.")
-        return None
-
-    try:
-        from qiskit_optimization.converters import QuadraticProgramToQubo
-    except Exception:
-        print("Please install qiskit_optimization.")
-        return None
 
     # set number of assets (= number of qubits)
     num_assets = num_qubits
