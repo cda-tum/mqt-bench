@@ -1,11 +1,10 @@
 # Code based on https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
 
 import numpy as np
-
 from qiskit import Aer
-from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SLSQP
+from qiskit.utils import QuantumInstance, algorithm_globals
 
 
 class Initializer:
