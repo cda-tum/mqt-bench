@@ -1,5 +1,5 @@
-from qiskit.circuit.library import TwoLocal
 import numpy as np
+from qiskit.circuit.library import TwoLocal
 
 
 def create_circuit(num_qubits: int):
