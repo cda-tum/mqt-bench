@@ -5,6 +5,8 @@ from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SPSA
 from qiskit.circuit.library import TwoLocal
 from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit_optimization.applications import Tsp
+from qiskit_optimization.converters import QuadraticProgramToQubo
 
 
 def create_circuit(num_nodes: int):
@@ -13,13 +15,6 @@ def create_circuit(num_nodes: int):
     Keyword arguments:
     num_nodes -- number of to be visited nodes
     """
-
-    try:
-        from qiskit_optimization.applications import Tsp
-        from qiskit_optimization.converters import QuadraticProgramToQubo
-    except Exception:
-        print("Please install qiskit_optimization.")
-        return None
 
     # Generating a graph of 3 nodes
     n = num_nodes

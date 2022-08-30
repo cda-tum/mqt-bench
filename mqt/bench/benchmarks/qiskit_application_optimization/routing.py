@@ -5,6 +5,8 @@ from qiskit import Aer
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.algorithms import MinimumEigenOptimizer
 
 
 class Initializer:
@@ -97,11 +99,6 @@ class QuantumOptimizer:
         return q, g, c, cost
 
     def construct_problem(self, q, g, c):
-        try:
-            from qiskit_optimization import QuadraticProgram
-        except Exception:
-            print("Please install qiskit_optimization.")
-            return None
 
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
@@ -112,12 +109,6 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp):
-
-        try:
-            from qiskit_optimization.algorithms import MinimumEigenOptimizer
-        except Exception:
-            print("Please install qiskit_optimization.")
-            return None
 
         algorithm_globals.random_seed = 10
         quantum_instance = QuantumInstance(
