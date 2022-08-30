@@ -192,7 +192,7 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 To generate a benchmark circuit on the algorithmic level, please use the `get_one_benchmark` method:
 
 ```python
-get_one_benchmark(
+def get_one_benchmark(
     benchmark_name: str,
     level: Union[str, int],
     circuit_size: int = None,
@@ -219,16 +219,16 @@ The available parameters are:
 
 ```python
 compiler_settings = {
-            "qiskit": {"optimization_level": 1},
-        }
+    "qiskit": {"optimization_level": 1},
+}
 ```
 
 or
 
 ```python
 compiler_settings = {
-            "tket": {"placement": "lineplacement"},
-        }
+    "tket": {"placement": "lineplacement"},
+}
 ```
 
 - `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
