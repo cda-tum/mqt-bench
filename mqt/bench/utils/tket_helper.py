@@ -114,8 +114,6 @@ def get_indep_level(
         except Exception as e:
             print("TKET Exception Indep: ", e)
             return False
-        # openqasm_gate_set_rebase = get_rebase("openqasm")
-        # openqasm_gate_set_rebase.apply(qc_tket)
         FullPeepholeOptimise().apply(qc_tket)
         if return_qc:
             return qc_tket
