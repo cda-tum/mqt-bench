@@ -1,9 +1,8 @@
 import random
-import numpy as np
-
 from fractions import Fraction
 
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+import numpy as np
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import QFT
 
 

@@ -1,11 +1,12 @@
-from mqt.benchviewer.src import backend
-from mqt.benchviewer.main import app, init
+import io
+import os
+from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
-from pathlib import Path
-import io
-from zipfile import ZipFile
-import os
+
+from mqt.benchviewer.main import app, init
+from mqt.benchviewer.src import backend
 
 
 @pytest.mark.parametrize(

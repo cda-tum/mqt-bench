@@ -1,12 +1,15 @@
 # Code based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
 
+import datetime
+
 from qiskit import Aer
-from qiskit.circuit.library import TwoLocal
-from qiskit.utils import QuantumInstance
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA
-
-import datetime
+from qiskit.circuit.library import TwoLocal
+from qiskit.utils import QuantumInstance
+from qiskit_finance.applications import PortfolioOptimization
+from qiskit_finance.data_providers import RandomDataProvider
+from qiskit_optimization.converters import QuadraticProgramToQubo
 
 
 def create_circuit(num_qubits: int):
@@ -15,19 +18,6 @@ def create_circuit(num_qubits: int):
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-    try:
-        from qiskit_finance.applications import PortfolioOptimization
-        from qiskit_finance.data_providers import RandomDataProvider
-
-    except:
-        print("Please install qiskit_finance.")
-        return None
-
-    try:
-        from qiskit_optimization.converters import QuadraticProgramToQubo
-    except:
-        print("Please install qiskit_optimization.")
-        return None
 
     # set number of assets (= number of qubits)
     num_assets = num_qubits
@@ -45,7 +35,6 @@ def create_circuit(num_qubits: int):
 
     q = 0.5  # set risk factor
     budget = num_assets // 2  # set budget
-    penalty = num_assets  # set parameter to scale the budget penalty term
 
     portfolio = PortfolioOptimization(
         expected_returns=mu, covariances=sigma, risk_factor=q, budget=budget

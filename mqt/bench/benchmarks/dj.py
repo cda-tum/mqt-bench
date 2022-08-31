@@ -1,7 +1,7 @@
 # Code from https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
 
-from qiskit import QuantumCircuit
 import numpy as np
+from qiskit import QuantumCircuit
 
 
 def dj_oracle(case, n):
