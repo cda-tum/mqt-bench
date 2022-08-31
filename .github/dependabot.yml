@@ -8,10 +8,11 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "friday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
     assignees:
-      - "nquetschlich"
-    reviewers:
       - "nquetschlich"
   - package-ecosystem: "github-actions"
     directory: "/"
