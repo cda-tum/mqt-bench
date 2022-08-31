@@ -4,6 +4,8 @@ import numpy as np
 from qiskit import Aer
 from qiskit.circuit.library import TwoLocal
 from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit_finance.circuit.library import UniformDistribution
+from qiskit_machine_learning.algorithms import QGAN, NumPyDiscriminator
 
 
 def create_circuit(num_qubits: int):
@@ -12,17 +14,6 @@ def create_circuit(num_qubits: int):
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-    try:
-        from qiskit_finance.circuit.library import UniformDistribution
-    except:
-        print("Please install qiskit_finance.")
-        return None
-
-    try:
-        from qiskit_machine_learning.algorithms import NumPyDiscriminator, QGAN
-    except:
-        print("Please install qiskit_machine_learning.")
-        return None
 
     seed = 10
     np.random.seed = seed
@@ -86,7 +77,7 @@ def create_circuit(num_qubits: int):
     discriminator = NumPyDiscriminator(len(num_qubits))
     qgan.set_discriminator(discriminator)
 
-    result = qgan.run(quantum_instance)
+    qgan.run(quantum_instance)
 
     param_values = qgan.generator.parameter_values
     qc = qgan.generator.construct_circuit(params=param_values)

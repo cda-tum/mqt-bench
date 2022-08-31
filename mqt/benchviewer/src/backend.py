@@ -1,15 +1,15 @@
 import io
 import os
 import re
+import sys
 from pathlib import Path
-from typing import List, Iterable
-from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Iterable, List
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
 import requests
-import sys
-from tqdm import tqdm
 from packaging import version
+from tqdm import tqdm
 
 if sys.version_info < (3, 10, 0):
     import importlib_metadata as metadata
@@ -168,7 +168,7 @@ def read_mqtbench_all_zip(
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
-    except Exception as e:
+    except Exception:
         print(
             "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
         )
@@ -267,7 +267,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
-    print("Download completed to {}. Server is starting now.".format(fname))
+    print(f"Download completed to {fname}. Server is starting now.")
 
 
 def get_tket_settings(filename: str):
@@ -406,13 +406,13 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
 
         if indep_qiskit_compiler:
             db_tmp1 = db_tmp.loc[
-                (db_tmp["indep_flag"] == True) & (db_tmp["compiler"] == "qiskit")
+                (db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp1])
 
         if indep_tket_compiler:
             db_tmp2 = db_tmp.loc[
-                (db_tmp["indep_flag"] == True) & (db_tmp["compiler"] == "tket")
+                (db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp2])
 
@@ -420,7 +420,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for gate_set in native_gatesets:
                 for opt_lvl in native_qiskit_opt_lvls:
                     db_tmp3 = db_tmp.loc[
-                        (db_tmp["nativegates_flag"] == True)
+                        (db_tmp["nativegates_flag"])
                         & (db_tmp["gate_set"] == gate_set)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
@@ -430,7 +430,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
         if nativegates_tket_compiler:
             for gate_set in native_gatesets:
                 db_tmp4 = db_tmp.loc[
-                    (db_tmp["nativegates_flag"] == True)
+                    (db_tmp["nativegates_flag"])
                     & (db_tmp["gate_set"] == gate_set)
                     & (db_tmp["compiler"] == "tket")
                 ]
@@ -440,7 +440,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for opt_lvl in mapped_qiskit_opt_lvls:
                 for device in mapped_devices:
                     db_tmp5 = db_tmp.loc[
-                        (db_tmp["mapped_flag"] == True)
+                        (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
@@ -451,7 +451,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             for placement in mapped_tket_placements:
                 for device in mapped_devices:
                     db_tmp6 = db_tmp.loc[
-                        (db_tmp["mapped_flag"] == True)
+                        (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "tket")
                         & (db_tmp["compiler_settings"] == placement)
@@ -563,7 +563,7 @@ def init_database():
 
     print("Initiating database...")
     database = createDatabase(MQTBENCH_ALL_ZIP)
-    print("... done: {} benchmarks.".format(len(database)))
+    print(f"... done: {len(database)} benchmarks.")
 
     if not database.empty:
         return True

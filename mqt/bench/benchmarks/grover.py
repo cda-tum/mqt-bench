@@ -1,7 +1,7 @@
-from qiskit import QuantumCircuit, QuantumRegister, AncillaRegister
-from qiskit.circuit.library import GroverOperator
-from qiskit.algorithms import Grover
 import numpy as np
+from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
+from qiskit.algorithms import Grover
+from qiskit.circuit.library import GroverOperator
 
 
 def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):

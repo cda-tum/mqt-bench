@@ -1,5 +1,6 @@
-from setuptools import setup
 import os
+
+from setuptools import setup
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
 with open(README_PATH) as readme_file:

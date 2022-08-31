@@ -1,7 +1,6 @@
+import networkx as nx
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import GraphState
-
-import networkx as nx
 
 
 def create_circuit(num_qubits: int, degree: int = 2):

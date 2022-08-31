@@ -1,28 +1,17 @@
-from qiskit import QuantumCircuit, transpile
-
-import json
-import importlib
-import signal
 import argparse
-import numpy as np
-import multiprocessing
-
+import importlib
+import json
+import signal
+from os import mkdir, path
 from typing import Union
-from os import path, mkdir, remove
+
 from joblib import Parallel, delayed
+from qiskit import QuantumCircuit
 
-from mqt.bench.benchmarks import (
-    shor,
-    hhl,
-)
-from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
-from mqt.bench.benchmarks.qiskit_application_finance import (
-    pricingcall,
-    pricingput,
-)
+from mqt.bench.benchmarks import hhl, shor
+from mqt.bench.benchmarks.qiskit_application_finance import pricingcall, pricingput
 from mqt.bench.benchmarks.qiskit_application_nature import groundstate
-
-
+from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
 from mqt.bench.utils import qiskit_helper, tket_helper, utils
 
 
@@ -54,7 +43,7 @@ def init_module_paths():
 def create_benchmarks_from_config(cfg_path: str):
     init_module_paths()
 
-    with open(cfg_path, "r") as jsonfile:
+    with open(cfg_path) as jsonfile:
         cfg = json.load(jsonfile)
         print("Read config successful")
 
@@ -249,7 +238,7 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     succes_generated_circuits_t_dep = generate_target_dep_level_circuit(
         qc, num_qubits, file_precheck
     )
-    return True
+    return succes_generated_circuits_t_indep or succes_generated_circuits_t_dep
 
 
 def generate_target_indep_level_circuit(
@@ -381,7 +370,7 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
         return qc, n, file_precheck
 
     except Exception as e:
-        print("\n Problem occured in outer loop: ", benchmark, num_qubits, e)
+        print("\n Problem occurred in outer loop: ", benchmark, num_qubits, e)
 
 
 def create_shor_qc(choice: str):
@@ -399,7 +388,7 @@ def create_shor_qc(choice: str):
 
     except Exception as e:
         print(
-            "\n Problem occured in outer loop: ", "create_shor_benchmarks: ", choice, e
+            "\n Problem occurred in outer loop: ", "create_shor_benchmarks: ", choice, e
         )
 
 
@@ -411,7 +400,7 @@ def create_hhl_qc(index: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occured in outer loop: ", "create_hhl_benchmarks", index, e)
+        print("\n Problem occurred in outer loop: ", "create_hhl_benchmarks", index, e)
 
 
 def create_routing_qc(nodes: int):
@@ -422,7 +411,7 @@ def create_routing_qc(nodes: int):
 
     except Exception as e:
         print(
-            "\n Problem occured in outer loop: ", "create_routing_benchmarks", nodes, e
+            "\n Problem occurred in outer loop: ", "create_routing_benchmarks", nodes, e
         )
 
 
@@ -433,7 +422,7 @@ def create_tsp_qc(nodes: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occured in outer loop: ", "create_tsp_benchmarks", nodes, e)
+        print("\n Problem occurred in outer loop: ", "create_tsp_benchmarks", nodes, e)
 
 
 def create_groundstate_qc(choice: str):
@@ -446,7 +435,7 @@ def create_groundstate_qc(choice: str):
 
     except Exception as e:
         print(
-            "\n Problem occured in outer loop: ",
+            "\n Problem occurred in outer loop: ",
             "create_groundstate_benchmarks",
             choice,
             e,
@@ -462,7 +451,7 @@ def create_pricingcall_qc(num_uncertainty: int):
 
     except Exception as e:
         print(
-            "\n Problem occured in outer loop: ",
+            "\n Problem occurred in outer loop: ",
             "create_pricingcall_benchmarks",
             num_uncertainty,
             e,
@@ -478,7 +467,7 @@ def create_pricingput_qc(num_uncertainty: int):
 
     except Exception as e:
         print(
-            "\n Problem occured in outer loop: ",
+            "\n Problem occurred in outer loop: ",
             "create_pricingput_benchmarks",
             num_uncertainty,
             e,
@@ -499,7 +488,7 @@ def get_one_benchmark(
 
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
-    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" leve
+    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
     compiler -- "qiskit" or "tket"
@@ -557,7 +546,7 @@ def get_one_benchmark(
         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
-    if compiler_settings == None:
+    if compiler_settings is None:
         compiler_settings = {
             "qiskit": {"optimization_level": 1},
             "tket": {"placement": "lineplacement"},
