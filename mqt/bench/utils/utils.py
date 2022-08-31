@@ -216,6 +216,7 @@ def save_as_qasm(
     gate_set: list = None,
     mapped: bool = False,
     c_map=None,
+    target_directory: str = "",
 ):
     """Saves a quantum circuit as a qasm file.
 
@@ -230,8 +231,13 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    qasm_output_folder = get_qasm_output_path()
-    with open(qasm_output_folder + filename + ".qasm", "w") as f:
+    if target_directory:
+        qasm_output_folder = target_directory
+    else:
+        qasm_output_folder = get_qasm_output_path()
+
+    filename = os.path.join(qasm_output_folder, filename) + ".qasm"
+    with open(filename, "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
             "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
