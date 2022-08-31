@@ -1,5 +1,5 @@
 {
-"timeout": 100,
+"timeout": 1,
 "benchmarks": [
   {
     "name": "ae",
@@ -14,11 +14,6 @@
     "min_qubits": 2,
     "max_qubits": 130,
     "stepsize": 1
-  },
-  {
-    "name": "excitedstate",
-    "include": true,
-    "instances": ["small"]
   },
   {
     "name": "ghz",
