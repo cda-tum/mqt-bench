@@ -1,188 +1,180 @@
 {
-"timeout": 300,
-"max_depth": 1000000,
-"save_png": false,
-"save_hist": false,
-"benchmarks": [
-  {
-    "name": "ae",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "dj",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "excitedstate",
-    "include": true,
-    "instances": ["small"]
-  },
-  {
-    "name": "ghz",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "graphstate",
-    "include": true,
-    "min_qubits": 3,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "groundstate",
-    "include": true,
-    "instances": ["small", "medium"]
-  },
-  {
-    "name": "grover",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 23,
-    "stepsize": 1,
-    "ancillary_mode": ["noancilla", "v-chain"]
-  },
-  {
-    "name": "hhl",
-    "include": true,
-    "min_index": 1,
-    "max_index": 4
-  },
-  {
-    "name": "portfolioqaoa",
-    "include": true,
-    "min_qubits": 3,
-    "max_qubits": 19,
-    "stepsize": 1
-  },
-  {
-    "name": "portfoliovqe",
-    "include": true,
-    "min_qubits": 3,
-    "max_qubits": 19,
-    "stepsize": 1
-  },
-  {
-    "name": "pricingcall",
-    "include": true,
-    "min_uncertainty": 2,
-    "max_uncertainty": 14
-  },
-  {
-    "name": "pricingput",
-    "include": true,
-    "min_uncertainty": 2,
-    "max_uncertainty": 14
-  },
-  {
-    "name": "qaoa",
-    "include": true ,
-    "min_qubits": 3,
-    "max_qubits": 24,
-    "stepsize": 1
-  },
-  {
-    "name": "qft",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qftentangled",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qgan",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 14,
-    "stepsize": 1
-  },
-  {
-    "name": "qpeexact",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qpeinexact",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "qwalk",
-    "include": true,
-    "min_qubits": 3,
-    "max_qubits": 95,
-    "stepsize": 1,
-    "ancillary_mode": ["noancilla", "v-chain"]
-  },
-  {
-    "name": "realamprandom",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "routing",
-    "include": true,
-    "min_nodes": 2,
-    "max_nodes": 4
-  },
-  {
-    "name": "shor",
-    "include": true,
-    "instances": ["xsmall", "small", "medium"]
-  },
-  {
-    "name": "su2random",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "tsp",
-    "include": true,
-    "min_nodes": 2,
-    "max_nodes": 4
-  },
-  {
-    "name": "twolocalrandom",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  },
-  {
-    "name": "vqe",
-    "include": true,
-    "min_qubits": 3,
-    "max_qubits": 21,
-    "stepsize": 1
-  },
-  {
-    "name": "wstate",
-    "include": true,
-    "min_qubits": 2,
-    "max_qubits": 130,
-    "stepsize": 1
-  }
-]
+  "timeout": 1,
+  "benchmarks": [
+    {
+      "name": "ae",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "dj",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "ghz",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "graphstate",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "groundstate",
+      "include": true,
+      "instances": ["small", "medium"]
+    },
+    {
+      "name": "grover",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1,
+      "ancillary_mode": ["noancilla", "v-chain"]
+    },
+    {
+      "name": "hhl",
+      "include": true,
+      "min_index": 1,
+      "max_index": 10
+    },
+    {
+      "name": "portfolioqaoa",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "portfoliovqe",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "pricingcall",
+      "include": true,
+      "min_uncertainty": 2,
+      "max_uncertainty": 130
+    },
+    {
+      "name": "pricingput",
+      "include": true,
+      "min_uncertainty": 2,
+      "max_uncertainty": 130
+    },
+    {
+      "name": "qaoa",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qft",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qftentangled",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qgan",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qpeexact",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qpeinexact",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "qwalk",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1,
+      "ancillary_mode": ["noancilla", "v-chain"]
+    },
+    {
+      "name": "realamprandom",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "routing",
+      "include": true,
+      "min_nodes": 2,
+      "max_nodes": 130
+    },
+    {
+      "name": "shor",
+      "include": true,
+      "instances": ["xsmall", "small", "medium"]
+    },
+    {
+      "name": "su2random",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "tsp",
+      "include": true,
+      "min_nodes": 2,
+      "max_nodes": 10
+    },
+    {
+      "name": "twolocalrandom",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "vqe",
+      "include": true,
+      "min_qubits": 3,
+      "max_qubits": 130,
+      "stepsize": 1
+    },
+    {
+      "name": "wstate",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1
+    }
+  ]
 }

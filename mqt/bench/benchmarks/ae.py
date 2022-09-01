@@ -1,5 +1,7 @@
 # Code from https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
 
+from __future__ import annotations
+
 from qiskit.algorithms import AmplitudeEstimation
 
 from mqt.bench.utils import utils

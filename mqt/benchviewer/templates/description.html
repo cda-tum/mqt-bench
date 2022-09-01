@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+
+    <style></style>
+
+    <title>MQT Bench</title>
+    <link rel="shortcut icon" href="../static/favicon.ico" />
+  </head>
+  <body>
+    <!-- Image and text -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <a class="navbar-brand" href="/mqtbench">
+        <img
+          src="../static/TUM_Logo_blau_rgb_s.svg"
+          alt=""
+          width="50"
+          height="24"
+          class="d-inline-block align-text-top"
+        />
+        MQT Bench
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="index">Benchmarks</a>
+          <a class="nav-item nav-link active" href="description "
+            >Level and File Descriptions</a
+          >
+          <a class="nav-item nav-link" href="benchmark_description "
+            >Benchmark Description</a
+          >
+          <a
+            class="nav-item nav-link"
+            href="https://www.cda.cit.tum.de/research/quantum/"
+            target="_blank"
+            >More on our Work</a
+          >
+          <a class="nav-item nav-link" href="legal">Legal Information</a>
+        </div>
+      </div>
+    </nav>
+    <div class="col-xs-12" style="height: 80px"></div>
+
+    <div class="container">
+      <h1>MQT Bench: Level Description and File Format</h1>
+      <p>Benchmarks are provided on four different abstraction levels:</p>
+      <ul>
+        <li>
+          <i>Algorithmic Level</i>: Circuits are described in a textbook-like
+          fashion using high-level constructs.
+        </li>
+        <li>
+          <i>Target-Independent Level</i>: Circuits are unfolded and unrolled
+          representations of the circuits from the algorithmic level.
+        </li>
+        <li>
+          <i>Target-dependent Native-Gates Level</i>: Circuits are synthesized
+          to a particular native gate-set.
+        </li>
+        <li>
+          <i>Target-dependent Mapped Level</i>: Circuits are mapped to a
+          particular architecture.
+        </li>
+      </ul>
+      <p>Used File Format:</p>
+      <ul>
+        <li>
+          Until openQASM 3.0 is widely supported, all circuits (except those on
+          the algorithmic level) are provided as <i>.qasm</i> files following
+          the openQASM 2.0 standard. Circuits on the algorithmic level can
+          directly be generated (as IBM Qiskit QuantumCircuit objects) using the
+          <i>mqt.bench</i> python package. Instructions on how to use the
+          package are included in the downloaded <i>.zip</i> file whenever an
+          algorithmic level circuit is requested. More details on openQASM 2.0
+          can be found <a href="https://arxiv.org/abs/1707.03429">here</a>, and
+          on openQASM 3.0 <a href="https://arxiv.org/abs/2104.14722">here</a>.
+        </li>
+        <li>
+          Not every benchmark is necessarily available for every possible
+          configuration of the available options. For example, not all qubit
+          counts in a given range might be available for a selected benchmark.
+        </li>
+        <li>
+          Mapped benchmarks are only available up to the biggest available
+          architecture. That is, for IBM (for Rigetti) mapped benchmarks are
+          available only for instances with up to 127 qubits (80 qubits).
+        </li>
+        <li>
+          Since the <i>.zip</i> file may be composed of numerous files
+          (currently, we offer more than 30.000 benchmark circuits), the
+          following naming convention is used for the respective files:
+        </li>
+      </ul>
+    </div>
+
+    <div class="container">
+      <table class="table-sm">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 15%">Level</th>
+            <th scope="col" style="width: 80%">Filename</th>
+            <th scope="col" style="width: 5%">Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="vertical-align: top">Algorithmic Level</td>
+            <td style="vertical-align: top">
+              For this level, dedicated <i>.qasm</i> files cannot be provided
+              yet, since openQASM 2.0 supports only a set of quantum gates.
+              Thus, we provide those benchmarks using our pypi package which is
+              accessible via <i>pip</i>.
+            </td>
+            <td style="vertical-align: top">
+              Python <i>Qiskit::QuantumCircuit</i> Object
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Target-independent Level</td>
+            <td style="vertical-align: top">
+              &lt;benchmark_identifier&gt;_indep_&lt;compiler&gt;_&lt;number_of_qubits&gt;.qasm
+            </td>
+            <td style="vertical-align: top">qft_indep_tket_5.qasm</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Target-dependent Native Gates Level
+            </td>
+            <td style="vertical-align: top">
+              &lt;benchmark_identifier&gt;_nativegates_&lt;native_gate_set&gt;_&lt;compiler&gt;_&lt;optional:
+              compiler settings&gt;_&lt;number_of_qubits&gt;.qasm
+            </td>
+            <td style="vertical-align: top">
+              qft_nativegates_ibm_qiskit_opt3_5.qasm
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Target-dependent Mapped Level</td>
+            <td style="vertical-align: top">
+              &lt;benchmark_identifier&gt;_mapped_&lt;device&gt;_&lt;compiler&gt;_&lt;compiler
+              settings>_&lt;number_of_qubits&gt;.qasm
+            </td>
+            <td style="vertical-align: top">
+              qft_nativegates_rigetti_aspen_m1_qiskit_opt3_5.qasm
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-xs-12" style="height: 50px"></div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

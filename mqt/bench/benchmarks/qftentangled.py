@@ -1,5 +1,7 @@
-from qiskit.circuit.library import QFT
+from __future__ import annotations
+
 from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.circuit.library import QFT
 
 
 def create_circuit(num_qubits: int):

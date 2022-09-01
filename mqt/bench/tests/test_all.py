@@ -1,38 +1,42 @@
-from mqt.bench.utils import utils
+from __future__ import annotations
+
+import os
+
+import pytest
+from pytket.qasm import circuit_to_qasm_str
+from qiskit import QuantumCircuit
+
+from mqt.bench.benchmark_generator import get_one_benchmark
 from mqt.bench.benchmarks import (
-    ghz,
-    dj,
     ae,
+    dj,
+    ghz,
     graphstate,
     grover,
     hhl,
     qaoa,
     qft,
     qftentangled,
-    qpeinexact,
     qpeexact,
-    vqe,
+    qpeinexact,
+    qwalk,
     realamprandom,
+    shor,
     su2random,
     twolocalrandom,
-    qwalk,
+    vqe,
     wstate,
-    shor,
 )
 from mqt.bench.benchmarks.qiskit_application_finance import (
+    portfolioqaoa,
+    portfoliovqe,
     pricingcall,
     pricingput,
-    portfoliovqe,
-    portfolioqaoa,
 )
 from mqt.bench.benchmarks.qiskit_application_ml import qgan
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate, excitedstate
-from mqt.bench.benchmarks.qiskit_application_optimization import tsp, routing
-from qiskit_nature.drivers import Molecule
-from mqt.bench.benchmark_generator import get_one_benchmark
-
-import pytest
-import os
+from mqt.bench.benchmarks.qiskit_application_nature import groundstate
+from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
+from mqt.bench.utils import qiskit_helper, tket_helper, utils
 
 
 def test_configure_begin():
@@ -41,39 +45,6 @@ def test_configure_begin():
         os.mkdir(test_qasm_output_path)
     utils.set_qasm_output_path(test_qasm_output_path)
     assert utils.get_qasm_output_path() == test_qasm_output_path
-
-
-@pytest.mark.skip(reason="Algo Level Errors are known when reading in existing files")
-@pytest.mark.parametrize(
-    "benchmark, num_qubits",
-    [
-        (ae, 8),
-        (ghz, 5),
-        (dj, 5),
-        (graphstate, 8),
-        (grover, 5),
-        (hhl, 2),
-        (qaoa, 5),
-        (qft, 8),
-        (qftentangled, 8),
-        (qpeexact, 8),
-        (qpeinexact, 8),
-        (qwalk, 5),
-        (vqe, 5),
-        (realamprandom, 9),
-        (su2random, 7),
-        (twolocalrandom, 8),
-        (wstate, 8),
-        (shor, 15),
-    ],
-)
-def test_quantumcircuit_algo_level(benchmark, num_qubits):
-    qc = benchmark.create_circuit(num_qubits)
-    filename_algo, depth, num_qubits = utils.handle_algorithm_level(
-        qc,
-        num_qubits,
-    )
-    assert depth > 0
 
 
 @pytest.mark.parametrize(
@@ -98,7 +69,7 @@ def test_quantumcircuit_algo_level(benchmark, num_qubits):
         (twolocalrandom, 8, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        # (shor, 15, False),
+        (shor, 9, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -107,19 +78,20 @@ def test_quantumcircuit_algo_level(benchmark, num_qubits):
 )
 def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
-        qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
+        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, file_precheck=False
-    )
-    assert depth > 0
-    filename_indep, depth, num_qubits = utils.get_indep_level(
-        qc, input_value, file_precheck=True
-    )
-    assert depth > 0
+    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert res
+    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
+    assert res
+
+    res = tket_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert res
+    res = tket_helper.get_indep_level(qc, input_value, file_precheck=True)
+    assert res
 
 
 @pytest.mark.parametrize(
@@ -153,92 +125,101 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
 )
 def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
     if benchmark == grover or benchmark == qwalk:
-        qc = benchmark.create_circuit(input_value, ancillary_mode="v-chain")
+        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    ibm_native_gates = ["id", "rz", "sx", "x", "cx", "reset"]
-    rigetti_native_gates = utils.get_rigetti_native_gates()
-    gate_sets = [(ibm_native_gates, "ibm"), (rigetti_native_gates, "rigetti")]
-    for (gate_set, gate_set_name) in gate_sets:
+
+    compilation_paths = [
+        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
+        ("rigetti", [("rigetti_aspen_m1", 80)]),
+        ("ionq", [("ionq11", 11)]),
+        ("oqc", [("oqc_lucy", 8)]),
+    ]
+    for gate_set_name, devices in compilation_paths:
         opt_level = 1
-        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
+        res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
+            qc.num_qubits,
             opt_level,
-            input_value,
             file_precheck=False,
         )
-        assert depth_native > 0
-        filename_indep, depth_native, n_actual = utils.get_native_gates_level(
+        assert res
+        res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
+            qc.num_qubits,
             opt_level,
-            input_value,
             file_precheck=True,
         )
-        assert depth_native > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
+        assert res
+        if gate_set_name != "ionq":
+            for device_name, max_qubits in devices:
+                # Creating the circuit on target-dependent: mapped level qiskit
+                if max_qubits >= qc.num_qubits:
+                    res = qiskit_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        opt_level,
+                        file_precheck=False,
+                    )
+                    assert res
+                    res = qiskit_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        opt_level,
+                        file_precheck=True,
+                    )
+                    assert res
+
+    for gate_set_name, devices in compilation_paths:
+        res = tket_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
-            opt_level,
-            n_actual,
-            False,
+            qc.num_qubits,
             file_precheck=False,
         )
-        assert depth_mapped > 0
-        filename_mapped, depth_mapped, num_qubits = utils.get_mapped_level(
+        assert res
+        res = tket_helper.get_native_gates_level(
             qc,
-            gate_set,
             gate_set_name,
-            opt_level,
-            n_actual,
-            False,
+            qc.num_qubits,
             file_precheck=True,
         )
-        assert depth_mapped > 0
+        assert res
+        if gate_set_name != "ionq":
+            for device_name, max_qubits in devices:
+                # Creating the circuit on target-dependent: mapped level qiskit
+                if max_qubits >= qc.num_qubits:
+                    res = tket_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        True,
+                        file_precheck=False,
+                    )
+                    assert res
+                    res = tket_helper.get_mapped_level(
+                        qc,
+                        gate_set_name,
+                        qc.num_qubits,
+                        device_name,
+                        False,
+                        file_precheck=True,
+                    )
+                    assert res
 
 
 def test_openqasm_gates():
     openqasm_gates = utils.get_openqasm_gates()
     assert len(openqasm_gates) == 42
-
-
-@pytest.mark.parametrize(
-    "gate_set_name, smallest_fitting_arch, num_qubits, c_map_found_result",
-    [
-        ("ibm", False, 120, True),
-        ("ibm", False, 130, False),
-        ("ibm", True, 4, True),
-        ("ibm", True, 6, True),
-        ("ibm", True, 15, True),
-        ("ibm", True, 27, True),
-        ("ibm", True, 65, True),
-        ("ibm", True, 125, True),
-        ("rigetti", False, 79, True),
-        ("rigetti", False, 82, False),
-        ("rigetti", True, 7, True),
-        ("rigetti", True, 15, True),
-        ("rigetti", True, 31, True),
-        ("rigetti", True, 39, True),
-        ("rigetti", True, 79, True),
-        ("google", True, 20, False),
-    ],
-)
-def test_cmap_selection(
-    gate_set_name: str,
-    smallest_fitting_arch: bool,
-    num_qubits: int,
-    c_map_found_result: bool,
-):
-    c_map, backend_name, gate_set_name_mapped, c_map_found = utils.select_c_map(
-        gate_set_name, smallest_fitting_arch, num_qubits
-    )
-    assert c_map_found == c_map_found_result
 
 
 @pytest.mark.parametrize("num_circles", [2, 3, 4, 5, 10])
@@ -252,26 +233,14 @@ def test_rigetti_cmap_generator(num_circles: int):
         assert len(utils.get_rigetti_c_map(num_circles)) == 212
 
 
-def test_get_google_c_map():
-    assert len(utils.get_google_c_map()) == 176
-
-
 def test_dj_constant_oracle():
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
 
 
-@pytest.mark.skip(reason="Takes really long")
-def test_ground_and_excited_state():
-    m_1 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    qc = groundstate.create_circuit(m_1)
-    assert qc.depth() > 0
-
-    qc = excitedstate.create_circuit(m_1)
+def test_groundstate():
+    m = utils.get_molecule("small")
+    qc = groundstate.create_circuit(m)
     assert qc.depth() > 0
 
 
@@ -281,38 +250,349 @@ def test_routing():
 
 
 @pytest.mark.parametrize(
-    "benchmark_name, level, input_number, instance, opt_level, gate_set_name, smallest_fitting_arch",
+    "benchmark_name, level, circuit_size, benchmark_instance_name, compiler, compiler_settings, gate_set_name, device_name,",
     [
-        ("dj", "alg", 5, None, None, None, None),
-        ("wstate", 0, 6, None, None, None, None),
-        ("ghz", "indep", 5, None, None, None, None),
-        ("graphstate", 1, 4, None, None, None, None),
-        ("dj", "nativegates", 5, None, 2, "ibm", None),
-        ("qft", 2, 6, None, 3, "rigetti", None),
-        ("qpeexact", "mapped", 5, None, 0, "ibm", True),
-        ("qpeinexact", 3, 4, None, None, "rigetti", False),
+        (
+            "dj",
+            "alg",
+            5,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ),
+        (
+            "wstate",
+            0,
+            6,
+            None,
+            None,
+            None,
+            None,
+            None,
+        ),
+        (
+            "ghz",
+            "indep",
+            5,
+            None,
+            "qiskit",
+            None,
+            None,
+            None,
+        ),
+        (
+            "graphstate",
+            1,
+            4,
+            None,
+            "qiskit",
+            None,
+            None,
+            None,
+        ),
+        (
+            "graphstate",
+            1,
+            4,
+            None,
+            "tket",
+            None,
+            None,
+            None,
+        ),
+        (
+            "groundstate",
+            1,
+            4,
+            "small",
+            "qiskit",
+            None,
+            None,
+            None,
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 2},
+            },
+            "ionq",
+            None,
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 2},
+            },
+            "ibm",
+            None,
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 2},
+            },
+            "rigetti",
+            None,
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 2},
+            },
+            "oqc",
+            None,
+        ),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 3},
+            },
+            "ionq",
+            None,
+        ),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 3},
+            },
+            "ibm",
+            None,
+        ),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "tket",
+            None,
+            "rigetti",
+            None,
+        ),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "tket",
+            None,
+            "oqc",
+            None,
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "ibm",
+            "ibm_washington",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "ibm",
+            "ibm_montreal",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m1",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "ionq",
+            "ionq11",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "oqc",
+            "oqc_lucy",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "ibm",
+            "ibm_washington",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "tket",
+            {
+                "tket": {"placement": "lineplacement"},
+            },
+            "ibm",
+            "ibm_washington",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "ibm",
+            "ibm_montreal",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "tket",
+            {
+                "tket": {"placement": "graphplacement"},
+            },
+            "ibm",
+            "ibm_montreal",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m1",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "tket",
+            {
+                "tket": {"placement": "lineplacement"},
+            },
+            "rigetti",
+            "rigetti_aspen_m1",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "oqc",
+            "oqc_lucy",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "tket",
+            {
+                "tket": {"placement": "graphplacement"},
+            },
+            "oqc",
+            "oqc_lucy",
+        ),
     ],
 )
 def test_get_one_benchmark(
     benchmark_name,
     level,
-    input_number,
-    instance,
-    opt_level,
+    circuit_size,
+    benchmark_instance_name,
+    compiler,
+    compiler_settings,
     gate_set_name,
-    smallest_fitting_arch,
+    device_name,
 ):
 
     qc = get_one_benchmark(
         benchmark_name,
         level,
-        input_number,
-        instance,
-        opt_level,
+        circuit_size,
+        benchmark_instance_name,
+        compiler,
+        compiler_settings,
         gate_set_name,
-        smallest_fitting_arch,
+        device_name,
     )
     assert qc.depth() > 0
+    if gate_set_name and "oqc" not in gate_set_name:
+        if compiler == "tket":
+            qc = QuantumCircuit.from_qasm_str(circuit_to_qasm_str(qc))
+        for instruction, _qargs, _cargs in qc.data:
+            gate_type = instruction.name
+            assert (
+                gate_type in qiskit_helper.get_native_gates(gate_set_name)
+                or gate_type == "barrier"
+            )
 
 
 def test_configure_end():
@@ -321,3 +601,39 @@ def test_configure_end():
         os.remove(os.path.join(test_qasm_output_path, f))
     os.rmdir(test_qasm_output_path)
     utils.set_qasm_output_path()
+
+
+@pytest.mark.parametrize(
+    "abstraction_level",
+    [
+        (1),
+        (2),
+        (3),
+    ],
+)
+def test_saving_qasm_to_alternative_location_with_alternative_filename(
+    abstraction_level: int,
+):
+    directory = "."
+    filename = "ae_test_qiskit"
+    qc = get_one_benchmark("ae", abstraction_level, 5)
+    assert qc
+    res = qiskit_helper.get_mapped_level(
+        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+    )
+    assert res
+    path = os.path.join(directory, filename) + ".qasm"
+    assert os.path.isfile(path)
+    os.remove(path)
+
+    directory = "."
+    filename = "ae_test_tket"
+    qc = get_one_benchmark("ae", abstraction_level, 7)
+    assert qc
+    res = tket_helper.get_mapped_level(
+        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+    )
+    assert res
+    path = os.path.join(directory, filename) + ".qasm"
+    assert os.path.isfile(path)
+    os.remove(path)

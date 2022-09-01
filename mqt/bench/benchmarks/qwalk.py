@@ -1,4 +1,6 @@
-from qiskit import QuantumCircuit, QuantumRegister, AncillaRegister
+from __future__ import annotations
+
+from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
 
 
 def create_circuit(

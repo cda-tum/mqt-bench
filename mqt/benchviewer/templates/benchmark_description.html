@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+
+    <style></style>
+
+    <title>MQT Bench</title>
+    <link rel="shortcut icon" href="../static/favicon.ico" />
+  </head>
+  <body>
+    <!-- Image and text -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <a class="navbar-brand" href="/mqtbench">
+        <img
+          src="../static/TUM_Logo_blau_rgb_s.svg"
+          alt=""
+          width="50"
+          height="24"
+          class="d-inline-block align-text-top"
+        />
+        MQT Bench
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="index">Benchmarks</a>
+          <a class="nav-item nav-link" href="description "
+            >Level and File Descriptions</a
+          >
+          <a class="nav-item nav-link active" href="benchmark_description "
+            >Benchmark Description</a
+          >
+          <a
+            class="nav-item nav-link"
+            href="https://www.cda.cit.tum.de/research/quantum/"
+            target="_blank"
+            >More on our Work</a
+          >
+          <a class="nav-item nav-link" href="legal">Legal Information</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="col-xs-12" style="height: 80px"></div>
+
+    <div class="container">
+      <h1>MQT Bench: Brief Description of Benchmarks</h1>
+
+      <table class="table-sm">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 20%">Benchmark Algorithm</th>
+            <th scope="col" style="width: 70%">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="vertical-align: top">Amplitude Estimation (AE)</td>
+            <td style="vertical-align: top">
+              AE aims to find an estimation for the amplitude of a certain
+              quantum state.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Deutsch-Jozsa</td>
+            <td style="vertical-align: top">
+              This algorithms determines, whether an unknown oracle mapping
+              input values either to 0 or 1 is constant (always output 1 or
+              always 0) or balanced (both outputs are equally likely).
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">GHZ State</td>
+            <td style="vertical-align: top">
+              The Greenberger-Horne-Zeilinger state is an entangled quantum
+              state with a certain type of entanglement.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Graph State</td>
+            <td style="vertical-align: top">
+              Graph states in quantum computing represent a graph with vertices
+              and edges through a quantum circuit.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Ground State</td>
+            <td style="vertical-align: top">
+              A famous application of quantum computing and specifically of VQE
+              algorithms is the ground state estimation of molecules. Here, we
+              provide two different molecules, H2 ("small") and LiH ("medium"),
+              and estimate their ground state using VQE with a TwoLocal ansatz.
+              The source code for the algorithmic level originates from
+              <a
+                href="https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Grover's (no ancilla)</td>
+            <td style="vertical-align: top">
+              One of the most famous quantum algorithm known so far, Grover's
+              algorithm finds a certain goal quantum state determined by an
+              oracle. In our case, the oracle is implemented by a
+              multi-controlled Toffoli gate over all input qubits. In this no
+              ancilla version, no ancilla qubits are used during its
+              realization.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Grover's (v-chain)</td>
+            <td style="vertical-align: top">
+              Similar to the algorithm above with the difference, that the
+              ancillary mode is a v-chain in this algorithm.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">HHL</td>
+            <td style="vertical-align: top">
+              The Harrow-Hassadim-Lloyd algorithm is used to solve linear system
+              of equations. Here, we use a specific system of equations.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Portfolio Optimization with QAOA
+            </td>
+            <td style="vertical-align: top">
+              This algorithms solves the mean-variance portfolio optimization
+              problem for different assets. In this case, a QAOA algorithm
+              instance is used. The source code for the algorithmic level
+              originates from
+              <a
+                href="https://qiskit.org/documentation/finance/tutorials/01_portfolio_optimization.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <td style="vertical-align: top">Portfolio Optimization with VQE</td>
+          <td style="vertical-align: top">
+            This algorithms solves the mean-variance portfolio optimization
+            problem for different assets. In this case, a VQE algorithm instance
+            is used. The source code for the algorithmic level originates from
+            <a
+              href="https://qiskit.org/documentation/finance/tutorials/01_portfolio_optimization.html"
+              target="_blank"
+              >this page</a
+            >.
+          </td>
+          <tr>
+            <td style="vertical-align: top">Pricing Call Option</td>
+            <td style="vertical-align: top">
+              This algorithm estimates the fair price of a european call option
+              using iterative amplitude estimation. The source code for the
+              algorithmic level originates from
+              <a
+                href="https://qiskit.org/documentation/finance/tutorials/03_european_call_option_pricing.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Pricing Put Option</td>
+            <td style="vertical-align: top">
+              This algorithm estimates the fair price of a european put option
+              using iterative amplitude estimation. The source code for the
+              algorithmic level originates from
+              <a
+                href="https://qiskit.org/documentation/finance/tutorials/04_european_put_option_pricing.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Quantum Approximation Optimization Algorithm (QAOA)
+            </td>
+            <td style="vertical-align: top">
+              One of the most famous algorithm from the algorithmic class of
+              variational quantum algorithms. It is a parameterizable quantum
+              algorithms to solve optimization problems. Here, it solves a
+              max-cut problem instance.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Quantum Fourier Transformation (QFT)
+            </td>
+            <td style="vertical-align: top">
+              QFT embodies the quantum equivalent of the discrete Fourier
+              transform and is a very important building block in many quantum
+              algorithms.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Entangled QFT</td>
+            <td style="vertical-align: top">
+              Applies regular QFT to entangled qubits.
+            </td>
+          </tr>
+
+          <tr>
+            <td style="vertical-align: top">
+              Quantum Generative Adversarial Network (QGAN)
+            </td>
+            <td style="vertical-align: top">
+              This algorithm class is the quantum equivalent to classical GAN
+              and learns the underlying distribution of input data. The source
+              code for the algorithmic level originates from
+              <a
+                href="https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Quantum Phase Estimation (QPE) exact
+            </td>
+            <td style="vertical-align: top">
+              QPE estimates the phase of a quantum operation and is a very
+              important building block in many quantum algorithms. In the exact
+              case, the applied phase is exactly representable by the number of
+              qubits.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Quantum Phase Estimation (QPE) inexact
+            </td>
+            <td style="vertical-align: top">
+              Similar to QPE exact with the difference, that the applied phase
+              is not exactly representable by the number of qubits.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Quantum Walk (no ancilla)</td>
+            <td style="vertical-align: top">
+              Quantum walks are the quantum equivalent to classical random
+              walks. In this no ancilla version, no ancilla qubits are used
+              during its realization.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Quantum Walk (v-chain)</td>
+            <td style="vertical-align: top">
+              Similar to the algorithm above with the difference, that the
+              ancillary mode is a v-chain in this algorithm.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Routing</td>
+            <td style="vertical-align: top">
+              This problem is similar to the travelling salesman problem with
+              the difference, that more than one vehicle may be used to travel
+              between those to be visited points, such that each point is
+              visited at least once. The source code for the algorithmic level
+              originates from
+              <a
+                href="https://qiskit.org/documentation/optimization/tutorials/07_examples_vehicle_routing.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Shor's</td>
+            <td style="vertical-align: top">
+              This algorithm is one of the most famous quantum algorithms and
+              used to find prime factors of integers. Here, we provide quantum
+              algorithms solving this problem for the integers 9, 15, and 821.
+              The filename, e.g., shor_821_4_t-indep_42.qasm includes also the
+              to be factorized number (821) and the period used, namely 4.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">Travelling Salesman</td>
+            <td style="vertical-align: top">
+              The travelling salesman problem is a very prominent optimization
+              problem of calculation the shortest path of a number of to be
+              visited points. Here, this is formulated as a quadratic problem
+              and solved using VQE with a TwoLocal ansatz. The source code for
+              the algorithmic level originates from
+              <a
+                href="https://qiskit.org/documentation/optimization/tutorials/06_examples_max_cut_and_tsp.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Variational Quantum Eigensolver (VQE)
+            </td>
+            <td style="vertical-align: top">
+              VQE is also one of the most famous algorithm from the class of
+              variational quantum algorithms. It is a parameterizable quantum
+              algorithms with different possible choices of an ansatz function.
+              Here, a TwoLocal ansatz is chosen and applied to the same max-cut
+              problem instance as in QAOA.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Efficient SU2 ansatz with Random Parameters
+            </td>
+            <td style="vertical-align: top">
+              VQE ansatz with randomly initialized values. Detailed information
+              can be found on
+              <a
+                href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.EfficientSU2.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Real Amplitudes ansatz with Random Parameters
+            </td>
+            <td style="vertical-align: top">
+              VQE ansatz with randomly initialized values. Detailed information
+              can be found on
+              <a
+                href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.RealAmplitudes.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">
+              Two Local ansatz with random parameters
+            </td>
+            <td style="vertical-align: top">
+              VQE ansatz with randomly initialized values. Detailed information
+              can be found on
+              <a
+                href="https://qiskit.org/documentation/stubs/qiskit.circuit.library.TwoLocal.html"
+                target="_blank"
+                >this page</a
+              >.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top">W-State</td>
+            <td style="vertical-align: top">
+              The W state is an entangled quantum state with a certain type of
+              entanglement.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="col-xs-12" style="height: 50px"></div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

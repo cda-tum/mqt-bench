@@ -1,0 +1,44 @@
+# Based on: https://zartman.xyz/blog/gh-static-deploy/
+name: Server Deployment
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  CDA_HOST_NAME: tueicda-cda.srv.mwn.de
+  CDA_USER_NAME: web-user
+  CDA_TARGET_DIR: /var/www/cda/app/
+  CDA_GIT_DIR: .git/
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install wheel
+        run: pip install wheel
+      - name: Install MQT Bench
+        run: pip install .
+      - name: Run tests
+        run: |
+          pip install pytest-cov
+          pytest -v
+      - name: Setup SSH via the stored Action Secrets
+        run: |
+          mkdir -p ~/.ssh
+          echo "${KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+          echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
+          echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
+          chmod -R 700 ~/.ssh
+      - name: Deployment on Webserver
+        working-directory: ${{ github.workspace }}
+        run: |
+          rsync -avz --update -e ssh --cvs-exclude --exclude "*__pycache__/" --exclude "*.qasm" . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}

@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+
+    <style></style>
+
+    <title>MQT Bench</title>
+    <link rel="shortcut icon" href="../static/favicon.ico" />
+  </head>
+  <body>
+    <!-- Image and text -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <a class="navbar-brand" href="/mqtbench">
+        <img
+          src="../static/TUM_Logo_blau_rgb_s.svg"
+          alt=""
+          width="50"
+          height="24"
+          class="d-inline-block align-text-top"
+        />
+        MQT Bench
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="index">Benchmarks</a>
+          <a class="nav-item nav-link" href="description"
+            >Level and File Descriptions</a
+          >
+          <a class="nav-item nav-link" href="benchmark_description"
+            >Benchmark Description</a
+          >
+          <a
+            class="nav-item nav-link"
+            href="https://www.cda.cit.tum.de/research/quantum/"
+            target="_blank"
+            >More on our Work</a
+          >
+          <a class="nav-item nav-link" href="legal">Legal Information</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="col-md-12" style="height: 80px"></div>
+    <div class="container">
+      <h1>
+        Welcome to the Munich Quantum Toolkit Benchmark Library (MQT Bench)!
+      </h1>
+      <p>
+        Quantum software tools for a wide variety of design tasks on and across
+        different levels of abstraction are crucial for eventually realizing
+        useful quantum applications. This requires practical and relevant
+        benchmarks in order for new software tools or design automation methods
+        to be empirically evaluated and compared to the current state of the
+        art. Since these tools and methods operate on and across different
+        levels of abstraction, it is beneficial having benchmarks consistently
+        available across those levels. The MQT Benchmark Library (MQT Bench)
+        provides a single benchmark suite which offers the same benchmark
+        algorithms on different levels of abstractions. At the moment, MQT Bench
+        comprises around 50,000 benchmark circuits ranging from 2 up to 130
+        qubits on four abstraction levels.
+      </p>
+
+      <p>
+        In order to create a benchmark set according to your needs, simply fill
+        out the form below.
+      </p>
+    </div>
+    <form
+      method="POST"
+      class="form-inline"
+      role="form"
+      action="download"
+      id="benchmark_form"
+      onchange="checks_on_change()"
+    >
+      <div class="container">
+        <div class="row">
+          <h4>Benchmark Selection</h4>
+          <p class="text-justify">
+            Please select the desired benchmarks from the set of all available
+            ones or select all (<input
+              class="form-check-input"
+              type="checkbox"
+              value="true"
+              id="all_benchmarks"
+              name="all_benchmarks"
+              onchange="toggleAllSelection()"
+            />). For details, see the
+            <a href="benchmark_description" target="_blank"
+              >benchmark description.</a
+            >
+          </p>
+        </div>
+        <div class="row border border-secondary">
+          <div class="row"></div>
+          <div class="row d-flex"></div>
+          <div class="col-md-6">
+            <h6 style="margin-bottom: 0px">Scalable Benchmarks:</h6>
+            <p class="text-justify" style="margin: 0px">
+              <i>
+                The number of qubits for the following benchmarks is adjustable.
+              </i>
+            </p>
+
+            {% for benchmark in benchmarks %}
+
+            <div>
+              <div class="col-md-12">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="{{ benchmark.name }}"
+                  id="selectBench_{{ benchmark.id }}"
+                  name="selectBench_{{ benchmark.id }}"
+                />
+                {{ benchmark.name }}
+              </div>
+            </div>
+            {% endfor %}
+
+            <h6 style="margin-bottom: 0px; margin-top: 15px">Qubit Range</h6>
+            <p class="text-justify" style="margin: 0px">
+              Select the desired qubit range for the scalable benchmarks.
+            </p>
+            <div class="d-flex text-center" style="margin-bottom: 5px">
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                min="2"
+                max="130"
+                id="minQubits"
+                name="minQubits"
+                placeholder="Min Qubits (2)"
+              />
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                min="2"
+                max="130"
+                id="maxQubits"
+                name="maxQubits"
+                placeholder="Max Qubits (130)"
+              />
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <h6 style="margin-bottom: 0px">Non-Scalable Benchmarks:</h6>
+            <p class="text-justify" style="margin: 0px">
+              <i
+                >The number of qubits for the following benchmarks is fixed.
+              </i>
+            </p>
+
+            {% for nonscalable_benchmark in nonscalable_benchmarks %}
+
+            <div>
+              <div class="col-md-12">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="{{ nonscalable_benchmark.name }}"
+                  id="selectBench_{{ nonscalable_benchmark.id }}"
+                  name="selectBench_{{ nonscalable_benchmark.id }}"
+                />
+                {{ nonscalable_benchmark.name }}
+              </div>
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="col-md-12" style="height: 20px"></div>
+        <h4>Abstraction Level Selection</h4>
+        <p class="text-justify" style="margin: 0px">
+          Next, abstraction levels for the selected benchmarks must be chosen.
+          There are four available levels ranging from a rather high level
+          description on the algorithm level towards a rath lower level
+          description on the target-dependent: mapped level. For details, see
+          <a href="description" target="_blank">the level description</a>.
+        </p>
+      </div>
+
+      <div class="col-md-12" style="height: 20px"></div>
+      <div class="container">
+        <div class="row">
+          <div
+            class="col border border-secondary"
+            style="width: 25%; min-width: 200px; margin: 1px"
+          >
+            <h6>Algorithm Level</h6>
+            <p class="text-justify" style="margin: 0px">
+              Currently, only available using the Python package. Details can be
+              found on our
+              <a
+                href="https://github.com/cda-tum/MQTBench/blob/main/README.md#repository-usage"
+                target="_blank"
+                >GitHub page</a
+              >.
+            </p>
+          </div>
+
+          <div
+            class="col border border-secondary"
+            style="width: 25%; min-width: 200px; margin: 1px"
+          >
+            <h6>Target-independent Level</h6>
+            <p class="text-justify" style="margin: 0px">
+              Select the used compiler:
+            </p>
+            <div class="d-flex">
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="indep_qiskit_compiler"
+                  name="indep_qiskit_compiler"
+                  value="true"
+                />
+                <label for="indep_qiskit_compiler">Qiskit</label>
+              </div>
+
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="indep_tket_compiler"
+                  name="indep_tket_compiler"
+                  value="true"
+                />
+                <label for="indep_tket_compiler">TKET</label>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="col border border-secondary"
+            style="width: 25%; min-width: 200px; margin: 1px"
+          >
+            <h6>Target-dependent: Native-Gates Level</h6>
+
+            <p class="text-justify" style="margin: 0px">
+              Select targeted native gate-set:
+            </p>
+            <div class="row">
+              <div class="col-md-12 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  id="nativegates_ibm"
+                  name="nativegates_ibm"
+                />
+                <label for="nativegates_ibm">IBM</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  id="nativegates_rigetti"
+                  name="nativegates_rigetti"
+                />
+                <label for="nativegates_rigetti">Riggeti</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  id="nativegates_oqc"
+                  name="nativegates_oqc"
+                />
+                <label for="nativegates_oqc">OQC</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  id="nativegates_ionq"
+                  name="nativegates_ionq"
+                />
+                <label for="nativegates_ionq">IonQ</label>
+              </div>
+            </div>
+            <p class="text-justify" style="margin: 0px; margin-top: 15px">
+              Select the used compiler:
+            </p>
+
+            <div class="d-flex">
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  onchange="toggleNativeQiskit()"
+                  id="nativegates_qiskit_compiler"
+                  name="nativegates_qiskit_compiler"
+                  value="true"
+                />
+                <label for="nativegates_qiskit_compiler">Qiskit</label>
+              </div>
+
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="nativegates_tket_compiler"
+                  name="nativegates_tket_compiler"
+                  value="true"
+                />
+                <label for="nativegates_tket_compiler">TKET</label>
+              </div>
+            </div>
+            <p class="text-justify" style="margin: 0px; margin-top: 15px">
+              If Qiskit is selected, select its optimization level:
+            </p>
+            <div class="col-md-12 align-items-center">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_qiskit_compiler_opt0"
+                value="true"
+                id="nativegates_qiskit_compiler_opt0"
+                disabled
+              />
+              <label for="nativegates_qiskit_compiler_opt0">Opt. 0</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_qiskit_compiler_opt1"
+                value="true"
+                id="nativegates_qiskit_compiler_opt1"
+                disabled
+              />
+              <label for="nativegates_qiskit_compiler_opt1">Opt. 1</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_qiskit_compiler_opt2"
+                value="true"
+                id="nativegates_qiskit_compiler_opt2"
+                disabled
+              />
+              <label for="nativegates_qiskit_compiler_opt2">Opt. 2</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_qiskit_compiler_opt3"
+                value="true"
+                id="nativegates_qiskit_compiler_opt3"
+                disabled
+              />
+              <label for="nativegates_qiskit_compiler_opt3">Opt. 3</label>
+            </div>
+          </div>
+
+          <div
+            class="col border border-secondary"
+            style="width: 25%; min-width: 200px; margin: 1px"
+          >
+            <h6>Target-dependent: Mapped Level</h6>
+            <p class="text-justify" style="margin: 0px">
+              Select a targeted device:
+            </p>
+
+            <div class="row">
+              <div class="row align-items-center">
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="device_ibm_washington"
+                    value="true"
+                    name="device_ibm_washington"
+                  />
+                  <label for="device_ibm_washington"
+                    >IBM Washington (127 Qubits)
+                  </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="device_ibm_montreal"
+                    value="true"
+                    name="device_ibm_montreal"
+                  />
+                  <label for="device_ibm_montreal"
+                    >IBM Montreal (27 Qubits)
+                  </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="device_rigetti_aspen_m1"
+                    value="true"
+                    name="device_rigetti_aspen_m1"
+                  />
+                  <label for="device_rigetti_aspen_m1"
+                    >Riggeti Aspen-M1 (80 Qubits)
+                  </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="device_oqc_lucy"
+                    value="true"
+                    name="device_oqc_lucy"
+                  />
+                  <label for="device_oqc_lucy">OQC Lucy (8 Qubits) </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="device_ionq_ionq11"
+                    value="true"
+                    name="device_ionq_ionq11"
+                  />
+                  <label for="device_ionq_ionq11">IonQ (11 Qubits) </label>
+                </div>
+              </div>
+            </div>
+            <p class="text-justify" style="margin: 0px; margin-top: 15px">
+              Select the used compiler:
+            </p>
+            <div class="d-flex">
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  onchange="toggleMappedQiskit()"
+                  id="mapped_qiskit_compiler"
+                  name="mapped_qiskit_compiler"
+                />
+                <label for="mapped_qiskit_compiler">Qiskit</label>
+              </div>
+              <div class="col-md-6 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  onchange="toggleMappedTKET()"
+                  id="mapped_tket_compiler"
+                  name="mapped_tket_compiler"
+                />
+                <label for="mapped_tket_compiler">TKET</label>
+              </div>
+            </div>
+            <div class="row">
+              <p class="text-justify" style="margin: 0px; margin-top: 15px">
+                If Qiskit is selected, select its optimization level:
+              </p>
+              <div class="col-md-12 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_qiskit_compiler_opt0"
+                  name="mapped_qiskit_compiler_opt0"
+                />
+                <label for="mapped_qiskit_compiler_opt0">Opt. 0</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_qiskit_compiler_opt1"
+                  name="mapped_qiskit_compiler_opt1"
+                />
+                <label for="mapped_qiskit_compiler_opt1">Opt. 1</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_qiskit_compiler_opt2"
+                  name="mapped_qiskit_compiler_opt2"
+                />
+                <label for="mapped_qiskit_compiler_opt2">Opt. 2</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_qiskit_compiler_opt3"
+                  name="mapped_qiskit_compiler_opt3"
+                />
+                <label for="mapped_qiskit_compiler_opt3">Opt. 3</label>
+              </div>
+              <p class="text-justify" style="margin: 0px; margin-top: 15px">
+                If TKET is selected, select its placement settings:
+              </p>
+              <div class="col-md-12 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_tket_compiler_graph"
+                  name="mapped_tket_compiler_graph"
+                />
+                <label for="mapped_tket_compiler_graph">Graph Placement </label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_tket_compiler_line"
+                  name="mapped_tket_compiler_line"
+                />
+                <label for="mapped_tket_compiler_line">Line Placement </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12" style="height: 20px"></div>
+        <h4>Download</h4>
+        <p class="text-justify"></p>
+        <div class="d-flex">
+          <div class="same_row">Number of selected benchmarks: &nbsp;</div>
+          <div class="same_row" id="num_benchmarks">0</div>
+        </div>
+        After the download button is clicked, all benchmarks provided as
+        <i>.qasm</i> files are downloaded as a <i>.zip</i> archive. Details of
+        the <a href="description" target="_blank">file format</a> are provided.
+        Alternatively, a pre-generated archive with <i>all</i> benchmarks can be
+        <a href="get_pre_gen">downloaded</a>.
+
+        <div class="text-center">
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg mx-auto text-center"
+            id="downloadButton"
+            disabled
+            value="submit"
+          >
+            Download selected Benchmarks
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="col-md-12" style="height: 20px"></div>
+
+    <div class="container">
+      <h4>Reference</h4>
+      <p class="text-justify">
+        For a more detailed description of MQT Bench, we are referring to the
+        corresponding paper
+        <a href="https://arxiv.org/pdf/2204.13719.pdf" target="_blank"
+          >"MQT Bench: Benchmarking Software and Design Automation Tools for
+          Quantum Computing"</a
+        >. Our implementation is available on
+        <a href="https://github.com/cda-tum/MQTBench" target="_blank">Github</a
+        >.
+
+        <strong
+          >In case you are using MQT Bench in your work, we would be thankful if
+          you referred to it by citing the following publication:</strong
+        >
+      </p>
+
+      <p>
+        @misc{quetschlich2022mqtbench, <br />
+        &nbsp; title=&#123;&#123;&#123;MQT Bench}}: Benchmarking Software and
+        Design Automation Tools for Quantum Computing},<br />
+        &nbsp; shorttitle = &#123;&#123;&#123;MQT Bench}}},<br />
+        &nbsp; author={Quetschlich, Nils and Burgholzer, Lukas and Wille,
+        Robert},<br />
+        &nbsp; year={2022},<br />
+        &nbsp; eprint = {2204.13719},<br />
+        &nbsp; eprinttype = {arxiv},<br />
+        &nbsp; publisher = {arXiv},<br />
+        &nbsp; note=&#123;&#123;&#123;MQT Bench}} is available at
+        \url{https://www.cda.cit.tum.de/mqtbench/}},<br />
+        }
+      </p>
+
+      <p>
+        In case you have any problems or questions feel free to contact us via
+        <a href="mailto:quantum.cda@xcit.tum.de">quantum.cda@xcit.tum.de</a>.
+        More on our work on quantum computation is summarized on
+        <a href="https://www.cda.cit.tum.de/research/quantum" target="_blank"
+          >this page</a
+        >.
+      </p>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      function toggleNativeQiskit() {
+          document.getElementById("nativegates_qiskit_compiler_opt0").disabled = !document.getElementById("nativegates_qiskit_compiler_opt0").disabled
+          document.getElementById("nativegates_qiskit_compiler_opt1").disabled = !document.getElementById("nativegates_qiskit_compiler_opt1").disabled
+          document.getElementById("nativegates_qiskit_compiler_opt2").disabled = !document.getElementById("nativegates_qiskit_compiler_opt2").disabled
+          document.getElementById("nativegates_qiskit_compiler_opt3").disabled = !document.getElementById("nativegates_qiskit_compiler_opt3").disabled
+      }
+
+      function toggleMappedQiskit() {
+          document.getElementById("mapped_qiskit_compiler_opt0").disabled = !document.getElementById("mapped_qiskit_compiler_opt0").disabled
+          document.getElementById("mapped_qiskit_compiler_opt1").disabled = !document.getElementById("mapped_qiskit_compiler_opt1").disabled
+          document.getElementById("mapped_qiskit_compiler_opt2").disabled = !document.getElementById("mapped_qiskit_compiler_opt2").disabled
+          document.getElementById("mapped_qiskit_compiler_opt3").disabled = !document.getElementById("mapped_qiskit_compiler_opt3").disabled
+      }
+
+      function toggleMappedTKET() {
+          document.getElementById("mapped_tket_compiler_graph").disabled = !document.getElementById("mapped_tket_compiler_graph").disabled
+          document.getElementById("mapped_tket_compiler_line").disabled = !document.getElementById("mapped_tket_compiler_line").disabled
+      }
+
+      function toggleAllSelection() {
+
+          var ids = {{benchmarks | length}}+{{nonscalable_benchmarks | length }}
+          for (let i = 1; i <= ids; i++) {
+              document.getElementById("selectBench_" + i).checked = all_benchmarks.checked
+          }
+      }
+
+      function checks_on_change() {
+          check_col_if_all_selected()
+          get_num_benchs()
+
+
+      }
+
+      function get_num_benchs() {
+          form = document.getElementById("benchmark_form")
+          const formData = new FormData(form);
+          fetch('./get_num_benchmarks', {
+              method: 'POST',
+              body: formData,
+              dataType: 'json',
+          }).then(response => response.json())
+              .then(response => {
+                  document.getElementById("num_benchmarks").innerHTML = response.num_selected;
+
+                          if (num_benchmarks.innerHTML > 0) {
+                              downloadButton.disabled = false;
+                          }
+                          if (num_benchmarks.innerHTML == 0) {
+                              downloadButton.disabled = true;
+                          }
+              });
+
+      }
+
+      function check_col_if_all_selected() {
+          var ids = {{benchmarks | length}}+{{nonscalable_benchmarks | length }}
+          var check_all_selected = true;
+          for (let i = 1; i <= ids; i++) {
+              if (!document.getElementById("selectBench_" + i).checked) {
+                  all_benchmarks.checked = false;
+                  check_all_selected = false;
+              }
+          }
+          if (check_all_selected) {
+              all_benchmarks.checked = true;
+          }
+      }
+    </script>
+  </body>
+</html>

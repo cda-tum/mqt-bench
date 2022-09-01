@@ -2,29 +2,27 @@ name: CodeCov
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - uses: snow-actions/sparse-checkout@v1.1.0
-      with:
-        patterns: "mqt"
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    - name: Install MQT Bench
-      run: pip install .\[all\]
-    - name: Generate Report
-      run: |
-        pip install pytest-cov
-        pytest -v --cov=./ --cov-report=xml
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        fail_ci_if_error: true
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install MQT Bench
+        run: pip install -e .
+      - name: Generate Report
+        run: |
+          pip install pytest-cov
+          pytest -v --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
