@@ -43,7 +43,7 @@ setup(
         "pandas==1.3.5",
         "flask==2.1.2",
         "networkx==2.8.3",
-        "pytest==7.1.1",
+        "pytest==7.1.2",
         "qiskit_finance==0.3.1",
         "qiskit_machine-learning==0.4.0",
         "qiskit-nature[pyscf]==0.3.1",
