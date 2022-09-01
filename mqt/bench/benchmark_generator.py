@@ -229,17 +229,17 @@ def generate_benchmark(benchmark):
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 
-    succes_generated_circuits_t_indep = generate_target_indep_level_circuit(
+    success_generated_circuits_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, file_precheck
     )
 
-    if not succes_generated_circuits_t_indep:
+    if not success_generated_circuits_t_indep:
         return False
 
-    succes_generated_circuits_t_dep = generate_target_dep_level_circuit(
+    success_generated_circuits_t_dep = generate_target_dep_level_circuit(
         qc, num_qubits, file_precheck
     )
-    return succes_generated_circuits_t_indep or succes_generated_circuits_t_dep
+    return success_generated_circuits_t_dep
 
 
 def generate_target_indep_level_circuit(
