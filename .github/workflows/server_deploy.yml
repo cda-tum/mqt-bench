@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 env:
   DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
