@@ -3,7 +3,7 @@
 [![CI](https://img.shields.io/github/workflow/status/cda-tum/MQTBench/CodeCov?style=flat-square&logo=github&label=coverage)](https://github.com/cda-tum/MQTBench/actions/workflows/coverage.yml)
 [![Bindings](https://img.shields.io/github/workflow/status/cda-tum/MQTBench/Deploy%20to%20PyPI?style=flat-square&logo=github&label=python)](https://github.com/cda-tum/MQTBench/actions/workflows/deploy.yml)
 [![codecov](https://img.shields.io/codecov/c/github/cda-tum/MQTBench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/MQTBench)
-[![Server Deployment](https://github.com/cda-tum/MQTBench/actions/workflows/server_deployment.yml/badge.svg)](https://github.com/cda-tum/MQTBench/actions/workflows/server_deployment.yml)
+[![Server Deployment](https://github.com/cda-tum/MQTBench/actions/workflows/server_deploy.yml/badge.svg)](https://github.com/cda-tum/MQTBench/actions/workflows/server_deploy.yml)
 
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
