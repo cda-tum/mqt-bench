@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import io
 import os
 import re
 import sys
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
@@ -500,7 +502,7 @@ class NoSeekBytesIO:
 
 
 def generate_zip_ephemeral_chunks(
-    filenames: List[str],
+    filenames: list[str],
 ) -> Iterable[bytes]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
@@ -513,7 +515,7 @@ def generate_zip_ephemeral_chunks(
     global MQTBENCH_ALL_ZIP
     fileobj = NoSeekBytesIO(io.BytesIO())
 
-    paths: List[Path] = [Path(name) for name in filenames]
+    paths: list[Path] = [Path(name) for name in filenames]
 
     with ZipFile(fileobj, mode="w") as zf:
         for individualFile in paths:

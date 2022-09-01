@@ -1,5 +1,7 @@
 # Code based on https://github.com/qiskit-community/qiskit-application-modules-demo-sessions/blob/main/qiskit-optimization/qiskit-optimization-demo.ipynb
 
+from __future__ import annotations
+
 from qiskit import Aer
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import SLSQP

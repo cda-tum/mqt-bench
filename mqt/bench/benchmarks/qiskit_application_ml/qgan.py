@@ -1,5 +1,7 @@
 # Code based on https://qiskit.org/documentation/machine-learning/tutorials/04_qgans_for_loading_random_distributions.html
 
+from __future__ import annotations
+
 import numpy as np
 from qiskit import Aer
 from qiskit.circuit.library import TwoLocal

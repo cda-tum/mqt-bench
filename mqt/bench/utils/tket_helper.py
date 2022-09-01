@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from os import path
 
 from pytket import OpType, architecture, circuit

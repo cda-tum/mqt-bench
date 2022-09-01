@@ -1,5 +1,7 @@
 # Code based on https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
 
+from __future__ import annotations
+
 import numpy as np
 from qiskit import Aer
 from qiskit.algorithms import VQE

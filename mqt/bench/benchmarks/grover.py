@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
 from qiskit.algorithms import Grover
