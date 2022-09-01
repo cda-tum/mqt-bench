@@ -599,8 +599,13 @@ def prepareFormInput(formData: list):
 
         if "minQubits" in k:
             min_qubits = v
+            if min_qubits == "":
+                min_qubits = 2
+
         if "maxQubits" in k:
             max_qubits = v
+            if max_qubits == "":
+                max_qubits = 130
         if "indep_qiskit_compiler" in k:
             indep_qiskit_compiler = True
         if "indep_tket_compiler" in k:
