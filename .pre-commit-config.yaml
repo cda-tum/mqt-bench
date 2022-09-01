@@ -36,6 +36,13 @@ repos:
       - id: fix-ligatures
       - id: fix-smartquotes
 
+  # Sort includes
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ["-a", "from __future__ import annotations", "--profile", "black", "--filter-files"]
+
   # Upgrade old Python syntax
   - repo: https://github.com/asottile/pyupgrade
     rev: "v2.37.3"
@@ -43,12 +50,6 @@ repos:
       - id: pyupgrade
         args: ["--py37-plus"]
 
-  # Sort includes
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        args: ["--profile", "black", "--filter-files"]
   # Run code formatting with Black
   - repo: https://github.com/psf/black
     rev: "22.6.0" # Keep in sync with blacken-docs
