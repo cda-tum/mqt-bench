@@ -1,5 +1,7 @@
 # Code based on https://qiskit.org/textbook/ch-applications/hhl_tutorial.html
 
+from __future__ import annotations
+
 import numpy as np
 from qiskit.algorithms.linear_solvers.hhl import HHL
 from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import (

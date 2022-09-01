@@ -1,6 +1,8 @@
 # Code based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
 
 
+from __future__ import annotations
+
 from qiskit import Aer
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA

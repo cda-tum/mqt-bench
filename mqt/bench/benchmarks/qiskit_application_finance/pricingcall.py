@@ -1,5 +1,7 @@
 # Code based on https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
+from __future__ import annotations
+
 import numpy as np
 from qiskit.algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.applications.estimation import EuropeanCallPricing

@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import argparse
 import importlib
 import json
 import signal
 from os import mkdir, path
-from typing import Union
 
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
@@ -476,7 +477,7 @@ def create_pricingput_qc(num_uncertainty: int):
 
 def get_one_benchmark(
     benchmark_name: str,
-    level: Union[str, int],
+    level: str | int,
     circuit_size: int = None,
     benchmark_instance_name: str = None,
     compiler: str = "qiskit",
