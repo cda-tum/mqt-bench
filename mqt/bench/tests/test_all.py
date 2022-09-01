@@ -3,7 +3,6 @@ import os
 import pytest
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
-from qiskit_nature.drivers import Molecule
 
 from mqt.bench.benchmark_generator import get_one_benchmark
 from mqt.bench.benchmarks import (
