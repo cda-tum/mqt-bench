@@ -621,5 +621,5 @@ if __name__ == "__main__":
     print("#### Start preprocessing")
     utils.postprocess_oqc_qasm_files()
     print("#### Start zipping")
-    #utils.create_zip_file()
+    # utils.create_zip_file()
     print("#### Generation ended")
