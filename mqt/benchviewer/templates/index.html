@@ -110,7 +110,10 @@
               id="all_benchmarks"
               name="all_benchmarks"
               onchange="toggleAllSelection()"
-            />).
+            />). For details, see the
+            <a href="benchmark_description" target="_blank"
+              >benchmark_description.</a
+            >
           </p>
         </div>
         <div class="row border border-secondary">
@@ -119,7 +122,9 @@
           <div class="col-md-6">
             <h6 style="margin-bottom: 0px">Scalable Benchmarks:</h6>
             <p class="text-justify" style="margin: 0px">
-              The number of qubits for the following benchmarks is adjustable.
+              <i>
+                The number of qubits for the following benchmarks is adjustable.
+              </i>
             </p>
 
             {% for benchmark in benchmarks %}
@@ -140,7 +145,7 @@
 
             <h6 style="margin-bottom: 0px; margin-top: 15px">Qubit Range</h6>
             <p class="text-justify" style="margin: 0px">
-              Specify the desired qubit range for the scalable benchmarks.
+              Select the desired qubit range for the scalable benchmarks.
             </p>
             <div class="d-flex text-center" style="margin-bottom: 5px">
               <input
@@ -167,7 +172,9 @@
           <div class="col-md-6">
             <h6 style="margin-bottom: 0px">Non-Scalable Benchmarks:</h6>
             <p class="text-justify" style="margin: 0px">
-              The number of qubits for the following benchmarks is fixed.
+              <i
+                >The number of qubits for the following benchmarks is fixed.
+              </i>
             </p>
 
             {% for nonscalable_benchmark in nonscalable_benchmarks %}
@@ -194,14 +201,9 @@
         <p class="text-justify" style="margin: 0px">
           Next, abstraction levels for the selected benchmarks must be chosen.
           There are four available levels ranging from a rather high level
-          description on the algorithm level towards a rather lower level
-          description compiled for a specific device and respective native
-          gate-set. Brief descriptions
-          <a href="benchmark_description">of the benchmarks</a> and
-          <a href="description"
-            >of the file format of the resulting instances</a
-          >
-          are provided.
+          description on the algorithm level towards a rath lower level
+          description on the target-dependent: mapped level. For details, see
+          <a href="description" target="_blank">the level description</a>.
         </p>
       </div>
 
@@ -214,7 +216,7 @@
           >
             <h6>Algorithm Level</h6>
             <p class="text-justify" style="margin: 0px">
-              Currently, only available using the python package. Details can be
+              Currently, only available using the Python package. Details can be
               found on our
               <a
                 href="https://github.com/cda-tum/MQTBench/blob/main/README.md#repository-usage"
@@ -229,7 +231,9 @@
             style="width: 25%; min-width: 200px; margin: 1px"
           >
             <h6>Target-independent Level</h6>
-            <p class="text-justify" style="margin: 0px">Select a compiler:</p>
+            <p class="text-justify" style="margin: 0px">
+              Select the used compiler:
+            </p>
             <div class="d-flex">
               <div class="col-md-6 align-items-center">
                 <input
@@ -262,7 +266,7 @@
             <h6>Target-dependent: Native-Gates Level</h6>
 
             <p class="text-justify" style="margin: 0px">
-              Specify target native gate-set:
+              Select targeted native gate-set:
             </p>
             <div class="row">
               <div class="col-md-12 align-items-center">
@@ -301,7 +305,7 @@
               </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
-              Select a compiler:
+              Select the used compiler:
             </p>
 
             <div class="d-flex">
@@ -329,7 +333,7 @@
               </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
-              If Qiskit is selected, specify its compilation settings:
+              If Qiskit is selected, select its optimization level:
             </p>
             <div class="col-md-12 align-items-center">
               <input
@@ -377,7 +381,7 @@
           >
             <h6>Target-dependent: Mapped Level</h6>
             <p class="text-justify" style="margin: 0px">
-              Select a target device:
+              Select a targeted device:
             </p>
 
             <div class="row">
@@ -446,7 +450,7 @@
               </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
-              Select a compiler:
+              Select the used compiler:
             </p>
             <div class="d-flex">
               <div class="col-md-6 align-items-center">
@@ -474,7 +478,7 @@
             </div>
             <div class="row">
               <p class="text-justify" style="margin: 0px; margin-top: 15px">
-                If Qiskit is selected, specify its compilation settings:
+                If Qiskit is selected, select its optimization level:
               </p>
               <div class="col-md-12 align-items-center">
                 <input
@@ -515,7 +519,7 @@
                 <label for="mapped_qiskit_compiler_opt3">Opt. 3</label>
               </div>
               <p class="text-justify" style="margin: 0px; margin-top: 15px">
-                If TKET is selected, specify its compilation settings:
+                If TKET is selected, select its placement settings:
               </p>
               <div class="col-md-12 align-items-center">
                 <input
@@ -540,10 +544,20 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12" style="height: 50px"></div>
-        <div class="text-center">
-          <div class="same_row"># of selected benchmarks:</div>
+        <div class="col-md-12" style="height: 20px"></div>
+        <h4>Download</h4>
+        <p class="text-justify"></p>
+        <div class="d-flex">
+          <div class="same_row">Number of selected benchmarks: &nbsp;</div>
           <div class="same_row" id="num_benchmarks">0</div>
+        </div>
+        After the download button is clicked, all benchmarks provided as
+        <i>.qasm</i> files are downloaded as a <i>.zip</i> archive. Details of
+        the <a href="description" target="_blank">file format</a> are provided.
+        Alternatively, a pre-generated archive with <i>all</i> benchmarks can be
+        <a href="get_pre_gen">downloaded</a>.
+
+        <div class="text-center">
           <button
             type="submit"
             class="btn btn-primary btn-lg mx-auto text-center"
@@ -557,30 +571,7 @@
       </div>
     </form>
 
-    <form
-      method="POST"
-      class="form-inline"
-      role="form"
-      action="get_pre_gen"
-      id="preGenForm"
-      onchange="checks_on_change()"
-    >
-      <div class="container-fluid text-center">
-        <br />
-        You can download a pre-generated <i>.zip</i> file with
-        <i>all</i> available benchmarks here:
-        <br />
-        <button
-          type="submit"
-          class="btn btn-primary btn-lg mx-auto text-center"
-          id="downloadPreGenZip"
-        >
-          Download all Benchmarks
-        </button>
-      </div>
-    </form>
-
-    <div class="col-md-12" style="height: 50px"></div>
+    <div class="col-md-12" style="height: 20px"></div>
 
     <div class="container">
       <h4>Reference</h4>
