@@ -236,9 +236,7 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     if not success_generated_circuits_t_indep:
         return False
 
-    generate_target_dep_level_circuit(
-        qc, num_qubits, file_precheck
-    )
+    generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
     return True
 
 
