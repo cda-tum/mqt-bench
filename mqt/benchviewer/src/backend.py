@@ -237,6 +237,8 @@ def read_mqtbench_all_zip(
                         if skip_question or response.lower() == "y" or response == "":
                             handle_downloading_benchmarks(target_location, download_url)
                             break
+            if version_found:
+                break
 
         if not version_found:
             print("No suitable benchmarks found.")
