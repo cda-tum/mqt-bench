@@ -11,7 +11,7 @@ env:
   KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
   CDA_HOST_NAME: tueicda-cda.srv.mwn.de
   CDA_USER_NAME: web-user
-  CDA_TARGET_DIR: /var/www/cda/app/
+  CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
   CDA_GIT_DIR: .git/
 
 jobs:
@@ -38,4 +38,4 @@ jobs:
       - name: Deployment on Webserver
         working-directory: ${{ github.workspace }}
         run: |
-          rsync -avz --update -e ssh --cvs-exclude --exclude "*__pycache__/" --exclude "*.qasm" . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
+          rsync -avz --update -e ssh --cvs-exclude --exclude "*__pycache__/" --exclude "*.egg-info/" --exclude "*.qasm" . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
