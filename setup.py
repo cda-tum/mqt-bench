@@ -37,9 +37,9 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        "qiskit==0.37.2",
-        "pytket==1.5",
-        "pytket-qiskit==0.28.0",
+        "qiskit==0.36.0",
+        "pytket==1.2.2",
+        "pytket-qiskit==0.25.0",
         "pandas==1.3.5",
         "flask==2.1.2",
         "networkx==2.8.3",
@@ -52,7 +52,6 @@ setup(
         "tqdm==4.64.0",
         "importlib_metadata>=3.6; python_version < '3.10'",
         "importlib_resources>=5.9; python_version < '3.10'",
-        "dlx==1.0.4"
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
