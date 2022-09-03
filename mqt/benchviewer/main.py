@@ -9,7 +9,7 @@ from flask import Flask, cli, jsonify, render_template, request, send_from_direc
 
 from mqt.benchviewer.src import backend
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/mqtbench")
 PREFIX = "/mqtbench/"
 
 
