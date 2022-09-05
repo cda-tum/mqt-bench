@@ -39,7 +39,7 @@ setup(
     install_requires=[
         "qiskit==0.36.0",
         "pytket==1.2.2",
-        "pytket-qiskit==0.25.0",
+        "pytket-qiskit==0.28.0",
         "pandas==1.3.5",
         "flask==2.2.2",
         "networkx==2.8.6",
