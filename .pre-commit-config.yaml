@@ -31,7 +31,7 @@ repos:
 
   # Handling unwanted unicode characters
   - repo: https://github.com/sirosen/texthooks
-    rev: "0.3.1"
+    rev: "0.4.0"
     hooks:
       - id: fix-ligatures
       - id: fix-smartquotes
@@ -52,7 +52,7 @@ repos:
 
   # Run code formatting with Black
   - repo: https://github.com/psf/black
-    rev: "22.6.0" # Keep in sync with blacken-docs
+    rev: "22.8.0" # Keep in sync with blacken-docs
     hooks:
       - id: black
 
