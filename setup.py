@@ -46,7 +46,7 @@ setup(
         "pytest==7.1.3",
         "qiskit_finance==0.3.4",
         "qiskit_machine-learning==0.4.0",
-        "qiskit-nature[pyscf]==0.3.1",
+        "qiskit-nature[pyscf]==0.4.4",
         "qiskit_optimization==0.3.2",
         "packaging==21.3",
         "tqdm==4.64.1",
