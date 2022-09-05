@@ -41,7 +41,7 @@ setup(
         "pytket==1.2.2",
         "pytket-qiskit==0.25.0",
         "pandas==1.3.5",
-        "flask==2.1.2",
+        "flask==2.2.2",
         "networkx==2.8.3",
         "pytest==7.1.3",
         "qiskit_finance==0.3.1",
