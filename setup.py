@@ -44,7 +44,7 @@ setup(
         "flask==2.2.2",
         "networkx==2.8.6",
         "pytest==7.1.3",
-        "qiskit_finance==0.3.1",
+        "qiskit_finance==0.3.4",
         "qiskit_machine-learning==0.4.0",
         "qiskit-nature[pyscf]==0.3.1",
         "qiskit_optimization==0.3.2",
