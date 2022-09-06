@@ -3,7 +3,7 @@ from __future__ import annotations
 from os import path
 
 from pytket import OpType, architecture, circuit
-from pytket.extensions.qiskit import qiskit_to_tk
+from pytket.extensions.qiskit import qiskit_to_tk, tk_to_qiskit
 from pytket.passes import (
     FullPeepholeOptimise,
     PlacementPass,
@@ -189,8 +189,9 @@ def get_native_gates_level(
         if return_qc:
             return qc_tket
         else:
+            qc_qiskit = tk_to_qiskit(qc_tket)
             res = utils.save_as_qasm(
-                circuit_to_qasm_str(qc_tket),
+                qc_qiskit.qasm(),
                 filename_native,
                 native_gatenames,
                 target_directory=target_directory,
@@ -282,8 +283,9 @@ def get_mapped_level(
         if return_qc:
             return qc_tket
         else:
+            qc_qiskit = tk_to_qiskit(qc_tket)
             res = utils.save_as_qasm(
-                circuit_to_qasm_str(qc_tket),
+                qc_qiskit.qasm(),
                 filename_mapped,
                 native_gatenames,
                 True,
