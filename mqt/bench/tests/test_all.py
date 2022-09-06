@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 import pytest
-from pytket.qasm import circuit_to_qasm_str
+from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
 from mqt.bench.benchmark_generator import get_one_benchmark
@@ -586,7 +586,7 @@ def test_get_one_benchmark(
     assert qc.depth() > 0
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
-            qc = QuantumCircuit.from_qasm_str(circuit_to_qasm_str(qc))
+            qc = tk_to_qiskit(qc)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
             assert (
