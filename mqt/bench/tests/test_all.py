@@ -4,7 +4,6 @@ import os
 
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import QuantumCircuit
 
 from mqt.bench.benchmark_generator import get_one_benchmark
 from mqt.bench.benchmarks import (
