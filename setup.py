@@ -50,7 +50,6 @@ setup(
         "qiskit_optimization==0.4.0",
         "packaging==21.3",
         "tqdm==4.64.1",
-        "pyscf==2.1.0; python_version == '3.10'",
         "importlib_metadata>=3.6; python_version < '3.10'",
         "importlib_resources>=5.9; python_version < '3.10'",
     ],
