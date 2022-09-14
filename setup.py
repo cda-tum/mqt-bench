@@ -38,7 +38,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "qiskit==0.37.2",
-        "pytket==1.5.2",
+        "pytket==1.6.1",
         "pytket-qiskit==0.28.0",
         "pandas==1.3.5",
         "flask==2.2.2",
