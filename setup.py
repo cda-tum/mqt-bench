@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup, find_namespace_packages
+from setuptools import find_namespace_packages, setup
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
 with open(README_PATH) as readme_file:
