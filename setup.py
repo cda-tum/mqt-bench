@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 README_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
 with open(README_PATH) as readme_file:
@@ -8,20 +8,7 @@ with open(README_PATH) as readme_file:
 
 setup(
     name="mqt.bench",
-    packages=[
-        "mqt.benchviewer",
-        "mqt.benchviewer.src",
-        "mqt.benchviewer.src.tests",
-        "mqt.benchviewer.templates",
-        "mqt.bench",
-        "mqt.bench.utils",
-        "mqt.bench.tests",
-        "mqt.bench.benchmarks",
-        "mqt.bench.benchmarks.qiskit_application_finance",
-        "mqt.bench.benchmarks.qiskit_application_ml",
-        "mqt.bench.benchmarks.qiskit_application_optimization",
-        "mqt.bench.benchmarks.qiskit_application_nature",
-    ],
+    packages=find_namespace_packages(include=["mqt.*"]),
     version="0.1.3",
     python_requires=">=3.8",
     license="MIT",
