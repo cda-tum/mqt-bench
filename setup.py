@@ -9,7 +9,6 @@ with open(README_PATH) as readme_file:
 setup(
     name="mqt.bench",
     packages=find_namespace_packages(include=["mqt.*"]),
-    version="0.1.3",
     python_requires=">=3.8",
     license="MIT",
     description="MQT Bench - A MQT tool for Benchmarking Quantum Software Tools",
