@@ -12,16 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.8"
       - name: Install MQT Bench
-        run: pip install -e .
+        run: pip install -e .[coverage]
       - name: Generate Report
-        run: |
-          pip install pytest-cov
-          pytest -v --cov=./ --cov-report=xml
+        run: pytest -v --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
