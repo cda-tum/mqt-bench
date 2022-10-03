@@ -42,7 +42,7 @@ setup(
         "pytket-qiskit==0.25.0",
         "pandas==1.3.5",
         "flask==2.2.2",
-        "networkx==2.8.6",
+        "networkx==2.8.7",
         "pytest==7.1.3",
         "qiskit_finance==0.3.4",
         "qiskit_machine-learning==0.4.0",
