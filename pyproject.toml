@@ -1,16 +1,73 @@
 [build-system]
-# Minimum requirements for the build system to execute.
-requires = ["setuptools>=45"]  # PEP 508 specifications.
+requires = [
+    "setuptools>=61",
+    "setuptools_scm[toml]>=6.4",
+]
 build-backend = "setuptools.build_meta"
 
-[tool.cibuildwheel]
-build = "cp3*"
-archs = "auto64"
-test-command = "python -c \"from mqt import bench\""
-build-verbosity = 3
+[project]
+name = "mqt.bench"
+description = "MQT Bench - A MQT tool for Benchmarking Quantum Software Tools"
+readme = "README.md"
+authors = [
+    { name = "Nils Quetschlich", email = "nils.quetschlich@tum.de" },
+    { name = "Lukas Burgholzer", email = "lukas.burgholzer@jku.at"},
+]
+keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+dynamic = ["version"]
 
-[tool.cibuildwheel.linux]
+dependencies = [
+    "qiskit==0.36.0",
+    "pytket==1.2.2",
+    "pytket-qiskit==0.25.0",
+    "pandas==1.3.5",
+    "flask==2.2.2",
+    "networkx==2.8.6",
+    "pytest==7.1.3",
+    "qiskit_finance==0.3.4",
+    "qiskit_machine-learning==0.4.0",
+    "qiskit-nature[pyscf]==0.3.1",
+    "qiskit_optimization==0.3.2",
+    "packaging==21.3",
+    "tqdm==4.64.1",
+    "importlib_metadata>=3.6; python_version < '3.10'",
+    "importlib_resources>=5.9; python_version < '3.10'",
+]
 
-[tool.cibuildwheel.macos]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
 
-[tool.cibuildwheel.windows]
+[project.optional-dependencies]
+test = ["pytest>=7"]
+coverage = ["mqt.bench[test]", "coverage[toml]~=6.5.0", "pytest-cov~=4.0.0"]
+dev = ["mqt.bench[coverage]"]
+
+[project.scripts]
+"mqt.bench" = "mqt.benchviewer.main:start_server"
+
+[project.urls]
+Homepage = "https://github.com/cda-tum/mqtbench"
+"Bug Tracker" = "https://github.com/cda-tum/mqtbench/issues"
+Discussions = "https://github.com/cda-tum/mqtbench/discussions"
+Research = "https://www.cda.cit.tum.de/research/quantum/"
+
+[tool.setuptools.packages.find]
+include = ["mqt.*"]
+
+[tool.setuptools_scm]
