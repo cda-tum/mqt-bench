@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from qiskit import Aer
-from qiskit.algorithms import QAOA
+from qiskit.algorithms.minimum_eigensolvers import QAOA
 from qiskit.algorithms.optimizers import SLSQP
-from qiskit.utils import QuantumInstance
+from qiskit.primitives import Sampler
 
 from mqt.bench.utils.utils import get_examplary_max_cut_qp
 
@@ -19,11 +18,8 @@ def create_circuit(num_qubits: int):
     """
 
     qp = get_examplary_max_cut_qp(num_qubits)
-    sim = QuantumInstance(
-        backend=Aer.get_backend("aer_simulator"), shots=1024, seed_simulator=10
-    )
 
-    qaoa = QAOA(reps=2, optimizer=SLSQP(maxiter=25), quantum_instance=sim)
+    qaoa = QAOA(sampler=Sampler(), reps=2, optimizer=SLSQP(maxiter=25))
     qaoa_result = qaoa.compute_minimum_eigenvalue(qp.to_ising()[0])
     qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
 
