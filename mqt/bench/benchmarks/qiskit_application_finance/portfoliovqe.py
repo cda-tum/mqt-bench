@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import datetime
 
-from qiskit import Aer
-from qiskit.algorithms import VQE
+from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
-from qiskit.utils import QuantumInstance
+from qiskit.primitives import Estimator
 from qiskit_finance.applications import PortfolioOptimization
 from qiskit_finance.data_providers import RandomDataProvider
 from qiskit_optimization.converters import QuadraticProgramToQubo
@@ -44,19 +43,12 @@ def create_circuit(num_qubits: int):
     qp = portfolio.to_quadratic_program()
     conv = QuadraticProgramToQubo()
     qp_qubo = conv.convert(qp)
-
-    backend = Aer.get_backend("aer_simulator")
-    seed = 10
-
     cobyla = COBYLA()
     cobyla.set_options(maxiter=25)
     ry = TwoLocal(num_assets, "ry", "cz", reps=3, entanglement="full")
-    sim = QuantumInstance(
-        backend=backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
-    )
 
-    vqe = VQE(ry, optimizer=cobyla, quantum_instance=sim)
-    vqe.random_seed = seed
+    vqe = VQE(ansatz=ry, optimizer=cobyla, estimator=Estimator())
+    vqe.random_seed = 10
     vqe_result = vqe.compute_minimum_eigenvalue(qp_qubo.to_ising()[0])
     qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
 
