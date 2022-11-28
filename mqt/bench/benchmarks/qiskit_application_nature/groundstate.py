@@ -3,35 +3,27 @@
 
 from __future__ import annotations
 
-from qiskit import Aer
-from qiskit.algorithms import VQE
+from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
-from qiskit.utils import QuantumInstance
-from qiskit_nature.converters.second_quantization import QubitConverter
-from qiskit_nature.drivers.second_quantization import (
-    ElectronicStructureDriverType,
-    ElectronicStructureMoleculeDriver,
-)
-from qiskit_nature.mappers.second_quantization import JordanWignerMapper
-from qiskit_nature.problems.second_quantization import ElectronicStructureProblem
+from qiskit.primitives import Estimator
+from qiskit_nature.second_q.drivers import PySCFDriver
+from qiskit_nature.second_q.mappers import JordanWignerMapper, QubitConverter
 
 
-def create_circuit(molecule, basis: str = "sto3g"):
+def create_circuit(molecule):
     """Returns a quantum circuit implementing Ground State Estimation.
 
     Keyword arguments:
     molecule -- Molecule for which the ground state shall be estimated.
     """
 
-    driver = ElectronicStructureMoleculeDriver(
-        molecule, basis=basis, driver_type=ElectronicStructureDriverType.PYSCF
-    )
+    driver = PySCFDriver(atom=molecule)
+    es_problem = driver.run()
 
-    es_problem = ElectronicStructureProblem(driver)
-    qubit_converter = QubitConverter(JordanWignerMapper())
+    converter = QubitConverter(JordanWignerMapper())
     second_q_op = es_problem.second_q_ops()
-    operator = qubit_converter.convert_only(second_q_op[0])
+    operator = converter.convert_only(second_q_op[0])
 
     tl_circuit = TwoLocal(
         rotation_blocks=["h", "rx"],
@@ -42,9 +34,7 @@ def create_circuit(molecule, basis: str = "sto3g"):
     )
 
     another_solver = VQE(
-        ansatz=tl_circuit,
-        quantum_instance=QuantumInstance(Aer.get_backend("aer_simulator"), shots=1024),
-        optimizer=COBYLA(maxiter=25),
+        ansatz=tl_circuit, estimator=Estimator(), optimizer=COBYLA(maxiter=25)
     )
 
     result = another_solver.compute_minimum_eigenvalue(operator)
