@@ -617,9 +617,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("#### Start generating")
-    # create_benchmarks_from_config(args.file_name)
-    print("#### Start preprocessing")
-    utils.postprocess_oqc_qasm_files()
+    create_benchmarks_from_config(args.file_name)
     print("#### Start zipping")
-    # utils.create_zip_file()
+    utils.create_zip_file()
     print("#### Generation ended")

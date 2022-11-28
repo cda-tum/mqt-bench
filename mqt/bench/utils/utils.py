@@ -6,7 +6,6 @@ from datetime import date
 
 import networkx as nx
 import numpy as np
-from joblib import Parallel, delayed
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
@@ -249,6 +248,9 @@ def save_as_qasm(
         f.write("\n")
         f.write(qc_str)
     f.close()
+
+    if "oqc" in filename:
+        postprocess_single_oqc_file(filename)
     return True
 
 
@@ -308,22 +310,31 @@ def get_molecule(benchmark_instance_name: str):
     return instances[benchmark_instance_name]
 
 
-def postprocess_oqc_qasm_files():
-    directory = get_qasm_output_path()
-    Parallel(n_jobs=-1, verbose=100)(
-        delayed(postprocess_single_oqc_file)(directory, filename)
-        for filename in os.listdir(directory)
-    )
+# def postprocess_oqc_qasm_files():
+#     directory = get_qasm_output_path()
+#     Parallel(n_jobs=-1, verbose=100)(
+#         delayed(postprocess_single_oqc_file)(directory, filename)
+#         for filename in os.listdir(directory)
+#     )
 
 
-def postprocess_single_oqc_file(directory: str, filename: str):
+def postprocess_single_oqc_file(filename: str):
 
-    f = os.path.join(directory, filename)
-    if "oqc_lucy_qiskit" in f or "oqc_qiskit" in f:
-        with open(f) as f:
+    if "oqc_lucy_qiskit" in filename or "nativegates_oqc_qiskit" in filename:
+        with open(filename) as f:
             lines = f.readlines()
-        new_name = os.path.join(directory, filename)
-        with open(new_name, "w") as f:
+        with open(filename, "w") as f:
+            for line in lines:
+                if not (
+                    "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
+                ):
+                    f.write(line)
+                if "gate ecr" in line.strip("\n"):
+                    f.write("opaque ecr q0,q1;\n")
+    elif "oqc_qiskit" in filename:
+        with open(filename) as f:
+            lines = f.readlines()
+        with open(filename, "w") as f:
             for line in lines:
                 if not (
                     "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
@@ -337,14 +348,21 @@ def postprocess_single_oqc_file(directory: str, filename: str):
                         "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
                     )
 
-        assert QuantumCircuit.from_qasm_file(new_name)
-        print("New qasm file for: ", new_name)
-
-    elif "oqc_lucy_tket" in f or "oqc_tket" in f:
-        with open(f) as f:
+    elif "oqc_lucy_tket" in filename or "nativegates_oqc_tket" in filename:
+        with open(filename) as f:
             lines = f.readlines()
-        new_name = os.path.join(directory, filename)
-        with open(new_name, "w") as f:
+        with open(filename, "w") as f:
+            count = 0
+            for line in lines:
+                f.write(line)
+                count += 1
+                if count == 9:
+                    f.write("opaque ecr q0,q1;\n")
+
+    elif "oqc_tket" in filename:
+        with open(filename) as f:
+            lines = f.readlines()
+        with open(filename, "w") as f:
             count = 0
             for line in lines:
                 f.write(line)
@@ -356,7 +374,9 @@ def postprocess_single_oqc_file(directory: str, filename: str):
                     f.write(
                         "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
                     )
-        assert QuantumCircuit.from_qasm_file(new_name)
+
+    assert QuantumCircuit.from_qasm_file(filename)
+    print("New qasm file for: ", filename)
 
 
 def create_zip_file():
