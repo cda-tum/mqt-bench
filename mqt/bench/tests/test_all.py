@@ -7,13 +7,12 @@ from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 
 from mqt.bench.benchmark_generator import get_one_benchmark
-from mqt.bench.benchmarks import (
+from mqt.bench.benchmarks import (  # hhl,; shor,
     ae,
     dj,
     ghz,
     graphstate,
     grover,
-    hhl,
     qaoa,
     qft,
     qftentangled,
@@ -21,7 +20,6 @@ from mqt.bench.benchmarks import (
     qpeinexact,
     qwalk,
     realamprandom,
-    shor,
     su2random,
     twolocalrandom,
     vqe,
