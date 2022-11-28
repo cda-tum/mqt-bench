@@ -319,8 +319,7 @@ def get_molecule(benchmark_instance_name: str):
 
 
 def postprocess_single_oqc_file(filename: str):
-
-    if "oqc_lucy_qiskit" in filename or "nativegates_oqc_qiskit" in filename:
+    if "mapped_oqc_lucy_qiskit" in filename or "nativegates_oqc_qiskit" in filename:
         with open(filename) as f:
             lines = f.readlines()
         with open(filename, "w") as f:
@@ -331,24 +330,8 @@ def postprocess_single_oqc_file(filename: str):
                     f.write(line)
                 if "gate ecr" in line.strip("\n"):
                     f.write("opaque ecr q0,q1;\n")
-    elif "oqc_qiskit" in filename:
-        with open(filename) as f:
-            lines = f.readlines()
-        with open(filename, "w") as f:
-            for line in lines:
-                if not (
-                    "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
-                ):
-                    f.write(line)
-                if "gate ecr" in line.strip("\n"):
-                    f.write(
-                        "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
-                    )
-                    f.write(
-                        "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
-                    )
 
-    elif "oqc_lucy_tket" in filename or "nativegates_oqc_tket" in filename:
+    elif "mapped_oqc_lucy_tket" in filename or "nativegates_oqc_tket" in filename:
         with open(filename) as f:
             lines = f.readlines()
         with open(filename, "w") as f:
@@ -358,22 +341,6 @@ def postprocess_single_oqc_file(filename: str):
                 count += 1
                 if count == 9:
                     f.write("opaque ecr q0,q1;\n")
-
-    elif "oqc_tket" in filename:
-        with open(filename) as f:
-            lines = f.readlines()
-        with open(filename, "w") as f:
-            count = 0
-            for line in lines:
-                f.write(line)
-                count += 1
-                if count == 9:
-                    f.write(
-                        "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
-                    )
-                    f.write(
-                        "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
-                    )
 
     assert QuantumCircuit.from_qasm_file(filename)
     print("New qasm file for: ", filename)
