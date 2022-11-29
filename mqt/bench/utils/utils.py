@@ -311,28 +311,26 @@ def get_molecule(benchmark_instance_name: str):
 
 
 def postprocess_single_oqc_file(filename: str):
-    if "mapped_oqc_lucy_qiskit" in filename or "nativegates_oqc_qiskit" in filename:
+    if "oqc" in filename and ("nativegates" in filename or "mapped" in filename):
         with open(filename) as f:
             lines = f.readlines()
-        with open(filename, "w") as f:
-            for line in lines:
-                if not (
-                    "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
-                ):
+        if "qiskit" in filename:
+            with open(filename, "w") as f:
+                for line in lines:
+                    if not (
+                        "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
+                    ):
+                        f.write(line)
+                    if "gate ecr" in line.strip("\n"):
+                        f.write("opaque ecr q0,q1;\n")
+        elif "tket" in filename:
+            with open(filename, "w") as f:
+                count = 0
+                for line in lines:
                     f.write(line)
-                if "gate ecr" in line.strip("\n"):
-                    f.write("opaque ecr q0,q1;\n")
-
-    elif "mapped_oqc_lucy_tket" in filename or "nativegates_oqc_tket" in filename:
-        with open(filename) as f:
-            lines = f.readlines()
-        with open(filename, "w") as f:
-            count = 0
-            for line in lines:
-                f.write(line)
-                count += 1
-                if count == 9:
-                    f.write("opaque ecr q0,q1;\n")
+                    count += 1
+                    if count == 9:
+                        f.write("opaque ecr q0,q1;\n")
 
     assert QuantumCircuit.from_qasm_file(filename)
     print("New qasm file for: ", filename)
