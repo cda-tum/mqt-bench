@@ -310,14 +310,6 @@ def get_molecule(benchmark_instance_name: str):
     return instances[benchmark_instance_name]
 
 
-# def postprocess_oqc_qasm_files():
-#     directory = get_qasm_output_path()
-#     Parallel(n_jobs=-1, verbose=100)(
-#         delayed(postprocess_single_oqc_file)(directory, filename)
-#         for filename in os.listdir(directory)
-#     )
-
-
 def postprocess_single_oqc_file(filename: str):
     if "mapped_oqc_lucy_qiskit" in filename or "nativegates_oqc_qiskit" in filename:
         with open(filename) as f:
