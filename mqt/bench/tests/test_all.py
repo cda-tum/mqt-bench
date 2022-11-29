@@ -3,16 +3,16 @@ from __future__ import annotations
 import os
 
 import pytest
-from pytket.qasm import circuit_to_qasm_str
-from qiskit import QuantumCircuit
+from pytket.extensions.qiskit import tk_to_qiskit
 
 from mqt.bench.benchmark_generator import get_one_benchmark
-from mqt.bench.benchmarks import (  # hhl,; shor,
+from mqt.bench.benchmarks import (
     ae,
     dj,
     ghz,
     graphstate,
     grover,
+    hhl,
     qaoa,
     qft,
     qftentangled,
@@ -20,6 +20,7 @@ from mqt.bench.benchmarks import (  # hhl,; shor,
     qpeinexact,
     qwalk,
     realamprandom,
+    shor,
     su2random,
     twolocalrandom,
     vqe,
@@ -53,7 +54,7 @@ def test_configure_begin():
         (dj, 5, True),
         (graphstate, 8, True),
         (grover, 5, False),
-        # (hhl, 2, False),
+        (hhl, 2, False),
         (qaoa, 5, True),
         (qft, 8, True),
         (qftentangled, 8, True),
@@ -67,7 +68,7 @@ def test_configure_begin():
         (twolocalrandom, 8, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        #  (shor, 9, False),
+        (shor, 9, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -100,7 +101,6 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (dj, 5, True),
         (graphstate, 8, True),
         (grover, 5, False),
-        #  (hhl, 2, False),
         (qaoa, 5, True),
         (qft, 8, True),
         (qftentangled, 8, True),
@@ -114,7 +114,6 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (twolocalrandom, 5, True),
         (wstate, 8, True),
         (portfolioqaoa, 5, True),
-        #  (shor, 9, False),
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
@@ -584,7 +583,7 @@ def test_get_one_benchmark(
     assert qc.depth() > 0
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
-            qc = QuantumCircuit.from_qasm_str(circuit_to_qasm_str(qc))
+            qc = tk_to_qiskit(qc)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
             assert (
