@@ -10,7 +10,7 @@ from joblib import Parallel, delayed
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
-from qiskit.test.mock import FakeMontreal, FakeWashington
+from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
@@ -279,30 +279,9 @@ def get_cmap_from_devicename(device: str):
 
 def get_molecule(benchmark_instance_name: str):
     """Returns a Molecule object depending on the parameter value."""
-    try:
-        from qiskit_nature.drivers import Molecule
-    except Exception:
-        print("Please install qiskit_nature.")
-        return None
-    m_1 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_2 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_3 = Molecule(
-        geometry=[
-            ["O", [0.0, 0.0, 0.0]],
-            ["H", [0.586, 0.757, 0.0]],
-            ["H", [0.586, -0.757, 0.0]],
-        ],
-        charge=0,
-        multiplicity=1,
-    )
+    m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
+    m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]
+    m_3 = ["O 0.0 0.0 0.0", "H 0.586, 0.757, 0.0", "H 0.586, -0.757, 0.0"]
     instances = {"small": m_1, "medium": m_2, "large": m_3}
 
     return instances[benchmark_instance_name]

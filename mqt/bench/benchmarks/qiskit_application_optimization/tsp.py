@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from qiskit import Aer
-from qiskit.algorithms import VQE
+from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SPSA
 from qiskit.circuit.library import TwoLocal
-from qiskit.utils import QuantumInstance, algorithm_globals
+from qiskit.primitives import Estimator
+from qiskit.utils import algorithm_globals
 from qiskit_optimization.applications import Tsp
 from qiskit_optimization.converters import QuadraticProgramToQubo
 
@@ -29,15 +29,10 @@ def create_circuit(num_nodes: int):
     qubit_op, offset = qubo.to_ising()
 
     algorithm_globals.random_seed = 10
-    seed = 10
-    backend = Aer.get_backend("aer_simulator")
-    quantum_instance = QuantumInstance(
-        backend, seed_simulator=seed, seed_transpiler=seed, shots=1024
-    )
 
     spsa = SPSA(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
-    vqe = VQE(ry, optimizer=spsa, quantum_instance=quantum_instance)
+    vqe = VQE(ansatz=ry, optimizer=spsa, estimator=Estimator())
 
     vqe_result = vqe.compute_minimum_eigenvalue(qubit_op)
     qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
