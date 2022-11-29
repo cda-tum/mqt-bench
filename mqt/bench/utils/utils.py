@@ -14,6 +14,55 @@ from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
 
+def get_supported_benchmarks():
+    return [
+        "ae",
+        "dj",
+        "grover-noancilla",
+        "grover-v-chain",
+        "ghz",
+        "graphstate",
+        "portfolioqaoa",
+        "portfoliovqe",
+        "qaoa",
+        "qft",
+        "qftentangled",
+        "qgan",
+        "qpeexact",
+        "qpeinexact",
+        "qwalk-noancilla",
+        "qwalk-v-chain",
+        "realamprandom",
+        "su2random",
+        "twolocalrandom",
+        "vqe",
+        "wstate",
+        "shor",
+        "hhl",
+        "pricingcall",
+        "pricingput",
+        "groundstate",
+        "routing",
+        "tsp",
+    ]
+
+
+def get_supported_levels():
+    return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
+
+
+def get_supported_compilers():
+    return ["qiskit", "tket"]
+
+
+def get_supported_gatesets():
+    return ["ibm", "rigetti", "ionq", "oqc"]
+
+
+def get_supported_devices():
+    return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m1", "ionq11", "oqc_lucy"]
+
+
 def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
     global qasm_path
     qasm_path = new_path

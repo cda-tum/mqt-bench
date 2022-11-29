@@ -5,7 +5,7 @@ import os
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 
-from mqt.bench.benchmark_generator import get_one_benchmark
+from mqt.bench.benchmark_generator import get_benchmark
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -254,7 +254,7 @@ def test_routing():
             "alg",
             5,
             None,
-            None,
+            "qiskit",
             None,
             None,
             None,
@@ -264,7 +264,7 @@ def test_routing():
             0,
             6,
             None,
-            None,
+            "tket",
             None,
             None,
             None,
@@ -559,7 +559,7 @@ def test_routing():
         ),
     ],
 )
-def test_get_one_benchmark(
+def test_get_benchmark(
     benchmark_name,
     level,
     circuit_size,
@@ -570,7 +570,7 @@ def test_get_one_benchmark(
     device_name,
 ):
 
-    qc = get_one_benchmark(
+    qc = get_benchmark(
         benchmark_name,
         level,
         circuit_size,
@@ -613,7 +613,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 ):
     directory = "."
     filename = "ae_test_qiskit"
-    qc = get_one_benchmark("ae", abstraction_level, 5)
+    qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
     res = qiskit_helper.get_mapped_level(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
@@ -625,7 +625,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 
     directory = "."
     filename = "ae_test_tket"
-    qc = get_one_benchmark("ae", abstraction_level, 7)
+    qc = get_benchmark("ae", abstraction_level, 7)
     assert qc
     res = tket_helper.get_mapped_level(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
