@@ -19,9 +19,6 @@ def create_circuit(num_qubits: int):
     """
 
     qp = get_examplary_max_cut_qp(num_qubits)
-    # sim = QuantumInstance(
-    #     backend=Aer.get_backend("aer_simulator"), shots=1024, seed_simulator=10
-    # )
 
     ansatz = RealAmplitudes(num_qubits, reps=2)
     vqe = VQE(ansatz=ansatz, optimizer=SLSQP(maxiter=25), estimator=Estimator())

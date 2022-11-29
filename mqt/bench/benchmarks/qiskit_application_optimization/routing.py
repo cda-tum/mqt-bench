@@ -118,7 +118,6 @@ class QuantumOptimizer:
         vqe = VQE(estimator=Estimator(), optimizer=SLSQP(maxiter=25), ansatz=ansatz)
         vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
         qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
-        #  _, _, _, level = self.binary_representation(x_sol=result.x)
         return qc
 
 
