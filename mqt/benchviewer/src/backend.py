@@ -369,6 +369,9 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
         "path",
     ]
     db_filtered = pd.DataFrame(columns=colnames)
+    db_filtered["indep_flag"] = db_filtered["indep_flag"].astype(bool)
+    db_filtered["nativegates_flag"] = db_filtered["nativegates_flag"].astype(bool)
+    db_filtered["mapped_flag"] = db_filtered["mapped_flag"].astype(bool)
     if len(database) == 0:
         return []
 
@@ -463,6 +466,7 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
                 ]
                 db_filtered = pd.concat([db_filtered, db_tmp6])
 
+    print(db_filtered.dtypes)
     return db_filtered["path"].to_list()
 
 
