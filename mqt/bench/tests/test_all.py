@@ -130,7 +130,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
 
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m1", 80)]),
+        ("rigetti", [("rigetti_aspen_m2", 80)]),
         ("ionq", [("ionq11", 11)]),
         ("oqc", [("oqc_lucy", 8)]),
     ]
@@ -219,15 +219,8 @@ def test_openqasm_gates():
     assert len(openqasm_gates) == 42
 
 
-@pytest.mark.parametrize("num_circles", [2, 3, 4, 5, 10])
-def test_rigetti_cmap_generator(num_circles: int):
-    if num_circles != 10:
-        assert (
-            len(utils.get_rigetti_c_map(num_circles))
-            == (10 * (num_circles - 1) + 8) * 2
-        )
-    else:
-        assert len(utils.get_rigetti_c_map(num_circles)) == 212
+def test_rigetti_cmap_generator():
+    assert len(utils.get_rigetti_aspen_m2_map()) == 212
 
 
 def test_dj_constant_oracle():
@@ -435,7 +428,7 @@ def test_routing():
                 "qiskit": {"optimization_level": 1},
             },
             "rigetti",
-            "rigetti_aspen_m1",
+            "rigetti_aspen_m2",
         ),
         (
             "qpeexact",
@@ -519,7 +512,7 @@ def test_routing():
                 "qiskit": {"optimization_level": 1},
             },
             "rigetti",
-            "rigetti_aspen_m1",
+            "rigetti_aspen_m2",
         ),
         (
             "qpeinexact",
@@ -531,7 +524,7 @@ def test_routing():
                 "tket": {"placement": "lineplacement"},
             },
             "rigetti",
-            "rigetti_aspen_m1",
+            "rigetti_aspen_m2",
         ),
         (
             "qpeinexact",

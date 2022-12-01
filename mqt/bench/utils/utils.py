@@ -60,7 +60,7 @@ def get_supported_gatesets():
 
 
 def get_supported_devices():
-    return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m1", "ionq11", "oqc_lucy"]
+    return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
 def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
@@ -136,58 +136,38 @@ def get_estimation_problem():
     return problem
 
 
-def get_rigetti_c_map(circles: int = 4):
-    """Returns a coupling map of the circular layout scheme used by Rigetti.
+def get_rigetti_aspen_m2_map():
+    """Returns a coupling map of Rigetti Aspen M2 chip."""
+    c_map_rigetti = []
+    for j in range(5):
+        for i in range(0, 7):
+            c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-    Keyword arguments:
-    circles -- number of circles, each one comprises 8 qubits
-    """
-    if circles != 10:
-        c_map_rigetti = []
-        for j in range(circles):
-            for i in range(0, 7):
-                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+            if i == 6:
+                c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
-                if i == 6:
-                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+        if j != 0:
+            c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
+            c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
-            if j != 0:
-                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+    for j in range(5):
+        m = 8 * j + 5 * 8
+        for i in range(0, 7):
+            c_map_rigetti.append([i + m, i + 1 + m])
 
-        inverted = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inverted
-    else:
-        c_map_rigetti = []
-        for j in range(5):
-            for i in range(0, 7):
-                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+            if i == 6:
+                c_map_rigetti.append([0 + m, 7 + m])
 
-                if i == 6:
-                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+        if j != 0:
+            c_map_rigetti.append([m - 6, m + 5])
+            c_map_rigetti.append([m - 7, m + 6])
 
-            if j != 0:
-                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+    for n in range(5):
+        c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
+        c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
 
-        for j in range(5):
-            m = 8 * j + 5 * 8
-            for i in range(0, 7):
-                c_map_rigetti.append([i + m, i + 1 + m])
-
-                if i == 6:
-                    c_map_rigetti.append([0 + m, 7 + m])
-
-            if j != 0:
-                c_map_rigetti.append([m - 6, m + 5])
-                c_map_rigetti.append([m - 7, m + 6])
-
-        for n in range(5):
-            c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
-            c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
-
-        inverted = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inverted
+    inverted = [[item[1], item[0]] for item in c_map_rigetti]
+    c_map_rigetti = c_map_rigetti + inverted
 
     return c_map_rigetti
 
@@ -318,8 +298,8 @@ def get_cmap_from_devicename(device: str):
         return FakeWashington().configuration().coupling_map
     elif device == "ibm_montreal":
         return FakeMontreal().configuration().coupling_map
-    elif device == "rigetti_aspen_m1":
-        return get_rigetti_c_map(10)
+    elif device == "rigetti_aspen_m2":
+        return get_rigetti_aspen_m2_map()
     elif device == "oqc_lucy":
         return get_cmap_oqc_lucy()
     elif device == "ionq11":
@@ -361,7 +341,6 @@ def postprocess_single_oqc_file(filename: str):
                         f.write("opaque ecr q0,q1;\n")
 
     assert QuantumCircuit.from_qasm_file(filename)
-    print("New qasm file for: ", filename)
 
 
 def create_zip_file():
