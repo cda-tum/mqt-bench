@@ -19,17 +19,13 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 
 dependencies = [
-    "qiskit~=0.39.2",
+    "qiskit[all]~=0.39.2",
     "pytket~=1.9.0",
     "pytket-qiskit~=0.30.0",
     "pandas>=1.0.0",
     "flask>=2.0.0",
     "networkx>=2.0.0",
     "pytest>=7.0.0",
-    "qiskit_finance~=0.3.4",
-    "qiskit_machine-learning~=0.5.0",
-    "qiskit-nature[pyscf]~=0.5.1",
-    "qiskit_optimization~=0.4.0",
     "packaging>=21.0",
     "tqdm>=4.0.0",
     "importlib_metadata>=3.6; python_version < '3.10'",
