@@ -129,7 +129,7 @@ So far, MQT Bench supports the following devices:
 
 1. IBMQ Washington with 127 qubits
 2. IBMQ Montreal with 27 qubits
-3. Rigetti Aspen-M1 with 80 qubits
+3. Rigetti Aspen-M2 with 80 qubits
 4. IonQ with 11 qubits
 5. OQC Lucy with 8 qubits
 

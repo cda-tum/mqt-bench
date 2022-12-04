@@ -270,7 +270,7 @@ def generate_target_dep_level_circuit(
 
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m1", 80)]),
+        ("rigetti", [("rigetti_aspen_m2", 80)]),
         ("ionq", [("ionq11", 11)]),
         ("oqc", [("oqc_lucy", 8)]),
     ]
@@ -494,7 +494,7 @@ def get_one_benchmark(
     compiler -- "qiskit" or "tket"
     compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
+    device_name -- "ibm_washington", "ibm_montreal", "aspen_m2", "ionq11", ""lucy""
 
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
@@ -538,7 +538,7 @@ def get_benchmark(
     compiler -- "qiskit" or "tket"
     compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m1", "ionq11", ""oqc_lucy""
+    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", ""oqc_lucy""
 
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
