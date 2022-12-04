@@ -1,5 +1,5 @@
 {
-  "timeout": 1,
+  "timeout": 120,
   "benchmarks": [
     {
       "name": "ae",
