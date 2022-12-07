@@ -340,8 +340,6 @@ def postprocess_single_oqc_file(filename: str):
                     if count == 9:
                         f.write("opaque ecr q0,q1;\n")
 
-    assert QuantumCircuit.from_qasm_file(filename)
-
 
 def create_zip_file():
     return subprocess.call(
