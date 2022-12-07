@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from datetime import date
 
 import networkx as nx
@@ -10,6 +11,11 @@ from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
+
+if sys.version_info < (3, 10, 0):
+    import importlib_metadata as metadata
+else:
+    from importlib import metadata
 
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
@@ -258,13 +264,23 @@ def save_as_qasm(
         qasm_output_folder = get_qasm_output_path()
 
     filename = os.path.join(qasm_output_folder, filename) + ".qasm"
+
+    try:
+        mqtbench_module_version = metadata.version("mqt.bench")
+    except Exception:
+        print(
+            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
+        )
+        return False
+
+    print(filename)
     with open(filename, "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
             "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
             + "\n"
         )
-        f.write("// MQT Bench version: " + "0.1.0" + "\n")
+        f.write("// MQT Bench version: " + mqtbench_module_version + "\n")
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
