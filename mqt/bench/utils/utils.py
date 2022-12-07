@@ -278,7 +278,7 @@ def save_as_qasm(
         f.write(qc_str)
     f.close()
 
-    if "oqc" in filename:
+    if gate_set == ["rz", "sx", "x", "ecr", "measure"]:
         postprocess_single_oqc_file(filename)
     return True
 
