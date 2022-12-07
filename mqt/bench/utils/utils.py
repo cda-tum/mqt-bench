@@ -319,26 +319,14 @@ def get_molecule(benchmark_instance_name: str):
 
 
 def postprocess_single_oqc_file(filename: str):
-    if "oqc" in filename and ("nativegates" in filename or "mapped" in filename):
-        with open(filename) as f:
-            lines = f.readlines()
-        if "qiskit" in filename:
-            with open(filename, "w") as f:
-                for line in lines:
-                    if not (
-                        "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
-                    ):
-                        f.write(line)
-                    if "gate ecr" in line.strip("\n"):
-                        f.write("opaque ecr q0,q1;\n")
-        elif "tket" in filename:
-            with open(filename, "w") as f:
-                count = 0
-                for line in lines:
-                    f.write(line)
-                    count += 1
-                    if count == 9:
-                        f.write("opaque ecr q0,q1;\n")
+    with open(filename) as f:
+        lines = f.readlines()
+    with open(filename, "w") as f:
+        for line in lines:
+            if not ("gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")):
+                f.write(line)
+            if 'include "qelib1.inc"' in line.strip("\n"):
+                f.write("opaque ecr q0,q1;\n")
 
 
 def create_zip_file():
