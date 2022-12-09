@@ -273,7 +273,6 @@ def save_as_qasm(
         )
         return False
 
-    print(filename)
     with open(filename, "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(

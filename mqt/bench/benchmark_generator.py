@@ -711,5 +711,5 @@ if __name__ == "__main__":
     print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
     print("#### Start zipping")
-    utils.create_zip_file()
+    # utils.create_zip_file()
     print("#### Generation ended")
