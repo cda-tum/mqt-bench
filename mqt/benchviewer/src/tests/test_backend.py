@@ -225,7 +225,7 @@ def test_prepareFormInput():
             [
                 "ibm_washington",
                 "ibm_montreal",
-                "rigetti_aspen_m2",
+                "rigetti_aspen",
                 "oqc_lucy",
                 "ionq11",
             ],
@@ -291,7 +291,7 @@ def test_create_database():
         (
             (True, True),
             ([1, 3], ["graph", "line"]),
-            ["ibm_montreal", "rigetti_aspen_m2", "ionq11", "ocq_lucy"],
+            ["ibm_montreal", "rigetti_aspen", "ionq11", "ocq_lucy"],
         ),
     )
     res = backend.get_selected_file_paths(input_data)
