@@ -5,6 +5,13 @@
 [![codecov](https://img.shields.io/codecov/c/github/cda-tum/MQTBench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/MQTBench)
 [![Server Deployment](https://github.com/cda-tum/MQTBench/actions/workflows/server_deploy.yml/badge.svg)](https://github.com/cda-tum/MQTBench/actions/workflows/server_deploy.yml)
 
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqt_light.png" width="60%">
+  <img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqt_dark.png" width="60%">
+</picture>
+</p>
+
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a quantum circuit benchmark suite with cross-level support, i.e., providing the same benchmark algorithms for different abstraction levels throughout the quantum computing
@@ -12,7 +19,7 @@ software stack.
 
 MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/) and is hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
-[<img src="img/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
+[<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
 
 This documentation explains how to use MQT Bench to create and filter benchmarks.
 
@@ -30,7 +37,7 @@ An example is given in the following:
 
 1. Algorithmic Level
 
-<img src="img/level_1.png"  align="center" width="250">
+<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_1.png"  align="center" width="250">
 
 Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of
 applications. A respective circuit is shown above, it represents an example of an ansatz function
@@ -39,7 +46,7 @@ level, the circuit is parameterized by the angles θ<sub>i</sub> of the six sing
 
 2. Target-independent Level
 
-<img src="img/level_2.png"  align="center" width="250">
+<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_2.png"  align="center" width="250">
 
 VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are
 iteratively updated by a classical optimizer analogous to conventional gradient-based optimization.
@@ -49,7 +56,7 @@ shown above.
 
 3. Target-dependent Native Gates Level
 
-<img src="img/level_3.png"  align="center" width="250"/>
+<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_3.png"  align="center" width="250"/>
 
 Different quantum computer realizations support
 different native gate-sets. In our example, we consider the
@@ -59,8 +66,8 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 
 4. Target-dependent Mapped Level
 
-<img src="img/level_4.png"  align="center" width="300"/>
-<img src="img/arch.png"  align="right" width="100"/>
+<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_4.png"  align="center" width="300"/>
+<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/arch.png"  align="right" width="100"/>
 
 The architecture of the IBMQ Manila device is shown
 above on the right and it defines between which qubits a two-qubit operation may be performed.
@@ -189,10 +196,10 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 (venv) $ pip install mqt.bench
 ```
 
-To generate a benchmark circuit on the algorithmic level, please use the `get_one_benchmark` method:
+To generate a benchmark circuit on the algorithmic level, please use the `get_benchmark` method:
 
 ```python3
-def get_one_benchmark(
+def get_benchmark(
     benchmark_name: str,
     level: Union[str, int],
     circuit_size: int = None,
@@ -270,9 +277,9 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 For example, in order to obtain the _5_-qubit Deutsch-Josza benchmark on algorithm level, use the following:
 
 ```python
-from mqt.bench import get_one_benchmark
+from mqt.bench import get_benchmark
 
-qc = get_one_benchmark("dj", "alg", 5)
+qc = get_benchmark("dj", "alg", 5)
 ```
 
 ### Locally hosting the MQT Bench Viewer
