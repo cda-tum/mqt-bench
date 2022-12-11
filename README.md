@@ -196,10 +196,10 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 (venv) $ pip install mqt.bench
 ```
 
-To generate a benchmark circuit on the algorithmic level, please use the `get_one_benchmark` method:
+To generate a benchmark circuit on the algorithmic level, please use the `get_benchmark` method:
 
 ```python3
-def get_one_benchmark(
+def get_benchmark(
     benchmark_name: str,
     level: Union[str, int],
     circuit_size: int = None,
@@ -277,9 +277,9 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 For example, in order to obtain the _5_-qubit Deutsch-Josza benchmark on algorithm level, use the following:
 
 ```python
-from mqt.bench import get_one_benchmark
+from mqt.bench import get_benchmark
 
-qc = get_one_benchmark("dj", "alg", 5)
+qc = get_benchmark("dj", "alg", 5)
 ```
 
 ### Locally hosting the MQT Bench Viewer
