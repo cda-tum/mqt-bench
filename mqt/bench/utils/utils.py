@@ -2,17 +2,71 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from datetime import date
 
 import networkx as nx
 import numpy as np
-from joblib import Parallel, delayed
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
-from qiskit.test.mock import FakeMontreal, FakeWashington
+from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
+
+if sys.version_info < (3, 10, 0):
+    import importlib_metadata as metadata
+else:
+    from importlib import metadata
 
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
+
+
+def get_supported_benchmarks():
+    return [
+        "ae",
+        "dj",
+        "grover-noancilla",
+        "grover-v-chain",
+        "ghz",
+        "graphstate",
+        "portfolioqaoa",
+        "portfoliovqe",
+        "qaoa",
+        "qft",
+        "qftentangled",
+        "qgan",
+        "qpeexact",
+        "qpeinexact",
+        "qwalk-noancilla",
+        "qwalk-v-chain",
+        "realamprandom",
+        "su2random",
+        "twolocalrandom",
+        "vqe",
+        "wstate",
+        "shor",
+        "hhl",
+        "pricingcall",
+        "pricingput",
+        "groundstate",
+        "routing",
+        "tsp",
+    ]
+
+
+def get_supported_levels():
+    return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
+
+
+def get_supported_compilers():
+    return ["qiskit", "tket"]
+
+
+def get_supported_gatesets():
+    return ["ibm", "rigetti", "ionq", "oqc"]
+
+
+def get_supported_devices():
+    return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
 def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
@@ -88,58 +142,38 @@ def get_estimation_problem():
     return problem
 
 
-def get_rigetti_c_map(circles: int = 4):
-    """Returns a coupling map of the circular layout scheme used by Rigetti.
+def get_rigetti_aspen_m2_map():
+    """Returns a coupling map of Rigetti Aspen M2 chip."""
+    c_map_rigetti = []
+    for j in range(5):
+        for i in range(0, 7):
+            c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-    Keyword arguments:
-    circles -- number of circles, each one comprises 8 qubits
-    """
-    if circles != 10:
-        c_map_rigetti = []
-        for j in range(circles):
-            for i in range(0, 7):
-                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+            if i == 6:
+                c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
-                if i == 6:
-                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+        if j != 0:
+            c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
+            c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
 
-            if j != 0:
-                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+    for j in range(5):
+        m = 8 * j + 5 * 8
+        for i in range(0, 7):
+            c_map_rigetti.append([i + m, i + 1 + m])
 
-        inverted = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inverted
-    else:
-        c_map_rigetti = []
-        for j in range(5):
-            for i in range(0, 7):
-                c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
+            if i == 6:
+                c_map_rigetti.append([0 + m, 7 + m])
 
-                if i == 6:
-                    c_map_rigetti.append([0 + j * 8, 7 + j * 8])
+        if j != 0:
+            c_map_rigetti.append([m - 6, m + 5])
+            c_map_rigetti.append([m - 7, m + 6])
 
-            if j != 0:
-                c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-                c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
+    for n in range(5):
+        c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
+        c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
 
-        for j in range(5):
-            m = 8 * j + 5 * 8
-            for i in range(0, 7):
-                c_map_rigetti.append([i + m, i + 1 + m])
-
-                if i == 6:
-                    c_map_rigetti.append([0 + m, 7 + m])
-
-            if j != 0:
-                c_map_rigetti.append([m - 6, m + 5])
-                c_map_rigetti.append([m - 7, m + 6])
-
-        for n in range(5):
-            c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
-            c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
-
-        inverted = [[item[1], item[0]] for item in c_map_rigetti]
-        c_map_rigetti = c_map_rigetti + inverted
+    inverted = [[item[1], item[0]] for item in c_map_rigetti]
+    c_map_rigetti = c_map_rigetti + inverted
 
     return c_map_rigetti
 
@@ -230,13 +264,22 @@ def save_as_qasm(
         qasm_output_folder = get_qasm_output_path()
 
     filename = os.path.join(qasm_output_folder, filename) + ".qasm"
+
+    try:
+        mqtbench_module_version = metadata.version("mqt.bench")
+    except Exception:
+        print(
+            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
+        )
+        return False
+
     with open(filename, "w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write(
             "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
             + "\n"
         )
-        f.write("// MQT Bench version: " + "0.1.0" + "\n")
+        f.write("// MQT Bench version: " + mqtbench_module_version + "\n")
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
@@ -249,6 +292,9 @@ def save_as_qasm(
         f.write("\n")
         f.write(qc_str)
     f.close()
+
+    if gate_set == ["rz", "sx", "x", "ecr", "measure"]:
+        postprocess_single_oqc_file(filename)
     return True
 
 
@@ -267,8 +313,8 @@ def get_cmap_from_devicename(device: str):
         return FakeWashington().configuration().coupling_map
     elif device == "ibm_montreal":
         return FakeMontreal().configuration().coupling_map
-    elif device == "rigetti_aspen_m1":
-        return get_rigetti_c_map(10)
+    elif device == "rigetti_aspen_m2":
+        return get_rigetti_aspen_m2_map()
     elif device == "oqc_lucy":
         return get_cmap_oqc_lucy()
     elif device == "ionq11":
@@ -279,84 +325,23 @@ def get_cmap_from_devicename(device: str):
 
 def get_molecule(benchmark_instance_name: str):
     """Returns a Molecule object depending on the parameter value."""
-    try:
-        from qiskit_nature.drivers import Molecule
-    except Exception:
-        print("Please install qiskit_nature.")
-        return None
-    m_1 = Molecule(
-        geometry=[["H", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 0.735]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_2 = Molecule(
-        geometry=[["Li", [0.0, 0.0, 0.0]], ["H", [0.0, 0.0, 2.5]]],
-        charge=0,
-        multiplicity=1,
-    )
-    m_3 = Molecule(
-        geometry=[
-            ["O", [0.0, 0.0, 0.0]],
-            ["H", [0.586, 0.757, 0.0]],
-            ["H", [0.586, -0.757, 0.0]],
-        ],
-        charge=0,
-        multiplicity=1,
-    )
+    m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
+    m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]
+    m_3 = ["O 0.0 0.0 0.0", "H 0.586, 0.757, 0.0", "H 0.586, -0.757, 0.0"]
     instances = {"small": m_1, "medium": m_2, "large": m_3}
 
     return instances[benchmark_instance_name]
 
 
-def postprocess_oqc_qasm_files():
-    directory = get_qasm_output_path()
-    Parallel(n_jobs=-1, verbose=100)(
-        delayed(postprocess_single_oqc_file)(directory, filename)
-        for filename in os.listdir(directory)
-    )
-
-
-def postprocess_single_oqc_file(directory: str, filename: str):
-
-    f = os.path.join(directory, filename)
-    if "oqc_lucy_qiskit" in f or "oqc_qiskit" in f:
-        with open(f) as f:
-            lines = f.readlines()
-        new_name = os.path.join(directory, filename)
-        with open(new_name, "w") as f:
-            for line in lines:
-                if not (
-                    "gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")
-                ):
-                    f.write(line)
-                if "gate ecr" in line.strip("\n"):
-                    f.write(
-                        "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
-                    )
-                    f.write(
-                        "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
-                    )
-
-        assert QuantumCircuit.from_qasm_file(new_name)
-        print("New qasm file for: ", new_name)
-
-    elif "oqc_lucy_tket" in f or "oqc_tket" in f:
-        with open(f) as f:
-            lines = f.readlines()
-        new_name = os.path.join(directory, filename)
-        with open(new_name, "w") as f:
-            count = 0
-            for line in lines:
+def postprocess_single_oqc_file(filename: str):
+    with open(filename) as f:
+        lines = f.readlines()
+    with open(filename, "w") as f:
+        for line in lines:
+            if not ("gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")):
                 f.write(line)
-                count += 1
-                if count == 9:
-                    f.write(
-                        "gate rzx(param0) q0,q1 { h q1; cx q0,q1; rz(param0) q1; cx q0,q1; h q1; }\n"
-                    )
-                    f.write(
-                        "gate ecr q0,q1 { rzx(pi/4) q0,q1; x q0; rzx(-pi/4) q0,q1; }\n"
-                    )
-        assert QuantumCircuit.from_qasm_file(new_name)
+            if 'include "qelib1.inc"' in line.strip("\n"):
+                f.write("opaque ecr q0,q1;\n")
 
 
 def create_zip_file():

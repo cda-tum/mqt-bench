@@ -179,7 +179,7 @@ def test_prepareFormInput():
             ("mapped_tket_compiler_line", "true"),
             ("device_ibm_washington", "true"),
             ("device_ibm_montreal", "true"),
-            ("device_rigetti_aspen_m1", "true"),
+            ("device_rigetti_aspen_m2", "true"),
             ("device_oqc_lucy", "true"),
             ("device_ionq_ionq11", "true"),
         ]
@@ -225,7 +225,7 @@ def test_prepareFormInput():
             [
                 "ibm_washington",
                 "ibm_montreal",
-                "rigetti_aspen_m1",
+                "rigetti_aspen",
                 "oqc_lucy",
                 "ionq11",
             ],
@@ -278,7 +278,7 @@ def test_create_database():
         ["2"],
         (False, False),
         ((False, False), [], ["rigetti", "ionq"]),
-        ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m1"]),
+        ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m2"]),
     )
     res = backend.get_selected_file_paths(input_data)
     assert len(res) > 20
@@ -291,7 +291,7 @@ def test_create_database():
         (
             (True, True),
             ([1, 3], ["graph", "line"]),
-            ["ibm_montreal", "rigetti_aspen_m1", "ionq11", "ocq_lucy"],
+            ["ibm_montreal", "rigetti_aspen", "ionq11", "ocq_lucy"],
         ),
     )
     res = backend.get_selected_file_paths(input_data)

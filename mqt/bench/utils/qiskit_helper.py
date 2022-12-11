@@ -118,7 +118,6 @@ def get_native_gates_level(
     """
 
     gate_set = get_native_gates(gate_set_name)
-
     if not target_filename:
         filename_native = (
             qc.name
@@ -141,23 +140,13 @@ def get_native_gates_level(
         compiled_without_architecture = transpile(
             qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
         )
-        n_actual = compiled_without_architecture.num_qubits
-        filename_nativegates = (
-            qc.name
-            + "_nativegates_"
-            + gate_set_name
-            + "_qiskit_opt"
-            + str(opt_level)
-            + "_"
-            + str(n_actual)
-        )
 
         if return_qc:
             return compiled_without_architecture
         else:
             res = utils.save_as_qasm(
                 compiled_without_architecture.qasm(),
-                filename_nativegates,
+                filename_native,
                 gate_set,
                 target_directory=target_directory,
             )

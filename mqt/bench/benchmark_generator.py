@@ -5,6 +5,7 @@ import importlib
 import json
 import signal
 from os import mkdir, path
+from warnings import warn
 
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
@@ -269,7 +270,7 @@ def generate_target_dep_level_circuit(
 
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m1", 80)]),
+        ("rigetti", [("rigetti_aspen_m2", 80)]),
         ("ionq", [("ionq11", 11)]),
         ("oqc", [("oqc_lucy", 8)]),
     ]
@@ -483,7 +484,7 @@ def get_one_benchmark(
     gate_set_name: str = "ibm",
     device_name: str = "ibm_washington",
 ):
-    """Returns one benchmark as a Qiskit::QuantumCircuit Object.
+    """Returns one benchmark as a Qiskit::QuantumCircuit Object. Deprecated method, please use 'get_benchmark' instead.
 
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
@@ -493,12 +494,102 @@ def get_one_benchmark(
     compiler -- "qiskit" or "tket"
     compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "aspen_m1", "ionq11", ""lucy""
+    device_name -- "ibm_washington", "ibm_montreal", "aspen_m2", "ionq11", ""lucy""
 
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
+
+    warn(
+        "'get_one_benchmark' is deprecated and will be removed in the future. Please use the 'get_benchmark' method with the same parameters.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    return get_benchmark(
+        benchmark_name=benchmark_name,
+        level=level,
+        circuit_size=circuit_size,
+        benchmark_instance_name=benchmark_instance_name,
+        compiler=compiler,
+        compiler_settings=compiler_settings,
+        gate_set_name=gate_set_name,
+        device_name=device_name,
+    )
+
+
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int = None,
+    benchmark_instance_name: str = None,
+    compiler: str = "qiskit",
+    compiler_settings: dict[str, dict[str, any]] = None,
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
+):
+    """Returns one benchmark as a Qiskit::QuantumCircuit Object.
+
+    Keyword arguments:
+    benchmark_name -- name of the to be generated benchmark
+    level -- Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
+    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
+    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
+    compiler -- "qiskit" or "tket"
+    compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
+    gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
+    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", ""oqc_lucy""
+
+    Return values:
+    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
+    """
+
     init_module_paths()
+
+    if benchmark_name not in utils.get_supported_benchmarks():
+        raise ValueError(
+            f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
+        )
+
+    if level not in utils.get_supported_levels():
+        raise ValueError(f"Selected level must be in {utils.get_supported_levels()}.")
+
+    if benchmark_name not in ["shor", "groundstate"] and not isinstance(
+        circuit_size, int
+    ):
+        raise ValueError("circuit_size must be None or int for this benchmark.")
+    elif benchmark_name in ["shor", "groundstate"] and not isinstance(
+        benchmark_instance_name, str
+    ):
+        raise ValueError("benchmark_instance_name must be defined for this benchmark.")
+
+    if benchmark_instance_name is not None and not isinstance(
+        benchmark_instance_name, str
+    ):
+        raise ValueError("Selected benchmark_instance_name must be None or str.")
+
+    if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
+        raise ValueError(
+            f"Selected compiler must be in {utils.get_supported_compilers()}."
+        )
+
+    if compiler_settings is not None and not isinstance(compiler_settings, dict):
+        raise ValueError(
+            "Selected compiler_settings must be None or 'dict[str, dict[str, any]]'."
+        )
+
+    if (
+        gate_set_name is not None
+        and gate_set_name not in utils.get_supported_gatesets()
+    ):
+        raise ValueError(
+            f"Selected gate_set_name must be None or in {utils.get_supported_gatesets()}."
+        )
+
+    if device_name is not None and device_name not in utils.get_supported_devices():
+        raise ValueError(
+            f"Selected device_name must be None or in {utils.get_supported_devices()}."
+        )
 
     if "grover" in benchmark_name or "qwalk" in benchmark_name:
         if "noancilla" in benchmark_name:
@@ -551,6 +642,7 @@ def get_one_benchmark(
             "tket": {"placement": "lineplacement"},
         }
 
+    compiler = compiler.lower()
     if level == "alg" or level == 0:
         return qc
 
@@ -617,9 +709,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("#### Start generating")
-    # create_benchmarks_from_config(args.file_name)
-    print("#### Start preprocessing")
-    utils.postprocess_oqc_qasm_files()
+    create_benchmarks_from_config(args.file_name)
     print("#### Start zipping")
     # utils.create_zip_file()
     print("#### Generation ended")

@@ -297,8 +297,8 @@ def get_target_device(filename: str):
         return "ibm_washington"
     elif "ibm_montreal" in filename:
         return "ibm_montreal"
-    elif "rigetti_aspen_m1" in filename:
-        return "rigetti_aspen_m1"
+    elif "rigetti_aspen" in filename:
+        return "rigetti_aspen"
     elif "ionq11" in filename:
         return "ionq11"
     elif "oqc_lucy" in filename:
@@ -369,6 +369,9 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
         "path",
     ]
     db_filtered = pd.DataFrame(columns=colnames)
+    db_filtered["indep_flag"] = db_filtered["indep_flag"].astype(bool)
+    db_filtered["nativegates_flag"] = db_filtered["nativegates_flag"].astype(bool)
+    db_filtered["mapped_flag"] = db_filtered["mapped_flag"].astype(bool)
     if len(database) == 0:
         return []
 
@@ -660,8 +663,8 @@ def prepareFormInput(formData: list):
             mapped_devices.append("ibm_montreal")
         if "device_ibm_washington" in k:
             mapped_devices.append("ibm_washington")
-        if "device_rigetti_aspen_m1" in k:
-            mapped_devices.append("rigetti_aspen_m1")
+        if "device_rigetti_aspen" in k:
+            mapped_devices.append("rigetti_aspen")
         if "device_oqc_lucy" in k:
             mapped_devices.append("oqc_lucy")
         if "device_ionq_ionq11" in k:

@@ -113,7 +113,8 @@ def get_indep_level(
         except Exception as e:
             print("TKET Exception Indep: ", e)
             return False
-        FullPeepholeOptimise().apply(qc_tket)
+
+        FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
         if return_qc:
             return qc_tket
         else:
@@ -183,7 +184,7 @@ def get_native_gates_level(
         native_gatenames = get_rebase(gate_set_name, True)
         native_gate_set_rebase = get_rebase(gate_set_name)
         native_gate_set_rebase.apply(qc_tket)
-        FullPeepholeOptimise().apply(qc_tket)
+        FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
         native_gate_set_rebase.apply(qc_tket)
 
         if return_qc:
@@ -272,7 +273,7 @@ def get_mapped_level(
         arch = architecture.Architecture(cmap)
 
         native_gate_set_rebase.apply(qc_tket)
-        FullPeepholeOptimise().apply(qc_tket)
+        FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
         if lineplacement:
             PlacementPass(LinePlacement(arch)).apply(qc_tket)
         else:
