@@ -83,8 +83,8 @@ nonscalable_benchmarks = [
 ]
 
 # Store the pandas dataframe as the database containing all available benchmarks
-database: pd.DataFrame = None
-MQTBENCH_ALL_ZIP: ZipFile = None
+database: pd.DataFrame | None = None
+MQTBENCH_ALL_ZIP: ZipFile | None = None
 
 
 def get_opt_level(filename: str):
@@ -125,7 +125,7 @@ def get_num_qubits(filename: str):
     return int(num)
 
 
-def createDatabase(zip_file: ZipFile):
+def create_database(zip_file: ZipFile):
     """Creates the database based on the provided directories.
 
     Keyword arguments:
@@ -140,7 +140,6 @@ def createDatabase(zip_file: ZipFile):
         if filename.endswith(".qasm"):
             parsed_data = parse_data(filename)
             rows_list.append(parsed_data)
-            continue
 
     colnames = [
         "benchmark",
@@ -245,8 +244,8 @@ def read_mqtbench_all_zip(
             return False
 
     with huge_zip_path.open("rb") as zf:
-        bytes = io.BytesIO(zf.read())
-        MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
+        zip_bytes = io.BytesIO(zf.read())
+        MQTBENCH_ALL_ZIP = ZipFile(zip_bytes, mode="r")
     return True
 
 
@@ -279,6 +278,8 @@ def get_tket_settings(filename: str):
         return "line"
     elif "graph" in filename:
         return "graph"
+    else:
+        raise ValueError("Unknown tket setting: " + filename)
 
 
 def get_gate_set(filename: str):
@@ -290,6 +291,8 @@ def get_gate_set(filename: str):
         return "ibm"
     elif "rigetti" in filename:
         return "rigetti"
+    else:
+        raise ValueError("Unknown gate set: " + filename)
 
 
 def get_target_device(filename: str):
@@ -303,13 +306,17 @@ def get_target_device(filename: str):
         return "ionq11"
     elif "oqc_lucy" in filename:
         return "oqc_lucy"
+    else:
+        raise ValueError("Unknown target device: " + filename)
 
 
 def get_compiler_and_settings(filename: str):
     if "qiskit" in filename:
-        return ("qiskit", get_opt_level(filename))
+        return "qiskit", get_opt_level(filename)
     elif "tket" in filename:
-        return ("tket", get_tket_settings(filename))
+        return "tket", get_tket_settings(filename)
+    else:
+        raise ValueError("Unknown compiler: " + filename)
 
 
 def parse_data(filename: str):
@@ -346,7 +353,7 @@ def parse_data(filename: str):
     return parsed_data
 
 
-def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
+def filter_database(filter_criteria: tuple, database: pd.DataFrame):
     """Filters the database according to the filter criteria.
 
     Keyword arguments:
@@ -389,19 +396,17 @@ def filterDatabase(filterCriteria: tuple, database: pd.DataFrame):
             (mapped_qiskit_opt_lvls, mapped_tket_placements),
             mapped_devices,
         ),
-    ) = filterCriteria
+    ) = filter_criteria
 
     selected_scalable_benchmarks = []
     selected_nonscalable_benchmarks = []
 
     for identifier in indices_benchmarks:
-        if int(identifier) > 0 and int(identifier) <= len(benchmarks):
+        if 0 < int(identifier) <= len(benchmarks):
             name = benchmarks[int(identifier) - 1]["filename"]
             selected_scalable_benchmarks.append(name)
 
-        elif int(identifier) > 0 and int(identifier) <= len(benchmarks) + len(
-            nonscalable_benchmarks
-        ):
+        elif 0 < int(identifier) <= len(benchmarks) + len(nonscalable_benchmarks):
             name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)][
                 "filename"
             ]
@@ -524,16 +529,16 @@ def generate_zip_ephemeral_chunks(
     paths: list[Path] = [Path(name) for name in filenames]
 
     with ZipFile(fileobj, mode="w") as zf:
-        for individualFile in paths:
+        for individual_file in paths:
             # zf.write(
-            #     individualFile,
-            #     arcname=individualFile.name,
+            #     individual_file,
+            #     arcname=individual_file.name,
             #     compress_type=ZIP_DEFLATED,
             #     compresslevel=1
             # )
             zf.writestr(
-                individualFile.name,
-                data=MQTBENCH_ALL_ZIP.read(individualFile.name),
+                individual_file.name,
+                data=MQTBENCH_ALL_ZIP.read(individual_file.name),
                 compress_type=ZIP_DEFLATED,
                 compresslevel=3,
             )
@@ -557,7 +562,7 @@ def get_selected_file_paths(prepared_data: tuple):
     """
 
     if prepared_data:
-        file_paths = filterDatabase(prepared_data, database)
+        file_paths = filter_database(prepared_data, database)
         return file_paths
     else:
         return False
@@ -570,7 +575,7 @@ def init_database():
     assert MQTBENCH_ALL_ZIP is not None
 
     print("Initiating database...")
-    database = createDatabase(MQTBENCH_ALL_ZIP)
+    database = create_database(MQTBENCH_ALL_ZIP)
     print(f"... done: {len(database)} benchmarks.")
 
     if not database.empty:
@@ -580,7 +585,7 @@ def init_database():
         return False
 
 
-def prepareFormInput(formData: list):
+def prepare_form_input(form_data: dict):
     """Formats the formData extracted from the user's inputs."""
 
     min_qubits = -1
@@ -599,7 +604,7 @@ def prepareFormInput(formData: list):
 
     pat = re.compile(r"_\d+")
     num_benchmarks = []
-    for k, v in formData.items():
+    for k, v in form_data.items():
         m = pat.search(k)
         if m:
             num = m.group()[1:]
