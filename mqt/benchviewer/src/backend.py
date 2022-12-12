@@ -279,7 +279,7 @@ def get_tket_settings(filename: str):
     elif "graph" in filename:
         return "graph"
     else:
-        raise ValueError("Unknown tket setting: " + filename)
+        return None
 
 
 def get_gate_set(filename: str):
@@ -302,7 +302,7 @@ def get_target_device(filename: str):
         return "ibm_montreal"
     elif "rigetti_aspen" in filename:
         return "rigetti_aspen"
-    elif "ionq" in filename:
+    elif "ionq11" in filename:
         return "ionq11"
     elif "oqc_lucy" in filename:
         return "oqc_lucy"
@@ -334,8 +334,14 @@ def parse_data(filename: str):
     nativegates_flag = "nativegates" in filename
     mapped_flag = "mapped" in filename
     compiler, compiler_settings = get_compiler_and_settings(filename)
-    gate_set = get_gate_set(filename)
-    target_device = get_target_device(filename)
+    if nativegates_flag or mapped_flag:
+        gate_set = get_gate_set(filename)
+    else:
+        gate_set = None
+    if mapped_flag:
+        target_device = get_target_device(filename)
+    else:
+        target_device = None
 
     path = os.path.join(filename)
     parsed_data = [
