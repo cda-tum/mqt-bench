@@ -369,6 +369,7 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
 
     except Exception as e:
         print(ERROR_MSG, benchmark, num_qubits, e)
+        raise e from None
 
 
 def create_shor_qc(choice: str):
@@ -686,6 +687,8 @@ def get_benchmark(
                 False,
                 True,
             )
+
+    raise ValueError("Invalid level specified.")
 
 
 if __name__ == "__main__":
