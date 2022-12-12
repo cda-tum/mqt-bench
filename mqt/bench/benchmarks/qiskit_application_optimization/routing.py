@@ -96,7 +96,7 @@ class QuantumOptimizer:
                 + c
             )
             cost = fun(x_sol)
-        except BaseException:
+        except Exception:
             cost = 0
 
         return Q, g, c, cost
