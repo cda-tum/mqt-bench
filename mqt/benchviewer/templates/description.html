@@ -74,19 +74,19 @@
       <p>Benchmarks are provided on four different abstraction levels:</p>
       <ul>
         <li>
-          <i>Algorithmic Level</i>: Circuits are described in a textbook-like
+          <em>Algorithmic Level</em>: Circuits are described in a textbook-like
           fashion using high-level constructs.
         </li>
         <li>
-          <i>Target-Independent Level</i>: Circuits are unfolded and unrolled
+          <em>Target-Independent Level</em>: Circuits are unfolded and unrolled
           representations of the circuits from the algorithmic level.
         </li>
         <li>
-          <i>Target-dependent Native-Gates Level</i>: Circuits are synthesized
+          <em>Target-dependent Native-Gates Level</em>: Circuits are synthesized
           to a particular native gate-set.
         </li>
         <li>
-          <i>Target-dependent Mapped Level</i>: Circuits are mapped to a
+          <em>Target-dependent Mapped Level</em>: Circuits are mapped to a
           particular architecture.
         </li>
       </ul>
@@ -94,11 +94,11 @@
       <ul>
         <li>
           Until openQASM 3.0 is widely supported, all circuits (except those on
-          the algorithmic level) are provided as <i>.qasm</i> files following
+          the algorithmic level) are provided as <em>.qasm</em> files following
           the openQASM 2.0 standard. Circuits on the algorithmic level can
           directly be generated (as IBM Qiskit QuantumCircuit objects) using the
-          <i>mqt.bench</i> python package. Instructions on how to use the
-          package are included in the downloaded <i>.zip</i> file whenever an
+          <em>mqt.bench</em> python package. Instructions on how to use the
+          package are included in the downloaded <em>.zip</em> file whenever an
           algorithmic level circuit is requested. More details on openQASM 2.0
           can be found <a href="https://arxiv.org/abs/1707.03429">here</a>, and
           on openQASM 3.0 <a href="https://arxiv.org/abs/2104.14722">here</a>.
@@ -114,7 +114,7 @@
           available only for instances with up to 127 qubits (80 qubits).
         </li>
         <li>
-          Since the <i>.zip</i> file may be composed of numerous files
+          Since the <em>.zip</em> file may be composed of numerous files
           (currently, we offer more than 30.000 benchmark circuits), the
           following naming convention is used for the respective files:
         </li>
@@ -123,6 +123,7 @@
 
     <div class="container">
       <table class="table-sm">
+          <caption>Level Descriptions</caption>
         <thead>
           <tr>
             <th scope="col" style="width: 15%">Level</th>
@@ -134,13 +135,13 @@
           <tr>
             <td style="vertical-align: top">Algorithmic Level</td>
             <td style="vertical-align: top">
-              For this level, dedicated <i>.qasm</i> files cannot be provided
+              For this level, dedicated <em>.qasm</em> files cannot be provided
               yet, since openQASM 2.0 supports only a set of quantum gates.
               Thus, we provide those benchmarks using our pypi package which is
-              accessible via <i>pip</i>.
+              accessible via <em>pip</em>.
             </td>
             <td style="vertical-align: top">
-              Python <i>Qiskit::QuantumCircuit</i> Object
+              Python <em>Qiskit::QuantumCircuit</em> Object
             </td>
           </tr>
           <tr>
