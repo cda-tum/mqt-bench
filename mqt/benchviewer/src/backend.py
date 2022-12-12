@@ -302,7 +302,7 @@ def get_target_device(filename: str):
         return "ibm_montreal"
     elif "rigetti_aspen" in filename:
         return "rigetti_aspen"
-    elif "ionq11" in filename:
+    elif "ionq" in filename:
         return "ionq11"
     elif "oqc_lucy" in filename:
         return "oqc_lucy"
