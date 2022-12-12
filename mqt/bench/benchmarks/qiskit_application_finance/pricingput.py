@@ -14,9 +14,6 @@ def create_circuit(num_uncertainty_qubits: int = 5):
     Keyword arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
-
-    num_uncertainty_qubits = num_uncertainty_qubits
-
     # parameters for considered random distribution
     s = 2.0  # initial spot price
     vol = 0.4  # volatility of 40%
