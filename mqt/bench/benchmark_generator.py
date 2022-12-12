@@ -386,6 +386,7 @@ def create_shor_qc(choice: str):
 
     except Exception as e:
         print(ERROR_MSG, "create_shor_benchmarks: ", choice, e)
+        raise e from None
 
 
 def create_hhl_qc(index: int):
@@ -397,6 +398,7 @@ def create_hhl_qc(index: int):
 
     except Exception as e:
         print(ERROR_MSG, "create_hhl_benchmarks", index, e)
+        raise e from None
 
 
 def create_routing_qc(nodes: int):
@@ -407,6 +409,7 @@ def create_routing_qc(nodes: int):
 
     except Exception as e:
         print(ERROR_MSG, "create_routing_benchmarks", nodes, e)
+        raise e from None
 
 
 def create_tsp_qc(nodes: int):
@@ -417,6 +420,7 @@ def create_tsp_qc(nodes: int):
 
     except Exception as e:
         print(ERROR_MSG, "create_tsp_benchmarks", nodes, e)
+        raise e from None
 
 
 def create_groundstate_qc(choice: str):
@@ -429,6 +433,7 @@ def create_groundstate_qc(choice: str):
 
     except Exception as e:
         print(ERROR_MSG, "create_groundstate_benchmarks", choice, e)
+        raise e from None
 
 
 def create_pricingcall_qc(num_uncertainty: int):
@@ -440,6 +445,7 @@ def create_pricingcall_qc(num_uncertainty: int):
 
     except Exception as e:
         print(ERROR_MSG, "create_pricingcall_benchmarks", num_uncertainty, e)
+        raise e from None
 
 
 def create_pricingput_qc(num_uncertainty: int):
@@ -451,6 +457,7 @@ def create_pricingput_qc(num_uncertainty: int):
 
     except Exception as e:
         print(ERROR_MSG, "create_pricingput_benchmarks", num_uncertainty, e)
+        raise e from None
 
 
 def get_one_benchmark(
