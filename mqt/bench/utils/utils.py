@@ -116,10 +116,13 @@ class BernoulliQ(QuantumCircuit):
         self._theta_p = 2 * np.arcsin(np.sqrt(probability))
         self.ry(2 * self._theta_p, 0)
 
-    def power(self, k):
+    def __eq__(self, other):
+        return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
+
+    def power(self, power: float, matrix_power: bool = True):
         # implement the efficient power of Q
         q_k = QuantumCircuit(1)
-        q_k.ry(2 * k * self._theta_p, 0)
+        q_k.ry(2 * power * self._theta_p, 0)
         return q_k
 
 
