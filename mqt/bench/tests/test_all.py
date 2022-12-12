@@ -77,7 +77,7 @@ def test_configure_begin():
     ],
 )
 def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
-    if benchmark == grover or benchmark == qwalk:
+    if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
@@ -122,7 +122,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
-    if benchmark == grover or benchmark == qwalk:
+    if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
