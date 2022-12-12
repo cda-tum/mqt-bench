@@ -254,10 +254,7 @@ def generate_target_indep_level_circuit(
     if res_indep_tket:
         num_generated_circuits += 1
 
-    if num_generated_circuits == 0:
-        return False
-    else:
-        return True
+    return num_generated_circuits != 0
 
 
 def generate_target_dep_level_circuit(
@@ -342,10 +339,7 @@ def generate_target_dep_level_circuit(
                         continue
                     else:
                         num_generated_benchmarks += 1
-    if num_generated_benchmarks == 0:
-        return False
-    else:
-        return True
+    return num_generated_benchmarks != 0
 
 
 ERROR_MSG = "\n Problem occurred in outer loop: "

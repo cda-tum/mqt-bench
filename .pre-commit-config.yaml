@@ -48,13 +48,13 @@ repos:
     rev: "v3.3.0"
     hooks:
       - id: pyupgrade
-        args: ["--py37-plus"]
+        args: ["--py38-plus"]
 
   # Run code formatting with Black
   - repo: https://github.com/psf/black
     rev: "22.10.0" # Keep in sync with blacken-docs
     hooks:
-      - id: black
+      - id: black-jupyter
 
   # Also run Black on examples in the documentation
   - repo: https://github.com/asottile/blacken-docs
@@ -82,7 +82,13 @@ repos:
     rev: "6.0.0"
     hooks:
       - id: flake8
-        additional_dependencies: [flake8-bugbear]
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-comprehensions
+          - flake8-future-annotations
+          - flake8-new-union-types
+          - flake8-simplify
+          - flake8-2020
 
   # Check for spelling
   - repo: https://github.com/codespell-project/codespell
