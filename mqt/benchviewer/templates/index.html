@@ -669,7 +669,7 @@
       }
 
       function get_num_benchs() {
-          form = document.getElementById("benchmark_form")
+          const form = document.getElementById("benchmark_form");
           const formData = new FormData(form);
           fetch('./get_num_benchmarks', {
               method: 'POST',
