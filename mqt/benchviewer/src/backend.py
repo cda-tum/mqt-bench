@@ -580,7 +580,7 @@ def init_database():
         return False
 
 
-def prepareFormInput(formData: list):
+def prepareFormInput(formData: dict):
     """Formats the formData extracted from the user's inputs."""
 
     min_qubits = -1
