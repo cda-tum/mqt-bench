@@ -225,8 +225,6 @@ def generate_benchmark(benchmark):
                 if not res:
                     break
 
-    return
-
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 
@@ -353,6 +351,9 @@ def generate_target_dep_level_circuit(
         return True
 
 
+ERROR_MSG = "\n Problem occurred in outer loop: "
+
+
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
     try:
@@ -370,7 +371,7 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
         return qc, n, file_precheck
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", benchmark, num_qubits, e)
+        print(ERROR_MSG, benchmark, num_qubits, e)
 
 
 def create_shor_qc(choice: str):
@@ -387,9 +388,7 @@ def create_shor_qc(choice: str):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ", "create_shor_benchmarks: ", choice, e
-        )
+        print(ERROR_MSG, "create_shor_benchmarks: ", choice, e)
 
 
 def create_hhl_qc(index: int):
@@ -400,7 +399,7 @@ def create_hhl_qc(index: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", "create_hhl_benchmarks", index, e)
+        print(ERROR_MSG, "create_hhl_benchmarks", index, e)
 
 
 def create_routing_qc(nodes: int):
@@ -410,9 +409,7 @@ def create_routing_qc(nodes: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ", "create_routing_benchmarks", nodes, e
-        )
+        print(ERROR_MSG, "create_routing_benchmarks", nodes, e)
 
 
 def create_tsp_qc(nodes: int):
@@ -422,7 +419,7 @@ def create_tsp_qc(nodes: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", "create_tsp_benchmarks", nodes, e)
+        print(ERROR_MSG, "create_tsp_benchmarks", nodes, e)
 
 
 def create_groundstate_qc(choice: str):
@@ -434,12 +431,7 @@ def create_groundstate_qc(choice: str):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_groundstate_benchmarks",
-            choice,
-            e,
-        )
+        print(ERROR_MSG, "create_groundstate_benchmarks", choice, e)
 
 
 def create_pricingcall_qc(num_uncertainty: int):
@@ -450,12 +442,7 @@ def create_pricingcall_qc(num_uncertainty: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_pricingcall_benchmarks",
-            num_uncertainty,
-            e,
-        )
+        print(ERROR_MSG, "create_pricingcall_benchmarks", num_uncertainty, e)
 
 
 def create_pricingput_qc(num_uncertainty: int):
@@ -466,12 +453,7 @@ def create_pricingput_qc(num_uncertainty: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_pricingput_benchmarks",
-            num_uncertainty,
-            e,
-        )
+        print(ERROR_MSG, "create_pricingput_benchmarks", num_uncertainty, e)
 
 
 def get_one_benchmark(
