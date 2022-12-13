@@ -230,7 +230,7 @@ def test_prepareFormInput():
         ),
     )
 
-    assert backend.prepareFormInput(form_data) == expected_res
+    assert backend.prepare_form_input(form_data) == expected_res
 
 
 def test_read_mqtbench_all_zip():
@@ -247,7 +247,7 @@ def test_create_database():
         bytes = io.BytesIO(zf.read())
         MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
 
-    database = backend.createDatabase(MQTBENCH_ALL_ZIP)
+    database = backend.create_database(MQTBENCH_ALL_ZIP)
     assert len(database) > 0
     backend.database = database
 

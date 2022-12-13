@@ -63,7 +63,9 @@ def download_pre_gen_zip():
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         app.logger.info("###### Start ######")
         app.logger.info("Timestamp: %s", timestamp)
-        app.logger.info("Headers: %s", request.headers)
+        headers = str(request.headers)
+        headers = headers.replace("\r\n", "").replace("\n", "")
+        app.logger.info("Headers: %s", headers)
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
@@ -81,14 +83,16 @@ def download_data():
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
-        prepared_data = backend.prepareFormInput(data)
+        prepared_data = backend.prepare_form_input(data)
         file_paths = backend.get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
         if ACTIVATE_LOGGING:
             app.logger.info("###### Start ######")
             app.logger.info("Timestamp: %s", timestamp)
-            app.logger.info("Headers: %s", request.headers)
+            headers = str(request.headers)
+            headers = headers.replace("\r\n", "").replace("\n", "")
+            app.logger.info("Headers: %s", headers)
             app.logger.info("Prepared_data: %s", prepared_data)
             app.logger.info("Download started: %s", len(file_paths))
             app.logger.info("###### End ######")
@@ -140,7 +144,7 @@ def get_num_benchmarks():
 
     if request.method == "POST":
         data = request.form
-        prepared_data = backend.prepareFormInput(data)
+        prepared_data = backend.prepare_form_input(data)
         file_paths = backend.get_selected_file_paths(prepared_data)
         num = len(file_paths)
         data = {"num_selected": num}

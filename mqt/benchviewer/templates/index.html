@@ -125,9 +125,9 @@
           <div class="col-md-6">
             <h6 style="margin-bottom: 0px">Scalable Benchmarks:</h6>
             <p class="text-justify" style="margin: 0px">
-              <i>
+              <em>
                 The number of qubits for the following benchmarks is adjustable.
-              </i>
+              </em>
             </p>
 
             {% for benchmark in benchmarks %}
@@ -175,9 +175,9 @@
           <div class="col-md-6">
             <h6 style="margin-bottom: 0px">Non-Scalable Benchmarks:</h6>
             <p class="text-justify" style="margin: 0px">
-              <i
-                >The number of qubits for the following benchmarks is fixed.
-              </i>
+              <em>
+                The number of qubits for the following benchmarks is fixed.
+              </em>
             </p>
 
             {% for nonscalable_benchmark in nonscalable_benchmarks %}
@@ -393,7 +393,6 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    value="true"
                     id="device_ibm_washington"
                     value="true"
                     name="device_ibm_washington"
@@ -406,7 +405,6 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    value="true"
                     id="device_ibm_montreal"
                     value="true"
                     name="device_ibm_montreal"
@@ -419,7 +417,6 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    value="true"
                     id="device_rigetti_aspen_m2"
                     value="true"
                     name="device_rigetti_aspen_m2"
@@ -432,7 +429,6 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    value="true"
                     id="device_oqc_lucy"
                     value="true"
                     name="device_oqc_lucy"
@@ -443,7 +439,6 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    value="true"
                     id="device_ionq_ionq11"
                     value="true"
                     name="device_ionq_ionq11"
@@ -555,10 +550,10 @@
           <div class="same_row" id="num_benchmarks">0</div>
         </div>
         After the download button is clicked, all benchmarks provided as
-        <i>.qasm</i> files are downloaded as a <i>.zip</i> archive. Details of
-        the <a href="description" target="_blank">file format</a> are provided.
-        Alternatively, a pre-generated archive with <i>all</i> benchmarks can be
-        <a href="get_pre_gen">downloaded</a>.
+        <em>.qasm</em> files are downloaded as a <em>.zip</em> archive. Details
+        of the <a href="description" target="_blank">file format</a> are
+        provided. Alternatively, a pre-generated archive with
+        <em>all</em> benchmarks can be <a href="get_pre_gen">downloaded</a>.
 
         <div class="text-center">
           <button
@@ -674,7 +669,7 @@
       }
 
       function get_num_benchs() {
-          form = document.getElementById("benchmark_form")
+          const form = document.getElementById("benchmark_form");
           const formData = new FormData(form);
           fetch('./get_num_benchmarks', {
               method: 'POST',

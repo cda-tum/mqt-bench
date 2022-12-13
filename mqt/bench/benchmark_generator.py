@@ -225,11 +225,8 @@ def generate_benchmark(benchmark):
                 if not res:
                     break
 
-    return
-
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
-
     success_generated_circuits_t_indep = generate_target_indep_level_circuit(
         qc, num_qubits, file_precheck
     )
@@ -244,7 +241,6 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
 def generate_target_indep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
-
     num_generated_circuits = 0
     res_indep_qiskit = benchmark_generation_watcher(
         qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck]
@@ -264,7 +260,6 @@ def generate_target_indep_level_circuit(
 def generate_target_dep_level_circuit(
     qc: QuantumCircuit, num_qubits: int, file_precheck
 ):
-
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
         ("rigetti", [("rigetti_aspen_m2", 80)]),
@@ -347,6 +342,9 @@ def generate_target_dep_level_circuit(
     return num_generated_benchmarks != 0
 
 
+ERROR_MSG = "\n Problem occurred in outer loop: "
+
+
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
     try:
@@ -364,7 +362,8 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
         return qc, n, file_precheck
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", benchmark, num_qubits, e)
+        print(ERROR_MSG, benchmark, num_qubits, e)
+        raise e from None
 
 
 def create_shor_qc(choice: str):
@@ -381,9 +380,8 @@ def create_shor_qc(choice: str):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ", "create_shor_benchmarks: ", choice, e
-        )
+        print(ERROR_MSG, "create_shor_benchmarks: ", choice, e)
+        raise e from None
 
 
 def create_hhl_qc(index: int):
@@ -394,7 +392,8 @@ def create_hhl_qc(index: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", "create_hhl_benchmarks", index, e)
+        print(ERROR_MSG, "create_hhl_benchmarks", index, e)
+        raise e from None
 
 
 def create_routing_qc(nodes: int):
@@ -404,9 +403,8 @@ def create_routing_qc(nodes: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ", "create_routing_benchmarks", nodes, e
-        )
+        print(ERROR_MSG, "create_routing_benchmarks", nodes, e)
+        raise e from None
 
 
 def create_tsp_qc(nodes: int):
@@ -416,7 +414,8 @@ def create_tsp_qc(nodes: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print("\n Problem occurred in outer loop: ", "create_tsp_benchmarks", nodes, e)
+        print(ERROR_MSG, "create_tsp_benchmarks", nodes, e)
+        raise e from None
 
 
 def create_groundstate_qc(choice: str):
@@ -428,12 +427,8 @@ def create_groundstate_qc(choice: str):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_groundstate_benchmarks",
-            choice,
-            e,
-        )
+        print(ERROR_MSG, "create_groundstate_benchmarks", choice, e)
+        raise e from None
 
 
 def create_pricingcall_qc(num_uncertainty: int):
@@ -444,12 +439,8 @@ def create_pricingcall_qc(num_uncertainty: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_pricingcall_benchmarks",
-            num_uncertainty,
-            e,
-        )
+        print(ERROR_MSG, "create_pricingcall_benchmarks", num_uncertainty, e)
+        raise e from None
 
 
 def create_pricingput_qc(num_uncertainty: int):
@@ -460,12 +451,8 @@ def create_pricingput_qc(num_uncertainty: int):
         return qc, qc.num_qubits, False
 
     except Exception as e:
-        print(
-            "\n Problem occurred in outer loop: ",
-            "create_pricingput_benchmarks",
-            num_uncertainty,
-            e,
-        )
+        print(ERROR_MSG, "create_pricingput_benchmarks", num_uncertainty, e)
+        raise e from None
 
 
 def get_one_benchmark(
@@ -517,10 +504,10 @@ def get_benchmark(
     level: str | int,
     circuit_size: int = None,
     benchmark_instance_name: str = None,
-    compiler: str = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] = None,
-    gate_set_name: str = "ibm",
-    device_name: str = "ibm_washington",
+    compiler: str | None = "qiskit",
+    compiler_settings: dict[str, dict[str, any]] | None = None,
+    gate_set_name: str | None = "ibm",
+    device_name: str | None = "ibm_washington",
 ):
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
 
@@ -590,6 +577,10 @@ def get_benchmark(
             anc_mode = "noancilla"
         elif "v-chain" in benchmark_name:
             anc_mode = "v-chain"
+        else:
+            raise ValueError(
+                "Either `noancilla` or `v-chain` must be specified for ancillary mode of Grover and QWalk benchmarks."
+            )
 
         short_name = benchmark_name.split("-")[0]
         lib = importlib.import_module(benchmarks_module_paths_dict[short_name])
@@ -630,43 +621,46 @@ def get_benchmark(
         lib = importlib.import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
+    if level == "alg" or level == 0:
+        return qc
+
+    if compiler is None:
+        raise ValueError("Compiler must be specified for non-algorithmic levels.")
+
+    compiler = compiler.lower()
+
+    if compiler not in utils.get_supported_compilers():
+        raise ValueError(
+            f"Selected compiler must be in {utils.get_supported_compilers()}."
+        )
+
     if compiler_settings is None:
         compiler_settings = {
             "qiskit": {"optimization_level": 1},
             "tket": {"placement": "lineplacement"},
         }
 
-    compiler = compiler.lower()
-    if level == "alg" or level == 0:
-        return qc
-
-    elif level == "indep" or level == 1:
-
+    if level == "indep" or level == 1:
         if compiler == "qiskit":
-            qc_indep = qiskit_helper.get_indep_level(qc, circuit_size, False, True)
+            return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
         elif compiler == "tket":
-            qc_indep = tket_helper.get_indep_level(qc, circuit_size, False, True)
-
-        return qc_indep
+            return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
     elif level == "nativegates" or level == 2:
-
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
-            qc_gates = qiskit_helper.get_native_gates_level(
+            return qiskit_helper.get_native_gates_level(
                 qc, gate_set_name, circuit_size, opt_level, False, True
             )
         elif compiler == "tket":
-            qc_gates = tket_helper.get_native_gates_level(
+            return tket_helper.get_native_gates_level(
                 qc, gate_set_name, circuit_size, False, True
             )
-
-        return qc_gates
 
     elif level == "mapped" or level == 3:
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
-            qc_mapped = qiskit_helper.get_mapped_level(
+            return qiskit_helper.get_mapped_level(
                 qc,
                 gate_set_name,
                 circuit_size,
@@ -678,7 +672,7 @@ def get_benchmark(
         elif compiler == "tket":
             placement = compiler_settings["tket"]["placement"].lower()
             lineplacement = placement == "lineplacement"
-            qc_mapped = tket_helper.get_mapped_level(
+            return tket_helper.get_mapped_level(
                 qc,
                 gate_set_name,
                 circuit_size,
@@ -687,9 +681,8 @@ def get_benchmark(
                 False,
                 True,
             )
-        return qc_mapped
-    else:
-        return print("Level specification was wrong.")
+
+    raise ValueError("Invalid level specified.")
 
 
 if __name__ == "__main__":

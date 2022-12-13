@@ -17,6 +17,8 @@ def get_native_gates(gate_set_name: str):
         return get_ibm_native_gates()
     elif gate_set_name == "rigetti":
         return get_rigetti_native_gates()
+    else:
+        raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
 def get_ibm_native_gates():
