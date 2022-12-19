@@ -52,7 +52,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
-coverage = ["mqt.bench[test]", "coverage[toml]>=6.5"]
+coverage = ["mqt.bench[test]", "pytest-cov[toml]"]
 dev = ["mqt.bench[coverage]"]
 
 [project.scripts]
