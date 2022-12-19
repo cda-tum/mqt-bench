@@ -20,7 +20,7 @@ dynamic = ["version"]
 
 dependencies = [
     "qiskit[all]~=0.39.2",
-    "pytket~=1.9.0",
+    "pytket>=1.9,<1.11",
     "pytket-qiskit",
     "pandas>=1.0.0",
     "flask>=2.0.0",
