@@ -19,7 +19,7 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 
 dependencies = [
-    "qiskit[all]~=0.39.2",
+    "qiskit[all]>=0.39.2,<0.40.0",
     "pytket>=1.9,<1.11",
     "pytket-qiskit",
     "pandas>=1.0.0",
