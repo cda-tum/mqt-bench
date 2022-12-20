@@ -116,7 +116,6 @@ def get_indep_level(
             print("TKET Exception Indep: ", e)
             return False
 
-        FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
         if return_qc:
             return qc_tket
         else:
