@@ -1,9 +1,8 @@
 # Based on: https://zartman.xyz/blog/gh-static-deploy/
 name: Server Deployment
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
   workflow_dispatch:
 
 env:
