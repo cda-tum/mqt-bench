@@ -4,8 +4,8 @@ import io
 import os
 import re
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
