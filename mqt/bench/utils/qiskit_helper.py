@@ -138,7 +138,6 @@ def get_native_gates_level(
         path.isfile(path.join(target_directory, filename_native) + ".qasm")
         and file_precheck
     ):
-
         compiled_without_architecture = transpile(
             qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
         )
@@ -207,7 +206,6 @@ def get_mapped_level(
         path.isfile(path.join(target_directory, target_filename) + ".qasm")
         and file_precheck
     ):
-
         compiled_with_architecture = transpile(
             qc,
             optimization_level=opt_level,

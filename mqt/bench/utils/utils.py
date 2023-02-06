@@ -89,7 +89,6 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
     try:
         from qiskit_optimization.applications import Maxcut
     except Exception:
-
         print("Please install qiskit_optimization.")
         return None
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)

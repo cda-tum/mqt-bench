@@ -563,7 +563,6 @@ def test_get_benchmark(
     gate_set_name,
     device_name,
 ):
-
     qc = get_benchmark(
         benchmark_name,
         level,
