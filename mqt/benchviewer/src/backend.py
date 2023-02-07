@@ -184,7 +184,6 @@ def read_mqtbench_all_zip(
     skip_question: bool = False,
     target_location: str = None,
 ):
-    global MQTBENCH_ALL_ZIP
     huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
     try:
@@ -248,6 +247,7 @@ def read_mqtbench_all_zip(
             print("No suitable benchmarks found.")
             return False
 
+    global MQTBENCH_ALL_ZIP
     with huge_zip_path.open("rb") as zf:
         zip_bytes = io.BytesIO(zf.read())
         MQTBENCH_ALL_ZIP = ZipFile(zip_bytes, mode="r")
