@@ -160,6 +160,29 @@ def create_database(zip_file: ZipFile):
     return database
 
 
+def handle_github_api_request(repo_url: str) -> requests.Response:
+    # If the environment variable GITHUB_TOKEN is set, use it to authenticate to the GitHub API
+    # to increase the rate limit from 60 to 5000 requests per hour per IP address.
+    headers = None
+    if "GITHUB_TOKEN" in os.environ:
+        headers = {"Authorization": f"token {os.environ['GITHUB_TOKEN']}"}
+
+    response = requests.get(
+        f"https://api.github.com/repos/cda-tum/mqtbench/{repo_url}", headers=headers
+    )
+    success_code = 200
+    if response.status_code == success_code:
+        return response
+
+    msg = (
+        f"Request to GitHub API failed with status code {response.status_code}!\n"
+        f"One reasons could be that the limit of 60 API calls per hour and IP address is exceeded.\n"
+        f"If you want to increase the limit, set the environment variable GITHUB_TOKEN to a GitHub personal access token.\n"
+        f"See https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token for more information."
+    )
+    raise RuntimeError(msg)
+
+
 def read_mqtbench_all_zip(
     skip_question: bool = False,
     target_location: str = None,
@@ -185,29 +208,17 @@ def read_mqtbench_all_zip(
         print("No benchmarks found. Querying GitHub...")
 
         version_found = False
-        response = requests.get("https://api.github.com/repos/cda-tum/mqtbench/tags")
         available_versions = []
-        for elem in response.json():
+        for elem in handle_github_api_request("tags").json():
             available_versions.append(elem["name"])
 
         for possible_version in available_versions:
             if version.parse(mqtbench_module_version) >= version.parse(
                 possible_version
             ):
-                url = (
-                    "https://api.github.com/repos/cda-tum/mqtbench/releases/tags/"
-                    + possible_version
-                )
-
-                response = requests.get(url)
-                if not response:
-                    print(
-                        "Suitable benchmarks cannot be downloaded since the GitHub API failed. "
-                        "One reasons could be that the limit of 60 API calls per hour and IP address is exceeded."
-                    )
-                    return False
-
-                response_json = response.json()
+                response_json = handle_github_api_request(
+                    f"releases/tags/{possible_version}"
+                ).json()
                 if "assets" in response_json:
                     assets = response_json["assets"]
                 elif "asset" in response_json:

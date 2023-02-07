@@ -21,6 +21,8 @@ jobs:
         run: pip install -e .[coverage]
       - name: Generate Report
         run: pytest -v --cov=./ --cov-report=xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
