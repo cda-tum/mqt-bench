@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import os
 import re
 import sys
 from pathlib import Path
@@ -164,9 +165,7 @@ def handle_github_api_request(repo_url: str) -> requests.Response:
     if "GITHUB_TOKEN" in os.environ:
         headers = {"Authorization": f"token {os.environ['GITHUB_TOKEN']}"}
 
-    response = requests.get(
-        f"https://api.github.com/repos/cda-tum/mqtbench/{repo_url}", headers=headers
-    )
+    response = requests.get(f"https://api.github.com/repos/cda-tum/mqtbench/{repo_url}", headers=headers)
     success_code = 200
     if response.status_code == success_code:
         return response
@@ -189,9 +188,7 @@ def read_mqtbench_all_zip(
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
     except Exception:
-        print(
-            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
-        )
+        print("'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'.")
         return False
 
     print("Searching for local benchmarks...")
@@ -206,12 +203,8 @@ def read_mqtbench_all_zip(
             available_versions.append(elem["name"])
 
         for possible_version in available_versions:
-            if version.parse(mqtbench_module_version) >= version.parse(
-                possible_version
-            ):
-                response_json = handle_github_api_request(
-                    f"releases/tags/{possible_version}"
-                ).json()
+            if version.parse(mqtbench_module_version) >= version.parse(possible_version):
+                response_json = handle_github_api_request(f"releases/tags/{possible_version}").json()
                 if "assets" in response_json:
                     assets = response_json["assets"]
                 elif "asset" in response_json:
@@ -234,9 +227,7 @@ def read_mqtbench_all_zip(
                                     download_url,
                                 )
                             )
-                            response = input(
-                                "Would you like to downloaded the file? (Y/n)"
-                            )
+                            response = input("Would you like to downloaded the file? (Y/n)")
                         if skip_question or response.lower() == "y" or response == "":
                             handle_downloading_benchmarks(target_location, download_url)
                             break
@@ -404,9 +395,7 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):
             selected_scalable_benchmarks.append(name)
 
         elif 0 < int(identifier) <= len(benchmarks) + len(nonscalable_benchmarks):
-            name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)][
-                "filename"
-            ]
+            name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)]["filename"]
             selected_nonscalable_benchmarks.append(name)
 
     db_tmp = database.loc[
@@ -440,9 +429,7 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):
     if nativegates_tket_compiler:
         for gate_set in native_gatesets:
             db_tmp4 = db_tmp.loc[
-                (db_tmp["nativegates_flag"])
-                & (db_tmp["gate_set"] == gate_set)
-                & (db_tmp["compiler"] == "tket")
+                (db_tmp["nativegates_flag"]) & (db_tmp["gate_set"] == gate_set) & (db_tmp["compiler"] == "tket")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp4])
 

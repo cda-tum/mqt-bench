@@ -59,9 +59,7 @@ def create_benchmarks_from_config(cfg_path: str):
     qasm_output_folder = utils.get_qasm_output_path()
     Path(qasm_output_folder).mkdir(exist_ok=True, parents=True)
 
-    Parallel(n_jobs=-1, verbose=100)(
-        delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"]
-    )
+    Parallel(n_jobs=-1, verbose=100)(delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"])
     return True
 
 
@@ -138,9 +136,7 @@ def generate_benchmark(benchmark):
                     benchmark["max_qubits"],
                     benchmark["stepsize"],
                 ):
-                    res_qc_creation = qc_creation_watcher(
-                        create_scalable_qc, [benchmark, n, anc_mode]
-                    )
+                    res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n, anc_mode])
                     if not res_qc_creation:
                         break
                     res = generate_circuits_on_all_levels(*res_qc_creation)
@@ -193,9 +189,7 @@ def generate_benchmark(benchmark):
                     break
 
         elif benchmark["name"] == "pricingcall":
-            for nodes in range(
-                benchmark["min_uncertainty"], benchmark["max_uncertainty"]
-            ):
+            for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
                 res_qc_creation = qc_creation_watcher(create_pricingcall_qc, [nodes])
                 if not res_qc_creation:
                     break
@@ -204,9 +198,7 @@ def generate_benchmark(benchmark):
                     break
 
         elif benchmark["name"] == "pricingput":
-            for nodes in range(
-                benchmark["min_uncertainty"], benchmark["max_uncertainty"]
-            ):
+            for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
                 res_qc_creation = qc_creation_watcher(create_pricingput_qc, [nodes])
                 if not res_qc_creation:
                     break
@@ -214,12 +206,8 @@ def generate_benchmark(benchmark):
                 if not res:
                     break
         else:
-            for n in range(
-                benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]
-            ):
-                res_qc_creation = qc_creation_watcher(
-                    create_scalable_qc, [benchmark, n]
-                )
+            for n in range(benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]):
+                res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n])
                 if not res_qc_creation:
                     break
                 res = generate_circuits_on_all_levels(*res_qc_creation)
@@ -228,9 +216,7 @@ def generate_benchmark(benchmark):
 
 
 def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
-    success_generated_circuits_t_indep = generate_target_indep_level_circuit(
-        qc, num_qubits, file_precheck
-    )
+    success_generated_circuits_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
 
     if not success_generated_circuits_t_indep:
         return False
@@ -239,28 +225,20 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     return True
 
 
-def generate_target_indep_level_circuit(
-    qc: QuantumCircuit, num_qubits: int, file_precheck
-):
+def generate_target_indep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck):
     num_generated_circuits = 0
-    res_indep_qiskit = benchmark_generation_watcher(
-        qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck]
-    )
+    res_indep_qiskit = benchmark_generation_watcher(qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck])
     if res_indep_qiskit:
         num_generated_circuits += 1
 
-    res_indep_tket = benchmark_generation_watcher(
-        tket_helper.get_indep_level, [qc, num_qubits, file_precheck]
-    )
+    res_indep_tket = benchmark_generation_watcher(tket_helper.get_indep_level, [qc, num_qubits, file_precheck])
     if res_indep_tket:
         num_generated_circuits += 1
 
     return num_generated_circuits != 0
 
 
-def generate_target_dep_level_circuit(
-    qc: QuantumCircuit, num_qubits: int, file_precheck
-):
+def generate_target_dep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck):
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
         ("rigetti", [("rigetti_aspen_m2", 80)]),
@@ -533,21 +511,15 @@ def get_benchmark(
         msg = f"Selected level must be in {utils.get_supported_levels()}."
         raise ValueError(msg)
 
-    if benchmark_name not in ["shor", "groundstate"] and not isinstance(
-        circuit_size, int
-    ):
+    if benchmark_name not in ["shor", "groundstate"] and not isinstance(circuit_size, int):
         msg = "circuit_size must be None or int for this benchmark."
         raise ValueError(msg)
 
-    if benchmark_name in ["shor", "groundstate"] and not isinstance(
-        benchmark_instance_name, str
-    ):
+    if benchmark_name in ["shor", "groundstate"] and not isinstance(benchmark_instance_name, str):
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
-    if benchmark_instance_name is not None and not isinstance(
-        benchmark_instance_name, str
-    ):
+    if benchmark_instance_name is not None and not isinstance(benchmark_instance_name, str):
         msg = "benchmark_instance_name must be None or str."
         raise ValueError(msg)
 
@@ -559,17 +531,12 @@ def get_benchmark(
         msg = "compiler_settings must be None or dict[str, dict[str, any]]."
         raise ValueError(msg)
 
-    if (
-        gate_set_name is not None
-        and gate_set_name not in utils.get_supported_gatesets()
-    ):
+    if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
         msg = f"Selected gate_set_name must be None or in {utils.get_supported_gatesets()}."
         raise ValueError(msg)
 
     if device_name is not None and device_name not in utils.get_supported_devices():
-        msg = (
-            f"Selected device_name must be None or in {utils.get_supported_devices()}."
-        )
+        msg = f"Selected device_name must be None or in {utils.get_supported_devices()}."
         raise ValueError(msg)
 
     if "grover" in benchmark_name or "qwalk" in benchmark_name:
@@ -650,13 +617,9 @@ def get_benchmark(
     if level == "nativegates" or level == native_gates_level:
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
-            return qiskit_helper.get_native_gates_level(
-                qc, gate_set_name, circuit_size, opt_level, False, True
-            )
+            return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
         if compiler == "tket":
-            return tket_helper.get_native_gates_level(
-                qc, gate_set_name, circuit_size, False, True
-            )
+            return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
 
     mapped_level = 3
     if level == "mapped" or level == mapped_level:
@@ -692,9 +655,7 @@ if __name__ == "__main__":
     init_module_paths()
 
     parser = argparse.ArgumentParser(description="Create Configuration")
-    parser.add_argument(
-        "--file-name", type=str, help="optional filename", default="./config.json"
-    )
+    parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
 
     args = parser.parse_args()
 

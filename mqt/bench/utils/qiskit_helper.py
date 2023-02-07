@@ -72,9 +72,7 @@ def get_indep_level(
     if file_precheck and path.is_file():
         return True
     openqasm_gates = utils.get_openqasm_gates()
-    target_independent = transpile(
-        qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
-    )
+    target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10)
 
     if return_qc:
         return target_independent
@@ -115,13 +113,7 @@ def get_native_gates_level(
     gate_set = get_native_gates(gate_set_name)
     if not target_filename:
         filename_native = (
-            qc.name
-            + "_nativegates_"
-            + gate_set_name
-            + "_qiskit_opt"
-            + str(opt_level)
-            + "_"
-            + str(num_qubits)
+            qc.name + "_nativegates_" + gate_set_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         )
         target_directory = utils.get_qasm_output_path()
     else:
@@ -177,15 +169,7 @@ def get_mapped_level(
     c_map = utils.get_cmap_from_devicename(device_name)
 
     if not target_filename:
-        filename_mapped = (
-            qc.name
-            + "_mapped_"
-            + device_name
-            + "_qiskit_opt"
-            + str(opt_level)
-            + "_"
-            + str(num_qubits)
-        )
+        filename_mapped = qc.name + "_mapped_" + device_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         target_directory = utils.get_qasm_output_path()
     else:
         filename_mapped = target_filename

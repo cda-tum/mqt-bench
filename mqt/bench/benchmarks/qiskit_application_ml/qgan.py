@@ -43,9 +43,7 @@ def create_circuit(num_qubits: int):
     batch_size = 10
 
     # Initialize qGAN
-    qgan = QGAN(
-        real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None
-    )
+    qgan = QGAN(real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None)
     qgan.seed = 10
     # Set quantum instance to run the quantum generator
     quantum_instance = QuantumInstance(
@@ -59,9 +57,7 @@ def create_circuit(num_qubits: int):
     init_dist = UniformDistribution(sum(num_qubits))
 
     # Set the ansatz circuit
-    ansatz = TwoLocal(
-        int(np.sum(num_qubits)), "ry", "cz", reps=1
-    )  # entanglement=entangler_map,
+    ansatz = TwoLocal(int(np.sum(num_qubits)), "ry", "cz", reps=1)  # entanglement=entangler_map,
 
     # You can increase the number of training epochs and use random initial parameters.
     init_params = np.random.rand(ansatz.num_parameters_settable) * 2 * np.pi
@@ -72,9 +68,7 @@ def create_circuit(num_qubits: int):
     # Set quantum generator
     qgan.set_generator(generator_circuit=g_circuit, generator_init_params=init_params)
     # The parameters have an order issue that following is a temp. workaround
-    qgan._generator._free_parameters = sorted(
-        g_circuit.parameters, key=lambda p: p.name
-    )
+    qgan._generator._free_parameters = sorted(g_circuit.parameters, key=lambda p: p.name)
     # Set classical discriminator neural network
     discriminator = NumPyDiscriminator(len(num_qubits))
     qgan.set_discriminator(discriminator)

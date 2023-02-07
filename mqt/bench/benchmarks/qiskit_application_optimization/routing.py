@@ -75,11 +75,7 @@ class QuantumOptimizer:
         Q = A * (np.kron(Id_n, Im_n_1) + np.dot(v.T, v))
 
         # g defines the contribution from the individual variables
-        g = (
-            w
-            - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T)
-            - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
-        )
+        g = w - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T) - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
 
         # c is the constant offset
         c = 2 * A * (n - 1) + 2 * A * (K**2)
@@ -89,11 +85,7 @@ class QuantumOptimizer:
 
             # Evaluates the cost distance from a binary representation of a path
             def fun(x):
-                return (
-                    np.dot(np.around(x), np.dot(Q, np.around(x)))
-                    + np.dot(g, np.around(x))
-                    + c
-                )
+                return np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c
 
             cost = fun(x_sol)
         except Exception:

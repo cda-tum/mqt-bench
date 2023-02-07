@@ -27,9 +27,7 @@ def create_circuit(
     if ancillary_mode == "recursion" and n > ancillary_cutoff_recursion:
         n_anc = 1
     ancillary_cutoff_vchain = 2
-    if (
-        ancillary_mode == "v-chain" or ancillary_mode == "v-chain-dirty"
-    ) and n > ancillary_cutoff_vchain:
+    if (ancillary_mode == "v-chain" or ancillary_mode == "v-chain-dirty") and n > ancillary_cutoff_vchain:
         n_anc = n - 2
 
     if n_anc == 0:

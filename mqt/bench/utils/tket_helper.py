@@ -33,17 +33,13 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
 def get_ionq_rebase(get_gatenames: bool = False):
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
-    return auto_rebase_pass(
-        {OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure}
-    )
+    return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
 
 
 def get_oqc_rebase(get_gatenames: bool = False):
     if get_gatenames:
         return ["rz", "sx", "x", "ecr", "measure"]
-    return auto_rebase_pass(
-        {OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure}
-    )
+    return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure})
 
 
 def get_rigetti_rebase(get_gatenames: bool = False):
@@ -137,9 +133,7 @@ def get_native_gates_level(
     """
 
     if not target_filename:
-        filename_native = (
-            qc.name + "_nativegates_" + gate_set_name + "_tket_" + str(num_qubits)
-        )
+        filename_native = qc.name + "_nativegates_" + gate_set_name + "_tket_" + str(num_qubits)
         target_directory = utils.get_qasm_output_path()
     else:
         filename_native = target_filename
@@ -209,15 +203,7 @@ def get_mapped_level(
     placement = "line" if lineplacement else "graph"
 
     if not target_filename:
-        filename_mapped = (
-            qc.name
-            + "_mapped_"
-            + device_name
-            + "_tket_"
-            + placement
-            + "_"
-            + str(num_qubits)
-        )
+        filename_mapped = qc.name + "_mapped_" + device_name + "_tket_" + placement + "_" + str(num_qubits)
         target_directory = utils.get_qasm_output_path()
     else:
         filename_mapped = target_filename
@@ -247,20 +233,13 @@ def get_mapped_level(
 
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
-    if lineplacement:
-        placer = LinePlacement(arch)
-    else:
-        placer = GraphPlacement(arch)
+    placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
     PlacementPass(placer).apply(qc_tket)
     RoutingPass(arch).apply(qc_tket)
-    FullPeepholeOptimise(target_2qb_gate=OpType.TK2, allow_swaps=False).apply(
-        qc_tket
-    )
+    FullPeepholeOptimise(target_2qb_gate=OpType.TK2, allow_swaps=False).apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
     if not qc_tket.valid_connectivity(arch, directed=True):
-        CXMappingPass(
-            arc=arch, placer=placer, directed_cx=True, delay_measures=False
-        ).apply(qc_tket)
+        CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
     if return_qc:
         return qc_tket

@@ -36,9 +36,7 @@ def init(
     ACTIVATE_LOGGING = activate_logging
 
     if ACTIVATE_LOGGING:
-        logging.basicConfig(
-            filename="/local/mqtbench/downloads.log", level=logging.INFO
-        )
+        logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
     return True
 
@@ -101,11 +99,7 @@ def download_data():
             return app.response_class(
                 backend.generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
-                headers={
-                    "Content-Disposition": 'attachment; filename="MQTBench_{}.zip"'.format(
-                        timestamp
-                    )
-                },
+                headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
                 direct_passthrough=True,
             )
 

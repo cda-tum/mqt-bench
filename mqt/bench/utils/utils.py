@@ -136,9 +136,7 @@ def get_estimation_problem():
     return EstimationProblem(
         state_preparation=a,  # A operator
         grover_operator=q,  # Q operator
-        objective_qubits=[
-            0
-        ],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
+        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
     )
 
 
@@ -257,26 +255,19 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    if target_directory:
-        qasm_output_folder = target_directory
-    else:
-        qasm_output_folder = get_qasm_output_path()
+    qasm_output_folder = target_directory if target_directory else get_qasm_output_path()
 
     file = Path(qasm_output_folder, filename + ".qasm")
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
     except Exception:
-        print(
-            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
-        )
+        print("'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'.")
         return False
 
     with file.open("w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
-        f.write(
-            "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/\n"
-        )
+        f.write("// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/\n")
         f.write("// MQT Bench version: " + mqtbench_module_version + "\n")
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")

@@ -66,6 +66,9 @@ include = ["mqt.*"]
 
 [tool.setuptools_scm]
 
+[tool.black]
+line-length = 120
+
 [tool.ruff]
 select = [
     "E", "F", "W", # flake8
@@ -117,3 +120,5 @@ exclude = [
     "node_modules",
     "venv",
 ]
+
+line-length = 120

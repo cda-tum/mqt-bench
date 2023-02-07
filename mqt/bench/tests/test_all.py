@@ -254,9 +254,7 @@ def test_unidirectional_coupling_map():
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    assert qc.valid_connectivity(
-        arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True
-    )
+    assert qc.valid_connectivity(arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -607,10 +605,7 @@ def test_get_benchmark(
             qc = tk_to_qiskit(qc)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
-            assert (
-                gate_type in qiskit_helper.get_native_gates(gate_set_name)
-                or gate_type == "barrier"
-            )
+            assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
 def test_configure_end():

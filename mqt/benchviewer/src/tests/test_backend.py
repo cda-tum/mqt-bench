@@ -234,9 +234,7 @@ def test_prepareFormInput():
 
 def test_read_mqtbench_all_zip():
     target_location = "mqt/benchviewer/static/files"
-    assert backend.read_mqtbench_all_zip(
-        skip_question=True, target_location=target_location
-    )
+    assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
 def test_create_database():
