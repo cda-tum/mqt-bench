@@ -215,7 +215,6 @@ def generate_benchmark(benchmark):
             for n in range(
                 benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]
             ):
-
                 res_qc_creation = qc_creation_watcher(
                     create_scalable_qc, [benchmark, n]
                 )

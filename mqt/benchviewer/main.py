@@ -141,7 +141,6 @@ def benchmark_description():
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
 def get_num_benchmarks():
-
     if request.method == "POST":
         data = request.form
         prepared_data = backend.prepare_form_input(data)
@@ -161,7 +160,6 @@ def start_server(
     target_location: str = None,
     debug_flag: bool = False,
 ):
-
     if not target_location:
         if sys.version_info < (3, 10, 0):
             import importlib_resources as resources

@@ -102,7 +102,6 @@ def get_indep_level(
         path.isfile(path.join(target_directory, filename_indep) + ".qasm")
         and file_precheck
     ):
-
         try:
             gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
             qc = transpile(
@@ -119,7 +118,6 @@ def get_indep_level(
         if return_qc:
             return qc_tket
         else:
-
             res = utils.save_as_qasm(
                 circuit_to_qasm_str(qc_tket),
                 filename_indep,
@@ -167,7 +165,6 @@ def get_native_gates_level(
         path.isfile(path.join(target_directory, filename_native) + ".qasm")
         and file_precheck
     ):
-
         try:
             gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
             qc = transpile(

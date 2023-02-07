@@ -33,13 +33,11 @@ class Initializer:
 
 class QuantumOptimizer:
     def __init__(self, instance, n, K):
-
         self.instance = instance
         self.n = n
         self.K = K
 
     def binary_representation(self, x_sol=0):
-
         instance = self.instance
         n = self.n
         K = self.K
@@ -65,7 +63,6 @@ class QuantumOptimizer:
         for ii in range(n):
             count = ii - 1
             for jj in range(n * (n - 1)):
-
                 if jj // (n - 1) == ii:
                     count = ii
 
@@ -111,7 +108,6 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp):
-
         algorithm_globals.random_seed = 10
 
         ansatz = RealAmplitudes(self.n)
