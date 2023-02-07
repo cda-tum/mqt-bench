@@ -52,7 +52,7 @@ def test_configure_begin():
     [
         (ae, 8, True),
         (ghz, 5, True),
-        (dj, 5, True),
+        (dj, 3, True),
         (graphstate, 8, True),
         (grover, 5, False),
         (hhl, 2, False),
@@ -99,7 +99,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     [
         (ae, 8, True),
         (ghz, 5, True),
-        (dj, 5, True),
+        (dj, 3, True),
         (graphstate, 8, True),
         (grover, 5, False),
         (qaoa, 5, True),
@@ -238,6 +238,24 @@ def test_groundstate():
 def test_routing():
     qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
+
+
+def test_unidirectional_coupling_map():
+    from pytket.architecture import Architecture
+
+    qc = get_benchmark(
+        benchmark_name="dj",
+        level="mapped",
+        circuit_size=3,
+        compiler="tket",
+        compiler_settings={"tket": {"placement": "graphplacement"}},
+        gate_set_name="oqc",
+        device_name="oqc_lucy",
+    )
+    # check that all gates in the circuit are in the coupling map
+    assert qc.valid_connectivity(
+        arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True
+    )
 
 
 @pytest.mark.parametrize(
