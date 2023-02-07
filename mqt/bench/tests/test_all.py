@@ -240,6 +240,24 @@ def test_routing():
     assert qc.depth() > 0
 
 
+def test_unidirectional_coupling_map():
+    from pytket.architecture import Architecture
+
+    qc = get_benchmark(
+        benchmark_name="dj",
+        level="mapped",
+        circuit_size=3,
+        compiler="tket",
+        compiler_settings={"tket": {"placement": "graphplacement"}},
+        gate_set_name="oqc",
+        device_name="oqc_lucy",
+    )
+    # check that all gates in the circuit are in the coupling map
+    assert qc.valid_connectivity(
+        arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True
+    )
+
+
 @pytest.mark.parametrize(
     "benchmark_name, level, circuit_size, benchmark_instance_name, compiler, compiler_settings, gate_set_name, device_name,",
     [
