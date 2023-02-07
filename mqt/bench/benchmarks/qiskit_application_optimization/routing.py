@@ -86,12 +86,15 @@ class QuantumOptimizer:
 
         try:
             max(x_sol)
+
             # Evaluates the cost distance from a binary representation of a path
-            fun = (
-                lambda x: np.dot(np.around(x), np.dot(Q, np.around(x)))
-                + np.dot(g, np.around(x))
-                + c
-            )
+            def fun(x):
+                return (
+                    np.dot(np.around(x), np.dot(Q, np.around(x)))
+                    + np.dot(g, np.around(x))
+                    + c
+                )
+
             cost = fun(x_sol)
         except Exception:
             cost = 0
@@ -113,8 +116,7 @@ class QuantumOptimizer:
         ansatz = RealAmplitudes(self.n)
         vqe = VQE(estimator=Estimator(), optimizer=SLSQP(maxiter=25), ansatz=ansatz)
         vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
-        qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
-        return qc
+        return vqe.ansatz.bind_parameters(vqe_result.optimal_point)
 
 
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
