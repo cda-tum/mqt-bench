@@ -52,7 +52,7 @@ def test_configure_begin():
     [
         (ae, 8, True),
         (ghz, 5, True),
-        (dj, 5, True),
+        (dj, 3, True),
         (graphstate, 8, True),
         (grover, 5, False),
         (hhl, 2, False),
@@ -99,7 +99,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
     [
         (ae, 8, True),
         (ghz, 5, True),
-        (dj, 5, True),
+        (dj, 3, True),
         (graphstate, 8, True),
         (grover, 5, False),
         (qaoa, 5, True),
