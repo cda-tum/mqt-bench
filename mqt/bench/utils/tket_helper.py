@@ -279,6 +279,9 @@ def get_mapped_level(
             placer = GraphPlacement(arch)
         PlacementPass(placer).apply(qc_tket)
         RoutingPass(arch).apply(qc_tket)
+        FullPeepholeOptimise(target_2qb_gate=OpType.TK2, allow_swaps=False).apply(
+            qc_tket
+        )
         native_gate_set_rebase.apply(qc_tket)
         if not qc_tket.valid_connectivity(arch, directed=True):
             CXMappingPass(arc=arch, placer=placer, directed_cx=True).apply(qc_tket)
