@@ -28,6 +28,8 @@ jobs:
         run: |
           pip install pytest
           pytest mqt/benchviewer/src/tests/test_backend.py -k 'test_flask_server'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*.whl
@@ -51,6 +53,8 @@ jobs:
         run: |
           pip install pytest
           pytest mqt/benchviewer/src/tests/test_backend.py -k 'test_flask_server'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
