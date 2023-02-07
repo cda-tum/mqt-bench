@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import io
-import os
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -12,7 +11,7 @@ from mqt.benchviewer.src import backend
 
 
 @pytest.mark.parametrize(
-    "filename, expected_res",
+    ("filename", "expected_res"),
     [
         ("shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm", 0),
         ("dj_mapped_ibm_washington_qiskit_opt3_103.qasm", 3),
@@ -26,7 +25,7 @@ def test_get_opt_level(filename, expected_res):
 
 
 @pytest.mark.parametrize(
-    "filename, expected_res",
+    ("filename", "expected_res"),
     [
         ("shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm", 18),
         ("dj_mapped_ibm_washington_qiskit_opt3_103.qasm", 103),
@@ -40,7 +39,7 @@ def test_get_num_qubits(filename, expected_res):
 
 
 @pytest.mark.parametrize(
-    "filename, expected_res",
+    ("filename", "expected_res"),
     [
         (
             "shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
@@ -235,17 +234,14 @@ def test_prepareFormInput():
 
 def test_read_mqtbench_all_zip():
     target_location = "mqt/benchviewer/static/files"
-    assert backend.read_mqtbench_all_zip(
-        skip_question=True, target_location=target_location
-    )
+    assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
 def test_create_database():
     huge_zip = Path("mqt/benchviewer/static/files/MQTBench_all.zip")
-    MQTBENCH_ALL_ZIP = None
     with huge_zip.open("rb") as zf:
-        bytes = io.BytesIO(zf.read())
-        MQTBENCH_ALL_ZIP = ZipFile(bytes, mode="r")
+        byteStream = io.BytesIO(zf.read())
+        MQTBENCH_ALL_ZIP = ZipFile(byteStream, mode="r")
 
     database = backend.create_database(MQTBENCH_ALL_ZIP)
     assert len(database) > 0
@@ -259,7 +255,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 3
+    assert len(res) > 3  # noqa: PLR2004
 
     input_data = (
         (110, 120),
@@ -269,7 +265,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 15
+    assert len(res) > 15  # noqa: PLR2004
 
     input_data = (
         (75, 110),
@@ -279,7 +275,7 @@ def test_create_database():
         ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m2"]),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20
+    assert len(res) > 20  # noqa: PLR2004
 
     input_data = (
         (2, 5),
@@ -293,7 +289,7 @@ def test_create_database():
         ),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20
+    assert len(res) > 20  # noqa: PLR2004
 
     input_data = (
         (2, 130),
@@ -313,17 +309,16 @@ def test_flask_server():
         target_location="mqt/benchviewer/static/files",
     )
 
-    assert os.path.isfile(
-        os.path.join("mqt/benchviewer/static/files", "MQTBench_all.zip")
-    )
-    assert os.path.isfile("./mqt/benchviewer/templates/benchmark_description.html")
-    assert os.path.isfile("./mqt/benchviewer/templates/index.html")
-    assert os.path.isfile("./mqt/benchviewer/templates/legal.html")
-    assert os.path.isfile("./mqt/benchviewer/templates/description.html")
+    assert Path("mqt/benchviewer/static/files/MQTBench_all.zip").is_file()
+    assert Path("./mqt/benchviewer/templates/benchmark_description.html").is_file()
+    assert Path("./mqt/benchviewer/templates/index.html").is_file()
+    assert Path("./mqt/benchviewer/templates/legal.html").is_file()
+    assert Path("./mqt/benchviewer/templates/description.html").is_file()
 
     with app.test_client() as c:
-        assert c.get("/mqtbench/index").status_code == 200
-        assert c.get("/mqtbench/download").status_code == 200
-        assert c.get("/mqtbench/legal").status_code == 200
-        assert c.get("/mqtbench/description").status_code == 200
-        assert c.get("/mqtbench/benchmark_description").status_code == 200
+        success_code = 200
+        assert c.get("/mqtbench/index").status_code == success_code
+        assert c.get("/mqtbench/download").status_code == success_code
+        assert c.get("/mqtbench/legal").status_code == success_code
+        assert c.get("/mqtbench/description").status_code == success_code
+        assert c.get("/mqtbench/benchmark_description").status_code == success_code

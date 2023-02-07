@@ -36,9 +36,7 @@ def init(
     ACTIVATE_LOGGING = activate_logging
 
     if ACTIVATE_LOGGING:
-        logging.basicConfig(
-            filename="/local/mqtbench/downloads.log", level=logging.INFO
-        )
+        logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
 
     return True
 
@@ -101,11 +99,7 @@ def download_data():
             return app.response_class(
                 backend.generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
-                headers={
-                    "Content-Disposition": 'attachment; filename="MQTBench_{}.zip"'.format(
-                        timestamp
-                    )
-                },
+                headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
                 direct_passthrough=True,
             )
 
@@ -145,13 +139,8 @@ def get_num_benchmarks():
         data = request.form
         prepared_data = backend.prepare_form_input(data)
         file_paths = backend.get_selected_file_paths(prepared_data)
-        num = len(file_paths)
-        data = {"num_selected": num}
-        return jsonify(data)
-    else:
-        data = {"num_selected": 0}
-
-        return jsonify(data)
+        return jsonify({"num_selected": len(file_paths)})
+    return jsonify({"num_selected": 0})
 
 
 def start_server(
@@ -173,12 +162,12 @@ def start_server(
         target_location=target_location,
     )
     print(
-        "Server is hosted at: " + "http://127.0.0.1:5000" + PREFIX + ".",
+        "Server is hosted at: http://127.0.0.1:5000" + PREFIX + ".",
         "To stop it, interrupt the process (e.g., via CTRL+C). \n",
     )
 
     # This line avoid the startup-message from flask
-    cli.show_server_banner = lambda *args: None
+    cli.show_server_banner = lambda *_args: None
 
     if not activate_logging:
         log = logging.getLogger("werkzeug")

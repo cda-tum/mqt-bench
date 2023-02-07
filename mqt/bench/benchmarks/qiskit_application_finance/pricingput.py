@@ -32,9 +32,7 @@ def create_circuit(num_uncertainty_qubits: int = 5):
 
     # construct A operator for QAE for the payoff function by
     # composing the uncertainty model and the objective
-    uncertainty_model = LogNormalDistribution(
-        num_uncertainty_qubits, mu=mu, sigma=sigma**2, bounds=(low, high)
-    )
+    uncertainty_model = LogNormalDistribution(num_uncertainty_qubits, mu=mu, sigma=sigma**2, bounds=(low, high))
 
     # set the strike price (should be within the low and the high value of the uncertainty)
     strike_price = 2.126

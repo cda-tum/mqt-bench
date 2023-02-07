@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from datetime import date
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
@@ -118,7 +118,7 @@ class BernoulliQ(QuantumCircuit):
     def __eq__(self, other):
         return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
 
-    def power(self, power: float, matrix_power: bool = True):
+    def power(self, power: float, _matrix_power: bool = True):
         # implement the efficient power of Q
         q_k = QuantumCircuit(1)
         q_k.ry(2 * power * self._theta_p, 0)
@@ -133,15 +133,11 @@ def get_estimation_problem():
     a = BernoulliA(p)
     q = BernoulliQ(p)
 
-    problem = EstimationProblem(
+    return EstimationProblem(
         state_preparation=a,  # A operator
         grover_operator=q,  # Q operator
-        objective_qubits=[
-            0
-        ],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
+        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
     )
-
-    return problem
 
 
 def get_rigetti_aspen_m2_map():
@@ -151,7 +147,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-            if i == 6:
+            if i == 6:  # noqa: PLR2004
                 c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
         if j != 0:
@@ -163,7 +159,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + m, i + 1 + m])
 
-            if i == 6:
+            if i == 6:  # noqa: PLR2004
                 c_map_rigetti.append([0 + m, 7 + m])
 
         if j != 0:
@@ -192,7 +188,7 @@ def get_ionq11_c_map():
 def get_openqasm_gates():
     """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
     # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
-    gate_list = [
+    return [
         "u3",
         "u2",
         "u1",
@@ -236,7 +232,6 @@ def get_openqasm_gates():
         "c3sqrtx",
         "c4x",
     ]
-    return gate_list
 
 
 def save_as_qasm(
@@ -260,27 +255,19 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    if target_directory:
-        qasm_output_folder = target_directory
-    else:
-        qasm_output_folder = get_qasm_output_path()
+    qasm_output_folder = target_directory if target_directory else get_qasm_output_path()
 
-    filename = os.path.join(qasm_output_folder, filename) + ".qasm"
+    file = Path(qasm_output_folder, filename + ".qasm")
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
     except Exception:
-        print(
-            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
-        )
+        print("'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'.")
         return False
 
-    with open(filename, "w") as f:
+    with file.open("w") as f:
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
-        f.write(
-            "// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/"
-            + "\n"
-        )
+        f.write("// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/\n")
         f.write("// MQT Bench version: " + mqtbench_module_version + "\n")
         if "qiskit" in filename:
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
@@ -296,7 +283,7 @@ def save_as_qasm(
     f.close()
 
     if gate_set == ["rz", "sx", "x", "ecr", "measure"]:
-        postprocess_single_oqc_file(filename)
+        postprocess_single_oqc_file(str(file))
     return True
 
 
@@ -305,24 +292,21 @@ def get_cmap_oqc_lucy():
     # source: https://github.com/aws/amazon-braket-examples/blob/main/examples/braket_features/Verbatim_Compilation.ipynb
 
     # Connections are NOT bidirectional, this is not an accident
-    c_map_oqc_lucy = [[0, 1], [0, 7], [1, 2], [2, 3], [7, 6], [6, 5], [4, 3], [4, 5]]
-
-    return c_map_oqc_lucy
+    return [[0, 1], [0, 7], [1, 2], [2, 3], [7, 6], [6, 5], [4, 3], [4, 5]]
 
 
 def get_cmap_from_devicename(device: str):
     if device == "ibm_washington":
         return FakeWashington().configuration().coupling_map
-    elif device == "ibm_montreal":
+    if device == "ibm_montreal":
         return FakeMontreal().configuration().coupling_map
-    elif device == "rigetti_aspen_m2":
+    if device == "rigetti_aspen_m2":
         return get_rigetti_aspen_m2_map()
-    elif device == "oqc_lucy":
+    if device == "oqc_lucy":
         return get_cmap_oqc_lucy()
-    elif device == "ionq11":
+    if device == "ionq11":
         return get_ionq11_c_map()
-    else:
-        return False
+    return False
 
 
 def get_molecule(benchmark_instance_name: str):
@@ -336,9 +320,9 @@ def get_molecule(benchmark_instance_name: str):
 
 
 def postprocess_single_oqc_file(filename: str):
-    with open(filename) as f:
+    with Path(filename).open() as f:
         lines = f.readlines()
-    with open(filename, "w") as f:
+    with Path(filename).open("w") as f:
         for line in lines:
             if not ("gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")):
                 f.write(line)

@@ -4,7 +4,6 @@ import io
 import os
 import re
 import sys
-from collections.abc import Iterable
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -17,6 +16,11 @@ if sys.version_info < (3, 10, 0):
     import importlib_metadata as metadata
 else:
     from importlib import metadata
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 # All available benchmarks shown on our webpage are defined here
@@ -99,10 +103,7 @@ def get_opt_level(filename: str):
 
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
-    if m:
-        num = m.group()[-1:]
-    else:
-        num = -1
+    num = m.group()[-1:] if m else -1
     return int(num)
 
 
@@ -118,10 +119,7 @@ def get_num_qubits(filename: str):
 
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
-    if m:
-        num = m.group()[0:-1]
-    else:
-        num = -1
+    num = m.group()[0:-1] if m else -1
     return int(num)
 
 
@@ -167,9 +165,7 @@ def handle_github_api_request(repo_url: str) -> requests.Response:
     if "GITHUB_TOKEN" in os.environ:
         headers = {"Authorization": f"token {os.environ['GITHUB_TOKEN']}"}
 
-    response = requests.get(
-        f"https://api.github.com/repos/cda-tum/mqtbench/{repo_url}", headers=headers
-    )
+    response = requests.get(f"https://api.github.com/repos/cda-tum/mqtbench/{repo_url}", headers=headers)
     success_code = 200
     if response.status_code == success_code:
         return response
@@ -187,22 +183,16 @@ def read_mqtbench_all_zip(
     skip_question: bool = False,
     target_location: str = None,
 ):
-    global MQTBENCH_ALL_ZIP
-    huge_zip_path = Path(target_location + "/MQTBench_all.zip")
+    huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
     except Exception:
-        print(
-            "'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'."
-        )
+        print("'mqt.bench' is most likely not installed. Please run 'pip install . or pip install mqt.bench'.")
         return False
 
     print("Searching for local benchmarks...")
-    if (
-        os.path.isfile(huge_zip_path)
-        and len(ZipFile(huge_zip_path, "r").namelist()) != 0
-    ):
+    if huge_zip_path.is_file() and len(ZipFile(huge_zip_path, "r").namelist()) != 0:
         print("... found.")
     else:
         print("No benchmarks found. Querying GitHub...")
@@ -213,12 +203,8 @@ def read_mqtbench_all_zip(
             available_versions.append(elem["name"])
 
         for possible_version in available_versions:
-            if version.parse(mqtbench_module_version) >= version.parse(
-                possible_version
-            ):
-                response_json = handle_github_api_request(
-                    f"releases/tags/{possible_version}"
-                ).json()
+            if version.parse(mqtbench_module_version) >= version.parse(possible_version):
+                response_json = handle_github_api_request(f"releases/tags/{possible_version}").json()
                 if "assets" in response_json:
                     assets = response_json["assets"]
                 elif "asset" in response_json:
@@ -241,9 +227,7 @@ def read_mqtbench_all_zip(
                                     download_url,
                                 )
                             )
-                            response = input(
-                                "Would you like to downloaded the file? (Y/n)"
-                            )
+                            response = input("Would you like to downloaded the file? (Y/n)")
                         if skip_question or response.lower() == "y" or response == "":
                             handle_downloading_benchmarks(target_location, download_url)
                             break
@@ -254,6 +238,7 @@ def read_mqtbench_all_zip(
             print("No suitable benchmarks found.")
             return False
 
+    global MQTBENCH_ALL_ZIP
     with huge_zip_path.open("rb") as zf:
         zip_bytes = io.BytesIO(zf.read())
         MQTBENCH_ALL_ZIP = ZipFile(zip_bytes, mode="r")
@@ -268,10 +253,8 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
     total_length = int(total_length)
     fname = target_location + "/MQTBench_all.zip"
 
-    if not os.path.isdir(target_location):
-        os.makedirs(target_location)
-
-    with open(fname, "wb") as f, tqdm(
+    Path(target_location).mkdir(parents=True, exist_ok=True)
+    with Path(fname).open("wb") as f, tqdm(
         desc=fname,
         total=total_length,
         unit="iB",
@@ -287,47 +270,43 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
 def get_tket_settings(filename: str):
     if "line" in filename:
         return "line"
-    elif "graph" in filename:
+    if "graph" in filename:
         return "graph"
-    else:
-        return None
+    return None
 
 
 def get_gate_set(filename: str):
     if "oqc" in filename:
         return "oqc"
-    elif "ionq" in filename:
+    if "ionq" in filename:
         return "ionq"
-    elif "ibm" in filename:
+    if "ibm" in filename:
         return "ibm"
-    elif "rigetti" in filename:
+    if "rigetti" in filename:
         return "rigetti"
-    else:
-        raise ValueError("Unknown gate set: " + filename)
+    raise ValueError("Unknown gate set: " + filename)
 
 
 def get_target_device(filename: str):
     if "ibm_washington" in filename:
         return "ibm_washington"
-    elif "ibm_montreal" in filename:
+    if "ibm_montreal" in filename:
         return "ibm_montreal"
-    elif "rigetti_aspen" in filename:
+    if "rigetti_aspen" in filename:
         return "rigetti_aspen"
-    elif "ionq11" in filename:
+    if "ionq11" in filename:
         return "ionq11"
-    elif "oqc_lucy" in filename:
+    if "oqc_lucy" in filename:
         return "oqc_lucy"
-    else:
-        raise ValueError("Unknown target device: " + filename)
+    raise ValueError("Unknown target device: " + filename)
 
 
 def get_compiler_and_settings(filename: str):
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
-    elif "tket" in filename:
+    if "tket" in filename:
         return "tket", get_tket_settings(filename)
-    else:
-        raise ValueError("Unknown compiler: " + filename)
+    raise ValueError("Unknown compiler: " + filename)
 
 
 def parse_data(filename: str):
@@ -345,17 +324,10 @@ def parse_data(filename: str):
     nativegates_flag = "nativegates" in filename
     mapped_flag = "mapped" in filename
     compiler, compiler_settings = get_compiler_and_settings(filename)
-    if nativegates_flag or mapped_flag:
-        gate_set = get_gate_set(filename)
-    else:
-        gate_set = None
-    if mapped_flag:
-        target_device = get_target_device(filename)
-    else:
-        target_device = None
+    gate_set = get_gate_set(filename) if nativegates_flag or mapped_flag else None
+    target_device = get_target_device(filename) if mapped_flag else None
 
-    path = os.path.join(filename)
-    parsed_data = [
+    return [
         benchmark,
         num_qubits,
         indep_flag,
@@ -365,9 +337,8 @@ def parse_data(filename: str):
         compiler_settings,
         gate_set,
         target_device,
-        path,
+        filename,
     ]
-    return parsed_data
 
 
 def filter_database(filter_criteria: tuple, database: pd.DataFrame):
@@ -424,9 +395,7 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):
             selected_scalable_benchmarks.append(name)
 
         elif 0 < int(identifier) <= len(benchmarks) + len(nonscalable_benchmarks):
-            name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)][
-                "filename"
-            ]
+            name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)]["filename"]
             selected_nonscalable_benchmarks.append(name)
 
     db_tmp = database.loc[
@@ -460,9 +429,7 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):
     if nativegates_tket_compiler:
         for gate_set in native_gatesets:
             db_tmp4 = db_tmp.loc[
-                (db_tmp["nativegates_flag"])
-                & (db_tmp["gate_set"] == gate_set)
-                & (db_tmp["compiler"] == "tket")
+                (db_tmp["nativegates_flag"]) & (db_tmp["gate_set"] == gate_set) & (db_tmp["compiler"] == "tket")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp4])
 
@@ -540,19 +507,11 @@ def generate_zip_ephemeral_chunks(
     Return values:
         Generator of bytes to send to the browser
     """
-    global MQTBENCH_ALL_ZIP
     fileobj = NoSeekBytesIO(io.BytesIO())
 
-    paths: list[Path] = [Path(name) for name in filenames]
-
+    paths = [Path(name) for name in filenames]
     with ZipFile(fileobj, mode="w") as zf:
         for individual_file in paths:
-            # zf.write(
-            #     individual_file,
-            #     arcname=individual_file.name,
-            #     compress_type=ZIP_DEFLATED,
-            #     compresslevel=1
-            # )
             zf.writestr(
                 individual_file.name,
                 data=MQTBENCH_ALL_ZIP.read(individual_file.name),
@@ -579,10 +538,8 @@ def get_selected_file_paths(prepared_data: tuple):
     """
 
     if prepared_data:
-        file_paths = filter_database(prepared_data, database)
-        return file_paths
-    else:
-        return False
+        return filter_database(prepared_data, database)
+    return False
 
 
 def init_database():
@@ -597,9 +554,9 @@ def init_database():
 
     if not database.empty:
         return True
-    else:
-        print("Database initialization failed.")
-        return False
+
+    print("Database initialization failed.")
+    return False
 
 
 def prepare_form_input(form_data: dict):
@@ -692,7 +649,7 @@ def prepare_form_input(form_data: dict):
         if "device_ionq_ionq11" in k:
             mapped_devices.append("ionq11")
 
-    res = (
+    return (
         (int(min_qubits), int(max_qubits)),
         num_benchmarks,
         (indep_qiskit_compiler, indep_tket_compiler),
@@ -707,5 +664,3 @@ def prepare_form_input(form_data: dict):
             mapped_devices,
         ),
     )
-    # print("Overall Result: ", res)
-    return res

@@ -67,10 +67,7 @@ def create_circuit(n: int, balanced: bool = True):
     balanced -- True for a balanced and False for a constant oracle
     """
 
-    if balanced:
-        oracle_mode = "balanced"
-    else:
-        oracle_mode = "constant"
+    oracle_mode = "balanced" if balanced else "constant"
     n = n - 1  # because of ancilla qubit
     oracle_gate = dj_oracle(oracle_mode, n)
     qc = dj_algorithm(oracle_gate, n)

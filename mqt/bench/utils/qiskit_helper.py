@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from os import path
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-from qiskit import QuantumCircuit
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
+
 from qiskit.compiler import transpile
 
 from mqt.bench.utils import utils
@@ -11,34 +14,29 @@ from mqt.bench.utils import utils
 def get_native_gates(gate_set_name: str):
     if gate_set_name == "ionq":
         return get_ionq_native_gates()
-    elif gate_set_name == "oqc":
+    if gate_set_name == "oqc":
         return get_oqc_native_gates()
-    elif gate_set_name == "ibm":
+    if gate_set_name == "ibm":
         return get_ibm_native_gates()
-    elif gate_set_name == "rigetti":
+    if gate_set_name == "rigetti":
         return get_rigetti_native_gates()
-    else:
-        raise ValueError("Unknown gate set name: " + gate_set_name)
+    raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
 def get_ibm_native_gates():
-    ibm_gates = ["rz", "sx", "x", "cx", "measure"]
-    return ibm_gates
+    return ["rz", "sx", "x", "cx", "measure"]
 
 
 def get_rigetti_native_gates():
-    rigetti_gates = ["rx", "rz", "cz", "measure"]
-    return rigetti_gates
+    return ["rx", "rz", "cz", "measure"]
 
 
 def get_ionq_native_gates():
-    ionq_gates = ["rxx", "rz", "ry", "rx", "measure"]
-    return ionq_gates
+    return ["rxx", "rz", "ry", "rx", "measure"]
 
 
 def get_oqc_native_gates():
-    oqc_gates = ["rz", "sx", "x", "ecr", "measure"]
-    return oqc_gates
+    return ["rz", "sx", "x", "ecr", "measure"]
 
 
 def get_indep_level(
@@ -70,26 +68,19 @@ def get_indep_level(
     else:
         filename_indep = target_filename
 
-    if not (
-        path.isfile(path.join(target_directory, filename_indep) + ".qasm")
-        and file_precheck
-    ):
-        openqasm_gates = utils.get_openqasm_gates()
-        target_independent = transpile(
-            qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10
-        )
-
-        if return_qc:
-            return target_independent
-        else:
-            res = utils.save_as_qasm(
-                target_independent.qasm(),
-                filename_indep,
-                target_directory=target_directory,
-            )
-            return res
-    else:
+    path = Path(target_directory, filename_indep + ".qasm")
+    if file_precheck and path.is_file():
         return True
+    openqasm_gates = utils.get_openqasm_gates()
+    target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10)
+
+    if return_qc:
+        return target_independent
+    return utils.save_as_qasm(
+        target_independent.qasm(),
+        filename_indep,
+        target_directory=target_directory,
+    )
 
 
 def get_native_gates_level(
@@ -122,38 +113,27 @@ def get_native_gates_level(
     gate_set = get_native_gates(gate_set_name)
     if not target_filename:
         filename_native = (
-            qc.name
-            + "_nativegates_"
-            + gate_set_name
-            + "_qiskit_opt"
-            + str(opt_level)
-            + "_"
-            + str(num_qubits)
+            qc.name + "_nativegates_" + gate_set_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         )
         target_directory = utils.get_qasm_output_path()
     else:
         filename_native = target_filename
 
-    if not (
-        path.isfile(path.join(target_directory, filename_native) + ".qasm")
-        and file_precheck
-    ):
-        compiled_without_architecture = transpile(
-            qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
-        )
-
-        if return_qc:
-            return compiled_without_architecture
-        else:
-            res = utils.save_as_qasm(
-                compiled_without_architecture.qasm(),
-                filename_native,
-                gate_set,
-                target_directory=target_directory,
-            )
-            return res
-    else:
+    path = Path(target_directory, filename_native + ".qasm")
+    if file_precheck and path.is_file():
         return True
+    compiled_without_architecture = transpile(
+        qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
+    )
+
+    if return_qc:
+        return compiled_without_architecture
+    return utils.save_as_qasm(
+        compiled_without_architecture.qasm(),
+        filename_native,
+        gate_set,
+        target_directory=target_directory,
+    )
 
 
 def get_mapped_level(
@@ -189,41 +169,28 @@ def get_mapped_level(
     c_map = utils.get_cmap_from_devicename(device_name)
 
     if not target_filename:
-        filename_mapped = (
-            qc.name
-            + "_mapped_"
-            + device_name
-            + "_qiskit_opt"
-            + str(opt_level)
-            + "_"
-            + str(num_qubits)
-        )
+        filename_mapped = qc.name + "_mapped_" + device_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         target_directory = utils.get_qasm_output_path()
     else:
         filename_mapped = target_filename
 
-    if not (
-        path.isfile(path.join(target_directory, target_filename) + ".qasm")
-        and file_precheck
-    ):
-        compiled_with_architecture = transpile(
-            qc,
-            optimization_level=opt_level,
-            basis_gates=gate_set,
-            coupling_map=c_map,
-            seed_transpiler=10,
-        )
-        if return_qc:
-            return compiled_with_architecture
-        else:
-            res = utils.save_as_qasm(
-                compiled_with_architecture.qasm(),
-                filename_mapped,
-                gate_set,
-                True,
-                c_map,
-                target_directory,
-            )
-            return res
-    else:
+    path = Path(target_directory, filename_mapped + ".qasm")
+    if file_precheck and path.is_file():
         return True
+    compiled_with_architecture = transpile(
+        qc,
+        optimization_level=opt_level,
+        basis_gates=gate_set,
+        coupling_map=c_map,
+        seed_transpiler=10,
+    )
+    if return_qc:
+        return compiled_with_architecture
+    return utils.save_as_qasm(
+        compiled_with_architecture.qasm(),
+        filename_mapped,
+        gate_set,
+        True,
+        c_map,
+        target_directory,
+    )

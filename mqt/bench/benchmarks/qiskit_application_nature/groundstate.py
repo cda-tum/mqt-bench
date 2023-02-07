@@ -33,9 +33,7 @@ def create_circuit(molecule):
         parameter_prefix="y",
     )
 
-    another_solver = VQE(
-        ansatz=tl_circuit, estimator=Estimator(), optimizer=COBYLA(maxiter=25)
-    )
+    another_solver = VQE(ansatz=tl_circuit, estimator=Estimator(), optimizer=COBYLA(maxiter=25))
 
     result = another_solver.compute_minimum_eigenvalue(operator)
     qc = another_solver.ansatz.bind_parameters(result.optimal_point)

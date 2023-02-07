@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+from pathlib import Path
 
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
@@ -41,14 +41,13 @@ from mqt.bench.utils import qiskit_helper, tket_helper, utils
 
 def test_configure_begin():
     test_qasm_output_path = "./test_output/"
-    if not os.path.exists(test_qasm_output_path):
-        os.mkdir(test_qasm_output_path)
+    Path(test_qasm_output_path).mkdir(parents=True, exist_ok=True)
     utils.set_qasm_output_path(test_qasm_output_path)
     assert utils.get_qasm_output_path() == test_qasm_output_path
 
 
 @pytest.mark.parametrize(
-    "benchmark, input_value, scalable",
+    ("benchmark", "input_value", "scalable"),
     [
         (ae, 8, True),
         (ghz, 5, True),
@@ -95,7 +94,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
 
 
 @pytest.mark.parametrize(
-    "benchmark, input_value, scalable",
+    ("benchmark", "input_value", "scalable"),
     [
         (ae, 8, True),
         (ghz, 5, True),
@@ -217,11 +216,13 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
 
 def test_openqasm_gates():
     openqasm_gates = utils.get_openqasm_gates()
-    assert len(openqasm_gates) == 42
+    num_openqasm_gates = 42
+    assert len(openqasm_gates) == num_openqasm_gates
 
 
 def test_rigetti_cmap_generator():
-    assert len(utils.get_rigetti_aspen_m2_map()) == 212
+    num_edges = 212
+    assert len(utils.get_rigetti_aspen_m2_map()) == num_edges
 
 
 def test_dj_constant_oracle():
@@ -253,13 +254,20 @@ def test_unidirectional_coupling_map():
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    assert qc.valid_connectivity(
-        arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True
-    )
+    assert qc.valid_connectivity(arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True)
 
 
 @pytest.mark.parametrize(
-    "benchmark_name, level, circuit_size, benchmark_instance_name, compiler, compiler_settings, gate_set_name, device_name,",
+    (
+        "benchmark_name",
+        "level",
+        "circuit_size",
+        "benchmark_instance_name",
+        "compiler",
+        "compiler_settings",
+        "gate_set_name",
+        "device_name",
+    ),
     [
         (
             "dj",
@@ -597,17 +605,15 @@ def test_get_benchmark(
             qc = tk_to_qiskit(qc)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
-            assert (
-                gate_type in qiskit_helper.get_native_gates(gate_set_name)
-                or gate_type == "barrier"
-            )
+            assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
 def test_configure_end():
-    test_qasm_output_path = "./test_output/"
-    for f in os.listdir(test_qasm_output_path):
-        os.remove(os.path.join(test_qasm_output_path, f))
-    os.rmdir(test_qasm_output_path)
+    # delete all files in the test directory and the directory itself
+    test_qasm_output_path = Path("./test_output/")
+    for f in Path(test_qasm_output_path).iterdir():
+        f.unlink()
+    test_qasm_output_path.rmdir()
     utils.set_qasm_output_path()
 
 
@@ -630,11 +636,10 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
     )
     assert res
-    path = os.path.join(directory, filename) + ".qasm"
-    assert os.path.isfile(path)
-    os.remove(path)
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
+    assert path.is_file()
+    path.unlink()
 
-    directory = "."
     filename = "ae_test_tket"
     qc = get_benchmark("ae", abstraction_level, 7)
     assert qc
@@ -650,9 +655,9 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
         filename,
     )
     assert res
-    path = os.path.join(directory, filename) + ".qasm"
-    assert os.path.isfile(path)
-    os.remove(path)
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
+    assert path.is_file()
+    path.unlink()
 
 
 def test_oqc_postprocessing():
@@ -660,7 +665,7 @@ def test_oqc_postprocessing():
     assert qc
     directory = "."
     filename = "ghz_oqc"
-    path = os.path.join(directory, filename) + ".qasm"
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
 
     tket_helper.get_native_gates_level(
         qc,
@@ -671,8 +676,8 @@ def test_oqc_postprocessing():
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(path)
-    os.remove(path)
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
 
     tket_helper.get_mapped_level(
         qc,
@@ -685,8 +690,8 @@ def test_oqc_postprocessing():
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(path)
-    os.remove(path)
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
 
     qiskit_helper.get_native_gates_level(
         qc,
@@ -698,8 +703,8 @@ def test_oqc_postprocessing():
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(path)
-    os.remove(path)
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
 
     qiskit_helper.get_mapped_level(
         qc,
@@ -712,5 +717,5 @@ def test_oqc_postprocessing():
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(path)
-    os.remove(path)
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()

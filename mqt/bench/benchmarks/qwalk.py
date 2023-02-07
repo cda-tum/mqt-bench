@@ -23,9 +23,11 @@ def create_circuit(
     node = QuantumRegister(n, "node")
 
     n_anc = 0
-    if ancillary_mode == "recursion" and n > 3:
+    ancillary_cutoff_recursion = 3
+    if ancillary_mode == "recursion" and n > ancillary_cutoff_recursion:
         n_anc = 1
-    if (ancillary_mode == "v-chain" or ancillary_mode == "v-chain-dirty") and n > 2:
+    ancillary_cutoff_vchain = 2
+    if (ancillary_mode == "v-chain" or ancillary_mode == "v-chain-dirty") and n > ancillary_cutoff_vchain:
         n_anc = n - 2
 
     if n_anc == 0:

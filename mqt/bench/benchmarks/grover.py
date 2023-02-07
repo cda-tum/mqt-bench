@@ -28,9 +28,7 @@ def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
     iterations = Grover.optimal_num_iterations(1, num_qubits)
 
-    num_qubits = (
-        operator.num_qubits - 1
-    )  # -1 because last qubit is "flag" qubit and already taken care of
+    num_qubits = operator.num_qubits - 1  # -1 because last qubit is "flag" qubit and already taken care of
 
     # num_qubits may differ now depending on the mcx_mode
     q2 = QuantumRegister(num_qubits, "q")
