@@ -61,13 +61,11 @@ Homepage = "https://github.com/cda-tum/mqtbench"
 Discussions = "https://github.com/cda-tum/mqtbench/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum/"
 
-[tool.setuptools.packages.find]
-include = ["mqt.*"]
-
 [tool.setuptools_scm]
 
 [tool.pytest.ini_options]
 minversion = "7.2"
+testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
 log_cli_level = "INFO"
 xfail_strict = true

@@ -142,41 +142,12 @@ So far, MQT Bench supports the following devices:
 
 # Repository Structure
 
-- mqt/bench/utils: Directory for the utils.py file
-- mqt/bench/tests: Directory for the tests for MQT Bench
-- mqt/bench/benchmarks: On the top-level, each benchmark algorithm is included as a separate file.
-  - Additionally, folders for each IBM Qiskit application module and their respective benchmarks are listed.
-- mqt/benchviewer: This is the folder for the webpage
-  (which can be started locally and is also hosted at
-  [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/)).
-
-```
-MQTBench/
-│ - README.md
-│
-└───mqt/bench/
-│   │───benchmark_generator.py
-│   └───utils/
-│   │   │ - utils.py
-│   │
-│   └───tests/
-│   └───benchmarks/
-│       │ - ae.py
-│       │   ...
-│       │ - wstate.py
-│       └─── qiskit_application_finance
-│       │       ...
-│       └─── qiskit_application_ml
-│       │       ...
-│       └─── qiskit_application_nature
-│       │       ...
-│       └─── qiskit_application_optimization
-│       │       ...
-│
-│───────benchviewer/
-        │ - main.py
-        │   ...
-```
+- src/mqt/: main source directory
+  - bench: Directory for the MQT Bench package
+  - bench/benchmarks: Directory for the benchmarks
+  - benchviewer: Directory for the webpage (which can be started locally and is also hosted at
+    [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/))
+- tests: Directory for the tests for MQT Bench
 
 # Repository Usage
 

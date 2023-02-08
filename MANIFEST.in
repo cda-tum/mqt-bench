@@ -1,3 +1,3 @@
-include mqt/benchviewer/static/files/MQTBench_all.zip
-include mqt/benchviewer/templates/*
-include mqt/benchviewer/static/*
+include src/mqt/benchviewer/static/files/MQTBench_all.zip
+include src/mqt/benchviewer/templates/*
+include src/mqt/benchviewer/static/*

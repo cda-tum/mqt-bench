@@ -12,12 +12,11 @@ if TYPE_CHECKING:
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
+from mqt.bench import qiskit_helper, tket_helper, utils
+from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
-from mqt.bench.benchmarks import hhl, shor
-from mqt.bench.benchmarks.qiskit_application_finance import pricingcall, pricingput
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate
-from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
-from mqt.bench.utils import qiskit_helper, tket_helper, utils
+benchmarks_module_paths_dict: dict[str, str] = {}
+timeout: int = 0
 
 
 def init_module_paths():
@@ -55,9 +54,7 @@ def create_benchmarks_from_config(cfg_path: str):
     global timeout
     timeout = cfg["timeout"]
 
-    global qasm_output_folder
-    qasm_output_folder = utils.get_qasm_output_path()
-    Path(qasm_output_folder).mkdir(exist_ok=True, parents=True)
+    Path(utils.get_qasm_output_path()).mkdir(exist_ok=True, parents=True)
 
     Parallel(n_jobs=-1, verbose=100)(delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"])
     return True
