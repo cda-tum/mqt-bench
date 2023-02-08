@@ -48,7 +48,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7.2"]
 coverage = ["mqt.bench[test]", "pytest-cov[toml]"]
 dev = ["mqt.bench[coverage]"]
 
@@ -65,6 +65,12 @@ Research = "https://www.cda.cit.tum.de/research/quantum/"
 include = ["mqt.*"]
 
 [tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+minversion = "7.2"
+addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
+log_cli_level = "INFO"
+xfail_strict = true
 
 [tool.black]
 line-length = 120
