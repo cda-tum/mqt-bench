@@ -70,6 +70,14 @@ addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
 log_cli_level = "INFO"
 xfail_strict = true
 
+[tool.coverage.run]
+source = ["mqt.bench", "mqt.benchviewer"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+precision = 1
+
 [tool.black]
 line-length = 120
 
