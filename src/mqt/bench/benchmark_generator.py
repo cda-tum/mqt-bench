@@ -6,7 +6,6 @@ import signal
 from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
-from warnings import warn
 
 if TYPE_CHECKING:
     from qiskit import QuantumCircuit
@@ -426,50 +425,6 @@ def create_pricingput_qc(num_uncertainty: int):
     except Exception as e:
         print(ERROR_MSG, "create_pricingput_benchmarks", num_uncertainty, e)
         raise e from None
-
-
-def get_one_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int = None,
-    benchmark_instance_name: str = None,
-    compiler: str = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] = None,
-    gate_set_name: str = "ibm",
-    device_name: str = "ibm_washington",
-):
-    """Returns one benchmark as a Qiskit::QuantumCircuit Object. Deprecated method, please use 'get_benchmark' instead.
-
-    Keyword arguments:
-    benchmark_name -- name of the to be generated benchmark
-    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
-    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
-    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
-    compiler -- "qiskit" or "tket"
-    compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
-    gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "aspen_m2", "ionq11", ""lucy""
-
-    Return values:
-    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
-    """
-
-    warn(
-        "'get_one_benchmark' is deprecated and will be removed in the future. Please use the 'get_benchmark' method with the same parameters.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    return get_benchmark(
-        benchmark_name=benchmark_name,
-        level=level,
-        circuit_size=circuit_size,
-        benchmark_instance_name=benchmark_instance_name,
-        compiler=compiler,
-        compiler_settings=compiler_settings,
-        gate_set_name=gate_set_name,
-        device_name=device_name,
-    )
 
 
 def get_benchmark(
