@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
-
 from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
