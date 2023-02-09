@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
+
 from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
@@ -43,7 +44,7 @@ def init_module_paths():
     }
 
 
-def create_benchmarks_from_config(cfg_path: str):
+def create_benchmarks_from_config(cfg_path: str = "./config.json") -> bool:
     init_module_paths()
 
     with Path(cfg_path).open() as jsonfile:
@@ -603,16 +604,8 @@ def get_benchmark(
     raise ValueError(msg)
 
 
-if __name__ == "__main__":
-    init_module_paths()
-
+def generate():
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
-
     args = parser.parse_args()
-
-    print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
-    print("#### Start zipping")
-    # utils.create_zip_file()
-    print("#### Generation ended")

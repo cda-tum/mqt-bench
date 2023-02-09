@@ -54,6 +54,8 @@ dev = ["mqt.bench[coverage]"]
 
 [project.scripts]
 "mqt.bench" = "mqt.benchviewer.main:start_server"
+"create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
+"generate_mqt_bench" = "mqt.bench.benchmark_generator:generate"
 
 [project.urls]
 Homepage = "https://github.com/cda-tum/mqtbench"
