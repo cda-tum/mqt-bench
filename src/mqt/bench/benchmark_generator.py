@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
+
 from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
@@ -123,7 +124,7 @@ def qc_creation_watcher(func, args):
     return qc, num_qubits, file_precheck
 
 
-def generate_benchmark(benchmark):
+def generate_benchmark(benchmark):  # noqa: PLR0912, PLR0915
     if benchmark["include"]:
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             for anc_mode in benchmark["ancillary_mode"]:
@@ -427,7 +428,7 @@ def create_pricingput_qc(num_uncertainty: int):
         raise e from None
 
 
-def get_benchmark(
+def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
     circuit_size: int = None,

@@ -149,7 +149,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-            if i == 6:  # noqa: PLR2004
+            if i == 6:
                 c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
         if j != 0:
@@ -161,7 +161,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + m, i + 1 + m])
 
-            if i == 6:  # noqa: PLR2004
+            if i == 6:
                 c_map_rigetti.append([0 + m, 7 + m])
 
         if j != 0:

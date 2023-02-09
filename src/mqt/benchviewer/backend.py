@@ -179,7 +179,7 @@ def handle_github_api_request(repo_url: str) -> requests.Response:
     raise RuntimeError(msg)
 
 
-def read_mqtbench_all_zip(
+def read_mqtbench_all_zip(  # noqa: PLR0912
     skip_question: bool = False,
     target_location: str = None,
 ):
@@ -341,7 +341,7 @@ def parse_data(filename: str):
     ]
 
 
-def filter_database(filter_criteria: tuple, database: pd.DataFrame):
+def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PLR0912
     """Filters the database according to the filter criteria.
 
     Keyword arguments:
@@ -559,7 +559,7 @@ def init_database():
     return False
 
 
-def prepare_form_input(form_data: dict):
+def prepare_form_input(form_data: dict):  # noqa: PLR0912, PLR0915
     """Formats the formData extracted from the user's inputs."""
 
     min_qubits = -1

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from mqt.bench.utils import get_estimation_problem
 from qiskit.algorithms import AmplitudeEstimation
+
+from mqt.bench.utils import get_estimation_problem
 
 
 def create_circuit(num_qubits: int):

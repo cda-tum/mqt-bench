@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 import pytest
+
 from mqt.benchviewer import backend
 from mqt.benchviewer.main import app, init
 
@@ -261,7 +262,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 3  # noqa: PLR2004
+    assert len(res) > 3
 
     input_data = (
         (110, 120),
@@ -271,7 +272,7 @@ def test_create_database():
         ((False, False), ([], []), []),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 15  # noqa: PLR2004
+    assert len(res) > 15
 
     input_data = (
         (75, 110),
@@ -281,7 +282,7 @@ def test_create_database():
         ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m2"]),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20  # noqa: PLR2004
+    assert len(res) > 20
 
     input_data = (
         (2, 5),
@@ -295,7 +296,7 @@ def test_create_database():
         ),
     )
     res = backend.get_selected_file_paths(input_data)
-    assert len(res) > 20  # noqa: PLR2004
+    assert len(res) > 20
 
     input_data = (
         (2, 130),
