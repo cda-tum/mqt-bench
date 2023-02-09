@@ -7,7 +7,7 @@ from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
@@ -320,6 +320,7 @@ ERROR_MSG = "\n Problem occurred in outer loop: "
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
+    init_module_paths()
     try:
         # Creating the circuit on Algorithmic Description level
         lib = import_module(benchmarks_module_paths_dict[benchmark["name"]])

@@ -13,13 +13,13 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
     import importlib_metadata as metadata
     import importlib_resources as resources
 
-qasm_path = "mqt/benchviewer/static/files/qasm_output/"
+qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
 def get_supported_benchmarks():

@@ -6,7 +6,7 @@ import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-from mqt.bench import get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import generate, get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -614,6 +614,48 @@ def test_configure_end():
         f.unlink()
     Path(test_qasm_output_path).rmdir()
     utils.set_qasm_output_path()
+
+
+def test_benchmark_creation(monkeypatch):
+    import json
+
+    config = {
+        "timeout": 120,
+        "benchmarks": [
+            {
+                "name": benchmark,
+                "include": True,
+                "min_qubits": 3,
+                "max_qubits": 4,
+                "stepsize": 1,
+                "ancillary_mode": ["noancilla", "v-chain"],
+                "instances": ["small"],
+                "min_index": 1,
+                "max_index": 2,
+                "min_nodes": 2,
+                "max_nodes": 3,
+                "min_uncertainty": 2,
+                "max_uncertainty": 3,
+            }
+            for benchmark in utils.get_supported_benchmarks()
+            if benchmark != "shor"
+        ],
+    }
+    with Path("test_config.json").open("w") as f:
+        json.dump(config, f)
+    monkeypatch.setattr("sys.argv", ["pytest", "--file-name", "test_config.json"])
+    generate()
+
+    benchmarks_path = utils.get_qasm_output_path()
+    assert len(list(Path(benchmarks_path).iterdir())) > 1000
+
+    Path("test_config.json").unlink()
+
+
+def test_zip_creation() -> None:
+    """Test the creation of the overall zip file."""
+    retcode = utils.create_zip_file()
+    assert retcode == 0
 
 
 @pytest.mark.parametrize(
