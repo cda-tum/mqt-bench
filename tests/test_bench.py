@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from mqt.bench import generate, get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
