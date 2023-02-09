@@ -4,6 +4,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
@@ -12,10 +13,11 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 
-if sys.version_info < (3, 10, 0):
-    import importlib_metadata as metadata
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+    from importlib import metadata, resources
 else:
-    from importlib import metadata
+    import importlib_metadata as metadata
+    import importlib_resources as resources
 
 qasm_path = "mqt/benchviewer/static/files/qasm_output/"
 
@@ -331,7 +333,8 @@ def postprocess_single_oqc_file(filename: str):
 
 
 def create_zip_file():
-    return subprocess.call(
-        "zip -rj ./mqt/benchviewer/static/files/MQTBench_all.zip ./mqt/benchviewer/static/files/qasm_output/",
-        shell=True,
-    )
+    benchviewer = resources.files("mqt.benchviewer")
+    with resources.as_file(benchviewer) as benchviewer_path:
+        zip_file = benchviewer_path / "static/files/MQTBench_all.zip"
+        qasm_output = benchviewer_path / "static/files/qasm_output"
+    return subprocess.call(f"zip -rj {zip_file} {qasm_output}", shell=True)
