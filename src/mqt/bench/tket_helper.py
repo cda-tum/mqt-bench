@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from mqt.bench import utils
 from pytket import OpType, architecture, circuit
 from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (
@@ -14,8 +15,6 @@ from pytket.passes import (
 from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
-
-from mqt.bench import utils
 
 
 def get_rebase(gate_set_name: str, get_gatenames: bool = False):

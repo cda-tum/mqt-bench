@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from qiskit import QuantumCircuit
 
-from qiskit.compiler import transpile
-
 from mqt.bench import utils
+from qiskit.compiler import transpile
 
 
 def get_native_gates(gate_set_name: str):

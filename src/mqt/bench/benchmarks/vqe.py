@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
+from mqt.bench.utils import get_examplary_max_cut_qp
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
-
-from mqt.bench.utils import get_examplary_max_cut_qp
 
 
 def create_circuit(num_qubits: int):

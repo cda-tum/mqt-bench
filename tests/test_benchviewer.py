@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 import pytest
-
 from mqt.benchviewer import backend
 from mqt.benchviewer.main import app, init
 
