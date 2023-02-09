@@ -3,6 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from pytket.extensions.qiskit import tk_to_qiskit
+from qiskit import QuantumCircuit
+
 from mqt.bench import generate, get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
@@ -32,8 +35,6 @@ from mqt.bench.benchmarks import (
     vqe,
     wstate,
 )
-from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import QuantumCircuit
 
 test_qasm_output_path = "./test_output/"
 
@@ -655,6 +656,10 @@ def test_zip_creation() -> None:
     """Test the creation of the overall zip file."""
     retcode = utils.create_zip_file()
     assert retcode == 0
+
+    zip_file = Path(utils.get_zip_file_path())
+    assert zip_file.is_file()
+    zip_file.unlink()
 
 
 @pytest.mark.parametrize(

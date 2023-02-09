@@ -71,7 +71,10 @@ def get_supported_devices():
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
+def set_qasm_output_path(new_path: str | None = None):
+    if new_path is None:
+        new_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
+
     global qasm_path
     qasm_path = new_path
 
@@ -79,6 +82,11 @@ def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_outp
 def get_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
     return qasm_path
+
+
+def get_zip_file_path():
+    """Returns the path where the zip file is stored."""
+    return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
 
 
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
@@ -333,8 +341,4 @@ def postprocess_single_oqc_file(filename: str):
 
 
 def create_zip_file():
-    benchviewer = resources.files("mqt.benchviewer")
-    with resources.as_file(benchviewer) as benchviewer_path:
-        zip_file = benchviewer_path / "static/files/MQTBench_all.zip"
-        qasm_output = benchviewer_path / "static/files/qasm_output"
-    return subprocess.call(f"zip -rj {zip_file} {qasm_output}", shell=True)
+    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
