@@ -48,12 +48,14 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7.2"]
 coverage = ["mqt.bench[test]", "pytest-cov[toml]"]
 dev = ["mqt.bench[coverage]"]
 
 [project.scripts]
 "mqt.bench" = "mqt.benchviewer.main:start_server"
+"create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
+"generate_mqt_bench" = "mqt.bench.benchmark_generator:generate"
 
 [project.urls]
 Homepage = "https://github.com/cda-tum/mqtbench"
@@ -61,10 +63,22 @@ Homepage = "https://github.com/cda-tum/mqtbench"
 Discussions = "https://github.com/cda-tum/mqtbench/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum/"
 
-[tool.setuptools.packages.find]
-include = ["mqt.*"]
-
 [tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+minversion = "7.2"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
+log_cli_level = "INFO"
+xfail_strict = true
+
+[tool.coverage.run]
+source = ["mqt.bench", "mqt.benchviewer"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+precision = 1
 
 [tool.black]
 line-length = 120
@@ -94,7 +108,11 @@ select = [
     "UP",          # pyupgrade
     "YTT",         # flake8-2020
 ]
-ignore = ["E501"]
+ignore = [
+    "PLR2004", # Magic values
+    "PLR0913", # Too many arguments
+    "E501",    # Line too long (Black is enough)
+]
 target-version = "py39"
 
 # Exclude a variety of commonly ignored directories.

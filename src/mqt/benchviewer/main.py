@@ -6,8 +6,7 @@ import sys
 from datetime import datetime
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
-
-from mqt.benchviewer.src import backend
+from mqt.benchviewer import backend
 
 app = Flask(__name__, static_url_path="/mqtbench")
 PREFIX = "/mqtbench/"

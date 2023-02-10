@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -20,7 +24,7 @@ jobs:
       - name: Install MQT Bench
         run: pip install -e .[coverage]
       - name: Generate Report
-        run: pytest -v --cov=./ --cov-report=xml
+        run: pytest -v --cov --cov-report=xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage to Codecov

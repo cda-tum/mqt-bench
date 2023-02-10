@@ -6,18 +6,16 @@ import signal
 from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
-from warnings import warn
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 from joblib import Parallel, delayed
+from mqt.bench import qiskit_helper, tket_helper, utils
+from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
-from mqt.bench.benchmarks import hhl, shor
-from mqt.bench.benchmarks.qiskit_application_finance import pricingcall, pricingput
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate
-from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
-from mqt.bench.utils import qiskit_helper, tket_helper, utils
+benchmarks_module_paths_dict: dict[str, str] = {}
+timeout: int = 0
 
 
 def init_module_paths():
@@ -45,7 +43,7 @@ def init_module_paths():
     }
 
 
-def create_benchmarks_from_config(cfg_path: str):
+def create_benchmarks_from_config(cfg_path: str = "./config.json") -> bool:
     init_module_paths()
 
     with Path(cfg_path).open() as jsonfile:
@@ -55,9 +53,7 @@ def create_benchmarks_from_config(cfg_path: str):
     global timeout
     timeout = cfg["timeout"]
 
-    global qasm_output_folder
-    qasm_output_folder = utils.get_qasm_output_path()
-    Path(qasm_output_folder).mkdir(exist_ok=True, parents=True)
+    Path(utils.get_qasm_output_path()).mkdir(exist_ok=True, parents=True)
 
     Parallel(n_jobs=-1, verbose=100)(delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"])
     return True
@@ -127,7 +123,7 @@ def qc_creation_watcher(func, args):
     return qc, num_qubits, file_precheck
 
 
-def generate_benchmark(benchmark):
+def generate_benchmark(benchmark):  # noqa: PLR0912, PLR0915
     if benchmark["include"]:
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             for anc_mode in benchmark["ancillary_mode"]:
@@ -323,6 +319,7 @@ ERROR_MSG = "\n Problem occurred in outer loop: "
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
+    init_module_paths()
     try:
         # Creating the circuit on Algorithmic Description level
         lib = import_module(benchmarks_module_paths_dict[benchmark["name"]])
@@ -431,51 +428,7 @@ def create_pricingput_qc(num_uncertainty: int):
         raise e from None
 
 
-def get_one_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int = None,
-    benchmark_instance_name: str = None,
-    compiler: str = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] = None,
-    gate_set_name: str = "ibm",
-    device_name: str = "ibm_washington",
-):
-    """Returns one benchmark as a Qiskit::QuantumCircuit Object. Deprecated method, please use 'get_benchmark' instead.
-
-    Keyword arguments:
-    benchmark_name -- name of the to be generated benchmark
-    level -- Choice of level, either as a string ("alg", "indep", "gates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
-    circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
-    benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
-    compiler -- "qiskit" or "tket"
-    compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
-    gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "aspen_m2", "ionq11", ""lucy""
-
-    Return values:
-    Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
-    """
-
-    warn(
-        "'get_one_benchmark' is deprecated and will be removed in the future. Please use the 'get_benchmark' method with the same parameters.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    return get_benchmark(
-        benchmark_name=benchmark_name,
-        level=level,
-        circuit_size=circuit_size,
-        benchmark_instance_name=benchmark_instance_name,
-        compiler=compiler,
-        compiler_settings=compiler_settings,
-        gate_set_name=gate_set_name,
-        device_name=device_name,
-    )
-
-
-def get_benchmark(
+def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
     circuit_size: int = None,
@@ -651,16 +604,8 @@ def get_benchmark(
     raise ValueError(msg)
 
 
-if __name__ == "__main__":
-    init_module_paths()
-
+def generate():
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
-
     args = parser.parse_args()
-
-    print("#### Start generating")
     create_benchmarks_from_config(args.file_name)
-    print("#### Start zipping")
-    # utils.create_zip_file()
-    print("#### Generation ended")

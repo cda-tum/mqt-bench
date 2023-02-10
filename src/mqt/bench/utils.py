@@ -4,6 +4,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
@@ -12,12 +13,13 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 
-if sys.version_info < (3, 10, 0):
-    import importlib_metadata as metadata
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
+    from importlib import metadata, resources
 else:
-    from importlib import metadata
+    import importlib_metadata as metadata
+    import importlib_resources as resources
 
-qasm_path = "mqt/benchviewer/static/files/qasm_output/"
+qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
 def get_supported_benchmarks():
@@ -69,7 +71,10 @@ def get_supported_devices():
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_output/"):
+def set_qasm_output_path(new_path: str | None = None):
+    if new_path is None:
+        new_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
+
     global qasm_path
     qasm_path = new_path
 
@@ -77,6 +82,11 @@ def set_qasm_output_path(new_path: str = "mqt/benchviewer/static/files/qasm_outp
 def get_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
     return qasm_path
+
+
+def get_zip_file_path():
+    """Returns the path where the zip file is stored."""
+    return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
 
 
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
@@ -147,7 +157,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
-            if i == 6:  # noqa: PLR2004
+            if i == 6:
                 c_map_rigetti.append([0 + j * 8, 7 + j * 8])
 
         if j != 0:
@@ -159,7 +169,7 @@ def get_rigetti_aspen_m2_map():
         for i in range(0, 7):
             c_map_rigetti.append([i + m, i + 1 + m])
 
-            if i == 6:  # noqa: PLR2004
+            if i == 6:
                 c_map_rigetti.append([0 + m, 7 + m])
 
         if j != 0:
@@ -331,7 +341,4 @@ def postprocess_single_oqc_file(filename: str):
 
 
 def create_zip_file():
-    return subprocess.call(
-        "zip -rj ./mqt/benchviewer/static/files/MQTBench_all.zip ./mqt/benchviewer/static/files/qasm_output/",
-        shell=True,
-    )
+    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)

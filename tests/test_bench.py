@@ -3,44 +3,42 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import QuantumCircuit
-
-from mqt.bench.benchmark_generator import get_benchmark
+from mqt.bench import get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
     ghz,
     graphstate,
+    groundstate,
     grover,
     hhl,
-    qaoa,
-    qft,
-    qftentangled,
-    qpeexact,
-    qpeinexact,
-    qwalk,
-    realamprandom,
-    shor,
-    su2random,
-    twolocalrandom,
-    vqe,
-    wstate,
-)
-from mqt.bench.benchmarks.qiskit_application_finance import (
     portfolioqaoa,
     portfoliovqe,
     pricingcall,
     pricingput,
+    qaoa,
+    qft,
+    qftentangled,
+    qgan,
+    qpeexact,
+    qpeinexact,
+    qwalk,
+    realamprandom,
+    routing,
+    shor,
+    su2random,
+    tsp,
+    twolocalrandom,
+    vqe,
+    wstate,
 )
-from mqt.bench.benchmarks.qiskit_application_ml import qgan
-from mqt.bench.benchmarks.qiskit_application_nature import groundstate
-from mqt.bench.benchmarks.qiskit_application_optimization import routing, tsp
-from mqt.bench.utils import qiskit_helper, tket_helper, utils
+from pytket.extensions.qiskit import tk_to_qiskit
+from qiskit import QuantumCircuit
+
+test_qasm_output_path = "./test_output/"
 
 
 def test_configure_begin():
-    test_qasm_output_path = "./test_output/"
     Path(test_qasm_output_path).mkdir(parents=True, exist_ok=True)
     utils.set_qasm_output_path(test_qasm_output_path)
     assert utils.get_qasm_output_path() == test_qasm_output_path
@@ -610,11 +608,57 @@ def test_get_benchmark(
 
 def test_configure_end():
     # delete all files in the test directory and the directory itself
-    test_qasm_output_path = Path("./test_output/")
+
     for f in Path(test_qasm_output_path).iterdir():
         f.unlink()
-    test_qasm_output_path.rmdir()
+    Path(test_qasm_output_path).rmdir()
     utils.set_qasm_output_path()
+
+
+# def test_benchmark_creation(monkeypatch):
+#     import json
+#
+#     config = {
+#         "timeout": 120,
+#         "benchmarks": [
+#             {
+#                 "name": benchmark,
+#                 "include": True,
+#                 "min_qubits": 3,
+#                 "max_qubits": 4,
+#                 "stepsize": 1,
+#                 "ancillary_mode": ["noancilla", "v-chain"],
+#                 "instances": ["small"],
+#                 "min_index": 1,
+#                 "max_index": 2,
+#                 "min_nodes": 2,
+#                 "max_nodes": 3,
+#                 "min_uncertainty": 2,
+#                 "max_uncertainty": 3,
+#             }
+#             for benchmark in utils.get_supported_benchmarks()
+#             if benchmark != "shor"
+#         ],
+#     }
+#     with Path("test_config.json").open("w") as f:
+#         json.dump(config, f)
+#     monkeypatch.setattr("sys.argv", ["pytest", "--file-name", "test_config.json"])
+#     generate()
+#
+#     benchmarks_path = utils.get_qasm_output_path()
+#     assert len(list(Path(benchmarks_path).iterdir())) > 1000
+#
+#     Path("test_config.json").unlink()
+
+
+def test_zip_creation() -> None:
+    """Test the creation of the overall zip file."""
+    retcode = utils.create_zip_file()
+    assert retcode == 0
+
+    zip_file = Path(utils.get_zip_file_path())
+    assert zip_file.is_file()
+    zip_file.unlink()
 
 
 @pytest.mark.parametrize(
