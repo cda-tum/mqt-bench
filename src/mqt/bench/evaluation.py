@@ -1,44 +1,52 @@
 from __future__ import annotations
 
-import sys
 import pickle
+import sys
 from typing import TYPE_CHECKING, Any
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import metadata, resources
-else:
-    import importlib_metadata as metadata
-    import importlib_resources as resources
 
-from qiskit.transpiler.passes import RemoveBarriers
-from joblib import Parallel, delayed
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
+    pass
+else:
+    pass
+
 from pathlib import Path
-from qiskit import QuantumCircuit, QuantumRegister
+
 import numpy as np
+from joblib import Parallel, delayed
 from mqt.bench import utils
+from qiskit import QuantumCircuit, QuantumRegister
+from qiskit.transpiler.passes import RemoveBarriers
+
 
 def create_statistics_from_qasm_files():
-
     source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
 
     res = Parallel(n_jobs=-1, verbose=100)(
-        delayed(evaluate_qasm_file)(filename)
-        for filename in source_circuits_list[:10000]
+        delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list[:10000]
     )
     target_dir = Path("/Users/nils/Documents/repos/MQTBench/")
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
         pickle.dump(res, f)
 
-def evaluate_qasm_file(filename: str) -> tuple[str,int, int, int, int]:
+
+def evaluate_qasm_file(filename: str) -> tuple[str, int, int, int, int]:
     print(filename)
     qc = QuantumCircuit.from_qasm_file(filename)
     qc.remove_final_measurements(inplace=True)
-    (program_communication,
-    critical_depth,
-    entanglement_ratio,
-    parallelism,
-    liveness) = calc_supermarq_features(qc)
+    (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = calc_supermarq_features(qc)
 
-    return filename, qc.num_qubits, qc.depth(), sum(qc.count_ops().values()), qc.num_nonlocal_gates(), program_communication, critical_depth, entanglement_ratio, parallelism, liveness
+    return (
+        filename,
+        qc.num_qubits,
+        qc.depth(),
+        sum(qc.count_ops().values()),
+        qc.num_nonlocal_gates(),
+        program_communication,
+        critical_depth,
+        entanglement_ratio,
+        parallelism,
+        liveness,
+    )
 
 
 def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int) -> Any:
@@ -51,6 +59,7 @@ def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int)
             return qubit_index
     error_msg = "Qubit not found."
     raise ValueError(error_msg)
+
 
 def calc_supermarq_features(
     qc: QuantumCircuit,
