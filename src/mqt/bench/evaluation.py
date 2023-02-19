@@ -22,7 +22,7 @@ def create_statistics_from_qasm_files():
     source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
 
     res = Parallel(n_jobs=-1, verbose=100)(
-        delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list[:10000]
+        delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list
     )
     target_dir = Path("/Users/nils/Documents/repos/MQTBench/")
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
