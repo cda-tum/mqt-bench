@@ -64,7 +64,7 @@ repos:
         types_or: [yaml, markdown, html, css, javascript, json]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.246
+    rev: v0.0.248
     hooks:
       - id: ruff
         args: ["--fix"]
