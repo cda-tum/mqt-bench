@@ -21,23 +21,20 @@ from qiskit.transpiler.passes import RemoveBarriers
 def create_statistics_from_qasm_files():
     source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
 
-    res = Parallel(n_jobs=-1, verbose=100)(
-        delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list
-    )
+    res = Parallel(n_jobs=-1, verbose=100)(delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list)
     target_dir = Path("/Users/nils/Documents/repos/MQTBench/")
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
         pickle.dump(res, f)
 
 
-def evaluate_qasm_file(filename: str) -> tuple[str, int, int, int, int]:
+def evaluate_qasm_file(filename: str) -> tuple[str, int, int, int, int, float, float, float, float, float]:
     print(filename)
     qc = QuantumCircuit.from_qasm_file(filename)
     qc.remove_final_measurements(inplace=True)
     (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = calc_supermarq_features(qc)
-
     return (
         filename,
-        qc.num_qubits,
+        int(str(filename).split("_")[-1].split(".")[0]),
         qc.depth(),
         sum(qc.count_ops().values()),
         qc.num_nonlocal_gates(),
