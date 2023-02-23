@@ -48,6 +48,11 @@ repos:
         additional_dependencies:
           - black==23.1.0 # keep in sync with black hook
 
+  # Clean jupyter notebooks
+  - repo: https://github.com/srstevenson/nb-clean
+    rev: "2.4.0"
+    hooks:
+      - id: nb-clean
   # Check for spelling
   - repo: https://github.com/codespell-project/codespell
     rev: "v2.2.2"
