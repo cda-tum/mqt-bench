@@ -1,1 +1,1 @@
-from mqt.bench.evaluation import create_statistics
+from mqt.bench.evaluation.evaluation import evaluate_qasm_file, create_statistics

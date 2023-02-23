@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from mqt.bench import get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import evaluation, get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -762,4 +762,23 @@ def test_oqc_postprocessing():
         target_filename=filename,
     )
     assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
+
+
+NUM_EVAL_ATTRIBUTES = 10
+
+
+def test_evaluate_qasm_file():
+    qc = get_benchmark("dj", 1, 5)
+    filename = "test_5.qasm"
+    qc.qasm(filename=filename)
+    path = Path(filename)
+    res = evaluation.evaluate_qasm_file(filename)
+    assert len(res) == NUM_EVAL_ATTRIBUTES
+    assert res[0] == filename
+    for elem in res[1:5]:
+        assert isinstance(elem, int)
+    for elem in res[5:]:
+        assert isinstance(elem, float)
+
     path.unlink()
