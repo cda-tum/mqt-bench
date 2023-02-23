@@ -17,12 +17,17 @@ from mqt.bench import utils
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.transpiler.passes import RemoveBarriers
 
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
+    from importlib import resources
+else:
+    import importlib_resources as resources
 
-def create_statistics_from_qasm_files():
+
+def create_statistics() -> None:
     source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
 
     res = Parallel(n_jobs=-1, verbose=100)(delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list)
-    target_dir = Path("/Users/nils/Documents/repos/MQTBench/")
+    target_dir = Path(resources.files("mqt.bench") / "evaluation/")
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
         pickle.dump(res, f)
 
@@ -114,6 +119,3 @@ def calc_supermarq_features(
         parallelism,
         liveness,
     )
-
-
-create_statistics_from_qasm_files()
