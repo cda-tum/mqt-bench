@@ -21,11 +21,8 @@ def create_statistics() -> None:
         delayed(evaluate_qasm_file)(str(filename)) for filename in source_circuits_list
     )
     target_dir = Path(resources.files("mqt.bench") / "evaluation/")
-    res_list = []
-    for res in res_dicts:
-        res_list.append(list(res.values()))
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
-        pickle.dump(res_list, f)
+        pickle.dump(res_dicts, f)
 
 
 class EvaluationResult(TypedDict):
