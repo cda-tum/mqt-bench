@@ -1,4 +1,4 @@
-name-template: "MQT Bench $RESOLVED_VERSION Release"
+name-template: "MQTBench $RESOLVED_VERSION Release"
 tag-template: "v$RESOLVED_VERSION"
 categories:
   - title: "🚀 Features and Enhancements"
