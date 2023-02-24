@@ -774,11 +774,6 @@ def test_evaluate_qasm_file():
     qc.qasm(filename=filename)
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
-    assert len(res) == NUM_EVAL_ATTRIBUTES
-    assert res[0] == filename
-    for elem in res[1:5]:
-        assert isinstance(elem, int)
-    for elem in res[5:]:
-        assert isinstance(elem, float)
+    assert len(res.values()) == NUM_EVAL_ATTRIBUTES
 
     path.unlink()
