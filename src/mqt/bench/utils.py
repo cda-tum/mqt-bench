@@ -353,7 +353,7 @@ def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int)
         else:
             qubit_index = offset + reg.index(qargs[index])
             return qubit_index
-    error_msg = "Qubit not found."
+    error_msg = "Global qubit index for given local qubit index not found."
     raise ValueError(error_msg)
 
 
