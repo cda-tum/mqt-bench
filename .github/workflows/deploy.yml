@@ -12,6 +12,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+env:
+  DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  CDA_HOST_NAME: tueicda-cda.srv.mwn.de
+  CDA_USER_NAME: web-user
+  CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
+
 jobs:
   build_wheel:
     name: Build wheel
@@ -77,3 +84,23 @@ jobs:
           password: ${{ secrets.pypi_password }}
           skip_existing: true
           verbose: true
+
+  upload_webserver:
+    needs: upload_pypi
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - name: Create version file
+        run: |
+          echo "version = \"$(git describe --tags --always)\"" > mqtbench_version.txt
+      - name: Setup SSH via the stored Action Secrets
+        run: |
+          mkdir -p ~/.ssh
+          echo "${KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+          echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
+          echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
+          chmod -R 700 ~/.ssh
+      - name: Copy version file to the webserver
+        working-directory: ${{ github.workspace }}
+        run: |
+          rsync -avz -e ssh mqtbench_version.txt ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}/mqtbench_version.txt
