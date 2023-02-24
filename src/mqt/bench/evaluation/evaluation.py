@@ -57,4 +57,3 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult:
         "parallelism": parallelism,
         "liveness": liveness,
     }
-
