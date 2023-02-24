@@ -345,7 +345,7 @@ def create_zip_file():
     return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
 
 
-def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int) -> Any:
+def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int) -> int:
     offset = 0
     for reg in qregs:
         if qargs[index] not in reg:
