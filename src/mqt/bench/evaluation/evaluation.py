@@ -58,5 +58,3 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult:
         "liveness": liveness,
     }
 
-
-create_statistics()
