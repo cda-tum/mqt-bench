@@ -41,7 +41,6 @@ class EvaluationResult(TypedDict):
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
     print(filename)
     qc = QuantumCircuit.from_qasm_file(filename)
-    qc.remove_final_measurements(inplace=True)
     (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = utils.calc_supermarq_features(
         qc
     )

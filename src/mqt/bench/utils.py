@@ -360,6 +360,7 @@ def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int)
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> tuple[float, float, float, float, float]:
+    qc.remove_final_measurements(inplace=True)
     qc = RemoveBarriers()(qc)
     connectivity_collection: list[list[int]] = []
     liveness_A_matrix = 0
