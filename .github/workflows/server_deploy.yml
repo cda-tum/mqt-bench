@@ -23,7 +23,7 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout git to get the version
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Create version file
