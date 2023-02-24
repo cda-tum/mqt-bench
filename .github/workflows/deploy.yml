@@ -90,6 +90,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Create version file
         run: |
           echo "version = \"$(git describe --tags --always)\"" > mqtbench_version.txt
