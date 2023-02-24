@@ -3,7 +3,7 @@ from __future__ import annotations
 import pickle
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from joblib import Parallel, delayed
 from mqt.bench import utils
@@ -44,7 +44,7 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult:
     (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = utils.calc_supermarq_features(
         qc
     )
-    return {
+    res_dict = {
         "filename": filename,
         "num_qubits": int(str(filename).split("_")[-1].split(".")[0]),
         "depth": qc.depth(),
@@ -56,6 +56,7 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult:
         "parallelism": parallelism,
         "liveness": liveness,
     }
+    return cast(EvaluationResult, res_dict)
 
 
 def count_occurrences(filenames: list[str], search_str: str) -> int:
