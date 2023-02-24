@@ -18,15 +18,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-      - name: Install wheel
-        run: pip install wheel
-      - name: Install MQT Bench
-        run: pip install .
+      - name: Create version file
+        run: |
+          echo "version = \"$(git describe --tags --always)\"" > mqtbench_version.txt
       - name: Setup SSH via the stored Action Secrets
         run: |
           mkdir -p ~/.ssh
@@ -34,7 +28,7 @@ jobs:
           echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
           echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
           chmod -R 700 ~/.ssh
-      - name: Deployment on Webserver
+      - name: Copy version file to the webserver
         working-directory: ${{ github.workspace }}
         run: |
-          rsync -avz --update -e ssh --cvs-exclude --exclude "*__pycache__/" --exclude "*.egg-info/" --exclude "*.qasm" . ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}
+          rsync -avz -e ssh mqtbench_version.txt ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}/mqtbench_version.txt
