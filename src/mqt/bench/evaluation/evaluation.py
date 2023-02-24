@@ -2,14 +2,8 @@ from __future__ import annotations
 
 import pickle
 import sys
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    pass
-else:
-    pass
-
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from joblib import Parallel, delayed
