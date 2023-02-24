@@ -18,6 +18,10 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout git to get the version
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Create version file
         run: |
           echo "version = \"$(git describe --tags --always)\"" > mqtbench_version.txt
