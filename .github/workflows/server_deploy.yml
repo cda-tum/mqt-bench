@@ -1,8 +1,11 @@
 # Based on: https://zartman.xyz/blog/gh-static-deploy/
 name: Server Deployment
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Deploy to PyPI"]
+    branches: [main]
+    types:
+      - completed
   workflow_dispatch:
 
 env:
