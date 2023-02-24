@@ -3,7 +3,7 @@ from __future__ import annotations
 import pickle
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import numpy as np
 from joblib import Parallel, delayed
@@ -19,30 +19,47 @@ else:
 
 def create_statistics() -> None:
     source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
-
-    res = Parallel(n_jobs=-1, verbose=100)(delayed(evaluate_qasm_file)(filename) for filename in source_circuits_list)
+    res_dicts = Parallel(n_jobs=-1, verbose=100)(
+        delayed(evaluate_qasm_file)(str(filename)) for filename in source_circuits_list
+    )
     target_dir = Path(resources.files("mqt.bench") / "evaluation/")
+    res_list = []
+    for res in res_dicts:
+        res_list.append(list(res.values()))
     with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
-        pickle.dump(res, f)
+        pickle.dump(res_list, f)
 
 
-def evaluate_qasm_file(filename: str) -> tuple[str, int, int, int, int, float, float, float, float, float]:
+class EvaluationResult(TypedDict):
+    filename: str
+    num_qubits: int
+    depth: int
+    num_gates: int
+    num_multiple_qubit_gates: int
+    program_communication: float
+    critical_depth: float
+    entanglement_ratio: float
+    parallelism: float
+    liveness: float
+
+
+def evaluate_qasm_file(filename: str) -> EvaluationResult:
     print(filename)
     qc = QuantumCircuit.from_qasm_file(filename)
     qc.remove_final_measurements(inplace=True)
     (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = calc_supermarq_features(qc)
-    return (
-        filename,
-        int(str(filename).split("_")[-1].split(".")[0]),
-        qc.depth(),
-        sum(qc.count_ops().values()),
-        qc.num_nonlocal_gates(),
-        program_communication,
-        critical_depth,
-        entanglement_ratio,
-        parallelism,
-        liveness,
-    )
+    return {
+        "filename": filename,
+        "num_qubits": int(str(filename).split("_")[-1].split(".")[0]),
+        "depth": qc.depth(),
+        "num_gates": sum(qc.count_ops().values()),
+        "num_multiple_qubit_gates": qc.num_nonlocal_gates(),
+        "program_communication": program_communication,
+        "critical_depth": critical_depth,
+        "entanglement_ratio": entanglement_ratio,
+        "parallelism": parallelism,
+        "liveness": liveness,
+    }
 
 
 def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int) -> Any:
@@ -113,3 +130,6 @@ def calc_supermarq_features(
         parallelism,
         liveness,
     )
+
+
+create_statistics()
