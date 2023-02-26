@@ -33,7 +33,7 @@ class EvaluationResult:
     depth: int
     num_gates: int
     num_multiple_qubit_gates: int
-    supermarq_features: dict[str, float]
+    supermarq_features: utils.SupermarqFeatures
 
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
