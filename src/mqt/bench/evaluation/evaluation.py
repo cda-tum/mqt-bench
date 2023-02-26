@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import pickle
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TYPE_CHECKING
 
 from joblib import Parallel, delayed
 from mqt.bench import utils
@@ -25,7 +26,8 @@ def create_statistics() -> None:
         pickle.dump(res_dicts, f)
 
 
-class EvaluationResult(TypedDict):
+@dataclass
+class EvaluationResult:
     filename: str
     num_qubits: int
     depth: int
@@ -44,19 +46,18 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult:
     (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = utils.calc_supermarq_features(
         qc
     )
-    res_dict = {
-        "filename": filename,
-        "num_qubits": int(str(filename).split("_")[-1].split(".")[0]),
-        "depth": qc.depth(),
-        "num_gates": sum(qc.count_ops().values()),
-        "num_multiple_qubit_gates": qc.num_nonlocal_gates(),
-        "program_communication": program_communication,
-        "critical_depth": critical_depth,
-        "entanglement_ratio": entanglement_ratio,
-        "parallelism": parallelism,
-        "liveness": liveness,
-    }
-    return cast(EvaluationResult, res_dict)
+    return EvaluationResult(
+        filename=filename,
+        num_qubits=int(str(filename).split("_")[-1].split(".")[0]),
+        depth=qc.depth(),
+        num_gates=sum(qc.count_ops().values()),
+        num_multiple_qubit_gates=qc.num_nonlocal_gates(),
+        program_communication=program_communication,
+        critical_depth=critical_depth,
+        entanglement_ratio=entanglement_ratio,
+        parallelism=parallelism,
+        liveness=liveness,
+    )
 
 
 def count_occurrences(filenames: list[str], search_str: str) -> int:
