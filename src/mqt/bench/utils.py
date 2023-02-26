@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
-from qiskit import QuantumCircuit, QuantumRegister, __qiskit_version__
+from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit.transpiler.passes import RemoveBarriers
@@ -19,6 +19,9 @@ if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
 else:
     import importlib_metadata as metadata
     import importlib_resources as resources
+
+if TYPE_CHECKING:
+    from qiskit.circuit import QuantumRegister, Qubit
 
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
@@ -345,7 +348,7 @@ def create_zip_file():
     return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
 
 
-def calc_qubit_index(qargs: list[Any], qregs: list[QuantumRegister], index: int) -> int:
+def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: int) -> int:
     offset = 0
     for reg in qregs:
         if qargs[index] not in reg:
