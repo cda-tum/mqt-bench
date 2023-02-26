@@ -33,30 +33,20 @@ class EvaluationResult:
     depth: int
     num_gates: int
     num_multiple_qubit_gates: int
-    program_communication: float
-    critical_depth: float
-    entanglement_ratio: float
-    parallelism: float
-    liveness: float
+    supermarq_features: dict[str, float]
 
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
     print(filename)
     qc = QuantumCircuit.from_qasm_file(filename)
-    (program_communication, critical_depth, entanglement_ratio, parallelism, liveness) = utils.calc_supermarq_features(
-        qc
-    )
+    supermarq_features = utils.calc_supermarq_features(qc)
     return EvaluationResult(
         filename=filename,
         num_qubits=int(str(filename).split("_")[-1].split(".")[0]),
         depth=qc.depth(),
         num_gates=sum(qc.count_ops().values()),
         num_multiple_qubit_gates=qc.num_nonlocal_gates(),
-        program_communication=program_communication,
-        critical_depth=critical_depth,
-        entanglement_ratio=entanglement_ratio,
-        parallelism=parallelism,
-        liveness=liveness,
+        supermarq_features=supermarq_features,
     )
 
 
