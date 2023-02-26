@@ -822,3 +822,9 @@ def test_count_occurrences(search_str: str, expected_val: int) -> None:
 )
 def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int]) -> None:
     assert evaluation.count_qubit_numbers_per_compiler(FILENAMES, compiler) == expected_val
+
+
+def test_calc_supermarq_features() -> None:
+    qc = get_benchmark("dj", 1, 5)
+    features = utils.calc_supermarq_features(qc)
+    assert type(features) == utils.SupermarqFeatures

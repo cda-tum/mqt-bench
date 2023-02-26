@@ -23,6 +23,18 @@ else:
 if TYPE_CHECKING:
     from qiskit.circuit import QuantumRegister, Qubit
 
+from dataclasses import dataclass
+
+
+@dataclass
+class SupermarqFeatures:
+    program_communication: float
+    critical_depth: float
+    entanglement_ratio: float
+    parallelism: float
+    liveness: float
+
+
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
@@ -410,7 +422,7 @@ def calc_supermarq_features(
     assert 0 <= parallelism <= 1
     assert 0 <= liveness <= 1
 
-    return (
+    return SupermarqFeatures(
         program_communication,
         critical_depth,
         entanglement_ratio,
