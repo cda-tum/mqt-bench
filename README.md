@@ -3,7 +3,6 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/cda-tum/MQTBench/coverage.yml?branch=main&style=flat-square&logo=github&label=coverage)](https://github.com/cda-tum/MQTBench/actions/workflows/coverage.yml)
 [![Bindings](https://img.shields.io/github/actions/workflow/status/cda-tum/MQTBench/deploy.yml?branch=main&style=flat-square&logo=github&label=python)](https://github.com/cda-tum/MQTBench/actions/workflows/deploy.yml)
 [![codecov](https://img.shields.io/codecov/c/github/cda-tum/MQTBench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/MQTBench)
-[![Server Deployment](https://img.shields.io/github/actions/workflow/status/cda-tum/MQTBench/server_deploy.yml?branch=main&style=flat-square&logo=github&label=deployment)](https://github.com/cda-tum/MQTBench/actions/workflows/server_deploy.yml)
 
 <p align="center">
 <picture>
