@@ -37,14 +37,13 @@ class EvaluationResult:
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
     qc = QuantumCircuit.from_qasm_file(filename)
-    supermarq_features = utils.calc_supermarq_features(qc)
     return EvaluationResult(
         filename=filename,
         num_qubits=int(str(filename).split("_")[-1].split(".")[0]),
         depth=qc.depth(),
         num_gates=sum(qc.count_ops().values()),
         num_multiple_qubit_gates=qc.num_nonlocal_gates(),
-        supermarq_features=supermarq_features,
+        supermarq_features=utils.calc_supermarq_features(qc),
     )
 
 
