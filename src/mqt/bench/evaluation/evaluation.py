@@ -37,7 +37,7 @@ class EvaluationResult:
 
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
-    print(filename)
+    print("Evaluating:", filename)
     qc = QuantumCircuit.from_qasm_file(filename)
     supermarq_features = utils.calc_supermarq_features(qc)
     return EvaluationResult(
@@ -56,3 +56,5 @@ def count_occurrences(filenames: list[str], search_str: str) -> int:
 
 def count_qubit_numbers_per_compiler(filenames: list[str], compiler: str) -> list[int]:
     return [int(str(filename).split("_")[-1].split(".")[0]) for filename in filenames if compiler in filename]
+
+create_statistics()
