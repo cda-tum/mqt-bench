@@ -21,8 +21,7 @@ def create_statistics() -> None:
     res_dicts = Parallel(n_jobs=-1, verbose=100)(
         delayed(evaluate_qasm_file)(str(filename)) for filename in source_circuits_list
     )
-    target_dir = Path(resources.files("mqt.bench") / "evaluation/")
-    with Path(target_dir / "evaluation_data.pkl").open("wb") as f:
+    with (resources.files("mqt.bench") / "evaluation" / "evaluation_data.pkl").open("wb") as f:
         pickle.dump(res_dicts, f)
 
 
