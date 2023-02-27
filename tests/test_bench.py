@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from mqt.bench import get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import evaluation, get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -763,3 +763,65 @@ def test_oqc_postprocessing():
     )
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
+
+
+def test_evaluate_qasm_file():
+    qc = get_benchmark("dj", 1, 5)
+    filename = "test_5.qasm"
+    qc.qasm(filename=filename)
+    path = Path(filename)
+    res = evaluation.evaluate_qasm_file(filename)
+    assert type(res) == evaluation.EvaluationResult
+
+    path.unlink()
+
+
+FILENAMES = [
+    "ae_indep_qiskit_10.qasm",
+    "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
+    "ae_indep_tket_93.qasm",
+    "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
+    "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
+    "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
+    "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
+    "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
+    "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
+    "qgan_mapped_ionq11_qiskit_opt3_3.qasm",
+    "qgan_mapped_oqc_lucy_tket_line_2.qasm",
+]
+
+
+@pytest.mark.parametrize(
+    ("search_str", "expected_val"),
+    [
+        ("qiskit", 9),
+        ("tket", 2),
+        ("nativegates", 2),
+        ("indep", 2),
+        ("mapped", 7),
+        ("mapped_ibm_washington", 2),
+        ("mapped_ibm_montreal", 1),
+        ("mapped_oqc_lucy", 2),
+        ("mapped_rigetti_aspen_m2", 1),
+        ("mapped_ionq11", 1),
+    ],
+)
+def test_count_occurrences(search_str: str, expected_val: int) -> None:
+    assert evaluation.count_occurrences(FILENAMES, search_str) == expected_val
+
+
+@pytest.mark.parametrize(
+    ("compiler", "expected_val"),
+    [
+        ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3]),
+        ("tket", [93, 2]),
+    ],
+)
+def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int]) -> None:
+    assert evaluation.count_qubit_numbers_per_compiler(FILENAMES, compiler) == expected_val
+
+
+def test_calc_supermarq_features() -> None:
+    qc = get_benchmark("dj", 1, 5)
+    features = utils.calc_supermarq_features(qc)
+    assert type(features) == utils.SupermarqFeatures
