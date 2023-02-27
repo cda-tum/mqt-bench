@@ -4,7 +4,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
@@ -394,10 +394,9 @@ def calc_supermarq_features(
             to_be_added_entries.remove(int(qubit_index))
             connectivity_collection[int(qubit_index)].extend(to_be_added_entries)
 
-    connectivity: list[Any] = []
+    connectivity: list[int] = []
     for i in range(qc.num_qubits):
-        connectivity.append([])
-        connectivity[i] = len(set(connectivity_collection[i]))
+        connectivity.append(len(set(connectivity_collection[i])))
 
     num_gates = sum(qc.count_ops().values())
     num_multiple_qubit_gates = qc.num_nonlocal_gates()
