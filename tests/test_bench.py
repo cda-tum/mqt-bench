@@ -765,9 +765,6 @@ def test_oqc_postprocessing():
     path.unlink()
 
 
-NUM_EVAL_ATTRIBUTES = 10
-
-
 def test_evaluate_qasm_file():
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
