@@ -37,7 +37,6 @@ class EvaluationResult:
 
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
-    print("Evaluating:", filename)
     qc = QuantumCircuit.from_qasm_file(filename)
     supermarq_features = utils.calc_supermarq_features(qc)
     return EvaluationResult(
