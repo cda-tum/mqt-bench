@@ -14,38 +14,10 @@ from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
 
-benchmarks_module_paths_dict: dict[str, str] = {}
 timeout: int = 0
 
 
-def init_module_paths():
-    global benchmarks_module_paths_dict
-    benchmarks_module_paths_dict = {
-        "ae": "mqt.bench.benchmarks.ae",
-        "dj": "mqt.bench.benchmarks.dj",
-        "grover": "mqt.bench.benchmarks.grover",
-        "ghz": "mqt.bench.benchmarks.ghz",
-        "graphstate": "mqt.bench.benchmarks.graphstate",
-        "portfolioqaoa": "mqt.bench.benchmarks.qiskit_application_finance.portfolioqaoa",
-        "portfoliovqe": "mqt.bench.benchmarks.qiskit_application_finance.portfoliovqe",
-        "qaoa": "mqt.bench.benchmarks.qaoa",
-        "qft": "mqt.bench.benchmarks.qft",
-        "qftentangled": "mqt.bench.benchmarks.qftentangled",
-        "qgan": "mqt.bench.benchmarks.qiskit_application_ml.qgan",
-        "qpeexact": "mqt.bench.benchmarks.qpeexact",
-        "qpeinexact": "mqt.bench.benchmarks.qpeinexact",
-        "qwalk": "mqt.bench.benchmarks.qwalk",
-        "realamprandom": "mqt.bench.benchmarks.realamprandom",
-        "su2random": "mqt.bench.benchmarks.su2random",
-        "twolocalrandom": "mqt.bench.benchmarks.twolocalrandom",
-        "vqe": "mqt.bench.benchmarks.vqe",
-        "wstate": "mqt.bench.benchmarks.wstate",
-    }
-
-
 def create_benchmarks_from_config(cfg_path: str = "./config.json") -> bool:
-    init_module_paths()
-
     with Path(cfg_path).open() as jsonfile:
         cfg = json.load(jsonfile)
         print("Read config successful")
@@ -319,7 +291,7 @@ ERROR_MSG = "\n Problem occurred in outer loop: "
 
 def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
     file_precheck = True
-    init_module_paths()
+    benchmarks_module_paths_dict = utils.get_benchmarks_module_paths_dict()
     try:
         # Creating the circuit on Algorithmic Description level
         lib = import_module(benchmarks_module_paths_dict[benchmark["name"]])
@@ -454,7 +426,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
 
-    init_module_paths()
+    benchmarks_module_paths_dict = utils.get_benchmarks_module_paths_dict()
 
     if benchmark_name not in utils.get_supported_benchmarks():
         msg = f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
