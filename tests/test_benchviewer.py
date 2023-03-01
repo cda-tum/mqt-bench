@@ -251,11 +251,10 @@ def test_create_database():
     res_zip = backend.read_mqtbench_all_zip(
         skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
     )
-    if not res_zip:
-        return False
+    assert res_zip
 
     database = backend.init_database()
-    assert len(database) > 0
+    assert database
 
     input_data = (
         (2, 5),
@@ -310,14 +309,14 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert res == []
-    return None
+    return
 
 
 def test_flask_server():
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(benchviewer_location / "static/files")
-    print(target_location)
+
     assert Server(
         skip_question=True,
         activate_logging=False,
