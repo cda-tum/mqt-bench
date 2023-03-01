@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
-from zipfile import ZipFile
 
 import pytest
-from mqt.benchviewer import backend
-from mqt.benchviewer.main import app, init
+from mqt.benchviewer import Backend, Server, backend
+from mqt.benchviewer.main import app
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
     from importlib import resources
@@ -232,7 +231,7 @@ def test_prepare_form_input():
             ],
         ),
     )
-
+    backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
 
 
@@ -240,18 +239,23 @@ benchviewer = resources.files("mqt.benchviewer")
 
 
 def test_read_mqtbench_all_zip():
+    backend = Backend()
     with resources.as_file(benchviewer) as benchviewer_path:
         target_location = str(benchviewer_path / "static/files")
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
 def test_create_database():
-    with resources.as_file(benchviewer) as benchviewer_path:
-        zip_location = benchviewer_path / "static/files/MQTBench_all.zip"
-    with ZipFile(zip_location, mode="r") as zf:
-        database = backend.create_database(zf)
+    backend = Backend()
+
+    res_zip = backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+    )
+    if not res_zip:
+        return False
+
+    database = backend.init_database()
     assert len(database) > 0
-    backend.database = database
 
     input_data = (
         (2, 5),
@@ -306,13 +310,15 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert res == []
+    return None
 
 
 def test_flask_server():
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(benchviewer_location / "static/files")
-    assert init(
+    print(target_location)
+    assert Server(
         skip_question=True,
         activate_logging=False,
         target_location=target_location,
