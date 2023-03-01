@@ -411,7 +411,7 @@ class Backend:
             ),
         )
 
-    def create_database(zip_file: ZipFile):
+    def create_database(self, zip_file: ZipFile):
         """Creates the database based on the provided directories.
 
         Keyword arguments:
