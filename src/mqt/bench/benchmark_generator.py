@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import signal
+import sys
 from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,20 +11,44 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
+if sys.version_info >= (3, 10, 0):  # pragma: no cover
+    from importlib import resources
+else:
+    import importlib_resources as resources
+
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
-from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
+from mqt.bench.benchmarks import (
+    groundstate,
+    hhl,
+    pricingcall,
+    pricingput,
+    routing,
+    shor,
+    tsp,
+)
 
 
 class BenchmarkGenerator:
-    def __init__(self, cfg_path: str = "./config.json"):
+    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None):
         with Path(cfg_path).open() as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
         self.error_msg_outer_loop = "\n Problem occurred in outer loop: "
+        if qasm_output_path is None:
+            self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
+        else:
+            self.qasm_output_path = qasm_output_path
 
         Path(utils.get_qasm_output_path()).mkdir(exist_ok=True, parents=True)
+
+    def set_qasm_output_path(self, new_path: str):
+        self.qasm_path = new_path
+
+    def get_qasm_output_path(self):
+        """Returns the path where all .qasm files are stored."""
+        return
 
     def create_benchmarks_from_config(self) -> bool:
         Parallel(n_jobs=-1, verbose=100)(
@@ -172,7 +197,11 @@ class BenchmarkGenerator:
                     if not res:
                         break
             else:
-                for n in range(benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]):
+                for n in range(
+                    benchmark["min_qubits"],
+                    benchmark["max_qubits"],
+                    benchmark["stepsize"],
+                ):
                     res_qc_creation = self.qc_creation_watcher(self.create_scalable_qc, [benchmark, n])
                     if not res_qc_creation:
                         break
@@ -192,12 +221,16 @@ class BenchmarkGenerator:
     def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck):
         num_generated_circuits = 0
         res_indep_qiskit = self.benchmark_generation_watcher(
-            qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck]
+            qiskit_helper.get_indep_level,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
         )
         if res_indep_qiskit:
             num_generated_circuits += 1
 
-        res_indep_tket = self.benchmark_generation_watcher(tket_helper.get_indep_level, [qc, num_qubits, file_precheck])
+        res_indep_tket = self.benchmark_generation_watcher(
+            tket_helper.get_indep_level,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
+        )
         if res_indep_tket:
             num_generated_circuits += 1
 
@@ -222,6 +255,8 @@ class BenchmarkGenerator:
                         num_qubits,
                         opt_level,
                         file_precheck,
+                        False,
+                        self.qasm_output_path,
                     ],
                 )
                 if not res:
@@ -256,6 +291,8 @@ class BenchmarkGenerator:
                     gate_set_name,
                     num_qubits,
                     file_precheck,
+                    False,
+                    self.qasm_output_path,
                 ],
             )
             if not res:
@@ -275,6 +312,8 @@ class BenchmarkGenerator:
                                 device_name,
                                 lineplacement,
                                 file_precheck,
+                                False,
+                                self.qasm_output_path,
                             ],
                         )
                         if not res:
@@ -371,7 +410,12 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_pricingcall_benchmarks", num_uncertainty, e)
+            print(
+                self.error_msg_outer_loop,
+                "create_pricingcall_benchmarks",
+                num_uncertainty,
+                e,
+            )
             raise e from None
 
     def create_pricingput_qc(self, num_uncertainty: int):
@@ -382,7 +426,12 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_pricingput_benchmarks", num_uncertainty, e)
+            print(
+                self.error_msg_outer_loop,
+                "create_pricingput_benchmarks",
+                num_uncertainty,
+                e,
+            )
             raise e from None
 
 

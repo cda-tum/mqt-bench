@@ -87,17 +87,9 @@ def get_supported_devices():
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def set_qasm_output_path(new_path: str | None = None):
-    if new_path is None:
-        new_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
-
-    global qasm_path
-    qasm_path = new_path
-
-
 def get_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
-    return qasm_path
+    return str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
 def get_zip_file_path():

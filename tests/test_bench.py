@@ -35,13 +35,11 @@ from mqt.bench.benchmarks import (
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-test_qasm_output_path = "./test_output/"
+TEST_QASM_OUTPUT_PATH = "./test_output/"
 
 
 def test_configure_begin():
-    Path(test_qasm_output_path).mkdir(parents=True, exist_ok=True)
-    utils.set_qasm_output_path(test_qasm_output_path)
-    assert utils.get_qasm_output_path() == test_qasm_output_path
+    Path(TEST_QASM_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
 
 
 @pytest.mark.parametrize(
@@ -80,14 +78,38 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
+    res = qiskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        return_qc=False,
+        target_directory=TEST_QASM_OUTPUT_PATH,
+    )
     assert res
-    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
+    res = qiskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=TEST_QASM_OUTPUT_PATH,
+    )
     assert res
 
-    res = tket_helper.get_indep_level(qc, input_value, file_precheck=False)
+    res = tket_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        return_qc=False,
+        target_directory=TEST_QASM_OUTPUT_PATH,
+    )
     assert res
-    res = tket_helper.get_indep_level(qc, input_value, file_precheck=True)
+    res = tket_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=TEST_QASM_OUTPUT_PATH,
+    )
     assert res
 
 
@@ -140,6 +162,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             qc.num_qubits,
             opt_level,
             file_precheck=False,
+            return_qc=False,
+            target_directory=TEST_QASM_OUTPUT_PATH,
         )
         assert res
         res = qiskit_helper.get_native_gates_level(
@@ -148,6 +172,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             qc.num_qubits,
             opt_level,
             file_precheck=True,
+            return_qc=False,
+            target_directory=TEST_QASM_OUTPUT_PATH,
         )
         assert res
         if gate_set_name != "ionq":
@@ -161,6 +187,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         device_name,
                         opt_level,
                         file_precheck=False,
+                        return_qc=False,
+                        target_directory=TEST_QASM_OUTPUT_PATH,
                     )
                     assert res
                     res = qiskit_helper.get_mapped_level(
@@ -170,6 +198,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         device_name,
                         opt_level,
                         file_precheck=True,
+                        return_qc=False,
+                        target_directory=TEST_QASM_OUTPUT_PATH,
                     )
                     assert res
 
@@ -179,6 +209,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             gate_set_name,
             qc.num_qubits,
             file_precheck=False,
+            return_qc=False,
+            target_directory=TEST_QASM_OUTPUT_PATH,
         )
         assert res
         res = tket_helper.get_native_gates_level(
@@ -186,6 +218,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             gate_set_name,
             qc.num_qubits,
             file_precheck=True,
+            return_qc=False,
+            target_directory=TEST_QASM_OUTPUT_PATH,
         )
         assert res
         if gate_set_name != "ionq":
@@ -199,6 +233,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         device_name,
                         True,
                         file_precheck=False,
+                        return_qc=False,
+                        target_directory=TEST_QASM_OUTPUT_PATH,
                     )
                     assert res
                     res = tket_helper.get_mapped_level(
@@ -208,6 +244,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         device_name,
                         False,
                         file_precheck=True,
+                        return_qc=False,
+                        target_directory=TEST_QASM_OUTPUT_PATH,
                     )
                     assert res
 
@@ -609,10 +647,9 @@ def test_get_benchmark(
 def test_configure_end():
     # delete all files in the test directory and the directory itself
 
-    for f in Path(test_qasm_output_path).iterdir():
+    for f in Path(TEST_QASM_OUTPUT_PATH).iterdir():
         f.unlink()
-    Path(test_qasm_output_path).rmdir()
-    utils.set_qasm_output_path()
+    Path(TEST_QASM_OUTPUT_PATH).rmdir()
 
 
 # def test_benchmark_creation(monkeypatch):

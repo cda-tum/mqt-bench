@@ -58,7 +58,7 @@ def get_indep_level(
     num_qubits: int,
     file_precheck: bool,
     return_qc: bool = False,
-    target_directory: str = "",
+    target_directory: str = "./",
     target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-independent level.
@@ -75,11 +75,7 @@ def get_indep_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-    if not target_filename:
-        filename_indep = qc.name + "_indep_tket_" + str(num_qubits)
-        target_directory = utils.get_qasm_output_path()
-    else:
-        filename_indep = target_filename
+    filename_indep = target_filename if target_filename else qc.name + "_indep_tket_" + str(num_qubits)
 
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
@@ -112,7 +108,7 @@ def get_native_gates_level(
     num_qubits: int,
     file_precheck: bool,
     return_qc: bool = False,
-    target_directory: str = "",
+    target_directory: str = "./",
     target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-dependent native gates level.
@@ -133,7 +129,6 @@ def get_native_gates_level(
 
     if not target_filename:
         filename_native = qc.name + "_nativegates_" + gate_set_name + "_tket_" + str(num_qubits)
-        target_directory = utils.get_qasm_output_path()
     else:
         filename_native = target_filename
 
@@ -178,7 +173,7 @@ def get_mapped_level(
     lineplacement: bool,
     file_precheck: bool,
     return_qc: bool = False,
-    target_directory: str = "",
+    target_directory: str = "./",
     target_filename: str = "",
 ):
     """Handles the creation of the benchmark on the target-dependent mapped level.
@@ -203,7 +198,6 @@ def get_mapped_level(
 
     if not target_filename:
         filename_mapped = qc.name + "_mapped_" + device_name + "_tket_" + placement + "_" + str(num_qubits)
-        target_directory = utils.get_qasm_output_path()
     else:
         filename_mapped = target_filename
 
