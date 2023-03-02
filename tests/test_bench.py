@@ -3,7 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from mqt.bench import BenchmarkGenerator, evaluation, get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import (
+    BenchmarkGenerator,
+    benchmark_generation_watcher,
+    evaluation,
+    get_benchmark,
+    qc_creation_watcher,
+    qiskit_helper,
+    tket_helper,
+    utils,
+)
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -872,15 +881,17 @@ def test_BenchmarkGenerator() -> None:
     assert generator.timeout > 0
     assert generator.cfg is not None
 
-    def endless_loop():
+
+def test_timeout_watchers() -> None:
+    # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
+    def endless_loop(arg1: TestObject, arg: str) -> None:  # noqa: ARG001
         while True:
             pass
 
-    generator.timeout = 1
-
     class TestObject:
-        def __init__(self, name):
+        def __init__(self, name: str):
             self.name = name
 
-    assert not generator.qc_creation_watcher(endless_loop, [TestObject("test"), "test"])
-    assert not generator.benchmark_generation_watcher(endless_loop, [TestObject("test"), "test"])
+    timeout = 1
+    assert not qc_creation_watcher(endless_loop, timeout, [TestObject("test"), "test"])
+    assert not benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), "test"])
