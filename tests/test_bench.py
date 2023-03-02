@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import types
 
 import pytest
 from mqt.bench import evaluation, get_benchmark, qiskit_helper, tket_helper, utils
@@ -38,7 +42,7 @@ from qiskit import QuantumCircuit
 test_qasm_output_path = "./test_output/"
 
 
-def test_configure_begin():
+def test_configure_begin() -> None:
     Path(test_qasm_output_path).mkdir(parents=True, exist_ok=True)
     utils.set_qasm_output_path(test_qasm_output_path)
     assert utils.get_qasm_output_path() == test_qasm_output_path
@@ -73,7 +77,7 @@ def test_configure_begin():
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
+def test_quantumcircuit_indep_level(benchmark: types.ModuleType, input_value: int, scalable: bool) -> None:
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -118,7 +122,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
+def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, input_value: int, scalable: bool) -> None:
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -212,34 +216,34 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                     assert res
 
 
-def test_openqasm_gates():
+def test_openqasm_gates() -> None:
     openqasm_gates = utils.get_openqasm_gates()
     num_openqasm_gates = 42
     assert len(openqasm_gates) == num_openqasm_gates
 
 
-def test_rigetti_cmap_generator():
+def test_rigetti_cmap_generator() -> None:
     num_edges = 212
     assert len(utils.get_rigetti_aspen_m2_map()) == num_edges
 
 
-def test_dj_constant_oracle():
+def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
 
 
-def test_groundstate():
+def test_groundstate() -> None:
     m = utils.get_molecule("small")
     qc = groundstate.create_circuit(m)
     assert qc.depth() > 0
 
 
-def test_routing():
+def test_routing() -> None:
     qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
 
 
-def test_unidirectional_coupling_map():
+def test_unidirectional_coupling_map() -> None:
     from pytket.architecture import Architecture
 
     qc = get_benchmark(
@@ -578,14 +582,14 @@ def test_unidirectional_coupling_map():
     ],
 )
 def test_get_benchmark(
-    benchmark_name,
-    level,
-    circuit_size,
-    benchmark_instance_name,
-    compiler,
-    compiler_settings,
-    gate_set_name,
-    device_name,
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int,
+    benchmark_instance_name: str | None,
+    compiler: str,
+    compiler_settings: dict[str, Any] | None,
+    gate_set_name: str | None,
+    device_name: str | None,
 ):
     qc = get_benchmark(
         benchmark_name,
@@ -606,7 +610,7 @@ def test_get_benchmark(
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
-def test_configure_end():
+def test_configure_end() -> None:
     # delete all files in the test directory and the directory itself
 
     for f in Path(test_qasm_output_path).iterdir():
@@ -671,7 +675,7 @@ def test_zip_creation() -> None:
 )
 def test_saving_qasm_to_alternative_location_with_alternative_filename(
     abstraction_level: int,
-):
+) -> None:
     directory = "."
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
@@ -704,7 +708,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     path.unlink()
 
 
-def test_oqc_postprocessing():
+def test_oqc_postprocessing() -> None:
     qc = get_benchmark("ghz", 1, 5)
     assert qc
     directory = "."
@@ -765,7 +769,7 @@ def test_oqc_postprocessing():
     path.unlink()
 
 
-def test_evaluate_qasm_file():
+def test_evaluate_qasm_file() -> None:
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
     qc.qasm(filename=filename)
