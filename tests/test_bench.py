@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from mqt.bench import evaluation, get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import BenchmarkGenerator, evaluation, get_benchmark, qiskit_helper, tket_helper, utils
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -862,3 +862,25 @@ def test_calc_supermarq_features() -> None:
     qc = get_benchmark("dj", 1, 5)
     features = utils.calc_supermarq_features(qc)
     assert type(features) == utils.SupermarqFeatures
+
+
+def test_BenchmarkGenerator() -> None:
+    generator = BenchmarkGenerator()
+    assert generator.get_qasm_output_path() is not None
+    generator.set_qasm_output_path("test")
+    assert generator.get_qasm_output_path() == "test"
+    assert generator.timeout > 0
+    assert generator.cfg is not None
+
+    def endless_loop():
+        while True:
+            pass
+
+    generator.timeout = 1
+
+    class TestObject:
+        def __init__(self, name):
+            self.name = name
+
+    assert not generator.qc_creation_watcher(endless_loop, [TestObject("test"), "test"])
+    assert not generator.benchmark_generation_watcher(endless_loop, [TestObject("test"), "test"])
