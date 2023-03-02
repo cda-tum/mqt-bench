@@ -4,9 +4,13 @@ import logging
 import os
 import sys
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 from mqt.benchviewer import backend
+
+if TYPE_CHECKING:
+    from flask.wrappers import Response
 
 app = Flask(__name__, static_url_path="/mqtbench")
 PREFIX = "/mqtbench/"
@@ -16,7 +20,7 @@ def init(
     skip_question: bool = False,
     activate_logging: bool = False,
     target_location: str = None,
-):
+) -> bool:
     global TARGET_LOCATION
     TARGET_LOCATION = target_location
     if not os.access(TARGET_LOCATION, os.W_OK):
@@ -42,7 +46,7 @@ def init(
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
 @app.route(f"{PREFIX}/index", methods=["POST", "GET"])
-def index():
+def index() -> str:
     """Return the index.html file together with the benchmarks and nonscalable benchmarks."""
 
     return render_template(
@@ -53,7 +57,7 @@ def index():
 
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
-def download_pre_gen_zip():
+def download_pre_gen_zip() -> str:
     filename = "MQTBench_all.zip"
 
     if ACTIVATE_LOGGING:
@@ -76,7 +80,7 @@ def download_pre_gen_zip():
 
 
 @app.route(f"{PREFIX}/download", methods=["POST", "GET"])
-def download_data():
+def download_data() -> str:
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
@@ -110,21 +114,21 @@ def download_data():
 
 
 @app.route(f"{PREFIX}/legal")
-def legal():
+def legal() -> str:
     """Return the legal.html file."""
 
     return render_template("legal.html")
 
 
 @app.route(f"{PREFIX}/description")
-def description():
+def description() -> str:
     """Return the description.html file in which the file formats are described."""
 
     return render_template("description.html")
 
 
 @app.route(f"{PREFIX}/benchmark_description")
-def benchmark_description():
+def benchmark_description() -> str:
     """Return the benchmark_description.html file together in which all benchmark algorithms
     are described in detail.
     """
@@ -133,7 +137,7 @@ def benchmark_description():
 
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
-def get_num_benchmarks():
+def get_num_benchmarks() -> Response:
     if request.method == "POST":
         data = request.form
         prepared_data = backend.prepare_form_input(data)
@@ -147,7 +151,7 @@ def start_server(
     activate_logging: bool = False,
     target_location: str = None,
     debug_flag: bool = False,
-):
+) -> None:
     if not target_location:
         if sys.version_info < (3, 10, 0):
             import importlib_resources as resources
