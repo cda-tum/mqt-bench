@@ -22,6 +22,7 @@ else:
 
 if TYPE_CHECKING:
     from qiskit.circuit import QuantumRegister, Qubit
+    from qiskit_optimization import QuadraticProgram
 
 from dataclasses import dataclass
 
@@ -38,7 +39,7 @@ class SupermarqFeatures:
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
-def get_supported_benchmarks():
+def get_supported_benchmarks() -> list[str]:
     return [
         "ae",
         "dj",
@@ -71,23 +72,23 @@ def get_supported_benchmarks():
     ]
 
 
-def get_supported_levels():
+def get_supported_levels() -> list[str | int]:
     return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
 
 
-def get_supported_compilers():
+def get_supported_compilers() -> list[str]:
     return ["qiskit", "tket"]
 
 
-def get_supported_gatesets():
+def get_supported_gatesets() -> list[str]:
     return ["ibm", "rigetti", "ionq", "oqc"]
 
 
-def get_supported_devices():
+def get_supported_devices() -> list[str]:
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def set_qasm_output_path(new_path: str | None = None):
+def set_qasm_output_path(new_path: str | None = None) -> None:
     if new_path is None:
         new_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
@@ -95,17 +96,17 @@ def set_qasm_output_path(new_path: str | None = None):
     qasm_path = new_path
 
 
-def get_qasm_output_path():
+def get_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return qasm_path
 
 
-def get_zip_file_path():
+def get_zip_file_path() -> str:
     """Returns the path where the zip file is stored."""
     return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
 
 
-def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
+def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram | None:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
     Keyword arguments:
@@ -125,7 +126,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2):
 class BernoulliA(QuantumCircuit):
     """A circuit representing the Bernoulli A operator."""
 
-    def __init__(self, probability):
+    def __init__(self, probability: float) -> None:
         super().__init__(1)  # circuit on 1 qubit
 
         theta_p = 2 * np.arcsin(np.sqrt(probability))
@@ -135,23 +136,23 @@ class BernoulliA(QuantumCircuit):
 class BernoulliQ(QuantumCircuit):
     """A circuit representing the Bernoulli Q operator."""
 
-    def __init__(self, probability):
+    def __init__(self, probability: float) -> None:
         super().__init__(1)  # circuit on 1 qubit
 
         self._theta_p = 2 * np.arcsin(np.sqrt(probability))
         self.ry(2 * self._theta_p, 0)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
 
-    def power(self, power: float, _matrix_power: bool = True):
+    def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
         # implement the efficient power of Q
         q_k = QuantumCircuit(1)
         q_k.ry(2 * power * self._theta_p, 0)
         return q_k
 
 
-def get_estimation_problem():
+def get_estimation_problem() -> EstimationProblem:
     """Returns a estimation problem instance for a fixed p value."""
 
     p = 0.2
@@ -166,7 +167,7 @@ def get_estimation_problem():
     )
 
 
-def get_rigetti_aspen_m2_map():
+def get_rigetti_aspen_m2_map() -> list[list[int]]:
     """Returns a coupling map of Rigetti Aspen M2 chip."""
     c_map_rigetti = []
     for j in range(5):
@@ -202,7 +203,7 @@ def get_rigetti_aspen_m2_map():
     return c_map_rigetti
 
 
-def get_ionq11_c_map():
+def get_ionq11_c_map() -> list[list[int]]:
     ionq11_c_map = []
     for i in range(0, 11):
         for j in range(0, 11):
@@ -211,7 +212,7 @@ def get_ionq11_c_map():
     return ionq11_c_map
 
 
-def get_openqasm_gates():
+def get_openqasm_gates() -> list[str]:
     """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
     # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
     return [
@@ -267,7 +268,7 @@ def save_as_qasm(
     mapped: bool = False,
     c_map=None,
     target_directory: str = "",
-):
+) -> bool:
     """Saves a quantum circuit as a qasm file.
 
     Keyword arguments:
@@ -313,7 +314,7 @@ def save_as_qasm(
     return True
 
 
-def get_cmap_oqc_lucy():
+def get_cmap_oqc_lucy() -> list[list[int]]:
     """Returns the coupling map of the OQC Lucy quantum computer."""
     # source: https://github.com/aws/amazon-braket-examples/blob/main/examples/braket_features/Verbatim_Compilation.ipynb
 
@@ -321,7 +322,7 @@ def get_cmap_oqc_lucy():
     return [[0, 1], [0, 7], [1, 2], [2, 3], [7, 6], [6, 5], [4, 3], [4, 5]]
 
 
-def get_cmap_from_devicename(device: str):
+def get_cmap_from_devicename(device: str) -> list[list[int]]:
     if device == "ibm_washington":
         return FakeWashington().configuration().coupling_map
     if device == "ibm_montreal":
@@ -335,7 +336,7 @@ def get_cmap_from_devicename(device: str):
     return False
 
 
-def get_molecule(benchmark_instance_name: str):
+def get_molecule(benchmark_instance_name: str) -> list[str]:
     """Returns a Molecule object depending on the parameter value."""
     m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
     m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]
@@ -345,7 +346,7 @@ def get_molecule(benchmark_instance_name: str):
     return instances[benchmark_instance_name]
 
 
-def postprocess_single_oqc_file(filename: str):
+def postprocess_single_oqc_file(filename: str) -> None:
     with Path(filename).open() as f:
         lines = f.readlines()
     with Path(filename).open("w") as f:
@@ -356,7 +357,7 @@ def postprocess_single_oqc_file(filename: str):
                 f.write("opaque ecr q0,q1;\n")
 
 
-def create_zip_file():
+def create_zip_file() -> int:
     return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
 
 

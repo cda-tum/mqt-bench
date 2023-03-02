@@ -10,7 +10,7 @@ from mqt.bench import utils
 from qiskit.compiler import transpile
 
 
-def get_native_gates(gate_set_name: str):
+def get_native_gates(gate_set_name: str) -> list[str]:
     if gate_set_name == "ionq":
         return get_ionq_native_gates()
     if gate_set_name == "oqc":
@@ -22,19 +22,19 @@ def get_native_gates(gate_set_name: str):
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
-def get_ibm_native_gates():
+def get_ibm_native_gates() -> list[str]:
     return ["rz", "sx", "x", "cx", "measure"]
 
 
-def get_rigetti_native_gates():
+def get_rigetti_native_gates() -> list[str]:
     return ["rx", "rz", "cz", "measure"]
 
 
-def get_ionq_native_gates():
+def get_ionq_native_gates() -> list[str]:
     return ["rxx", "rz", "ry", "rx", "measure"]
 
 
-def get_oqc_native_gates():
+def get_oqc_native_gates() -> list[str]:
     return ["rz", "sx", "x", "ecr", "measure"]
 
 
@@ -45,7 +45,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-independent level.
 
     Keyword arguments:
@@ -91,7 +91,7 @@ def get_native_gates_level(
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
@@ -145,7 +145,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
     Keyword arguments:

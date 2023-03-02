@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from mqt.bench import utils
-from pytket import OpType, architecture, circuit
+from pytket import OpType, architecture
 from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (
     CXMappingPass,
@@ -16,8 +17,12 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
+if TYPE_CHECKING:
+    from pytket.circuit import Circuit
+    from pytket.passes import RebaseCustom
 
-def get_rebase(gate_set_name: str, get_gatenames: bool = False):
+
+def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
     if gate_set_name == "ionq":
         return get_ionq_rebase(get_gatenames)
     if gate_set_name == "oqc":
@@ -29,25 +34,25 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
-def get_ionq_rebase(get_gatenames: bool = False):
+def get_ionq_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
 
 
-def get_oqc_rebase(get_gatenames: bool = False):
+def get_oqc_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "sx", "x", "ecr", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure})
 
 
-def get_rigetti_rebase(get_gatenames: bool = False):
+def get_rigetti_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "rx", "cz", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Rx, OpType.CZ, OpType.Measure})
 
 
-def get_ibm_rebase(get_gatenames: bool = False):
+def get_ibm_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "sx", "x", "cx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.CX, OpType.Measure})
@@ -60,7 +65,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-independent level.
 
     Keyword arguments:
@@ -107,14 +112,14 @@ def get_indep_level(
 
 
 def get_native_gates_level(
-    qc: circuit,
+    qc: QuantumCircuit,
     gate_set_name: str,
     num_qubits: int,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
@@ -171,7 +176,7 @@ def get_native_gates_level(
 
 
 def get_mapped_level(
-    qc: circuit,
+    qc: QuantumCircuit,
     gate_set_name: str,
     num_qubits: int,
     device_name: str,
@@ -180,7 +185,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
     Keyword arguments:
