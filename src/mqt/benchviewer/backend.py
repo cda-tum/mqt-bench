@@ -4,6 +4,7 @@ import io
 import os
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -21,6 +22,24 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+
+@dataclass(kw_only=True)
+class BenchmarkConfiguration:
+    min_qubits: int
+    max_qubits: int
+    indices_benchmarks: list[int]
+    indep_qiskit_compiler: bool
+    indep_tket_compiler: bool
+    nativegates_qiskit_compiler: bool
+    nativegates_tket_compiler: bool
+    mapped_qiskit_compiler: bool
+    mapped_tket_compiler: bool
+    native_qiskit_opt_lvls: list[int] | None = None
+    native_gatesets: list[str] | None = None
+    mapped_qiskit_opt_lvls: list[int] | None = None
+    mapped_tket_placements: list[str] | None = None
+    mapped_devices: list[str] | None = None
 
 
 # All available benchmarks shown on our webpage are defined here
@@ -91,7 +110,7 @@ database: pd.DataFrame | None = None
 MQTBENCH_ALL_ZIP: ZipFile | None = None
 
 
-def get_opt_level(filename: str):
+def get_opt_level(filename: str) -> int:
     """Extracts the optimization level based on a filename.
 
     Keyword arguments:
@@ -107,7 +126,7 @@ def get_opt_level(filename: str):
     return int(num)
 
 
-def get_num_qubits(filename: str):
+def get_num_qubits(filename: str) -> int:
     """Extracts the number of qubits based on a filename.
 
     Keyword arguments:
@@ -123,7 +142,7 @@ def get_num_qubits(filename: str):
     return int(num)
 
 
-def create_database(zip_file: ZipFile):
+def create_database(zip_file: ZipFile) -> pd.DataFrame:
     """Creates the database based on the provided directories.
 
     Keyword arguments:
@@ -182,7 +201,7 @@ def handle_github_api_request(repo_url: str) -> requests.Response:
 def read_mqtbench_all_zip(  # noqa: PLR0912
     skip_question: bool = False,
     target_location: str = None,
-):
+) -> bool:
     huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
     try:
@@ -245,7 +264,7 @@ def read_mqtbench_all_zip(  # noqa: PLR0912
     return True
 
 
-def handle_downloading_benchmarks(target_location: str, download_url: str):
+def handle_downloading_benchmarks(target_location: str, download_url: str) -> None:
     print("Start downloading benchmarks...")
 
     r = requests.get(download_url)
@@ -267,7 +286,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str):
     print(f"Download completed to {fname}. Server is starting now.")
 
 
-def get_tket_settings(filename: str):
+def get_tket_settings(filename: str) -> str | None:
     if "line" in filename:
         return "line"
     if "graph" in filename:
@@ -275,7 +294,7 @@ def get_tket_settings(filename: str):
     return None
 
 
-def get_gate_set(filename: str):
+def get_gate_set(filename: str) -> str:
     if "oqc" in filename:
         return "oqc"
     if "ionq" in filename:
@@ -287,7 +306,7 @@ def get_gate_set(filename: str):
     raise ValueError("Unknown gate set: " + filename)
 
 
-def get_target_device(filename: str):
+def get_target_device(filename: str) -> str:
     if "ibm_washington" in filename:
         return "ibm_washington"
     if "ibm_montreal" in filename:
@@ -301,7 +320,7 @@ def get_target_device(filename: str):
     raise ValueError("Unknown target device: " + filename)
 
 
-def get_compiler_and_settings(filename: str):
+def get_compiler_and_settings(filename: str) -> tuple[str, str | None]:
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
     if "tket" in filename:
@@ -309,7 +328,7 @@ def get_compiler_and_settings(filename: str):
     raise ValueError("Unknown compiler: " + filename)
 
 
-def parse_data(filename: str):
+def parse_data(filename: str) -> list:
     """Extracts the necessary information from a given filename.
 
     Keyword arguments:
@@ -341,7 +360,7 @@ def parse_data(filename: str):
     ]
 
 
-def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PLR0912
+def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataFrame) -> list[str]:  # noqa: PLR0912
     """Filters the database according to the filter criteria.
 
     Keyword arguments:
@@ -370,26 +389,10 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PL
     if len(database) == 0:
         return []
 
-    (
-        (min_qubits, max_qubits),
-        indices_benchmarks,
-        (indep_qiskit_compiler, indep_tket_compiler),
-        (
-            (nativegates_qiskit_compiler, nativegates_tket_compiler),
-            native_qiskit_opt_lvls,
-            native_gatesets,
-        ),
-        (
-            (mapped_qiskit_compiler, mapped_tket_compiler),
-            (mapped_qiskit_opt_lvls, mapped_tket_placements),
-            mapped_devices,
-        ),
-    ) = filter_criteria
-
     selected_scalable_benchmarks = []
     selected_nonscalable_benchmarks = []
 
-    for identifier in indices_benchmarks:
+    for identifier in benchmark_config.indices_benchmarks:
         if 0 < int(identifier) <= len(benchmarks):
             name = benchmarks[int(identifier) - 1]["filename"]
             selected_scalable_benchmarks.append(name)
@@ -400,24 +403,28 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PL
 
     db_tmp = database.loc[
         (
-            (database["num_qubits"] >= min_qubits)
-            & (database["num_qubits"] <= max_qubits)
+            (database["num_qubits"] >= benchmark_config.min_qubits)
+            & (database["num_qubits"] <= benchmark_config.max_qubits)
             & (database["benchmark"].isin(selected_scalable_benchmarks))
         )
         | (database["benchmark"].isin(selected_nonscalable_benchmarks))
     ]
 
-    if indep_qiskit_compiler:
+    if benchmark_config.indep_qiskit_compiler:
         db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")]
         db_filtered = pd.concat([db_filtered, db_tmp1])
 
-    if indep_tket_compiler:
+    if benchmark_config.indep_tket_compiler:
         db_tmp2 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")]
         db_filtered = pd.concat([db_filtered, db_tmp2])
 
-    if nativegates_qiskit_compiler:
-        for gate_set in native_gatesets:
-            for opt_lvl in native_qiskit_opt_lvls:
+    if (
+        benchmark_config.nativegates_qiskit_compiler
+        and benchmark_config.native_gatesets
+        and benchmark_config.native_qiskit_opt_lvls
+    ):
+        for gate_set in benchmark_config.native_gatesets:
+            for opt_lvl in benchmark_config.native_qiskit_opt_lvls:
                 db_tmp3 = db_tmp.loc[
                     (db_tmp["nativegates_flag"])
                     & (db_tmp["gate_set"] == gate_set)
@@ -426,16 +433,20 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PL
                 ]
                 db_filtered = pd.concat([db_filtered, db_tmp3])
 
-    if nativegates_tket_compiler:
-        for gate_set in native_gatesets:
+    if benchmark_config.nativegates_tket_compiler and benchmark_config.native_gatesets:
+        for gate_set in benchmark_config.native_gatesets:
             db_tmp4 = db_tmp.loc[
                 (db_tmp["nativegates_flag"]) & (db_tmp["gate_set"] == gate_set) & (db_tmp["compiler"] == "tket")
             ]
             db_filtered = pd.concat([db_filtered, db_tmp4])
 
-    if mapped_qiskit_compiler:
-        for opt_lvl in mapped_qiskit_opt_lvls:
-            for device in mapped_devices:
+    if (
+        benchmark_config.mapped_qiskit_compiler
+        and benchmark_config.mapped_qiskit_opt_lvls
+        and benchmark_config.mapped_devices
+    ):
+        for opt_lvl in benchmark_config.mapped_qiskit_opt_lvls:
+            for device in benchmark_config.mapped_devices:
                 db_tmp5 = db_tmp.loc[
                     (db_tmp["mapped_flag"])
                     & (db_tmp["target_device"] == device)
@@ -444,9 +455,13 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PL
                 ]
                 db_filtered = pd.concat([db_filtered, db_tmp5])
 
-    if mapped_tket_compiler:
-        for placement in mapped_tket_placements:
-            for device in mapped_devices:
+    if (
+        benchmark_config.mapped_tket_compiler
+        and benchmark_config.mapped_tket_placements
+        and benchmark_config.mapped_devices
+    ):
+        for placement in benchmark_config.mapped_tket_placements:
+            for device in benchmark_config.mapped_devices:
                 db_tmp6 = db_tmp.loc[
                     (db_tmp["mapped_flag"])
                     & (db_tmp["target_device"] == device)
@@ -459,40 +474,40 @@ def filter_database(filter_criteria: tuple, database: pd.DataFrame):  # noqa: PL
 
 
 class NoSeekBytesIO:
-    def __init__(self, fp: io.BytesIO):
+    def __init__(self, fp: io.BytesIO) -> None:
         self.fp = fp
         self.deleted_offset = 0
 
-    def write(self, b):
+    def write(self, b: bytes) -> int:
         return self.fp.write(b)
 
-    def tell(self):
+    def tell(self) -> int:
         return self.deleted_offset + self.fp.tell()
 
-    def hidden_tell(self):
+    def hidden_tell(self) -> int:
         return self.fp.tell()
 
-    def seekable(self):
+    def seekable(self) -> bool:
         return False
 
-    def hidden_seek(self, offset, start_point=io.SEEK_SET):
+    def hidden_seek(self, offset: int, start_point: int = io.SEEK_SET) -> int:
         return self.fp.seek(offset, start_point)
 
-    def truncate_and_remember_offset(self, size):
+    def truncate_and_remember_offset(self, size: int | None) -> int:
         self.deleted_offset += self.fp.tell()
         self.fp.seek(0)
         return self.fp.truncate(size)
 
-    def get_value(self):
+    def get_value(self) -> bytes:
         return self.fp.getvalue()
 
-    def close(self):
+    def close(self) -> None:
         return self.fp.close()
 
-    def read(self):
+    def read(self) -> bytes:
         return self.fp.read()
 
-    def flush(self):
+    def flush(self) -> None:
         return self.fp.flush()
 
 
@@ -527,7 +542,7 @@ def generate_zip_ephemeral_chunks(
     fileobj.close()
 
 
-def get_selected_file_paths(prepared_data: tuple):
+def get_selected_file_paths(prepared_data: BenchmarkConfiguration) -> list[str]:
     """Extracts all file paths according to the prepared user's filter criteria.
 
     Keyword arguments:
@@ -536,13 +551,12 @@ def get_selected_file_paths(prepared_data: tuple):
     Return values:
     file_paths -- list of filter criteria for each selected benchmark
     """
-
     if prepared_data:
         return filter_database(prepared_data, database)
     return False
 
 
-def init_database():
+def init_database() -> bool:
     """Generates the database and saves it into a global variable."""
     global database
 
@@ -559,11 +573,21 @@ def init_database():
     return False
 
 
-def prepare_form_input(form_data: dict):  # noqa: PLR0912, PLR0915
-    """Formats the formData extracted from the user's inputs."""
+def parse_benchmark_id_from_form_key(k: str) -> str | None:
+    pat = re.compile(r"_\d+")
+    m = pat.search(k)
+    if m:
+        return m.group()[1:]
+    return None
 
-    min_qubits = -1
-    max_qubits = -1
+
+def prepare_form_input(
+    form_data: dict,
+) -> BenchmarkConfiguration:
+    """Formats the formData extracted from the user's inputs."""
+    min_qubits = 2
+    max_qubits = 130
+    indices_benchmarks = []
     indep_qiskit_compiler = False
     indep_tket_compiler = False
     nativegates_qiskit_compiler = False
@@ -576,91 +600,52 @@ def prepare_form_input(form_data: dict):  # noqa: PLR0912, PLR0915
     mapped_tket_placements = []
     mapped_devices = []
 
-    pat = re.compile(r"_\d+")
-    num_benchmarks = []
     for k, v in form_data.items():
-        m = pat.search(k)
-        if m:
-            num = m.group()[1:]
-            num_benchmarks.append(num)
+        indices_benchmarks.append(parse_benchmark_id_from_form_key(k)) if "select" in k else None
+        min_qubits = int(v) if "minQubits" in k and v != "" else min_qubits
+        max_qubits = int(v) if "maxQubits" in k and v != "" else max_qubits
 
-        if "minQubits" in k:
-            min_qubits = v
-            if min_qubits == "":
-                min_qubits = 2
+        indep_qiskit_compiler = "indep_qiskit_compiler" in k or indep_qiskit_compiler
+        indep_tket_compiler = "indep_tket_compiler" in k or indep_tket_compiler
 
-        if "maxQubits" in k:
-            max_qubits = v
-            if max_qubits == "":
-                max_qubits = 130
-        if "indep_qiskit_compiler" in k:
-            indep_qiskit_compiler = True
-        if "indep_tket_compiler" in k:
-            indep_tket_compiler = True
+        nativegates_qiskit_compiler = "nativegates_qiskit_compiler" in k or nativegates_qiskit_compiler
+        nativegates_tket_compiler = "nativegates_tket_compiler" in k or nativegates_tket_compiler
+        native_qiskit_opt_lvls.append(0) if "nativegates_qiskit_compiler_opt0" in k else None
+        native_qiskit_opt_lvls.append(1) if "nativegates_qiskit_compiler_opt1" in k else None
+        native_qiskit_opt_lvls.append(2) if "nativegates_qiskit_compiler_opt2" in k else None
+        native_qiskit_opt_lvls.append(3) if "nativegates_qiskit_compiler_opt3" in k else None
+        native_gatesets.append("ibm") if "nativegates_ibm" in k else None
+        native_gatesets.append("rigetti") if "nativegates_rigetti" in k else None
+        native_gatesets.append("oqc") if "nativegates_oqc" in k else None
+        native_gatesets.append("ionq") if "nativegates_ionq" in k else None
 
-        if "nativegates_qiskit_compiler" in k:
-            nativegates_qiskit_compiler = True
-        if "nativegates_tket_compiler" in k:
-            nativegates_tket_compiler = True
-        if "nativegates_qiskit_compiler_opt0" in k:
-            native_qiskit_opt_lvls.append(0)
-        if "nativegates_qiskit_compiler_opt1" in k:
-            native_qiskit_opt_lvls.append(1)
-        if "nativegates_qiskit_compiler_opt2" in k:
-            native_qiskit_opt_lvls.append(2)
-        if "nativegates_qiskit_compiler_opt3" in k:
-            native_qiskit_opt_lvls.append(3)
+        mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
+        mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
+        mapped_qiskit_opt_lvls.append(0) if "mapped_qiskit_compiler_opt0" in k else None
+        mapped_qiskit_opt_lvls.append(1) if "mapped_qiskit_compiler_opt1" in k else None
+        mapped_qiskit_opt_lvls.append(2) if "mapped_qiskit_compiler_opt2" in k else None
+        mapped_qiskit_opt_lvls.append(3) if "mapped_qiskit_compiler_opt3" in k else None
+        mapped_tket_placements.append("graph") if "mapped_tket_compiler_graph" in k else None
+        mapped_tket_placements.append("line") if "mapped_tket_compiler_line" in k else None
+        mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
+        mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
+        mapped_devices.append("rigetti_aspen") if "device_rigetti_aspen" in k else None
+        mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
+        mapped_devices.append("ionq11") if "device_ionq_ionq11" in k else None
 
-        if "nativegates_ibm" in k:
-            native_gatesets.append("ibm")
-        if "nativegates_rigetti" in k:
-            native_gatesets.append("rigetti")
-        if "nativegates_oqc" in k:
-            native_gatesets.append("oqc")
-        if "nativegates_ionq" in k:
-            native_gatesets.append("ionq")
-
-        if "mapped_qiskit_compiler" in k:
-            mapped_qiskit_compiler = True
-        if "mapped_tket_compiler" in k:
-            mapped_tket_compiler = True
-        if "mapped_qiskit_compiler_opt0" in k:
-            mapped_qiskit_opt_lvls.append(0)
-        if "mapped_qiskit_compiler_opt1" in k:
-            mapped_qiskit_opt_lvls.append(1)
-        if "mapped_qiskit_compiler_opt2" in k:
-            mapped_qiskit_opt_lvls.append(2)
-        if "mapped_qiskit_compiler_opt3" in k:
-            mapped_qiskit_opt_lvls.append(3)
-
-        if "mapped_tket_compiler_graph" in k:
-            mapped_tket_placements.append("graph")
-        if "mapped_tket_compiler_line" in k:
-            mapped_tket_placements.append("line")
-
-        if "device_ibm_montreal" in k:
-            mapped_devices.append("ibm_montreal")
-        if "device_ibm_washington" in k:
-            mapped_devices.append("ibm_washington")
-        if "device_rigetti_aspen" in k:
-            mapped_devices.append("rigetti_aspen")
-        if "device_oqc_lucy" in k:
-            mapped_devices.append("oqc_lucy")
-        if "device_ionq_ionq11" in k:
-            mapped_devices.append("ionq11")
-
-    return (
-        (int(min_qubits), int(max_qubits)),
-        num_benchmarks,
-        (indep_qiskit_compiler, indep_tket_compiler),
-        (
-            (nativegates_qiskit_compiler, nativegates_tket_compiler),
-            native_qiskit_opt_lvls,
-            native_gatesets,
-        ),
-        (
-            (mapped_qiskit_compiler, mapped_tket_compiler),
-            (mapped_qiskit_opt_lvls, mapped_tket_placements),
-            mapped_devices,
-        ),
+    return BenchmarkConfiguration(
+        min_qubits=min_qubits,
+        max_qubits=max_qubits,
+        indices_benchmarks=indices_benchmarks,
+        indep_qiskit_compiler=indep_qiskit_compiler,
+        indep_tket_compiler=indep_tket_compiler,
+        nativegates_qiskit_compiler=nativegates_qiskit_compiler,
+        nativegates_tket_compiler=nativegates_tket_compiler,
+        native_qiskit_opt_lvls=native_qiskit_opt_lvls,
+        native_gatesets=native_gatesets,
+        mapped_qiskit_compiler=mapped_qiskit_compiler,
+        mapped_tket_compiler=mapped_tket_compiler,
+        mapped_qiskit_opt_lvls=mapped_qiskit_opt_lvls,
+        mapped_tket_placements=mapped_tket_placements,
+        mapped_devices=mapped_devices,
     )
