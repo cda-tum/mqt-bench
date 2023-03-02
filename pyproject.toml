@@ -83,6 +83,30 @@ precision = 1
 [tool.black]
 line-length = 120
 
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+files = ["src", "tests", "setup.py"]
+python_version = "3.9"
+strict = true
+show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+explicit_package_bases = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = ["pytket.*"]
+implicit_reexport = true
+
+[[tool.mypy.overrides]]
+# `mqt.bench` can be removed once it is typed.
+# `sb3_contrib` is fully typed but takes forever to install in the environment.
+# recent versions of `gym` are typed, but stable-baselines3 pins a very old version of gym.
+# qiskit is not yet marked as typed, but is typed mostly.
+# the other libraries do not have type stubs.
+module = ["qiskit.*", "joblib.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 select = [
     "E", "F", "W", # flake8
