@@ -5,7 +5,7 @@ import json
 import signal
 from importlib import import_module
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
@@ -18,7 +18,7 @@ benchmarks_module_paths_dict: dict[str, str] = {}
 timeout: int = 0
 
 
-def init_module_paths():
+def init_module_paths() -> None:
     global benchmarks_module_paths_dict
     benchmarks_module_paths_dict = {
         "ae": "mqt.bench.benchmarks.ae",
@@ -59,11 +59,11 @@ def create_benchmarks_from_config(cfg_path: str = "./config.json") -> bool:
     return True
 
 
-def benchmark_generation_watcher(func, args):
+def benchmark_generation_watcher(func: Any, args: list[Any]) -> bool | QuantumCircuit:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum, _frame):  # Custom signal handler
+    def timeout_handler(_signum: Any, _frame: Any):  # Custom signal handler
         raise TimeoutException()
 
     # Change the behavior of SIGALRM
@@ -97,7 +97,7 @@ def benchmark_generation_watcher(func, args):
     return res
 
 
-def qc_creation_watcher(func, args):
+def qc_creation_watcher(func: Any, args: list[Any]) -> bool | tuple[QuantumCircuit, int, str]:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
@@ -123,7 +123,7 @@ def qc_creation_watcher(func, args):
     return qc, num_qubits, file_precheck
 
 
-def generate_benchmark(benchmark):  # noqa: PLR0912, PLR0915
+def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR0915
     if benchmark["include"]:
         if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
             for anc_mode in benchmark["ancillary_mode"]:
@@ -211,7 +211,7 @@ def generate_benchmark(benchmark):  # noqa: PLR0912, PLR0915
                     break
 
 
-def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
+def generate_circuits_on_all_levels(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
     success_generated_circuits_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
 
     if not success_generated_circuits_t_indep:
@@ -221,7 +221,7 @@ def generate_circuits_on_all_levels(qc, num_qubits, file_precheck):
     return True
 
 
-def generate_target_indep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck):
+def generate_target_indep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
     num_generated_circuits = 0
     res_indep_qiskit = benchmark_generation_watcher(qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck])
     if res_indep_qiskit:
@@ -234,7 +234,7 @@ def generate_target_indep_level_circuit(qc: QuantumCircuit, num_qubits: int, fil
     return num_generated_circuits != 0
 
 
-def generate_target_dep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck):
+def generate_target_dep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
     compilation_paths = [
         ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
         ("rigetti", [("rigetti_aspen_m2", 80)]),
@@ -317,7 +317,9 @@ def generate_target_dep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_
 ERROR_MSG = "\n Problem occurred in outer loop: "
 
 
-def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
+def create_scalable_qc(
+    benchmark: dict[str, Any], num_qubits: int, ancillary_mode: str = None
+) -> tuple[QuantumCircuit, int, bool]:
     file_precheck = True
     init_module_paths()
     try:
@@ -339,7 +341,7 @@ def create_scalable_qc(benchmark, num_qubits, ancillary_mode=None):
         raise e from None
 
 
-def create_shor_qc(choice: str):
+def create_shor_qc(choice: str) -> tuple[QuantumCircuit, int, bool]:
     instances = {
         "xsmall": [9, 4],  # 18 qubits
         "small": [15, 4],  # 18 qubits
@@ -357,7 +359,7 @@ def create_shor_qc(choice: str):
         raise e from None
 
 
-def create_hhl_qc(index: int):
+def create_hhl_qc(index: int) -> tuple[QuantumCircuit, int, bool]:
     # index is not the number of qubits in this case
     try:
         # Creating the circuit on Algorithmic Description level
@@ -369,7 +371,7 @@ def create_hhl_qc(index: int):
         raise e from None
 
 
-def create_routing_qc(nodes: int):
+def create_routing_qc(nodes: int) -> tuple[QuantumCircuit, int, bool]:
     try:
         # Creating the circuit on Algorithmic Description level
         qc = routing.create_circuit(nodes, 2)
@@ -380,7 +382,7 @@ def create_routing_qc(nodes: int):
         raise e from None
 
 
-def create_tsp_qc(nodes: int):
+def create_tsp_qc(nodes: int) -> tuple[QuantumCircuit, int, bool]:
     try:
         # Creating the circuit on Algorithmic Description level
         qc = tsp.create_circuit(nodes)
@@ -391,7 +393,7 @@ def create_tsp_qc(nodes: int):
         raise e from None
 
 
-def create_groundstate_qc(choice: str):
+def create_groundstate_qc(choice: str) -> tuple[QuantumCircuit, int, bool]:
     molecule = utils.get_molecule(choice)
 
     try:
@@ -404,7 +406,7 @@ def create_groundstate_qc(choice: str):
         raise e from None
 
 
-def create_pricingcall_qc(num_uncertainty: int):
+def create_pricingcall_qc(num_uncertainty: int) -> tuple[QuantumCircuit, int, bool]:
     # num_options is not the number of qubits in this case
     try:
         # Creating the circuit on Algorithmic Description level
@@ -416,7 +418,7 @@ def create_pricingcall_qc(num_uncertainty: int):
         raise e from None
 
 
-def create_pricingput_qc(num_uncertainty: int):
+def create_pricingput_qc(num_uncertainty: int) -> tuple[QuantumCircuit, int, bool]:
     # num_uncertainty is not the number of qubits in this case
     try:
         # Creating the circuit on Algorithmic Description level
@@ -431,13 +433,13 @@ def create_pricingput_qc(num_uncertainty: int):
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
-    circuit_size: int = None,
-    benchmark_instance_name: str = None,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
     compiler: str | None = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] | None = None,
+    compiler_settings: dict[str, dict[str, Any]] | None = None,
     gate_set_name: str | None = "ibm",
     device_name: str | None = "ibm_washington",
-):
+) -> QuantumCircuit:
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
 
     Keyword arguments:
@@ -604,7 +606,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     raise ValueError(msg)
 
 
-def generate():
+def generate() -> None:
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
     args = parser.parse_args()
