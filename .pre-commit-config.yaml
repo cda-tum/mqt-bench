@@ -86,4 +86,5 @@ repos:
           - types-setuptools
           - types-requests
           - types-tqdm
+          - types-flask
           - pytket-qiskit

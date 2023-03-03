@@ -99,12 +99,7 @@ module = ["pytket.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-# `mqt.bench` can be removed once it is typed.
-# `sb3_contrib` is fully typed but takes forever to install in the environment.
-# recent versions of `gym` are typed, but stable-baselines3 pins a very old version of gym.
-# qiskit is not yet marked as typed, but is typed mostly.
-# the other libraries do not have type stubs.
-module = ["qiskit.*", "joblib.*"]
+module = ["qiskit.*", "joblib.*", "qiskit_optimization.*", "qiskit_nature.*", "qiskit_finance.*", "qiskit_machine_learning.*", "networkx.*", "pandas.*", "importlib_metadata.*"]
 ignore_missing_imports = true
 
 [tool.ruff]
