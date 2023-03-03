@@ -172,18 +172,7 @@ def create_database(zip_file: ZipFile) -> pd.DataFrame:
             parsed_data = parse_data(filename)
             rows_list.append(parsed_data)
 
-    colnames = [
-        "benchmark",
-        "num_qubits",
-        "indep_flag",
-        "nativegates_flag",
-        "mapped_flag",
-        "compiler",
-        "compiler_settings",
-        "gate_set",
-        "target_device",
-        "path",
-    ]
+    colnames = list(ParsedBenchmarkName.__annotations__.keys())
 
     database = pd.DataFrame(rows_list, columns=colnames)
     database["num_qubits"] = database["num_qubits"].astype(int)
@@ -388,20 +377,9 @@ def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataF
     database -- database containing all available benchmarks
 
     Return values:
-    db_filtered["path"].to_list() -- list of all file paths of the selected benchmark files
+    db_filtered["filename"].to_list() -- list of all file paths of the selected benchmark files
     """
-    colnames = [
-        "benchmark",
-        "num_qubits",
-        "indep_flag",
-        "nativegates_flag",
-        "mapped_flag",
-        "compiler",
-        "compiler_settings",
-        "gate_set",
-        "target_device",
-        "path",
-    ]
+    colnames = list(ParsedBenchmarkName.__annotations__.keys())
     db_filtered = pd.DataFrame(columns=colnames)
     db_filtered["indep_flag"] = db_filtered["indep_flag"].astype(bool)
     db_filtered["nativegates_flag"] = db_filtered["nativegates_flag"].astype(bool)
@@ -490,7 +468,7 @@ def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataF
                 ]
                 db_filtered = pd.concat([db_filtered, db_tmp6])
 
-    return cast(list[str], db_filtered["path"].to_list())
+    return cast(list[str], db_filtered["filename"].to_list())
 
 
 class NoSeekBytesIO:
