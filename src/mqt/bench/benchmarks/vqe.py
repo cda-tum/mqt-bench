@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from mqt.bench.utils import get_examplary_max_cut_qp
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
+from qiskit_optimization import QuadraticProgram
+
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
 
 
-def create_circuit(num_qubits: int):
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Variational Quantum Eigensolver Algorithm for a specific max-cut
      example.
 
@@ -18,6 +24,7 @@ def create_circuit(num_qubits: int):
     """
 
     qp = get_examplary_max_cut_qp(num_qubits)
+    assert isinstance(qp, QuadraticProgram)
 
     ansatz = RealAmplitudes(num_qubits, reps=2)
     vqe = VQE(ansatz=ansatz, optimizer=SLSQP(maxiter=25), estimator=Estimator())

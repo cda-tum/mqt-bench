@@ -6,7 +6,7 @@ from qiskit.algorithms import Grover
 from qiskit.circuit.library import GroverOperator
 
 
-def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
+def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> QuantumCircuit:
     """Returns a quantum circuit implementing Grover's algorithm.
 
     Keyword arguments:

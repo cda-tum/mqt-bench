@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from mqt.bench.utils import get_estimation_problem
 from qiskit.algorithms import AmplitudeEstimation
 
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
 
-def create_circuit(num_qubits: int):
+
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
     Keyword arguments:

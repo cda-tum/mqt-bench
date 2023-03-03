@@ -3,7 +3,7 @@ from __future__ import annotations
 from qiskit import QuantumCircuit, QuantumRegister
 
 
-def create_circuit(num_qubits: int):
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the GHZ state.
 
     Keyword arguments:

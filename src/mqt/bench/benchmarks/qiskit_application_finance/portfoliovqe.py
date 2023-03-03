@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+from typing import TYPE_CHECKING
 
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import COBYLA
@@ -12,8 +13,11 @@ from qiskit_finance.applications import PortfolioOptimization
 from qiskit_finance.data_providers import RandomDataProvider
 from qiskit_optimization.converters import QuadraticProgramToQubo
 
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
 
-def create_circuit(num_qubits: int):
+
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit of VQE applied to a specific portfolio optimization task.
 
     Keyword arguments:

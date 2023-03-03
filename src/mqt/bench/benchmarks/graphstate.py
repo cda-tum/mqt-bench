@@ -5,7 +5,7 @@ from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import GraphState
 
 
-def create_circuit(num_qubits: int, degree: int = 2):
+def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit implementing a graph state.
 
     Keyword arguments:

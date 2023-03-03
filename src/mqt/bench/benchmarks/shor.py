@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from qiskit.algorithms.factorizers import Shor
 
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
 
-def create_circuit(num_to_be_factorized: int, a: int = 2):
+
+def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Shor's algorithm.
 
     Keyword arguments:
