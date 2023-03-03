@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 class BenchmarkConfiguration:
     min_qubits: int
     max_qubits: int
-    indices_benchmarks: list[int]
+    indices_benchmarks: list[str]
     indep_qiskit_compiler: bool
     indep_tket_compiler: bool
     nativegates_qiskit_compiler: bool
@@ -40,6 +40,20 @@ class BenchmarkConfiguration:
     mapped_qiskit_opt_lvls: list[int] | None = None
     mapped_tket_placements: list[str] | None = None
     mapped_devices: list[str] | None = None
+
+
+@dataclass(kw_only=True)
+class ParsedBenchmarkName:
+    benchmark: str
+    num_qubits: int
+    indep_flag: bool
+    nativegates_flag: bool
+    mapped_flag: bool
+    compiler: str | int
+    compiler_settings: str
+    gate_set: str
+    target_device: str
+    filename: str
 
 
 # All available benchmarks shown on our webpage are defined here
@@ -328,7 +342,7 @@ def get_compiler_and_settings(filename: str) -> tuple[str, str | None]:
     raise ValueError("Unknown compiler: " + filename)
 
 
-def parse_data(filename: str) -> list:
+def parse_data(filename: str) -> ParsedBenchmarkName:
     """Extracts the necessary information from a given filename.
 
     Keyword arguments:
@@ -346,18 +360,18 @@ def parse_data(filename: str) -> list:
     gate_set = get_gate_set(filename) if nativegates_flag or mapped_flag else None
     target_device = get_target_device(filename) if mapped_flag else None
 
-    return [
-        benchmark,
-        num_qubits,
-        indep_flag,
-        nativegates_flag,
-        mapped_flag,
-        compiler,
-        compiler_settings,
-        gate_set,
-        target_device,
-        filename,
-    ]
+    return ParsedBenchmarkName(
+        benchmark=benchmark,
+        num_qubits=num_qubits,
+        indep_flag=indep_flag,
+        nativegates_flag=nativegates_flag,
+        mapped_flag=mapped_flag,
+        compiler=compiler,
+        compiler_settings=compiler_settings,
+        gate_set=gate_set,
+        target_device=target_device,
+        filename=filename,
+    )
 
 
 def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataFrame) -> list[str]:  # noqa: PLR0912
