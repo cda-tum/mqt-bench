@@ -63,7 +63,7 @@ def benchmark_generation_watcher(func: Any, args: list[Any]) -> bool | QuantumCi
     class TimeoutException(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum: Any, _frame: Any):  # Custom signal handler
+    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
         raise TimeoutException()
 
     # Change the behavior of SIGALRM
@@ -97,11 +97,11 @@ def benchmark_generation_watcher(func: Any, args: list[Any]) -> bool | QuantumCi
     return res
 
 
-def qc_creation_watcher(func: Any, args: list[Any]) -> bool | tuple[QuantumCircuit, int, str]:
+def qc_creation_watcher(func: Any, args: list[Any]) -> bool | tuple[QuantumCircuit, int, bool]:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum, _frame):  # Custom signal handler
+    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
         raise TimeoutException
 
     # Change the behavior of SIGALRM
@@ -135,7 +135,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                     res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n, anc_mode])
                     if not res_qc_creation:
                         break
-                    res = generate_circuits_on_all_levels(*res_qc_creation)
+                    assert not isinstance(res_qc_creation, bool)
+                    qc, num_qubits, file_precheck = res_qc_creation
+                    res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                     if not res:
                         break
 
@@ -144,7 +146,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_shor_qc, [choice])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -153,7 +157,10 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_hhl_qc, [i])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -162,7 +169,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_routing_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -171,7 +180,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_tsp_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -180,7 +191,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_groundstate_qc, [choice])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -189,7 +202,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_pricingcall_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -198,7 +213,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_pricingput_qc, [nodes])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
         else:
@@ -206,7 +223,9 @@ def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR
                 res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n])
                 if not res_qc_creation:
                     break
-                res = generate_circuits_on_all_levels(*res_qc_creation)
+                assert not isinstance(res_qc_creation, bool)
+                qc, num_qubits, file_precheck = res_qc_creation
+                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
                 if not res:
                     break
 
@@ -318,7 +337,7 @@ ERROR_MSG = "\n Problem occurred in outer loop: "
 
 
 def create_scalable_qc(
-    benchmark: dict[str, Any], num_qubits: int, ancillary_mode: str = None
+    benchmark: dict[str, Any], num_qubits: int, ancillary_mode: str | None = None
 ) -> tuple[QuantumCircuit, int, bool]:
     file_precheck = True
     init_module_paths()
@@ -475,7 +494,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if benchmark_instance_name is not None and not isinstance(benchmark_instance_name, str):
-        msg = "benchmark_instance_name must be None or str."
+        msg = "benchmark_instance_name must be None or str."  # type: ignore[unreachable]
         raise ValueError(msg)
 
     if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
@@ -483,7 +502,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is not None and not isinstance(compiler_settings, dict):
-        msg = "compiler_settings must be None or dict[str, dict[str, any]]."
+        msg = "compiler_settings must be None or dict[str, dict[str, any]]."  # type: ignore[unreachable]
         raise ValueError(msg)
 
     if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
@@ -509,6 +528,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         qc.name = qc.name + "-" + anc_mode
 
     elif benchmark_name == "shor":
+        assert isinstance(benchmark_instance_name, str)
         instances = {
             "xsmall": [9, 4],  # 18 qubits
             "small": [15, 4],  # 18 qubits
@@ -520,25 +540,32 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         qc = shor.create_circuit(*instances[benchmark_instance_name])
 
     elif benchmark_name == "hhl":
+        assert isinstance(circuit_size, int)
         qc = hhl.create_circuit(circuit_size)
 
     elif benchmark_name == "routing":
+        assert isinstance(circuit_size, int)
         qc = routing.create_circuit(circuit_size)
 
     elif benchmark_name == "tsp":
+        assert isinstance(circuit_size, int)
         qc = tsp.create_circuit(circuit_size)
 
     elif benchmark_name == "groundstate":
+        assert isinstance(benchmark_instance_name, str)
         molecule = utils.get_molecule(benchmark_instance_name)
         qc = groundstate.create_circuit(molecule)
 
     elif benchmark_name == "pricingcall":
+        assert isinstance(circuit_size, int)
         qc = pricingcall.create_circuit(circuit_size)
 
     elif benchmark_name == "pricingput":
+        assert isinstance(circuit_size, int)
         qc = pricingput.create_circuit(circuit_size)
 
     else:
+        assert isinstance(circuit_size, int)
         lib = import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
@@ -568,6 +595,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
+    assert isinstance(gate_set_name, str)
     native_gates_level = 2
     if level == "nativegates" or level == native_gates_level:
         if compiler == "qiskit":
@@ -576,6 +604,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
 
+    assert isinstance(device_name, str)
+    assert isinstance(gate_set_name, str)
     mapped_level = 3
     if level == "mapped" or level == mapped_level:
         if compiler == "qiskit":
