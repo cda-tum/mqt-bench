@@ -24,11 +24,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-@dataclass(kw_only=True)
+@dataclass
 class BenchmarkConfiguration:
     min_qubits: int
     max_qubits: int
-    indices_benchmarks: list[str]
+    indices_benchmarks: list[int]
     indep_qiskit_compiler: bool
     indep_tket_compiler: bool
     nativegates_qiskit_compiler: bool

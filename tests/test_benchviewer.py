@@ -24,7 +24,7 @@ else:
         ("HHL_indep_5.qasm", -1),
     ],
 )
-def test_get_opt_level(filename, expected_res):
+def test_get_opt_level(filename: str, expected_res: int) -> None:
     assert int(backend.get_opt_level(filename)) == expected_res
 
 
@@ -189,36 +189,7 @@ def test_prepare_form_input() -> None:
     expected_res = backend.BenchmarkConfiguration(
         min_qubits=75,
         max_qubits=110,
-        indices_benchmarks=[
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-        ],
+        indices_benchmarks=list(range(1, 29)),
         indep_qiskit_compiler=True,
         indep_tket_compiler=True,
         nativegates_qiskit_compiler=True,
@@ -255,7 +226,7 @@ def test_create_database() -> None:
     input_data = backend.BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=5,
-        indices_benchmarks=["4"],
+        indices_benchmarks=[4],
         indep_qiskit_compiler=True,
         indep_tket_compiler=False,
         nativegates_qiskit_compiler=False,
@@ -270,7 +241,7 @@ def test_create_database() -> None:
     input_data = backend.BenchmarkConfiguration(
         min_qubits=110,
         max_qubits=120,
-        indices_benchmarks=["3"],
+        indices_benchmarks=[3],
         indep_qiskit_compiler=False,
         indep_tket_compiler=False,
         nativegates_qiskit_compiler=False,
@@ -285,7 +256,7 @@ def test_create_database() -> None:
     input_data = backend.BenchmarkConfiguration(
         min_qubits=75,
         max_qubits=110,
-        indices_benchmarks=["2"],
+        indices_benchmarks=[2],
         indep_qiskit_compiler=False,
         indep_tket_compiler=False,
         nativegates_qiskit_compiler=False,
@@ -302,7 +273,7 @@ def test_create_database() -> None:
     input_data = backend.BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=5,
-        indices_benchmarks=["23"],
+        indices_benchmarks=[23],
         indep_qiskit_compiler=True,
         indep_tket_compiler=True,
         nativegates_qiskit_compiler=True,
@@ -321,7 +292,7 @@ def test_create_database() -> None:
     input_data = backend.BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=130,
-        indices_benchmarks=["1"],
+        indices_benchmarks=[1],
         indep_qiskit_compiler=False,
         indep_tket_compiler=False,
         nativegates_qiskit_compiler=True,
