@@ -40,7 +40,7 @@ def get_oqc_native_gates() -> list[str]:
 
 def get_indep_level(
     qc: QuantumCircuit,
-    num_qubits: int,
+    num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "",
@@ -85,7 +85,7 @@ def get_indep_level(
 def get_native_gates_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
     return_qc: bool = False,
@@ -138,7 +138,7 @@ def get_native_gates_level(
 def get_mapped_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
     device_name: str,
     opt_level: int,
     file_precheck: bool,

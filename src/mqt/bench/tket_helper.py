@@ -4,22 +4,23 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from mqt.bench import utils
-from pytket import OpType, architecture
+from pytket import OpType
+from pytket.architecture import Architecture  # type: ignore[attr-defined]
 from pytket.extensions.qiskit import qiskit_to_tk
-from pytket.passes import (
+from pytket.passes import (  # type: ignore[attr-defined]
     CXMappingPass,
     FullPeepholeOptimise,
     PlacementPass,
     RoutingPass,
     auto_rebase_pass,
 )
-from pytket.placement import GraphPlacement, LinePlacement
+from pytket.placement import GraphPlacement, LinePlacement  # type: ignore[attr-defined]
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
 if TYPE_CHECKING:
     from pytket.circuit import Circuit
-    from pytket.passes import RebaseCustom
+    from pytket.passes import RebaseCustom  # type: ignore[attr-defined]
 
 
 def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
@@ -60,7 +61,7 @@ def get_ibm_rebase(get_gatenames: bool = False) -> RebaseCustom:
 
 def get_indep_level(
     qc: QuantumCircuit,
-    num_qubits: int,
+    num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "",
@@ -114,7 +115,7 @@ def get_indep_level(
 def get_native_gates_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "",
@@ -178,7 +179,7 @@ def get_native_gates_level(
 def get_mapped_level(
     qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
     device_name: str,
     lineplacement: bool,
     file_precheck: bool,
@@ -233,7 +234,7 @@ def get_mapped_level(
 
     native_gatenames = get_rebase(gate_set_name, True)
     native_gate_set_rebase = get_rebase(gate_set_name)
-    arch = architecture.Architecture(cmap)
+    arch = Architecture(cmap)
 
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
