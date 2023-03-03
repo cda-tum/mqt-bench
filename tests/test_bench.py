@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import types
@@ -244,7 +244,7 @@ def test_routing() -> None:
 
 
 def test_unidirectional_coupling_map() -> None:
-    from pytket.architecture import Architecture
+    from pytket.architecture import Architecture  # type: ignore[attr-defined]
 
     qc = get_benchmark(
         benchmark_name="dj",
@@ -587,10 +587,10 @@ def test_get_benchmark(
     circuit_size: int,
     benchmark_instance_name: str | None,
     compiler: str,
-    compiler_settings: dict[str, Any] | None,
+    compiler_settings: dict[str, dict[str, str | int]] | None,
     gate_set_name: str | None,
     device_name: str | None,
-):
+) -> None:
     qc = get_benchmark(
         benchmark_name,
         level,
