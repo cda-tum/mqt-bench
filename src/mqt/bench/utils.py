@@ -4,7 +4,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import networkx as nx
 import numpy as np
@@ -123,7 +123,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram 
     return maxcut.to_quadratic_program()
 
 
-class BernoulliA(QuantumCircuit):
+class BernoulliA(QuantumCircuit):  # type: ignore[misc]
     """A circuit representing the Bernoulli A operator."""
 
     def __init__(self, probability: float) -> None:
@@ -133,7 +133,7 @@ class BernoulliA(QuantumCircuit):
         self.ry(theta_p, 0)
 
 
-class BernoulliQ(QuantumCircuit):
+class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
     """A circuit representing the Bernoulli Q operator."""
 
     def __init__(self, probability: float) -> None:
@@ -264,9 +264,9 @@ def get_openqasm_gates() -> list[str]:
 def save_as_qasm(
     qc_str: str,
     filename: str,
-    gate_set: list = None,
+    gate_set: list[str] | None = None,
     mapped: bool = False,
-    c_map=None,
+    c_map: list[list[int]] | None = None,
     target_directory: str = "",
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
@@ -324,16 +324,17 @@ def get_cmap_oqc_lucy() -> list[list[int]]:
 
 def get_cmap_from_devicename(device: str) -> list[list[int]]:
     if device == "ibm_washington":
-        return FakeWashington().configuration().coupling_map
+        return cast(list[list[int]], FakeWashington().configuration().coupling_map)
     if device == "ibm_montreal":
-        return FakeMontreal().configuration().coupling_map
+        return cast(list[list[int]], FakeMontreal().configuration().coupling_map)
     if device == "rigetti_aspen_m2":
         return get_rigetti_aspen_m2_map()
     if device == "oqc_lucy":
         return get_cmap_oqc_lucy()
     if device == "ionq11":
         return get_ionq11_c_map()
-    return False
+    error_msg = f"Device {device} is not supported."
+    raise ValueError(error_msg)
 
 
 def get_molecule(benchmark_instance_name: str) -> list[str]:
@@ -368,14 +369,14 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
             offset += reg.size
         else:
             qubit_index = offset + reg.index(qargs[index])
-            return qubit_index
+            return cast(int, qubit_index)
     error_msg = f"Global qubit index for local qubit {index} index not found."
     raise ValueError(error_msg)
 
 
 def calc_supermarq_features(
     qc: QuantumCircuit,
-) -> tuple[float, float, float, float, float]:
+) -> SupermarqFeatures:
     qc.remove_final_measurements(inplace=True)
     qc = RemoveBarriers()(qc)
     connectivity_collection: list[list[int]] = []
