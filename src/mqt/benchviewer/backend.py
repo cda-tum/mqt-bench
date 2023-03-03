@@ -18,10 +18,10 @@ if sys.version_info < (3, 10, 0):
 else:
     from importlib import metadata
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Generator
 
 
 @dataclass
@@ -42,7 +42,7 @@ class BenchmarkConfiguration:
     mapped_devices: list[str] | None = None
 
 
-@dataclass(kw_only=True)
+@dataclass
 class ParsedBenchmarkName:
     benchmark: str
     num_qubits: int
@@ -50,9 +50,9 @@ class ParsedBenchmarkName:
     nativegates_flag: bool
     mapped_flag: bool
     compiler: str | int
-    compiler_settings: str
-    gate_set: str
-    target_device: str
+    compiler_settings: str | int | None
+    gate_set: str | None
+    target_device: str | None
     filename: str
 
 
@@ -136,8 +136,7 @@ def get_opt_level(filename: str) -> int:
 
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
-    num = m.group()[-1:] if m else -1
-    return int(num)
+    return int(m.group()[-1:]) if m else -1
 
 
 def get_num_qubits(filename: str) -> int:
@@ -153,6 +152,7 @@ def get_num_qubits(filename: str) -> int:
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
     num = m.group()[0:-1] if m else -1
+    assert isinstance(num, str)
     return int(num)
 
 
@@ -214,7 +214,7 @@ def handle_github_api_request(repo_url: str) -> requests.Response:
 
 def read_mqtbench_all_zip(  # noqa: PLR0912
     skip_question: bool = False,
-    target_location: str = None,
+    target_location: str = "./",
 ) -> bool:
     huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
@@ -282,8 +282,8 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
     print("Start downloading benchmarks...")
 
     r = requests.get(download_url)
-    total_length = r.headers.get("content-length")
-    total_length = int(total_length)
+    total_length = int(r.headers["content-length"])
+
     fname = target_location + "/MQTBench_all.zip"
 
     Path(target_location).mkdir(parents=True, exist_ok=True)
@@ -301,11 +301,14 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
 
 
 def get_tket_settings(filename: str) -> str | None:
+    if "mapped" not in filename:
+        return None
     if "line" in filename:
         return "line"
     if "graph" in filename:
         return "graph"
-    return None
+    error_msg = "Unknown tket settings in: " + filename
+    raise ValueError(error_msg)
 
 
 def get_gate_set(filename: str) -> str:
@@ -317,7 +320,8 @@ def get_gate_set(filename: str) -> str:
         return "ibm"
     if "rigetti" in filename:
         return "rigetti"
-    raise ValueError("Unknown gate set: " + filename)
+    error_msg = "Unknown gate set in: " + filename
+    raise ValueError(error_msg)
 
 
 def get_target_device(filename: str) -> str:
@@ -331,15 +335,17 @@ def get_target_device(filename: str) -> str:
         return "ionq11"
     if "oqc_lucy" in filename:
         return "oqc_lucy"
-    raise ValueError("Unknown target device: " + filename)
+    error_msg = "Unknown target device in: " + filename
+    raise ValueError(error_msg)
 
 
-def get_compiler_and_settings(filename: str) -> tuple[str, str | None]:
+def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
     if "tket" in filename:
         return "tket", get_tket_settings(filename)
-    raise ValueError("Unknown compiler: " + filename)
+    error_msg = "Unknown compiler in: " + filename
+    raise ValueError(error_msg)
 
 
 def parse_data(filename: str) -> ParsedBenchmarkName:
@@ -407,12 +413,12 @@ def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataF
     selected_nonscalable_benchmarks = []
 
     for identifier in benchmark_config.indices_benchmarks:
-        if 0 < int(identifier) <= len(benchmarks):
-            name = benchmarks[int(identifier) - 1]["filename"]
+        if 0 < identifier <= len(benchmarks):
+            name = benchmarks[identifier - 1]["filename"]
             selected_scalable_benchmarks.append(name)
 
-        elif 0 < int(identifier) <= len(benchmarks) + len(nonscalable_benchmarks):
-            name = nonscalable_benchmarks[int(identifier) - 1 - len(benchmarks)]["filename"]
+        elif 0 < identifier <= len(benchmarks) + len(nonscalable_benchmarks):
+            name = nonscalable_benchmarks[identifier - 1 - len(benchmarks)]["filename"]
             selected_nonscalable_benchmarks.append(name)
 
     db_tmp = database.loc[
@@ -484,7 +490,7 @@ def filter_database(benchmark_config: BenchmarkConfiguration, database: pd.DataF
                 ]
                 db_filtered = pd.concat([db_filtered, db_tmp6])
 
-    return db_filtered["path"].to_list()
+    return cast(list[str], db_filtered["path"].to_list())
 
 
 class NoSeekBytesIO:
@@ -527,7 +533,7 @@ class NoSeekBytesIO:
 
 def generate_zip_ephemeral_chunks(
     filenames: list[str],
-) -> Iterable[bytes]:
+) -> Generator[bytes, None, None]:
     """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
     Keyword arguments:
@@ -539,7 +545,8 @@ def generate_zip_ephemeral_chunks(
     fileobj = NoSeekBytesIO(io.BytesIO())
 
     paths = [Path(name) for name in filenames]
-    with ZipFile(fileobj, mode="w") as zf:
+    assert MQTBENCH_ALL_ZIP is not None
+    with ZipFile(fileobj, mode="w") as zf:  # type: ignore[arg-type]
         for individual_file in paths:
             zf.writestr(
                 individual_file.name,
@@ -565,9 +572,7 @@ def get_selected_file_paths(prepared_data: BenchmarkConfiguration) -> list[str]:
     Return values:
     file_paths -- list of filter criteria for each selected benchmark
     """
-    if prepared_data:
-        return filter_database(prepared_data, database)
-    return False
+    return filter_database(prepared_data, database)
 
 
 def init_database() -> bool:
@@ -587,17 +592,15 @@ def init_database() -> bool:
     return False
 
 
-def parse_benchmark_id_from_form_key(k: str) -> str | None:
+def parse_benchmark_id_from_form_key(k: str) -> int | None:
     pat = re.compile(r"_\d+")
     m = pat.search(k)
     if m:
-        return m.group()[1:]
+        return int(m.group()[1:])
     return None
 
 
-def prepare_form_input(
-    form_data: dict,
-) -> BenchmarkConfiguration:
+def prepare_form_input(form_data: dict[str, str]) -> BenchmarkConfiguration:
     """Formats the formData extracted from the user's inputs."""
     min_qubits = 2
     max_qubits = 130
@@ -615,7 +618,10 @@ def prepare_form_input(
     mapped_devices = []
 
     for k, v in form_data.items():
-        indices_benchmarks.append(parse_benchmark_id_from_form_key(k)) if "select" in k else None
+        if "select" in k:
+            found_benchmark_id = parse_benchmark_id_from_form_key(k)
+            if found_benchmark_id:
+                indices_benchmarks.append(found_benchmark_id)
         min_qubits = int(v) if "minQubits" in k and v != "" else min_qubits
         max_qubits = int(v) if "maxQubits" in k and v != "" else max_qubits
 
