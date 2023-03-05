@@ -17,7 +17,7 @@ else:
 
 
 def create_statistics() -> None:
-    source_circuits_list = [file for file in Path(utils.get_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
+    source_circuits_list = [file for file in Path(utils.get_default_qasm_output_path()).iterdir() if file.suffix == ".qasm"]
     res_dicts = Parallel(n_jobs=-1, verbose=100)(
         delayed(evaluate_qasm_file)(str(filename)) for filename in source_circuits_list
     )

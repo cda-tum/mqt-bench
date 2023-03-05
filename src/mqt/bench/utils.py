@@ -87,7 +87,7 @@ def get_supported_devices():
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def get_qasm_output_path():
+def get_default_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
@@ -347,7 +347,7 @@ def postprocess_single_oqc_file(filename: str):
 
 
 def create_zip_file():
-    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
+    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_default_qasm_output_path()}", shell=True)
 
 
 def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: int) -> int:
