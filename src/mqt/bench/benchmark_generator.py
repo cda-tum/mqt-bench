@@ -281,8 +281,7 @@ class BenchmarkGenerator:
             else:
                 qc = lib.create_circuit(num_qubits)
 
-            n = qc.num_qubits
-            return qc, n, file_precheck
+            return qc, qc.num_qubits, file_precheck
 
         except Exception as e:
             print(self.error_msg_outer_loop, benchmark, num_qubits, e)
