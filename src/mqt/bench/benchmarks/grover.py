@@ -37,5 +37,6 @@ def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla"):
 
     qc.compose(operator.power(iterations), inplace=True)
     qc.measure_all()
+    qc.name = qc.name + "-" + ancillary_mode
 
     return qc
