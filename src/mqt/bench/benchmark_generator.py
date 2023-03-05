@@ -35,7 +35,6 @@ class BenchmarkGenerator:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
-        self.error_msg_outer_loop = "\n Problem occurred in outer loop: "
         if qasm_output_path is None:
             self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
         else:
@@ -160,7 +159,7 @@ class BenchmarkGenerator:
 
     def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck):
         num_generated_circuits = 0
-        res_indep_qiskit = self.benchmark_generation_watcher(
+        res_indep_qiskit = benchmark_generation_watcher(
             qiskit_helper.get_indep_level,
             self.timeout,
             [qc, num_qubits, file_precheck, False, self.qasm_output_path],
@@ -168,7 +167,7 @@ class BenchmarkGenerator:
         if res_indep_qiskit:
             num_generated_circuits += 1
 
-        res_indep_tket = self.benchmark_generation_watcher(
+        res_indep_tket = benchmark_generation_watcher(
             tket_helper.get_indep_level,
             self.timeout,
             [qc, num_qubits, file_precheck, False, self.qasm_output_path],
@@ -189,7 +188,7 @@ class BenchmarkGenerator:
         for gate_set_name, devices in compilation_paths:
             # Creating the circuit on both target-dependent levels for qiskit
             for opt_level in range(4):
-                res = self.benchmark_generation_watcher(
+                res = benchmark_generation_watcher(
                     qiskit_helper.get_native_gates_level,
                     self.timeout,
                     [
@@ -210,7 +209,7 @@ class BenchmarkGenerator:
                 for opt_level in range(4):
                     # Creating the circuit on target-dependent: mapped level qiskit
                     if max_qubits >= qc.num_qubits:
-                        res = self.benchmark_generation_watcher(
+                        res = benchmark_generation_watcher(
                             qiskit_helper.get_mapped_level,
                             self.timeout,
                             [
@@ -228,7 +227,7 @@ class BenchmarkGenerator:
 
             # Creating the circuit on both target-dependent levels for tket
 
-            res = self.benchmark_generation_watcher(
+            res = benchmark_generation_watcher(
                 tket_helper.get_native_gates_level,
                 self.timeout,
                 [
@@ -248,7 +247,7 @@ class BenchmarkGenerator:
                 if max_qubits >= qc.num_qubits:
                     for lineplacement in (False, True):
                         # Creating the circuit on target-dependent: mapped level tket
-                        res = self.benchmark_generation_watcher(
+                        res = benchmark_generation_watcher(
                             tket_helper.get_mapped_level,
                             self.timeout,
                             [
@@ -284,7 +283,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, file_precheck
 
         except Exception as e:
-            print(self.error_msg_outer_loop, benchmark, num_qubits, e)
+            print(benchmark, num_qubits, e)
             raise e from None
 
     def create_shor_qc(self, choice: str):
@@ -301,7 +300,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_shor_benchmarks: ", choice, e)
+            print("create_shor_benchmarks: ", choice, e)
             raise e from None
 
     def create_hhl_qc(self, index: int):
@@ -312,7 +311,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_hhl_benchmarks", index, e)
+            print("create_hhl_benchmarks", index, e)
             raise e from None
 
     def create_routing_qc(self, nodes: int):
@@ -322,7 +321,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_routing_benchmarks", nodes, e)
+            print("create_routing_benchmarks", nodes, e)
             raise e from None
 
     def create_tsp_qc(self, nodes: int):
@@ -332,7 +331,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_tsp_benchmarks", nodes, e)
+            print("create_tsp_benchmarks", nodes, e)
             raise e from None
 
     def create_groundstate_qc(self, choice: str):
@@ -344,7 +343,7 @@ class BenchmarkGenerator:
             return qc, qc.num_qubits, False
 
         except Exception as e:
-            print(self.error_msg_outer_loop, "create_groundstate_benchmarks", choice, e)
+            print("create_groundstate_benchmarks", choice, e)
             raise e from None
 
     def create_pricingcall_qc(self, num_uncertainty: int):
@@ -356,7 +355,6 @@ class BenchmarkGenerator:
 
         except Exception as e:
             print(
-                self.error_msg_outer_loop,
                 "create_pricingcall_benchmarks",
                 num_uncertainty,
                 e,
@@ -372,7 +370,6 @@ class BenchmarkGenerator:
 
         except Exception as e:
             print(
-                self.error_msg_outer_loop,
                 "create_pricingput_benchmarks",
                 num_uncertainty,
                 e,
