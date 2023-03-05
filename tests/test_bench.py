@@ -919,9 +919,7 @@ def test_timeout_watchers() -> None:
     assert not qc_creation_watcher(endless_loop, timeout, [TestObject("test"), True])
     assert not benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), True])
 
-    generator = BenchmarkGenerator()
-    benchmark = {
-        "name": "dj",
-    }
-    assert qc_creation_watcher(generator.create_scalable_qc, timeout, [benchmark, 5])
+    BenchmarkGenerator()
+
+    assert qc_creation_watcher(dj.create_circuit, timeout, [5])
     assert benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), False])
