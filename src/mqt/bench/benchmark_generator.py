@@ -37,7 +37,7 @@ class BenchmarkGenerator:
         self.timeout = self.cfg["timeout"]
         self.error_msg_outer_loop = "\n Problem occurred in outer loop: "
         if qasm_output_path is None:
-            self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
+            self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
         else:
             self.qasm_output_path = qasm_output_path
 
