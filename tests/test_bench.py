@@ -876,10 +876,8 @@ def test_calc_supermarq_features() -> None:
 
 
 def test_BenchmarkGenerator() -> None:
-    generator = BenchmarkGenerator()
-    assert generator.get_qasm_output_path is not None
-    generator.set_qasm_output_path("test")
-    assert generator.get_qasm_output_path == "test"
+    generator = BenchmarkGenerator(qasm_output_path="test")
+    assert generator.qasm_output_path == "test"
     assert generator.timeout > 0
     assert generator.cfg is not None
 

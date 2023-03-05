@@ -42,13 +42,6 @@ class BenchmarkGenerator:
 
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
-    def set_qasm_output_path(self, new_path: str):
-        self.qasm_output_path = new_path
-
-    def get_qasm_output_path(self):
-        """Returns the path where all .qasm files are stored."""
-        return self.qasm_output_path
-
     def create_benchmarks_from_config(self) -> bool:
         Parallel(n_jobs=-1, verbose=100)(
             delayed(self.generate_benchmark)(benchmark) for benchmark in self.cfg["benchmarks"]
