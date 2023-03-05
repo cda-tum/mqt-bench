@@ -212,6 +212,7 @@ class BenchmarkGenerator:
                                 device_name,
                                 opt_level,
                                 file_precheck,
+                                self.qasm_output_path,
                             ],
                         )
                         if not res:
