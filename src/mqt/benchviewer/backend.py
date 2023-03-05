@@ -119,8 +119,6 @@ class Backend:
         db_filtered["indep_flag"] = db_filtered["indep_flag"].astype(bool)
         db_filtered["nativegates_flag"] = db_filtered["nativegates_flag"].astype(bool)
         db_filtered["mapped_flag"] = db_filtered["mapped_flag"].astype(bool)
-        if len(self.database) == 0:
-            return []
 
         (
             (min_qubits, max_qubits),
