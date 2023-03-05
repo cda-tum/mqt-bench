@@ -329,14 +329,7 @@ def get_cmap_from_devicename(device: str):
     return False
 
 
-def get_molecule(benchmark_instance_name: str):
-    """Returns a Molecule object depending on the parameter value."""
-    m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
-    m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]
-    m_3 = ["O 0.0 0.0 0.0", "H 0.586, 0.757, 0.0", "H 0.586, -0.757, 0.0"]
-    instances = {"small": m_1, "medium": m_2, "large": m_3}
 
-    return instances[benchmark_instance_name]
 
 
 def postprocess_single_oqc_file(filename: str):

@@ -109,9 +109,8 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "groundstate":
                 for choice in benchmark["instances"]:
-                    molecule = utils.get_molecule(choice)
 
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [choice, molecule])
+                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [choice])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -347,8 +346,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         qc = lib.create_circuit(to_be_factored_number, a_value)
 
     elif benchmark_name == "groundstate":
-        molecule = utils.get_molecule(benchmark_instance_name)
-        qc = lib.create_circuit(molecule)
+        qc = lib.create_circuit("benchmark_instance_name")
 
     else:
         qc = lib.create_circuit(circuit_size)
