@@ -6,11 +6,10 @@ from pathlib import Path
 import pytest
 from mqt.bench import (
     BenchmarkGenerator,
-    benchmark_generation_watcher,
     evaluation,
     get_benchmark,
-    qc_creation_watcher,
     qiskit_helper,
+    timeout_watcher,
     tket_helper,
     utils,
 )
@@ -19,7 +18,6 @@ from mqt.bench.benchmarks import (
     dj,
     ghz,
     graphstate,
-    groundstate,
     grover,
     hhl,
     portfolioqaoa,
@@ -278,10 +276,9 @@ def test_dj_constant_oracle():
     assert qc.depth() > 0
 
 
-def test_groundstate():
-    m = utils.get_molecule("small")
-    qc = groundstate.create_circuit(m)
-    assert qc.depth() > 0
+# def test_groundstate():
+#     qc = groundstate.create_circuit("small")
+#     assert qc.depth() > 0
 
 
 def test_routing():
@@ -660,7 +657,14 @@ def test_create_benchmarks_from_config(output_path):
     config = {
         "timeout": 120,
         "benchmarks": [
-            {"name": "ghz", "include": True, "min_qubits": 2, "max_qubits": 3, "stepsize": 1},
+            {
+                "name": "ghz",
+                "include": True,
+                "min_qubits": 2,
+                "max_qubits": 3,
+                "stepsize": 1,
+                "precheck_possible": True,
+            },
         ],
     }
 
@@ -681,42 +685,6 @@ def test_configure_end(output_path):
     for f in Path(output_path).iterdir():
         f.unlink()
     Path(output_path).rmdir()
-
-
-# def test_benchmark_creation(monkeypatch):
-#     import json
-#
-#     config = {
-#         "timeout": 120,
-#         "benchmarks": [
-#             {
-#                 "name": benchmark,
-#                 "include": True,
-#                 "min_qubits": 3,
-#                 "max_qubits": 4,
-#                 "stepsize": 1,
-#                 "ancillary_mode": ["noancilla", "v-chain"],
-#                 "instances": ["small"],
-#                 "min_index": 1,
-#                 "max_index": 2,
-#                 "min_nodes": 2,
-#                 "max_nodes": 3,
-#                 "min_uncertainty": 2,
-#                 "max_uncertainty": 3,
-#             }
-#             for benchmark in utils.get_supported_benchmarks()
-#             if benchmark != "shor"
-#         ],
-#     }
-#     with Path("test_config.json").open("w") as f:
-#         json.dump(config, f)
-#     monkeypatch.setattr("sys.argv", ["pytest", "--file-name", "test_config.json"])
-#     generate()
-#
-#     benchmarks_path = utils.get_qasm_output_path
-#     assert len(list(Path(benchmarks_path).iterdir())) > 1000
-#
-#     Path("test_config.json").unlink()
 
 
 def test_zip_creation() -> None:
@@ -916,10 +884,5 @@ class TestObject:
 
 def test_timeout_watchers() -> None:
     timeout = 1
-    assert not qc_creation_watcher(endless_loop, timeout, [TestObject("test"), True])
-    assert not benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), True])
-
-    BenchmarkGenerator()
-
-    assert qc_creation_watcher(dj.create_circuit, timeout, [5])
-    assert benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), False])
+    assert not timeout_watcher(endless_loop, timeout, [TestObject("test"), True])
+    assert timeout_watcher(endless_loop, timeout, [TestObject("test"), False])

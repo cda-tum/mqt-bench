@@ -329,9 +329,6 @@ def get_cmap_from_devicename(device: str):
     return False
 
 
-
-
-
 def postprocess_single_oqc_file(filename: str):
     with Path(filename).open() as f:
         lines = f.readlines()
@@ -418,4 +415,4 @@ def calc_supermarq_features(
 
 
 def get_module_for_benchmark(benchmark_name) -> ModuleType:
-    return importlib.import_module("mqt.bench.benchmarks." + benchmark_name)
+    return importlib.import_module("." + benchmark_name, package="mqt.bench.benchmarks")

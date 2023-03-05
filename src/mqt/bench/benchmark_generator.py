@@ -49,9 +49,7 @@ class BenchmarkGenerator:
                         benchmark["max_qubits"],
                         benchmark["stepsize"],
                     ):
-                        res_qc_creation = qc_creation_watcher(
-                            lib.create_circuit, self.timeout, [benchmark, n, anc_mode]
-                        )
+                        res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [benchmark, n, anc_mode])
                         if not res_qc_creation:
                             break
                         res = self.generate_circuits_on_all_levels(
@@ -63,7 +61,7 @@ class BenchmarkGenerator:
             elif benchmark["name"] == "shor":
                 for choice in benchmark["instances"]:
                     to_be_factored_number, a_value = lib.get_instance(choice)
-                    res_qc_creation = qc_creation_watcher(
+                    res_qc_creation = timeout_watcher(
                         lib.create_circuit, self.timeout, [to_be_factored_number, a_value]
                     )
                     if not res_qc_creation:
@@ -76,7 +74,7 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "hhl":
                 for i in range(benchmark["min_index"], benchmark["max_index"]):
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [i])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [i])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -87,7 +85,7 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "routing":
                 for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [nodes, 2])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes, 2])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -98,7 +96,7 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "tsp":
                 for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [nodes])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -109,8 +107,7 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "groundstate":
                 for choice in benchmark["instances"]:
-
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [choice])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [choice])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -121,7 +118,7 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "pricingcall" or benchmark["name"] == "pricingput":
                 for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
-                    res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [nodes])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -135,7 +132,7 @@ class BenchmarkGenerator:
                     benchmark["max_qubits"],
                     benchmark["stepsize"],
                 ):
-                    res_qc_creation = qc_creation_watcher(lib, self.timeout, [benchmark, n])
+                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [n])
                     if not res_qc_creation:
                         break
                     res = self.generate_circuits_on_all_levels(
@@ -155,7 +152,7 @@ class BenchmarkGenerator:
 
     def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck):
         num_generated_circuits = 0
-        res_indep_qiskit = benchmark_generation_watcher(
+        res_indep_qiskit = timeout_watcher(
             qiskit_helper.get_indep_level,
             self.timeout,
             [qc, num_qubits, file_precheck, False, self.qasm_output_path],
@@ -163,7 +160,7 @@ class BenchmarkGenerator:
         if res_indep_qiskit:
             num_generated_circuits += 1
 
-        res_indep_tket = benchmark_generation_watcher(
+        res_indep_tket = timeout_watcher(
             tket_helper.get_indep_level,
             self.timeout,
             [qc, num_qubits, file_precheck, False, self.qasm_output_path],
@@ -184,7 +181,7 @@ class BenchmarkGenerator:
         for gate_set_name, devices in compilation_paths:
             # Creating the circuit on both target-dependent levels for qiskit
             for opt_level in range(4):
-                res = benchmark_generation_watcher(
+                res = timeout_watcher(
                     qiskit_helper.get_native_gates_level,
                     self.timeout,
                     [
@@ -205,7 +202,7 @@ class BenchmarkGenerator:
                 for opt_level in range(4):
                     # Creating the circuit on target-dependent: mapped level qiskit
                     if max_qubits >= qc.num_qubits:
-                        res = benchmark_generation_watcher(
+                        res = timeout_watcher(
                             qiskit_helper.get_mapped_level,
                             self.timeout,
                             [
@@ -224,7 +221,7 @@ class BenchmarkGenerator:
 
             # Creating the circuit on both target-dependent levels for tket
 
-            res = benchmark_generation_watcher(
+            res = timeout_watcher(
                 tket_helper.get_native_gates_level,
                 self.timeout,
                 [
@@ -244,7 +241,7 @@ class BenchmarkGenerator:
                 if max_qubits >= qc.num_qubits:
                     for lineplacement in (False, True):
                         # Creating the circuit on target-dependent: mapped level tket
-                        res = benchmark_generation_watcher(
+                        res = timeout_watcher(
                             tket_helper.get_mapped_level,
                             self.timeout,
                             [
@@ -346,7 +343,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         qc = lib.create_circuit(to_be_factored_number, a_value)
 
     elif benchmark_name == "groundstate":
-        qc = lib.create_circuit("benchmark_instance_name")
+        qc = lib.create_circuit(benchmark_instance_name)
 
     else:
         qc = lib.create_circuit(circuit_size)
@@ -423,7 +420,7 @@ def generate():
     benchmark_generator.create_benchmarks_from_config()
 
 
-def benchmark_generation_watcher(func, timeout, args):
+def timeout_watcher(func, timeout, args):
     class TimeoutException(Exception):  # Custom exception class
         pass
 
@@ -450,7 +447,7 @@ def benchmark_generation_watcher(func, timeout, args):
             e,
             func.__name__,
             func.__module__.split(".")[-1],
-            args[0].name,
+            args[0],
             args[1:],
         )
         return False
@@ -459,35 +456,3 @@ def benchmark_generation_watcher(func, timeout, args):
         signal.alarm(0)
 
     return res
-
-
-def qc_creation_watcher(func, timeout, args):
-    class TimeoutException(Exception):  # Custom exception class
-        pass
-
-    def timeout_handler(_signum, _frame):  # Custom signal handler
-        raise TimeoutException
-
-    # Change the behavior of SIGALRM
-    signal.signal(signal.SIGALRM, timeout_handler)
-
-    signal.alarm(timeout)
-    try:
-        qc, num_qubits, file_precheck = func(*args)
-    except TimeoutException:
-        print("Benchmark Creation exceeded timeout limit for ", func, args[1:])
-        return False
-    except Exception as e:
-        print(
-            "Something else went wrong: ",
-            e,
-            func.__name__,
-            func.__module__.split(".")[-1],
-            args,
-        )
-        return False
-    else:
-        # Reset the alarm
-        signal.alarm(0)
-
-    return qc, num_qubits, file_precheck
