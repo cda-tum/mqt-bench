@@ -109,7 +109,6 @@ class BenchmarkGenerator:
 
             elif benchmark["name"] == "groundstate":
                 for choice in benchmark["instances"]:
-
                     res_qc_creation = qc_creation_watcher(lib.create_circuit, self.timeout, [choice])
                     if not res_qc_creation:
                         break

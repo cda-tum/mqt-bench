@@ -329,9 +329,6 @@ def get_cmap_from_devicename(device: str):
     return False
 
 
-
-
-
 def postprocess_single_oqc_file(filename: str):
     with Path(filename).open() as f:
         lines = f.readlines()
