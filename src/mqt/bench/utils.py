@@ -273,9 +273,7 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    qasm_output_folder = target_directory if target_directory else get_qasm_output_path()
-
-    file = Path(qasm_output_folder, filename + ".qasm")
+    file = Path(target_directory, filename + ".qasm")
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
