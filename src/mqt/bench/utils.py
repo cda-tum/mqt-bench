@@ -89,7 +89,7 @@ def get_supported_devices():
 
 def get_default_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
-    return str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
+    return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
 
 
 def get_zip_file_path():
