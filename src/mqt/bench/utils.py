@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import importlib
 import subprocess
 import sys
 from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 import networkx as nx
 import numpy as np
@@ -420,25 +424,5 @@ def calc_supermarq_features(
     )
 
 
-def get_benchmarks_module_paths_dict() -> dict[str, str]:
-    return {
-        "ae": "mqt.bench.benchmarks.ae",
-        "dj": "mqt.bench.benchmarks.dj",
-        "grover": "mqt.bench.benchmarks.grover",
-        "ghz": "mqt.bench.benchmarks.ghz",
-        "graphstate": "mqt.bench.benchmarks.graphstate",
-        "portfolioqaoa": "mqt.bench.benchmarks.qiskit_application_finance.portfolioqaoa",
-        "portfoliovqe": "mqt.bench.benchmarks.qiskit_application_finance.portfoliovqe",
-        "qaoa": "mqt.bench.benchmarks.qaoa",
-        "qft": "mqt.bench.benchmarks.qft",
-        "qftentangled": "mqt.bench.benchmarks.qftentangled",
-        "qgan": "mqt.bench.benchmarks.qiskit_application_ml.qgan",
-        "qpeexact": "mqt.bench.benchmarks.qpeexact",
-        "qpeinexact": "mqt.bench.benchmarks.qpeinexact",
-        "qwalk": "mqt.bench.benchmarks.qwalk",
-        "realamprandom": "mqt.bench.benchmarks.realamprandom",
-        "su2random": "mqt.bench.benchmarks.su2random",
-        "twolocalrandom": "mqt.bench.benchmarks.twolocalrandom",
-        "vqe": "mqt.bench.benchmarks.vqe",
-        "wstate": "mqt.bench.benchmarks.wstate",
-    }
+def get_module_for_benchmark(benchmark_name) -> ModuleType:
+    return importlib.import_module("mqt.bench.benchmarks." + benchmark_name)
