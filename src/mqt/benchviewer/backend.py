@@ -100,6 +100,9 @@ class Backend:
         Return values:
         db_filtered["path"].to_list() -- list of all file paths of the selected benchmark files
         """
+        if len(self.database) == 0:
+            return []
+
         colnames = [
             "benchmark",
             "num_qubits",
