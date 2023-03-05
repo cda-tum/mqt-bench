@@ -11,7 +11,7 @@ from qiskit_nature.second_q.drivers import PySCFDriver
 from qiskit_nature.second_q.mappers import JordanWignerMapper, QubitConverter
 
 
-def create_circuit(molecule):
+def create_circuit(choice, molecule):
     """Returns a quantum circuit implementing Ground State Estimation.
 
     Keyword arguments:
@@ -39,6 +39,7 @@ def create_circuit(molecule):
     qc = another_solver.ansatz.bind_parameters(result.optimal_point)
 
     qc.name = "groundstate"
+    qc.name = qc.name + "_" + choice
     qc.measure_all()
 
     return qc
