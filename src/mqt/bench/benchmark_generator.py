@@ -41,7 +41,7 @@ class BenchmarkGenerator:
         else:
             self.qasm_output_path = qasm_output_path
 
-        Path(utils.get_qasm_output_path()).mkdir(exist_ok=True, parents=True)
+        Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
     def set_qasm_output_path(self, new_path: str):
         self.qasm_output_path = new_path
