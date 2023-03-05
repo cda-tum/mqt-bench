@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -655,9 +656,28 @@ def test_get_benchmark(
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
+def test_create_benchmarks_from_config(output_path):
+    config = {
+        "timeout": 120,
+        "benchmarks": [
+            {"name": "ghz", "include": True, "min_qubits": 2, "max_qubits": 3, "stepsize": 1},
+        ],
+    }
+
+    Path("config.json").rename("old_config.json")
+
+    with Path("config.json").open("w") as f:
+        json.dump(config, f)
+
+    generator = BenchmarkGenerator(qasm_output_path=output_path)
+    generator.create_benchmarks_from_config()
+    Path("config.json").unlink()
+
+    Path("old_config.json").rename("config.json")
+
+
 def test_configure_end(output_path):
     # delete all files in the test directory and the directory itself
-
     for f in Path(output_path).iterdir():
         f.unlink()
     Path(output_path).rmdir()
