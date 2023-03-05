@@ -44,11 +44,13 @@ from mqt.bench.benchmarks import (
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-TEST_QASM_OUTPUT_PATH = "./test_output/"
 
-
-def test_configure_begin():
-    Path(TEST_QASM_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+@pytest.fixture()
+def output_path():
+    output_path = Path("./tests/test_output/")
+    if not output_path.exists():
+        output_path.mkdir()
+    return str(output_path)
 
 
 @pytest.mark.parametrize(
@@ -80,7 +82,7 @@ def test_configure_begin():
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
+def test_quantumcircuit_indep_level(benchmark, input_value, scalable, output_path):
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -92,7 +94,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         input_value,
         file_precheck=False,
         return_qc=False,
-        target_directory=TEST_QASM_OUTPUT_PATH,
+        target_directory=output_path,
     )
     assert res
     res = qiskit_helper.get_indep_level(
@@ -100,7 +102,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         input_value,
         file_precheck=True,
         return_qc=False,
-        target_directory=TEST_QASM_OUTPUT_PATH,
+        target_directory=output_path,
     )
     assert res
 
@@ -109,7 +111,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         input_value,
         file_precheck=False,
         return_qc=False,
-        target_directory=TEST_QASM_OUTPUT_PATH,
+        target_directory=output_path,
     )
     assert res
     res = tket_helper.get_indep_level(
@@ -117,7 +119,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         input_value,
         file_precheck=True,
         return_qc=False,
-        target_directory=TEST_QASM_OUTPUT_PATH,
+        target_directory=output_path,
     )
     assert res
 
@@ -149,7 +151,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable):
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable):
+def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalable, output_path):
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -172,7 +174,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             opt_level,
             file_precheck=False,
             return_qc=False,
-            target_directory=TEST_QASM_OUTPUT_PATH,
+            target_directory=output_path,
         )
         assert res
         res = qiskit_helper.get_native_gates_level(
@@ -182,7 +184,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             opt_level,
             file_precheck=True,
             return_qc=False,
-            target_directory=TEST_QASM_OUTPUT_PATH,
+            target_directory=output_path,
         )
         assert res
         if gate_set_name != "ionq":
@@ -197,7 +199,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         opt_level,
                         file_precheck=False,
                         return_qc=False,
-                        target_directory=TEST_QASM_OUTPUT_PATH,
+                        target_directory=output_path,
                     )
                     assert res
                     res = qiskit_helper.get_mapped_level(
@@ -208,7 +210,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         opt_level,
                         file_precheck=True,
                         return_qc=False,
-                        target_directory=TEST_QASM_OUTPUT_PATH,
+                        target_directory=output_path,
                     )
                     assert res
 
@@ -219,7 +221,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             qc.num_qubits,
             file_precheck=False,
             return_qc=False,
-            target_directory=TEST_QASM_OUTPUT_PATH,
+            target_directory=output_path,
         )
         assert res
         res = tket_helper.get_native_gates_level(
@@ -228,7 +230,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
             qc.num_qubits,
             file_precheck=True,
             return_qc=False,
-            target_directory=TEST_QASM_OUTPUT_PATH,
+            target_directory=output_path,
         )
         assert res
         if gate_set_name != "ionq":
@@ -243,7 +245,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         True,
                         file_precheck=False,
                         return_qc=False,
-                        target_directory=TEST_QASM_OUTPUT_PATH,
+                        target_directory=output_path,
                     )
                     assert res
                     res = tket_helper.get_mapped_level(
@@ -254,7 +256,7 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark, input_value, scalabl
                         False,
                         file_precheck=True,
                         return_qc=False,
-                        target_directory=TEST_QASM_OUTPUT_PATH,
+                        target_directory=output_path,
                     )
                     assert res
 
@@ -653,12 +655,12 @@ def test_get_benchmark(
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
-def test_configure_end():
+def test_configure_end(output_path):
     # delete all files in the test directory and the directory itself
 
-    for f in Path(TEST_QASM_OUTPUT_PATH).iterdir():
+    for f in Path(output_path).iterdir():
         f.unlink()
-    Path(TEST_QASM_OUTPUT_PATH).rmdir()
+    Path(output_path).rmdir()
 
 
 # def test_benchmark_creation(monkeypatch):
@@ -691,7 +693,7 @@ def test_configure_end():
 #     monkeypatch.setattr("sys.argv", ["pytest", "--file-name", "test_config.json"])
 #     generate()
 #
-#     benchmarks_path = utils.get_qasm_output_path()
+#     benchmarks_path = utils.get_qasm_output_path
 #     assert len(list(Path(benchmarks_path).iterdir())) > 1000
 #
 #     Path("test_config.json").unlink()
@@ -875,23 +877,33 @@ def test_calc_supermarq_features() -> None:
 
 def test_BenchmarkGenerator() -> None:
     generator = BenchmarkGenerator()
-    assert generator.get_qasm_output_path() is not None
+    assert generator.get_qasm_output_path is not None
     generator.set_qasm_output_path("test")
-    assert generator.get_qasm_output_path() == "test"
+    assert generator.get_qasm_output_path == "test"
     assert generator.timeout > 0
     assert generator.cfg is not None
 
 
+# This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
+def endless_loop(arg1: TestObject, run_forever: bool) -> None:  # noqa: ARG001
+    while run_forever:
+        pass
+    return True
+
+
+class TestObject:
+    def __init__(self, name: str):
+        self.name = name
+
+
 def test_timeout_watchers() -> None:
-    # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
-    def endless_loop(arg1: TestObject, arg: str) -> None:  # noqa: ARG001
-        while True:
-            pass
-
-    class TestObject:
-        def __init__(self, name: str):
-            self.name = name
-
     timeout = 1
-    assert not qc_creation_watcher(endless_loop, timeout, [TestObject("test"), "test"])
-    assert not benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), "test"])
+    assert not qc_creation_watcher(endless_loop, timeout, [TestObject("test"), True])
+    assert not benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), True])
+
+    generator = BenchmarkGenerator()
+    benchmark = {
+        "name": "dj",
+    }
+    assert qc_creation_watcher(generator.create_scalable_qc, timeout, [benchmark, 5])
+    assert benchmark_generation_watcher(endless_loop, timeout, [TestObject("test"), False])
