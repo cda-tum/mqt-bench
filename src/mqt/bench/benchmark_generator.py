@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
-if sys.version_info >= (3, 10, 0):  # pragma: no cover
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
 else:
     import importlib_resources as resources
