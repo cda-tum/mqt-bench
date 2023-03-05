@@ -258,12 +258,12 @@ class Backend:
         """
         fileobj = self.NoSeekBytesIO(io.BytesIO())
 
-        paths = [Path(name) for name in filenames]
         with ZipFile(fileobj, mode="w") as zf:
-            for individual_file in paths:
+            for individual_file in filenames:
+                individual_file_as_path = Path(individual_file)
                 zf.writestr(
-                    individual_file.name,
-                    data=self.mqtbench_all_zip.read(individual_file.name),
+                    individual_file_as_path.name,
+                    data=self.mqtbench_all_zip.read(individual_file_as_path.name),
                     compress_type=ZIP_DEFLATED,
                     compresslevel=3,
                 )
