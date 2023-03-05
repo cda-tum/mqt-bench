@@ -652,7 +652,7 @@ def get_num_qubits(filename: str):
     filename -- filename of a benchmark
 
     Return values:
-    num -- optimization level
+    num -- number of qubits
     """
 
     pat = re.compile(r"(\d+)\.")
