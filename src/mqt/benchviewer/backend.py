@@ -557,11 +557,14 @@ class Backend:
 
 
 def get_tket_settings(filename: str):
+    if "mapped" not in filename:
+        return None
     if "line" in filename:
         return "line"
     if "graph" in filename:
         return "graph"
-    return ValueError("Unknown tket_setting: " + filename)
+    error_msg = "Unknown tket settings in: " + filename
+    raise ValueError(error_msg)
 
 
 def get_gate_set(filename: str):
