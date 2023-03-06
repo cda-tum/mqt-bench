@@ -18,6 +18,7 @@ from mqt.bench.benchmarks import (
     dj,
     ghz,
     graphstate,
+    groundstate,
     grover,
     hhl,
     portfolioqaoa,
@@ -276,9 +277,9 @@ def test_dj_constant_oracle():
     assert qc.depth() > 0
 
 
-# def test_groundstate():
-#     qc = groundstate.create_circuit("small")
-#     assert qc.depth() > 0
+def test_groundstate():
+    qc = groundstate.create_circuit("small")
+    assert qc.depth() > 0
 
 
 def test_routing():
