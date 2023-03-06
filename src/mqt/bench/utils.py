@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib
 import subprocess
 import sys
 from datetime import date
@@ -21,6 +20,8 @@ from qiskit.transpiler.passes import RemoveBarriers
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
+    from importlib import import_module
+
     import importlib_metadata as metadata
     import importlib_resources as resources
 
@@ -416,13 +417,13 @@ def calc_supermarq_features(
 
 def get_module_for_benchmark(benchmark_name) -> ModuleType:
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
-        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
+        return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qgan":
-        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_machine_learning.qgan")
+        return import_module("mqt.bench.benchmarks.qiskit_application_machine_learning.qgan")
     if benchmark_name == "groundstate":
-        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
+        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
     if benchmark_name == "routing":
-        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
+        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
     if benchmark_name == "tsp":
-        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
-    return importlib.import_module("mqt.bench." + benchmark_name)
+        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
+    return import_module("mqt.bench." + benchmark_name)
