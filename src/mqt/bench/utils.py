@@ -16,11 +16,10 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit.transpiler.passes import RemoveBarriers
-
+from importlib import import_module
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
-    from importlib import import_module
 
     import importlib_metadata as metadata
     import importlib_resources as resources
@@ -426,4 +425,4 @@ def get_module_for_benchmark(benchmark_name) -> ModuleType:
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
     if benchmark_name == "tsp":
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
-    return import_module("mqt.bench." + benchmark_name)
+    return import_module("mqt.bench.benchmarks." + benchmark_name)
