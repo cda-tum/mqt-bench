@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from types import ModuleType
 
+from importlib import import_module
+
 import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
@@ -16,11 +18,10 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit.transpiler.passes import RemoveBarriers
-from importlib import import_module
+
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
-
     import importlib_metadata as metadata
     import importlib_resources as resources
 
