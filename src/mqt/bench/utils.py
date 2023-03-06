@@ -415,4 +415,14 @@ def calc_supermarq_features(
 
 
 def get_module_for_benchmark(benchmark_name) -> ModuleType:
-    return importlib.import_module("." + benchmark_name, package="mqt.bench.benchmarks")
+    if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
+        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
+    if benchmark_name == "qgan":
+        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_machine_learning.qgan")
+    if benchmark_name == "groundstate":
+        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
+    if benchmark_name == "routing":
+        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
+    if benchmark_name == "tsp":
+        return importlib.import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
+    return importlib.import_module("mqt.bench." + benchmark_name)
