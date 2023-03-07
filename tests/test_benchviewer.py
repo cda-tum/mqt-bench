@@ -311,6 +311,18 @@ def test_create_database():
     assert res == []
 
 
+def test_streaming_zip():
+    backend = Backend()
+    backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+    )
+    res = backend.generate_zip_ephemeral_chunks(filenames=["ae_indep_qiskit_2.qasm", "ae_indep_qiskit_3.qasm"])
+    assert list(res)
+
+    with pytest.raises(KeyError):
+        assert not list(backend.generate_zip_ephemeral_chunks(filenames=["not_existing_file.qasm"]))
+
+
 def test_flask_server():
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
