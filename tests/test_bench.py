@@ -653,6 +653,93 @@ def test_get_benchmark(
             gate_type = instruction.name
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
+def test_get_benchmark_faulty_parameters():
+    match = "Selected benchmark is not supported. Valid benchmarks are"
+    with pytest.raises(ValueError,match=match):
+        get_benchmark("wrong_name", 2, 6)
+    match = "Selected level must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            8,
+            "wrong_size",
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "circuit_size must be None or int for this benchmark."
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "dj",
+            1,
+            -1,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected compiler must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "wrong_compiler",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "compiler_settings must be None"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            "wrong_compiler_settings",
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected gate_set_name must be None or in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "wrong_gateset",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected device_name must be None or in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "wrong_device",
+        )
+
 
 def test_create_benchmarks_from_config(output_path):
     config = {
@@ -888,3 +975,15 @@ def test_timeout_watchers() -> None:
 def test_get_module_for_benchmark() -> None:
     for benchmark in utils.get_supported_benchmarks():
         assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
+
+
+def test_benchmark_helper() -> None:
+    shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
+    for elem in shor_instances:
+        res = shor.get_instance(elem)
+        assert res is not None
+
+    groundstate_instances = ["small", "medium", "large"]
+    for elem in groundstate_instances:
+        res = groundstate.get_molecule(elem)
+        assert res is not None
