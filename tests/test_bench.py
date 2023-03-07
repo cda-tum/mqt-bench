@@ -887,3 +887,8 @@ def test_timeout_watchers() -> None:
     timeout = 1
     assert not timeout_watcher(endless_loop, timeout, [TestObject("test"), True])
     assert timeout_watcher(endless_loop, timeout, [TestObject("test"), False])
+
+
+def test_get_module_for_benchmark() -> None:
+    for benchmark in utils.get_supported_benchmarks():
+        assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None

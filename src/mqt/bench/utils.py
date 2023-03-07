@@ -419,7 +419,7 @@ def get_module_for_benchmark(benchmark_name) -> ModuleType:
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
         return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qgan":
-        return import_module("mqt.bench.benchmarks.qiskit_application_machine_learning.qgan")
+        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qgan")
     if benchmark_name == "groundstate":
         return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
     if benchmark_name == "routing":
