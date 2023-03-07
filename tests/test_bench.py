@@ -653,9 +653,10 @@ def test_get_benchmark(
             gate_type = instruction.name
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
+
 def test_get_benchmark_faulty_parameters():
     match = "Selected benchmark is not supported. Valid benchmarks are"
-    with pytest.raises(ValueError,match=match):
+    with pytest.raises(ValueError, match=match):
         get_benchmark("wrong_name", 2, 6)
     match = "Selected level must be in"
     with pytest.raises(ValueError, match=match):
@@ -760,7 +761,7 @@ def test_create_benchmarks_from_config(output_path):
         json.dump(config, f)
 
     generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
-    generator.create_benchmarks_from_config()
+    generator.create_benchmarks_from_config(num_jobs=1)
     file.unlink()
 
 

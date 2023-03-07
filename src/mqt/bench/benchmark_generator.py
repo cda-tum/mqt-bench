@@ -32,8 +32,8 @@ class BenchmarkGenerator:
 
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
-    def create_benchmarks_from_config(self) -> bool:
-        Parallel(n_jobs=-1, verbose=100)(
+    def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
+        Parallel(n_jobs=num_jobs, verbose=100)(
             delayed(self.generate_benchmark)(benchmark) for benchmark in self.cfg["benchmarks"]
         )
         return True
@@ -378,12 +378,12 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     raise ValueError(msg)
 
 
-def generate():
+def generate(num_jobs: int = -1):
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
     args = parser.parse_args()
     benchmark_generator = BenchmarkGenerator(args.file_name)
-    benchmark_generator.create_benchmarks_from_config()
+    benchmark_generator.create_benchmarks_from_config(num_jobs)
 
 
 def timeout_watcher(func, timeout, args):
