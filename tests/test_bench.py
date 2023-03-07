@@ -48,8 +48,7 @@ from qiskit import QuantumCircuit
 @pytest.fixture()
 def output_path():
     output_path = Path("./tests/test_output/")
-    if not output_path.exists():
-        output_path.mkdir()
+    output_path.mkdir(parents=True, exist_ok=True)
     return str(output_path)
 
 
