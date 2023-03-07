@@ -89,6 +89,7 @@ def test_quantumcircuit_indep_level(benchmark, input_value, scalable, output_pat
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
+    assert benchmark.__name__.split(".")[-1] in qc.name
     res = qiskit_helper.get_indep_level(
         qc,
         input_value,
