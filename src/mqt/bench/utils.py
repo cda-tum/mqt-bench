@@ -6,6 +6,11 @@ from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:  # pragma: no cover
+    from types import ModuleType
+
+from importlib import import_module
+
 import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
@@ -87,17 +92,9 @@ def get_supported_devices():
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def set_qasm_output_path(new_path: str | None = None):
-    if new_path is None:
-        new_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
-
-    global qasm_path
-    qasm_path = new_path
-
-
-def get_qasm_output_path():
+def get_default_qasm_output_path():
     """Returns the path where all .qasm files are stored."""
-    return qasm_path
+    return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
 
 
 def get_zip_file_path():
@@ -281,9 +278,7 @@ def save_as_qasm(
     if c_map is None:
         c_map = []
 
-    qasm_output_folder = target_directory if target_directory else get_qasm_output_path()
-
-    file = Path(qasm_output_folder, filename + ".qasm")
+    file = Path(target_directory, filename + ".qasm")
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
@@ -335,16 +330,6 @@ def get_cmap_from_devicename(device: str):
     return False
 
 
-def get_molecule(benchmark_instance_name: str):
-    """Returns a Molecule object depending on the parameter value."""
-    m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
-    m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]
-    m_3 = ["O 0.0 0.0 0.0", "H 0.586, 0.757, 0.0", "H 0.586, -0.757, 0.0"]
-    instances = {"small": m_1, "medium": m_2, "large": m_3}
-
-    return instances[benchmark_instance_name]
-
-
 def postprocess_single_oqc_file(filename: str):
     with Path(filename).open() as f:
         lines = f.readlines()
@@ -357,7 +342,7 @@ def postprocess_single_oqc_file(filename: str):
 
 
 def create_zip_file():
-    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_qasm_output_path()}", shell=True)
+    return subprocess.call(f"zip -rj {get_zip_file_path()} {get_default_qasm_output_path()}", shell=True)
 
 
 def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: int) -> int:
@@ -428,3 +413,17 @@ def calc_supermarq_features(
         parallelism,
         liveness,
     )
+
+
+def get_module_for_benchmark(benchmark_name) -> ModuleType:
+    if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
+        return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
+    if benchmark_name == "qgan":
+        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qgan")
+    if benchmark_name == "groundstate":
+        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
+    if benchmark_name == "routing":
+        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
+    if benchmark_name == "tsp":
+        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
+    return import_module("mqt.bench.benchmarks." + benchmark_name)

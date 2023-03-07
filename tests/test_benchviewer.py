@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
-from zipfile import ZipFile
 
 import pytest
-from mqt.benchviewer import backend
-from mqt.benchviewer.main import app, init
+from mqt.benchviewer import Backend, Server, backend
+from mqt.benchviewer.main import app
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
     from importlib import resources
@@ -232,7 +231,7 @@ def test_prepare_form_input():
             ],
         ),
     )
-
+    backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
 
 
@@ -240,18 +239,22 @@ benchviewer = resources.files("mqt.benchviewer")
 
 
 def test_read_mqtbench_all_zip():
+    backend = Backend()
     with resources.as_file(benchviewer) as benchviewer_path:
         target_location = str(benchviewer_path / "static/files")
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
 def test_create_database():
-    with resources.as_file(benchviewer) as benchviewer_path:
-        zip_location = benchviewer_path / "static/files/MQTBench_all.zip"
-    with ZipFile(zip_location, mode="r") as zf:
-        database = backend.create_database(zf)
-    assert len(database) > 0
-    backend.database = database
+    backend = Backend()
+
+    res_zip = backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+    )
+    assert res_zip
+
+    database = backend.init_database()
+    assert database
 
     input_data = (
         (2, 5),
@@ -308,11 +311,24 @@ def test_create_database():
     assert res == []
 
 
+def test_streaming_zip():
+    backend = Backend()
+    backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+    )
+    res = backend.generate_zip_ephemeral_chunks(filenames=["ae_indep_qiskit_2.qasm", "ae_indep_qiskit_3.qasm"])
+    assert list(res)
+
+    with pytest.raises(KeyError):
+        assert not list(backend.generate_zip_ephemeral_chunks(filenames=["not_existing_file.qasm"]))
+
+
 def test_flask_server():
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(benchviewer_location / "static/files")
-    assert init(
+
+    assert Server(
         skip_question=True,
         activate_logging=False,
         target_location=target_location,
