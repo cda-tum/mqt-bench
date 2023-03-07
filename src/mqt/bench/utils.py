@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
 
 from importlib import import_module

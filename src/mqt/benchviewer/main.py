@@ -8,7 +8,7 @@ from datetime import datetime
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 from mqt.benchviewer.backend import Backend
 
-if sys.version_info < (3, 10, 0):
+if sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources
 else:
     from importlib import resources
