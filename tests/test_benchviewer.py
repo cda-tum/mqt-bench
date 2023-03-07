@@ -309,7 +309,6 @@ def test_create_database():
     )
     res = backend.get_selected_file_paths(input_data)
     assert res == []
-    return
 
 
 def test_flask_server():
