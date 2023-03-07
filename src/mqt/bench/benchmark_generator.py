@@ -261,7 +261,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = f"Selected level must be in {utils.get_supported_levels()}."
         raise ValueError(msg)
 
-    if benchmark_name not in ["shor", "groundstate"] and not isinstance(circuit_size, int):
+    if benchmark_name not in ["shor", "groundstate"] and not (isinstance(circuit_size, int) and circuit_size > 0):
         msg = "circuit_size must be None or int for this benchmark."
         raise ValueError(msg)
 
