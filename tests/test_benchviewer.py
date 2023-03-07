@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
-from zipfile import ZipFile
 
 import pytest
-from mqt.benchviewer import backend
-from mqt.benchviewer.main import app, init
+from mqt.benchviewer import Backend, BenchmarkConfiguration, Server, backend
+from mqt.benchviewer.main import app
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
     from importlib import resources
@@ -186,7 +185,7 @@ def test_prepare_form_input() -> None:
         "device_ionq_ionq11": "true",
     }
 
-    expected_res = backend.BenchmarkConfiguration(
+    expected_res = BenchmarkConfiguration(
         min_qubits=75,
         max_qubits=110,
         indices_benchmarks=list(range(1, 29)),
@@ -202,7 +201,7 @@ def test_prepare_form_input() -> None:
         mapped_tket_placements=["graph", "line"],
         mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
     )
-
+    backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
 
 
@@ -210,18 +209,22 @@ benchviewer = resources.files("mqt.benchviewer")
 
 
 def test_read_mqtbench_all_zip() -> None:
+    backend = Backend()
     with resources.as_file(benchviewer) as benchviewer_path:
         target_location = str(benchviewer_path / "static/files")
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
-def test_create_database() -> None:
-    with resources.as_file(benchviewer) as benchviewer_path:
-        zip_location = benchviewer_path / "static/files/MQTBench_all.zip"
-    with ZipFile(zip_location, mode="r") as zf:
-        database = backend.create_database(zf)
-    assert len(database) > 0
-    backend.database = database
+def test_create_database():
+    backend = Backend()
+
+    res_zip = backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+    )
+    assert res_zip
+
+    database = backend.init_database()
+    assert database
 
     input_data = backend.BenchmarkConfiguration(
         min_qubits=2,
@@ -304,34 +307,46 @@ def test_create_database() -> None:
     assert res == []
 
 
-def test_flask_server() -> None:
-    with resources.as_file(benchviewer) as benchviewer_path:
-        benchviewer_location = benchviewer_path
-    target_location = str(benchviewer_location / "static/files")
-    assert init(
-        skip_question=True,
-        activate_logging=False,
-        target_location=target_location,
+def test_streaming_zip() -> None:
+    backend = Backend()
+    backend.read_mqtbench_all_zip(
+        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
     )
+    res = backend.generate_zip_ephemeral_chunks(filenames=["ae_indep_qiskit_2.qasm", "ae_indep_qiskit_3.qasm"])
+    assert list(res)
 
-    paths_to_check = [
-        "static/files/MQTBench_all.zip",
-        "templates/benchmark_description.html",
-        "templates/index.html",
-        "templates/legal.html",
-        "templates/description.html",
-    ]
-    for path in paths_to_check:
-        assert (benchviewer_location / path).is_file()
+    with pytest.raises(KeyError):
+        assert not list(backend.generate_zip_ephemeral_chunks(filenames=["not_existing_file.qasm"]))
 
-    with app.test_client() as c:
-        success_code = 200
-        links_to_check = [
-            "/mqtbench/index",
-            "/mqtbench/download",
-            "/mqtbench/legal",
-            "/mqtbench/description",
-            "/mqtbench/benchmark_description",
+    def test_flask_server() -> None:
+        with resources.as_file(benchviewer) as benchviewer_path:
+            benchviewer_location = benchviewer_path
+        target_location = str(benchviewer_location / "static/files")
+
+        assert Server(
+            skip_question=True,
+            activate_logging=False,
+            target_location=target_location,
+        )
+
+        paths_to_check = [
+            "static/files/MQTBench_all.zip",
+            "templates/benchmark_description.html",
+            "templates/index.html",
+            "templates/legal.html",
+            "templates/description.html",
         ]
-        for link in links_to_check:
-            assert c.get(link).status_code == success_code
+        for path in paths_to_check:
+            assert (benchviewer_location / path).is_file()
+
+        with app.test_client() as c:
+            success_code = 200
+            links_to_check = [
+                "/mqtbench/index",
+                "/mqtbench/download",
+                "/mqtbench/legal",
+                "/mqtbench/description",
+                "/mqtbench/benchmark_description",
+            ]
+            for link in links_to_check:
+                assert c.get(link).status_code == success_code

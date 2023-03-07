@@ -1,14 +1,16 @@
 from mqt.bench.benchmark_generator import (
-    create_benchmarks_from_config,
     generate,
     get_benchmark,
+    BenchmarkGenerator,
+    timeout_watcher,
 )
 from mqt.bench import qiskit_helper, tket_helper, utils
 
 __all__ = [
-    "create_benchmarks_from_config",
     "generate",
     "get_benchmark",
+    "BenchmarkGenerator",
+    "timeout_watcher",
     "qiskit_helper",
     "tket_helper",
     "utils",

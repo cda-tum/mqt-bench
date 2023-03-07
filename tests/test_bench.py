@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -7,7 +8,15 @@ if TYPE_CHECKING:
     import types
 
 import pytest
-from mqt.bench import evaluation, get_benchmark, qiskit_helper, tket_helper, utils
+from mqt.bench import (
+    BenchmarkGenerator,
+    evaluation,
+    get_benchmark,
+    qiskit_helper,
+    timeout_watcher,
+    tket_helper,
+    utils,
+)
 from mqt.bench.benchmarks import (
     ae,
     dj,
@@ -39,13 +48,12 @@ from mqt.bench.benchmarks import (
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-test_qasm_output_path = "./test_output/"
 
-
-def test_configure_begin() -> None:
-    Path(test_qasm_output_path).mkdir(parents=True, exist_ok=True)
-    utils.set_qasm_output_path(test_qasm_output_path)
-    assert utils.get_qasm_output_path() == test_qasm_output_path
+@pytest.fixture()
+def output_path():
+    output_path = Path("./tests/test_output/")
+    output_path.mkdir(parents=True, exist_ok=True)
+    return str(output_path)
 
 
 @pytest.mark.parametrize(
@@ -77,21 +85,48 @@ def test_configure_begin() -> None:
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_indep_level(benchmark: types.ModuleType, input_value: int, scalable: bool) -> None:
+def test_quantumcircuit_indep_level(
+    benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
+) -> None:
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
     if scalable:
         assert qc.num_qubits == input_value
-    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=False)
+    assert benchmark.__name__.split(".")[-1] in qc.name
+    res = qiskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        return_qc=False,
+        target_directory=output_path,
+    )
     assert res
-    res = qiskit_helper.get_indep_level(qc, input_value, file_precheck=True)
+    res = qiskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=output_path,
+    )
     assert res
 
-    res = tket_helper.get_indep_level(qc, input_value, file_precheck=False)
+    res = tket_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        return_qc=False,
+        target_directory=output_path,
+    )
     assert res
-    res = tket_helper.get_indep_level(qc, input_value, file_precheck=True)
+    res = tket_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=output_path,
+    )
     assert res
 
 
@@ -122,7 +157,9 @@ def test_quantumcircuit_indep_level(benchmark: types.ModuleType, input_value: in
         (qgan, 5, True),
     ],
 )
-def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, input_value: int, scalable: bool) -> None:
+def test_quantumcircuit_native_and_mapped_levels(
+    benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
+) -> None:
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -144,6 +181,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
             qc.num_qubits,
             opt_level,
             file_precheck=False,
+            return_qc=False,
+            target_directory=output_path,
         )
         assert res
         res = qiskit_helper.get_native_gates_level(
@@ -152,6 +191,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
             qc.num_qubits,
             opt_level,
             file_precheck=True,
+            return_qc=False,
+            target_directory=output_path,
         )
         assert res
         if gate_set_name != "ionq":
@@ -165,6 +206,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
                         device_name,
                         opt_level,
                         file_precheck=False,
+                        return_qc=False,
+                        target_directory=output_path,
                     )
                     assert res
                     res = qiskit_helper.get_mapped_level(
@@ -174,6 +217,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
                         device_name,
                         opt_level,
                         file_precheck=True,
+                        return_qc=False,
+                        target_directory=output_path,
                     )
                     assert res
 
@@ -183,6 +228,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
             gate_set_name,
             qc.num_qubits,
             file_precheck=False,
+            return_qc=False,
+            target_directory=output_path,
         )
         assert res
         res = tket_helper.get_native_gates_level(
@@ -190,6 +237,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
             gate_set_name,
             qc.num_qubits,
             file_precheck=True,
+            return_qc=False,
+            target_directory=output_path,
         )
         assert res
         if gate_set_name != "ionq":
@@ -203,6 +252,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
                         device_name,
                         True,
                         file_precheck=False,
+                        return_qc=False,
+                        target_directory=output_path,
                     )
                     assert res
                     res = tket_helper.get_mapped_level(
@@ -212,6 +263,8 @@ def test_quantumcircuit_native_and_mapped_levels(benchmark: types.ModuleType, in
                         device_name,
                         False,
                         file_precheck=True,
+                        return_qc=False,
+                        target_directory=output_path,
                     )
                     assert res
 
@@ -233,8 +286,7 @@ def test_dj_constant_oracle() -> None:
 
 
 def test_groundstate() -> None:
-    m = utils.get_molecule("small")
-    qc = groundstate.create_circuit(m)
+    qc = groundstate.create_circuit("small")
     assert qc.depth() > 0
 
 
@@ -610,49 +662,122 @@ def test_get_benchmark(
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
-def test_configure_end() -> None:
+def test_get_benchmark_faulty_parameters():
+    match = "Selected benchmark is not supported. Valid benchmarks are"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark("wrong_name", 2, 6)
+    match = "Selected level must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            8,
+            "wrong_size",
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "circuit_size must be None or int for this benchmark."
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "dj",
+            1,
+            -1,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected compiler must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "wrong_compiler",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "compiler_settings must be None"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            "wrong_compiler_settings",
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected gate_set_name must be None or in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "wrong_gateset",
+            "rigetti_aspen_m2",
+        )
+    match = "Selected device_name must be None or in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            1,
+            3,
+            None,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "wrong_device",
+        )
+
+
+def test_create_benchmarks_from_config(output_path):
+    config = {
+        "timeout": 120,
+        "benchmarks": [
+            {
+                "name": "ghz",
+                "include": True,
+                "min_qubits": 2,
+                "max_qubits": 3,
+                "stepsize": 1,
+                "precheck_possible": True,
+            },
+        ],
+    }
+    file = Path("test_config.json")
+    with file.open("w") as f:
+        json.dump(config, f)
+
+    generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
+    generator.create_benchmarks_from_config(num_jobs=1)
+    file.unlink()
+
+
+def test_configure_end(output_path):
     # delete all files in the test directory and the directory itself
-
-    for f in Path(test_qasm_output_path).iterdir():
+    for f in Path(output_path).iterdir():
         f.unlink()
-    Path(test_qasm_output_path).rmdir()
-    utils.set_qasm_output_path()
-
-
-# def test_benchmark_creation(monkeypatch):
-#     import json
-#
-#     config = {
-#         "timeout": 120,
-#         "benchmarks": [
-#             {
-#                 "name": benchmark,
-#                 "include": True,
-#                 "min_qubits": 3,
-#                 "max_qubits": 4,
-#                 "stepsize": 1,
-#                 "ancillary_mode": ["noancilla", "v-chain"],
-#                 "instances": ["small"],
-#                 "min_index": 1,
-#                 "max_index": 2,
-#                 "min_nodes": 2,
-#                 "max_nodes": 3,
-#                 "min_uncertainty": 2,
-#                 "max_uncertainty": 3,
-#             }
-#             for benchmark in utils.get_supported_benchmarks()
-#             if benchmark != "shor"
-#         ],
-#     }
-#     with Path("test_config.json").open("w") as f:
-#         json.dump(config, f)
-#     monkeypatch.setattr("sys.argv", ["pytest", "--file-name", "test_config.json"])
-#     generate()
-#
-#     benchmarks_path = utils.get_qasm_output_path()
-#     assert len(list(Path(benchmarks_path).iterdir())) > 1000
-#
-#     Path("test_config.json").unlink()
+    Path(output_path).rmdir()
 
 
 def test_zip_creation() -> None:
@@ -829,3 +954,45 @@ def test_calc_supermarq_features() -> None:
     qc = get_benchmark("dj", 1, 5)
     features = utils.calc_supermarq_features(qc)
     assert type(features) == utils.SupermarqFeatures
+
+
+def test_BenchmarkGenerator() -> None:
+    generator = BenchmarkGenerator(qasm_output_path="test")
+    assert generator.qasm_output_path == "test"
+    assert generator.timeout > 0
+    assert generator.cfg is not None
+
+
+# This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
+def endless_loop(arg1: TestObject, run_forever: bool) -> None:  # noqa: ARG001
+    while run_forever:
+        pass
+    return True
+
+
+class TestObject:
+    def __init__(self, name: str):
+        self.name = name
+
+
+def test_timeout_watchers() -> None:
+    timeout = 1
+    assert not timeout_watcher(endless_loop, timeout, [TestObject("test"), True])
+    assert timeout_watcher(endless_loop, timeout, [TestObject("test"), False])
+
+
+def test_get_module_for_benchmark() -> None:
+    for benchmark in utils.get_supported_benchmarks():
+        assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
+
+
+def test_benchmark_helper() -> None:
+    shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
+    for elem in shor_instances:
+        res = shor.get_instance(elem)
+        assert res is not None
+
+    groundstate_instances = ["small", "medium", "large"]
+    for elem in groundstate_instances:
+        res = groundstate.get_molecule(elem)
+        assert res is not None

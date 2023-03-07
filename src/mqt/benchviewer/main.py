@@ -7,44 +7,49 @@ from datetime import datetime
 from typing import Any
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
-from mqt.benchviewer import backend
+from mqt.benchviewer.backend import Backend
 
-if sys.version_info < (3, 10, 0):
+if sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources
 else:
-    from importlib import resources  # type: ignore[no-redef]
+    from importlib import resources
+
+
+class Server:
+    def __init__(
+        self,
+        skip_question: bool = False,
+        activate_logging: bool = False,
+        target_location: str = None,
+    ):
+        self.backend = Backend()
+
+        self.target_location = target_location
+        if not os.access(self.target_location, os.W_OK):
+            msg = "target_location is not writable. Please specify a different path."
+            raise RuntimeError(msg)
+
+        res_zip = self.backend.read_mqtbench_all_zip(skip_question, self.target_location)
+        if not res_zip:
+            msg = "Error while reading the MQTBench_all.zip file."
+            raise RuntimeError(msg)
+
+        res_db = self.backend.init_database()
+        if not res_db:
+            msg = "Error while initializing the database."
+            raise RuntimeError(msg)
+
+        self.activate_logging = activate_logging
+
+        if self.activate_logging:
+            logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
+        global SERVER  # noqa: PLW0603
+        SERVER = self
 
 
 app = Flask(__name__, static_url_path="/mqtbench")
+SERVER = None
 PREFIX = "/mqtbench/"
-
-
-def init(
-    skip_question: bool = False,
-    activate_logging: bool = False,
-    target_location: str = "./",
-) -> bool:
-    global TARGET_LOCATION
-    TARGET_LOCATION = target_location  # type: ignore[name-defined]
-    if not os.access(TARGET_LOCATION, os.W_OK):  # type: ignore[name-defined]
-        print("target_location is not writable. Please specify a different path.")
-        return False
-
-    res_zip = backend.read_mqtbench_all_zip(skip_question, target_location)
-    if not res_zip:
-        return False
-
-    res_db = backend.init_database()
-    if not res_db:
-        return False
-
-    global ACTIVATE_LOGGING
-    ACTIVATE_LOGGING = activate_logging  # type: ignore[name-defined]
-
-    if ACTIVATE_LOGGING:  # type: ignore[name-defined]
-        logging.basicConfig(filename="/local/mqtbench/downloads.log", level=logging.INFO)
-
-    return True
 
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
@@ -54,8 +59,8 @@ def index() -> Any:
 
     return render_template(
         "index.html",
-        benchmarks=backend.benchmarks,
-        nonscalable_benchmarks=backend.nonscalable_benchmarks,
+        benchmarks=SERVER.backend.benchmarks,
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
     )
 
 
@@ -63,7 +68,7 @@ def index() -> Any:
 def download_pre_gen_zip() -> Any:
     filename = "MQTBench_all.zip"
 
-    if ACTIVATE_LOGGING:  # type: ignore[name-defined]
+    if SERVER.activate_logging:
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         app.logger.info("###### Start ######")
         app.logger.info("Timestamp: %s", timestamp)
@@ -73,8 +78,8 @@ def download_pre_gen_zip() -> Any:
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
-    return send_from_directory(  # type: ignore[call-arg]
-        directory=TARGET_LOCATION,  # type: ignore[name-defined]
+    return send_from_directory(
+        directory=SERVER.target_location,
         path=filename,
         as_attachment=True,
         mimetype="application/zip",
@@ -87,11 +92,11 @@ def download_data() -> Any:
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
-        prepared_data = backend.prepare_form_input(data)
-        file_paths = backend.get_selected_file_paths(prepared_data)
+        prepared_data = SERVER.backend.prepare_form_input(data)
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-        if ACTIVATE_LOGGING:  # type: ignore[name-defined]
+        if SERVER.activate_logging:
             app.logger.info("###### Start ######")
             app.logger.info("Timestamp: %s", timestamp)
             headers = str(request.headers)
@@ -103,7 +108,7 @@ def download_data() -> Any:
 
         if file_paths:
             return app.response_class(
-                backend.generate_zip_ephemeral_chunks(file_paths),
+                SERVER.backend.generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
                 headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
                 direct_passthrough=True,
@@ -111,8 +116,8 @@ def download_data() -> Any:
 
     return render_template(
         "index.html",
-        benchmarks=backend.benchmarks,
-        nonscalable_benchmarks=backend.nonscalable_benchmarks,
+        benchmarks=SERVER.backend.benchmarks,
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
     )
 
 
@@ -143,8 +148,8 @@ def benchmark_description() -> Any:
 def get_num_benchmarks() -> Any:
     if request.method == "POST":
         data = request.form
-        prepared_data = backend.prepare_form_input(data)
-        file_paths = backend.get_selected_file_paths(prepared_data)
+        prepared_data = SERVER.backend.prepare_form_input(data)
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
         return jsonify({"num_selected": len(file_paths)})
     return jsonify({"num_selected": 0})
 
@@ -158,7 +163,7 @@ def start_server(
     if not target_location:
         target_location = str(resources.files("mqt.benchviewer") / "static" / "files")
 
-    init(
+    Server(
         skip_question=skip_question,
         activate_logging=activate_logging,
         target_location=target_location,

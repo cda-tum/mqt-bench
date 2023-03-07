@@ -3,464 +3,241 @@ from __future__ import annotations
 import argparse
 import json
 import signal
-from importlib import import_module
+import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
+    from importlib import resources
+else:
+    import importlib_resources as resources
+
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
-from mqt.bench.benchmarks import groundstate, hhl, pricingcall, pricingput, routing, shor, tsp
-
-benchmarks_module_paths_dict: dict[str, str] = {}
-timeout: int = 0
 
 
-def init_module_paths() -> None:
-    global benchmarks_module_paths_dict
-    benchmarks_module_paths_dict = {
-        "ae": "mqt.bench.benchmarks.ae",
-        "dj": "mqt.bench.benchmarks.dj",
-        "grover": "mqt.bench.benchmarks.grover",
-        "ghz": "mqt.bench.benchmarks.ghz",
-        "graphstate": "mqt.bench.benchmarks.graphstate",
-        "portfolioqaoa": "mqt.bench.benchmarks.qiskit_application_finance.portfolioqaoa",
-        "portfoliovqe": "mqt.bench.benchmarks.qiskit_application_finance.portfoliovqe",
-        "qaoa": "mqt.bench.benchmarks.qaoa",
-        "qft": "mqt.bench.benchmarks.qft",
-        "qftentangled": "mqt.bench.benchmarks.qftentangled",
-        "qgan": "mqt.bench.benchmarks.qiskit_application_ml.qgan",
-        "qpeexact": "mqt.bench.benchmarks.qpeexact",
-        "qpeinexact": "mqt.bench.benchmarks.qpeinexact",
-        "qwalk": "mqt.bench.benchmarks.qwalk",
-        "realamprandom": "mqt.bench.benchmarks.realamprandom",
-        "su2random": "mqt.bench.benchmarks.su2random",
-        "twolocalrandom": "mqt.bench.benchmarks.twolocalrandom",
-        "vqe": "mqt.bench.benchmarks.vqe",
-        "wstate": "mqt.bench.benchmarks.wstate",
-    }
+class BenchmarkGenerator:
+    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None):
+        with Path(cfg_path).open() as jsonfile:
+            self.cfg = json.load(jsonfile)
+            print("Read config successful")
+        self.timeout = self.cfg["timeout"]
+        if qasm_output_path is None:
+            self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
+        else:
+            self.qasm_output_path = qasm_output_path
 
+        Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
-def create_benchmarks_from_config(cfg_path: str = "./config.json") -> bool:
-    init_module_paths()
-
-    with Path(cfg_path).open() as jsonfile:
-        cfg = json.load(jsonfile)
-        print("Read config successful")
-
-    global timeout
-    timeout = cfg["timeout"]
-
-    Path(utils.get_qasm_output_path()).mkdir(exist_ok=True, parents=True)
-
-    Parallel(n_jobs=-1, verbose=100)(delayed(generate_benchmark)(benchmark) for benchmark in cfg["benchmarks"])
-    return True
-
-
-def benchmark_generation_watcher(func: Any, args: list[Any]) -> bool | QuantumCircuit:
-    class TimeoutException(Exception):  # Custom exception class
-        pass
-
-    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
-        raise TimeoutException()
-
-    # Change the behavior of SIGALRM
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout)
-    try:
-        res = func(*args)
-    except TimeoutException:
-        print(
-            "Calculation/Generation exceeded timeout limit for ",
-            func.__name__,
-            func.__module__.split(".")[-1],
-            args[0].name,
-            args[1:],
+    def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
+        Parallel(n_jobs=num_jobs, verbose=100)(
+            delayed(self.generate_benchmark)(benchmark) for benchmark in self.cfg["benchmarks"]
         )
-        return False
-    except Exception as e:
-        print(
-            "Exception: ",
-            e,
-            func.__name__,
-            func.__module__.split(".")[-1],
-            args[0].name,
-            args[1:],
-        )
-        return False
-    else:
-        # Reset the alarm
-        signal.alarm(0)
+        return True
 
-    return res
+    def generate_benchmark(self, benchmark):  # noqa: PLR0912
+        lib = utils.get_module_for_benchmark(benchmark["name"])
+        file_precheck = benchmark["precheck_possible"]
+        if benchmark["include"]:
+            if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
+                for anc_mode in benchmark["ancillary_mode"]:
+                    for n in range(
+                        benchmark["min_qubits"],
+                        benchmark["max_qubits"],
+                        benchmark["stepsize"],
+                    ):
+                        success_flag = self.start_benchmark_generation(lib.create_circuit, [n, anc_mode], file_precheck)
+                        if not success_flag:
+                            break
 
+            elif benchmark["name"] == "shor":
+                for choice in benchmark["instances"]:
+                    to_be_factored_number, a_value = lib.get_instance(choice)
+                    success_flag = self.start_benchmark_generation(
+                        lib.create_circuit, [to_be_factored_number, a_value], file_precheck
+                    )
+                    if not success_flag:
+                        break
 
-def qc_creation_watcher(func: Any, args: list[Any]) -> bool | tuple[QuantumCircuit, int, bool]:
-    class TimeoutException(Exception):  # Custom exception class
-        pass
+            elif benchmark["name"] == "hhl":
+                for i in range(benchmark["min_index"], benchmark["max_index"]):
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [i], file_precheck)
+                    if not success_flag:
+                        break
 
-    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
-        raise TimeoutException
+            elif benchmark["name"] == "routing":
+                for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes, 2], file_precheck)
+                    if not success_flag:
+                        break
 
-    # Change the behavior of SIGALRM
-    signal.signal(signal.SIGALRM, timeout_handler)
+            elif benchmark["name"] == "tsp":
+                for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
+                    if not success_flag:
+                        break
 
-    signal.alarm(timeout)
-    try:
-        qc, num_qubits, file_precheck = func(*args)
-    except TimeoutException:
-        print("Benchmark Creation exceeded timeout limit for ", func, args[1:])
-        return False
-    except Exception as e:
-        print("Something else went wrong: ", e)
-        return False
-    else:
-        # Reset the alarm
-        signal.alarm(0)
+            elif benchmark["name"] == "groundstate":
+                for choice in benchmark["instances"]:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [choice], file_precheck)
+                    if not success_flag:
+                        break
 
-    return qc, num_qubits, file_precheck
-
-
-def generate_benchmark(benchmark: dict[str, Any]) -> None:  # noqa: PLR0912, PLR0915
-    if benchmark["include"]:
-        if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
-            for anc_mode in benchmark["ancillary_mode"]:
+            elif benchmark["name"] == "pricingcall" or benchmark["name"] == "pricingput":
+                for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
+                    if not success_flag:
+                        break
+            else:
                 for n in range(
                     benchmark["min_qubits"],
                     benchmark["max_qubits"],
                     benchmark["stepsize"],
                 ):
-                    res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n, anc_mode])
-                    if not res_qc_creation:
-                        break
-                    assert not isinstance(res_qc_creation, bool)
-                    qc, num_qubits, file_precheck = res_qc_creation
-                    res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [n], file_precheck)
+                    if not success_flag:
                         break
 
-        elif benchmark["name"] == "shor":
-            for choice in benchmark["instances"]:
-                res_qc_creation = qc_creation_watcher(create_shor_qc, [choice])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
+    def generate_target_dep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck):
+        compilation_paths = [
+            ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
+            ("rigetti", [("rigetti_aspen_m2", 80)]),
+            ("ionq", [("ionq11", 11)]),
+            ("oqc", [("oqc_lucy", 8)]),
+        ]
+        num_generated_benchmarks = 0
+        for gate_set_name, devices in compilation_paths:
+            # Creating the circuit on both target-dependent levels for qiskit
+            for opt_level in range(4):
+                res = timeout_watcher(
+                    qiskit_helper.get_native_gates_level,
+                    self.timeout,
+                    [
+                        qc,
+                        gate_set_name,
+                        num_qubits,
+                        opt_level,
+                        file_precheck,
+                        False,
+                        self.qasm_output_path,
+                    ],
+                )
                 if not res:
                     break
+                num_generated_benchmarks += 1
 
-        elif benchmark["name"] == "hhl":
-            for i in range(benchmark["min_index"], benchmark["max_index"]):
-                res_qc_creation = qc_creation_watcher(create_hhl_qc, [i])
-                if not res_qc_creation:
-                    break
+            for device_name, max_qubits in devices:
+                for opt_level in range(4):
+                    # Creating the circuit on target-dependent: mapped level qiskit
+                    if max_qubits >= qc.num_qubits:
+                        res = timeout_watcher(
+                            qiskit_helper.get_mapped_level,
+                            self.timeout,
+                            [
+                                qc,
+                                gate_set_name,
+                                qc.num_qubits,
+                                device_name,
+                                opt_level,
+                                file_precheck,
+                                self.qasm_output_path,
+                            ],
+                        )
+                        if not res:
+                            break
+                        num_generated_benchmarks += 1
 
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
+            # Creating the circuit on both target-dependent levels for tket
 
-        elif benchmark["name"] == "routing":
-            for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                res_qc_creation = qc_creation_watcher(create_routing_qc, [nodes])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-
-        elif benchmark["name"] == "tsp":
-            for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                res_qc_creation = qc_creation_watcher(create_tsp_qc, [nodes])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-
-        elif benchmark["name"] == "groundstate":
-            for choice in benchmark["instances"]:
-                res_qc_creation = qc_creation_watcher(create_groundstate_qc, [choice])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-
-        elif benchmark["name"] == "pricingcall":
-            for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
-                res_qc_creation = qc_creation_watcher(create_pricingcall_qc, [nodes])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-
-        elif benchmark["name"] == "pricingput":
-            for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
-                res_qc_creation = qc_creation_watcher(create_pricingput_qc, [nodes])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-        else:
-            for n in range(benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"]):
-                res_qc_creation = qc_creation_watcher(create_scalable_qc, [benchmark, n])
-                if not res_qc_creation:
-                    break
-                assert not isinstance(res_qc_creation, bool)
-                qc, num_qubits, file_precheck = res_qc_creation
-                res = generate_circuits_on_all_levels(qc, num_qubits, file_precheck)
-                if not res:
-                    break
-
-
-def generate_circuits_on_all_levels(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-    success_generated_circuits_t_indep = generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
-
-    if not success_generated_circuits_t_indep:
-        return False
-
-    generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
-    return True
-
-
-def generate_target_indep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-    num_generated_circuits = 0
-    res_indep_qiskit = benchmark_generation_watcher(qiskit_helper.get_indep_level, [qc, num_qubits, file_precheck])
-    if res_indep_qiskit:
-        num_generated_circuits += 1
-
-    res_indep_tket = benchmark_generation_watcher(tket_helper.get_indep_level, [qc, num_qubits, file_precheck])
-    if res_indep_tket:
-        num_generated_circuits += 1
-
-    return num_generated_circuits != 0
-
-
-def generate_target_dep_level_circuit(qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-    compilation_paths = [
-        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m2", 80)]),
-        ("ionq", [("ionq11", 11)]),
-        ("oqc", [("oqc_lucy", 8)]),
-    ]
-    num_generated_benchmarks = 0
-    for gate_set_name, devices in compilation_paths:
-        # Creating the circuit on both target-dependent levels for qiskit
-        for opt_level in range(4):
-            res = benchmark_generation_watcher(
-                qiskit_helper.get_native_gates_level,
+            res = timeout_watcher(
+                tket_helper.get_native_gates_level,
+                self.timeout,
                 [
                     qc,
                     gate_set_name,
                     num_qubits,
-                    opt_level,
                     file_precheck,
+                    False,
+                    self.qasm_output_path,
                 ],
             )
             if not res:
-                break
+                continue
             num_generated_benchmarks += 1
 
-        for device_name, max_qubits in devices:
-            for opt_level in range(4):
-                # Creating the circuit on target-dependent: mapped level qiskit
+            for device_name, max_qubits in devices:
                 if max_qubits >= qc.num_qubits:
-                    res = benchmark_generation_watcher(
-                        qiskit_helper.get_mapped_level,
-                        [
-                            qc,
-                            gate_set_name,
-                            qc.num_qubits,
-                            device_name,
-                            opt_level,
-                            file_precheck,
-                        ],
-                    )
-                    if not res:
-                        break
-                    num_generated_benchmarks += 1
+                    for lineplacement in (False, True):
+                        # Creating the circuit on target-dependent: mapped level tket
+                        res = timeout_watcher(
+                            tket_helper.get_mapped_level,
+                            self.timeout,
+                            [
+                                qc,
+                                gate_set_name,
+                                qc.num_qubits,
+                                device_name,
+                                lineplacement,
+                                file_precheck,
+                                False,
+                                self.qasm_output_path,
+                            ],
+                        )
+                        if not res:
+                            continue
+                        num_generated_benchmarks += 1
+        return num_generated_benchmarks != 0
 
-        # Creating the circuit on both target-dependent levels for tket
+    def start_benchmark_generation(self, create_circuit_function, parameters, file_precheck) -> bool:
+        res_qc_creation = timeout_watcher(create_circuit_function, self.timeout, parameters)
+        if not res_qc_creation:
+            return False
+        return self.generate_circuits_on_all_levels(res_qc_creation, res_qc_creation.num_qubits, file_precheck)
 
-        res = benchmark_generation_watcher(
-            tket_helper.get_native_gates_level,
-            [
-                qc,
-                gate_set_name,
-                num_qubits,
-                file_precheck,
-            ],
+    def generate_circuits_on_all_levels(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool):
+        success_generated_circuits_t_indep = self.generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
+
+        if not success_generated_circuits_t_indep:
+            return False
+
+        self.generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
+        return True
+
+    def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
+        num_generated_circuits = 0
+        res_indep_qiskit = timeout_watcher(
+            qiskit_helper.get_indep_level,
+            self.timeout,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
         )
-        if not res:
-            continue
-        num_generated_benchmarks += 1
+        if res_indep_qiskit:
+            num_generated_circuits += 1
 
-        for device_name, max_qubits in devices:
-            if max_qubits >= qc.num_qubits:
-                for lineplacement in (False, True):
-                    # Creating the circuit on target-dependent: mapped level tket
-                    res = benchmark_generation_watcher(
-                        tket_helper.get_mapped_level,
-                        [
-                            qc,
-                            gate_set_name,
-                            qc.num_qubits,
-                            device_name,
-                            lineplacement,
-                            file_precheck,
-                        ],
-                    )
-                    if not res:
-                        continue
-                    num_generated_benchmarks += 1
-    return num_generated_benchmarks != 0
+        res_indep_tket = timeout_watcher(
+            tket_helper.get_indep_level,
+            self.timeout,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
+        )
+        if res_indep_tket:
+            num_generated_circuits += 1
 
-
-ERROR_MSG = "\n Problem occurred in outer loop: "
-
-
-def create_scalable_qc(
-    benchmark: dict[str, Any], num_qubits: int, ancillary_mode: str | None = None
-) -> tuple[QuantumCircuit, int, bool]:
-    file_precheck = True
-    init_module_paths()
-    try:
-        # Creating the circuit on Algorithmic Description level
-        lib = import_module(benchmarks_module_paths_dict[benchmark["name"]])
-        if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
-            qc = lib.create_circuit(num_qubits, ancillary_mode=ancillary_mode)
-            qc.name = qc.name + "-" + ancillary_mode
-            file_precheck = False
-
-        else:
-            qc = lib.create_circuit(num_qubits)
-
-        n = qc.num_qubits
-        return qc, n, file_precheck
-
-    except Exception as e:
-        print(ERROR_MSG, benchmark, num_qubits, e)
-        raise e from None
-
-
-def create_shor_qc(choice: str) -> tuple[QuantumCircuit, int, bool]:
-    instances = {
-        "xsmall": [9, 4],  # 18 qubits
-        "small": [15, 4],  # 18 qubits
-        "medium": [821, 4],  # 42 qubits
-        "large": [11777, 4],  # 58 qubits
-        "xlarge": [201209, 4],  # 74 qubits
-    }
-
-    try:
-        qc = shor.create_circuit(instances[choice][0], instances[choice][1])
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_shor_benchmarks: ", choice, e)
-        raise e from None
-
-
-def create_hhl_qc(index: int) -> tuple[QuantumCircuit, int, bool]:
-    # index is not the number of qubits in this case
-    try:
-        # Creating the circuit on Algorithmic Description level
-        qc = hhl.create_circuit(index)
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_hhl_benchmarks", index, e)
-        raise e from None
-
-
-def create_routing_qc(nodes: int) -> tuple[QuantumCircuit, int, bool]:
-    try:
-        # Creating the circuit on Algorithmic Description level
-        qc = routing.create_circuit(nodes, 2)
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_routing_benchmarks", nodes, e)
-        raise e from None
-
-
-def create_tsp_qc(nodes: int) -> tuple[QuantumCircuit, int, bool]:
-    try:
-        # Creating the circuit on Algorithmic Description level
-        qc = tsp.create_circuit(nodes)
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_tsp_benchmarks", nodes, e)
-        raise e from None
-
-
-def create_groundstate_qc(choice: str) -> tuple[QuantumCircuit, int, bool]:
-    molecule = utils.get_molecule(choice)
-
-    try:
-        qc = groundstate.create_circuit(molecule)
-        qc.name = qc.name + "_" + choice
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_groundstate_benchmarks", choice, e)
-        raise e from None
-
-
-def create_pricingcall_qc(num_uncertainty: int) -> tuple[QuantumCircuit, int, bool]:
-    # num_options is not the number of qubits in this case
-    try:
-        # Creating the circuit on Algorithmic Description level
-        qc = pricingcall.create_circuit(num_uncertainty)
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_pricingcall_benchmarks", num_uncertainty, e)
-        raise e from None
-
-
-def create_pricingput_qc(num_uncertainty: int) -> tuple[QuantumCircuit, int, bool]:
-    # num_uncertainty is not the number of qubits in this case
-    try:
-        # Creating the circuit on Algorithmic Description level
-        qc = pricingput.create_circuit(num_uncertainty)
-        return qc, qc.num_qubits, False
-
-    except Exception as e:
-        print(ERROR_MSG, "create_pricingput_benchmarks", num_uncertainty, e)
-        raise e from None
+        return num_generated_circuits != 0
 
 
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
-    circuit_size: int | None = None,
-    benchmark_instance_name: str | None = None,
+    circuit_size: int = None,
+    benchmark_instance_name: str = None,
     compiler: str | None = "qiskit",
-    compiler_settings: dict[str, dict[str, Any]] | None = None,
+    compiler_settings: dict[str, dict[str, any]] | None = None,
     gate_set_name: str | None = "ibm",
     device_name: str | None = "ibm_washington",
-) -> QuantumCircuit:
+):
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
-
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
     level -- Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
@@ -470,12 +247,9 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
     device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", ""oqc_lucy""
-
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
-
-    init_module_paths()
 
     if benchmark_name not in utils.get_supported_benchmarks():
         msg = f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
@@ -485,7 +259,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = f"Selected level must be in {utils.get_supported_levels()}."
         raise ValueError(msg)
 
-    if benchmark_name not in ["shor", "groundstate"] and not isinstance(circuit_size, int):
+    if benchmark_name not in ["shor", "groundstate"] and not (isinstance(circuit_size, int) and circuit_size > 0):
         msg = "circuit_size must be None or int for this benchmark."
         raise ValueError(msg)
 
@@ -494,7 +268,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if benchmark_instance_name is not None and not isinstance(benchmark_instance_name, str):
-        msg = "benchmark_instance_name must be None or str."  # type: ignore[unreachable]
+        msg = "benchmark_instance_name must be None or str."
         raise ValueError(msg)
 
     if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
@@ -502,7 +276,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is not None and not isinstance(compiler_settings, dict):
-        msg = "compiler_settings must be None or dict[str, dict[str, any]]."  # type: ignore[unreachable]
+        msg = "compiler_settings must be None or dict[str, dict[str, any]]."
         raise ValueError(msg)
 
     if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
@@ -513,6 +287,10 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = f"Selected device_name must be None or in {utils.get_supported_devices()}."
         raise ValueError(msg)
 
+    lib = utils.get_module_for_benchmark(
+        benchmark_name.split("-")[0]
+    )  # split is used to filter the ancillary mode for grover and qwalk
+
     if "grover" in benchmark_name or "qwalk" in benchmark_name:
         if "noancilla" in benchmark_name:
             anc_mode = "noancilla"
@@ -522,51 +300,16 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             msg = "Either `noancilla` or `v-chain` must be specified for ancillary mode of Grover and QWalk benchmarks."
             raise ValueError(msg)
 
-        short_name = benchmark_name.split("-")[0]
-        lib = import_module(benchmarks_module_paths_dict[short_name])
         qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
-        qc.name = qc.name + "-" + anc_mode
 
     elif benchmark_name == "shor":
-        assert isinstance(benchmark_instance_name, str)
-        instances = {
-            "xsmall": [9, 4],  # 18 qubits
-            "small": [15, 4],  # 18 qubits
-            "medium": [821, 4],  # 42 qubits
-            "large": [11777, 4],  # 58 qubits
-            "xlarge": [201209, 4],  # 74 qubits
-        }
-
-        qc = shor.create_circuit(*instances[benchmark_instance_name])
-
-    elif benchmark_name == "hhl":
-        assert isinstance(circuit_size, int)
-        qc = hhl.create_circuit(circuit_size)
-
-    elif benchmark_name == "routing":
-        assert isinstance(circuit_size, int)
-        qc = routing.create_circuit(circuit_size)
-
-    elif benchmark_name == "tsp":
-        assert isinstance(circuit_size, int)
-        qc = tsp.create_circuit(circuit_size)
+        to_be_factored_number, a_value = lib.get_instance(benchmark_instance_name)
+        qc = lib.create_circuit(to_be_factored_number, a_value)
 
     elif benchmark_name == "groundstate":
-        assert isinstance(benchmark_instance_name, str)
-        molecule = utils.get_molecule(benchmark_instance_name)
-        qc = groundstate.create_circuit(molecule)
-
-    elif benchmark_name == "pricingcall":
-        assert isinstance(circuit_size, int)
-        qc = pricingcall.create_circuit(circuit_size)
-
-    elif benchmark_name == "pricingput":
-        assert isinstance(circuit_size, int)
-        qc = pricingput.create_circuit(circuit_size)
+        qc = lib.create_circuit(benchmark_instance_name)
 
     else:
-        assert isinstance(circuit_size, int)
-        lib = import_module(benchmarks_module_paths_dict[benchmark_name])
         qc = lib.create_circuit(circuit_size)
 
     if level == "alg" or level == 0:
@@ -595,7 +338,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
-    assert isinstance(gate_set_name, str)
     native_gates_level = 2
     if level == "nativegates" or level == native_gates_level:
         if compiler == "qiskit":
@@ -604,8 +346,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
 
-    assert isinstance(device_name, str)
-    assert isinstance(gate_set_name, str)
     mapped_level = 3
     if level == "mapped" or level == mapped_level:
         if compiler == "qiskit":
@@ -636,8 +376,47 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     raise ValueError(msg)
 
 
-def generate() -> None:
+def generate(num_jobs: int = -1):
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
     args = parser.parse_args()
-    create_benchmarks_from_config(args.file_name)
+    benchmark_generator = BenchmarkGenerator(args.file_name)
+    benchmark_generator.create_benchmarks_from_config(num_jobs)
+
+
+def timeout_watcher(func, timeout, args):
+    class TimeoutException(Exception):  # Custom exception class
+        pass
+
+    def timeout_handler(_signum, _frame):  # Custom signal handler
+        raise TimeoutException()
+
+    # Change the behavior of SIGALRM
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(timeout)
+    try:
+        res = func(*args)
+    except TimeoutException:
+        print(
+            "Calculation/Generation exceeded timeout limit for ",
+            func.__name__,
+            func.__module__.split(".")[-1],
+            args[0].name,
+            args[1:],
+        )
+        return False
+    except Exception as e:
+        print(
+            "Exception: ",
+            e,
+            func.__name__,
+            func.__module__.split(".")[-1],
+            args[0],
+            args[1:],
+        )
+        return False
+    else:
+        # Reset the alarm
+        signal.alarm(0)
+
+    return res
