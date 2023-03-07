@@ -38,7 +38,7 @@ class BenchmarkGenerator:
         )
         return True
 
-    def generate_benchmark(self, benchmark):  # noqa: PLR0912, PLR0915
+    def generate_benchmark(self, benchmark):  # noqa: PLR0912
         lib = utils.get_module_for_benchmark(benchmark["name"])
         file_precheck = benchmark["precheck_possible"]
         if benchmark["include"]:
@@ -49,82 +49,47 @@ class BenchmarkGenerator:
                         benchmark["max_qubits"],
                         benchmark["stepsize"],
                     ):
-                        res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [benchmark, n, anc_mode])
-                        if not res_qc_creation:
-                            break
-                        res = self.generate_circuits_on_all_levels(
-                            res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                        )
-                        if not res:
+                        success_flag = self.start_benchmark_generation(lib.create_circuit, [n, anc_mode], file_precheck)
+                        if not success_flag:
                             break
 
             elif benchmark["name"] == "shor":
                 for choice in benchmark["instances"]:
                     to_be_factored_number, a_value = lib.get_instance(choice)
-                    res_qc_creation = timeout_watcher(
-                        lib.create_circuit, self.timeout, [to_be_factored_number, a_value]
+                    success_flag = self.start_benchmark_generation(
+                        lib.create_circuit, [to_be_factored_number, a_value], file_precheck
                     )
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    if not success_flag:
                         break
 
             elif benchmark["name"] == "hhl":
                 for i in range(benchmark["min_index"], benchmark["max_index"]):
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [i])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [i], file_precheck)
+                    if not success_flag:
                         break
 
             elif benchmark["name"] == "routing":
                 for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes, 2])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes, 2], file_precheck)
+                    if not success_flag:
                         break
 
             elif benchmark["name"] == "tsp":
                 for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
+                    if not success_flag:
                         break
 
             elif benchmark["name"] == "groundstate":
                 for choice in benchmark["instances"]:
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [choice])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [choice], file_precheck)
+                    if not success_flag:
                         break
 
             elif benchmark["name"] == "pricingcall" or benchmark["name"] == "pricingput":
                 for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [nodes])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
+                    if not success_flag:
                         break
             else:
                 for n in range(
@@ -132,13 +97,8 @@ class BenchmarkGenerator:
                     benchmark["max_qubits"],
                     benchmark["stepsize"],
                 ):
-                    res_qc_creation = timeout_watcher(lib.create_circuit, self.timeout, [n])
-                    if not res_qc_creation:
-                        break
-                    res = self.generate_circuits_on_all_levels(
-                        res_qc_creation, res_qc_creation.num_qubits, file_precheck
-                    )
-                    if not res:
+                    success_flag = self.start_benchmark_generation(lib.create_circuit, [n], file_precheck)
+                    if not success_flag:
                         break
 
     def generate_circuits_on_all_levels(self, qc, num_qubits, file_precheck):
@@ -259,6 +219,12 @@ class BenchmarkGenerator:
                             continue
                         num_generated_benchmarks += 1
         return num_generated_benchmarks != 0
+
+    def start_benchmark_generation(self, create_circuit_function, parameters, file_precheck) -> bool:
+        res_qc_creation = timeout_watcher(create_circuit_function, self.timeout, parameters)
+        if not res_qc_creation:
+            return False
+        return self.generate_circuits_on_all_levels(res_qc_creation, res_qc_creation.num_qubits, file_precheck)
 
 
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
