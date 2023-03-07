@@ -292,7 +292,7 @@ class Backend:
     def init_database(
         self,
     ):
-        """Generates the database and saves it into a global variable."""
+        """Generates the database and saves it into a class variable."""
 
         assert self.mqtbench_all_zip is not None
 
