@@ -668,17 +668,13 @@ def test_create_benchmarks_from_config(output_path):
             },
         ],
     }
-
-    Path("config.json").rename("old_config.json")
-
-    with Path("config.json").open("w") as f:
+    file = Path("test_config.json")
+    with file.open("w") as f:
         json.dump(config, f)
 
-    generator = BenchmarkGenerator(qasm_output_path=output_path)
+    generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
     generator.create_benchmarks_from_config()
-    Path("config.json").unlink()
-
-    Path("old_config.json").rename("config.json")
+    file.unlink()
 
 
 def test_configure_end(output_path):
