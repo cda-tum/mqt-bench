@@ -234,6 +234,14 @@ def get_mapped_level(
     if not qc_tket.valid_connectivity(arch, directed=True):
         CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
+
+    max_index = 0
+    for elem in qc_tket.qubits:
+        tmp = elem.index[0]
+        max_index = tmp if tmp > max_index else max_index
+    diff = max(cmap) - max_index
+    qc_tket.add_blank_wires(diff)
+
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
