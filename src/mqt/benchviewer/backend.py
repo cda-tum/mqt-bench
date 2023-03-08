@@ -411,7 +411,7 @@ class Backend:
         print("Start downloading benchmarks...")
 
         r = requests.get(download_url)
-        total_length = cast(float, r.headers.get("content-length"))
+        total_length = cast(int, (r.headers.get("content-length")))
         fname = target_location + "/MQTBench_all.zip"
 
         Path(target_location).mkdir(parents=True, exist_ok=True)
