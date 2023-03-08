@@ -257,6 +257,17 @@ class Backend:
         yield fileobj.read()
         fileobj.close()
 
+    def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
+        """Extracts all file paths according to the prepared user's filter criteria.
+
+        Keyword arguments:
+        prepared_data -- user's filter criteria after preparation step
+
+        Return values:
+        file_paths -- list of filter criteria for each selected benchmark
+        """
+        return self.filter_database(prepared_data)
+
     def init_database(self) -> bool:
         """Generates the database and saves it into a global variable."""
 
@@ -426,17 +437,6 @@ class Backend:
                 size = f.write(data)
                 bar.update(size)
         print(f"Download completed to {fname}. Server is starting now.")
-
-    def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
-        """Extracts all file paths according to the prepared user's filter criteria.
-
-        Keyword arguments:
-        prepared_data -- user's filter criteria after preparation step
-
-        Return values:
-        file_paths -- list of filter criteria for each selected benchmark
-        """
-        return self.filter_database(prepared_data)
 
 
 def parse_data(filename: str) -> ParsedBenchmarkName:

@@ -102,6 +102,35 @@ class BenchmarkGenerator:
                     if not success_flag:
                         break
 
+    def generate_circuits_on_all_levels(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
+        success_generated_circuits_t_indep = self.generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
+
+        if not success_generated_circuits_t_indep:
+            return False
+
+        self.generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
+        return True
+
+    def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
+        num_generated_circuits = 0
+        res_indep_qiskit = timeout_watcher(
+            qiskit_helper.get_indep_level,
+            self.timeout,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
+        )
+        if res_indep_qiskit:
+            num_generated_circuits += 1
+
+        res_indep_tket = timeout_watcher(
+            tket_helper.get_indep_level,
+            self.timeout,
+            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
+        )
+        if res_indep_tket:
+            num_generated_circuits += 1
+
+        return num_generated_circuits != 0
+
     def generate_target_dep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
         compilation_paths: list[tuple[str, list[tuple[str, int]]]] = [
             ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
@@ -199,35 +228,6 @@ class BenchmarkGenerator:
         if not res_qc_creation:
             return False
         return self.generate_circuits_on_all_levels(res_qc_creation, res_qc_creation.num_qubits, file_precheck)
-
-    def generate_circuits_on_all_levels(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-        success_generated_circuits_t_indep = self.generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
-
-        if not success_generated_circuits_t_indep:
-            return False
-
-        self.generate_target_dep_level_circuit(qc, num_qubits, file_precheck)
-        return True
-
-    def generate_target_indep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-        num_generated_circuits = 0
-        res_indep_qiskit = timeout_watcher(
-            qiskit_helper.get_indep_level,
-            self.timeout,
-            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
-        )
-        if res_indep_qiskit:
-            num_generated_circuits += 1
-
-        res_indep_tket = timeout_watcher(
-            tket_helper.get_indep_level,
-            self.timeout,
-            [qc, num_qubits, file_precheck, False, self.qasm_output_path],
-        )
-        if res_indep_tket:
-            num_generated_circuits += 1
-
-        return num_generated_circuits != 0
 
 
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
