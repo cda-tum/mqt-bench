@@ -222,7 +222,9 @@ def test_create_database() -> None:
         skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
     )
     assert res_zip
-    assert backend.database is not None
+
+    assert backend.database is None
+    backend.init_database()
 
     input_data = BenchmarkConfiguration(
         min_qubits=2,
