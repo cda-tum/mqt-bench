@@ -421,7 +421,7 @@ class Backend:
     def handle_downloading_benchmarks(self, target_location: str, download_url: str) -> None:
         print("Start downloading benchmarks...")
 
-        r = requests.get(download_url)
+        r = requests.get(download_url, stream=True)
 
         content_length_response = r.headers.get("content-length")
         assert content_length_response is not None
