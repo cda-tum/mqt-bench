@@ -23,7 +23,7 @@ def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
     return qc
 
 
-def get_instance(choice: str):
+def get_instance(choice: str) -> list[int]:
     instances = {
         "xsmall": [9, 4],  # 18 qubits
         "small": [15, 4],  # 18 qubits

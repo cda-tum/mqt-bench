@@ -215,18 +215,16 @@ def test_read_mqtbench_all_zip() -> None:
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
-def test_create_database():
+def test_create_database() -> None:
     backend = Backend()
 
     res_zip = backend.read_mqtbench_all_zip(
         skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
     )
     assert res_zip
+    assert backend.database is not None
 
-    database = backend.init_database()
-    assert database
-
-    input_data = backend.BenchmarkConfiguration(
+    input_data = BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=5,
         indices_benchmarks=[4],
@@ -239,9 +237,10 @@ def test_create_database():
     )
 
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 3
 
-    input_data = backend.BenchmarkConfiguration(
+    input_data = BenchmarkConfiguration(
         min_qubits=110,
         max_qubits=120,
         indices_benchmarks=[3],
@@ -254,9 +253,10 @@ def test_create_database():
         native_gatesets=["rigetti", "ionq"],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 15
 
-    input_data = backend.BenchmarkConfiguration(
+    input_data = BenchmarkConfiguration(
         min_qubits=75,
         max_qubits=110,
         indices_benchmarks=[2],
@@ -271,9 +271,10 @@ def test_create_database():
         mapped_tket_placements=["graph"],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 20
 
-    input_data = backend.BenchmarkConfiguration(
+    input_data = BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=5,
         indices_benchmarks=[23],
@@ -290,9 +291,10 @@ def test_create_database():
         mapped_qiskit_opt_lvls=[0, 3],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 20
 
-    input_data = backend.BenchmarkConfiguration(
+    input_data = BenchmarkConfiguration(
         min_qubits=2,
         max_qubits=130,
         indices_benchmarks=[1],
@@ -304,6 +306,7 @@ def test_create_database():
         mapped_tket_compiler=True,
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert res == []
 
 
@@ -318,35 +321,36 @@ def test_streaming_zip() -> None:
     with pytest.raises(KeyError):
         assert not list(backend.generate_zip_ephemeral_chunks(filenames=["not_existing_file.qasm"]))
 
-    def test_flask_server() -> None:
-        with resources.as_file(benchviewer) as benchviewer_path:
-            benchviewer_location = benchviewer_path
-        target_location = str(benchviewer_location / "static/files")
 
-        assert Server(
-            skip_question=True,
-            activate_logging=False,
-            target_location=target_location,
-        )
+def test_flask_server() -> None:
+    with resources.as_file(benchviewer) as benchviewer_path:
+        benchviewer_location = benchviewer_path
+    target_location = str(benchviewer_location / "static/files")
 
-        paths_to_check = [
-            "static/files/MQTBench_all.zip",
-            "templates/benchmark_description.html",
-            "templates/index.html",
-            "templates/legal.html",
-            "templates/description.html",
+    Server(
+        skip_question=True,
+        activate_logging=False,
+        target_location=target_location,
+    )
+
+    paths_to_check = [
+        "static/files/MQTBench_all.zip",
+        "templates/benchmark_description.html",
+        "templates/index.html",
+        "templates/legal.html",
+        "templates/description.html",
+    ]
+    for path in paths_to_check:
+        assert (benchviewer_location / path).is_file()
+
+    with app.test_client() as c:
+        success_code = 200
+        links_to_check = [
+            "/mqtbench/index",
+            "/mqtbench/download",
+            "/mqtbench/legal",
+            "/mqtbench/description",
+            "/mqtbench/benchmark_description",
         ]
-        for path in paths_to_check:
-            assert (benchviewer_location / path).is_file()
-
-        with app.test_client() as c:
-            success_code = 200
-            links_to_check = [
-                "/mqtbench/index",
-                "/mqtbench/download",
-                "/mqtbench/legal",
-                "/mqtbench/description",
-                "/mqtbench/benchmark_description",
-            ]
-            for link in links_to_check:
-                assert c.get(link).status_code == success_code
+        for link in links_to_check:
+            assert c.get(link).status_code == success_code

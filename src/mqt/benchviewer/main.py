@@ -4,12 +4,12 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 from mqt.benchviewer.backend import Backend
 
-if sys.version_info < (3, 10, 0):  # pragma: no cover
+if TYPE_CHECKING or sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources
 else:
     from importlib import resources
@@ -18,9 +18,9 @@ else:
 class Server:
     def __init__(
         self,
+        target_location: str,
         skip_question: bool = False,
         activate_logging: bool = False,
-        target_location: str = None,
     ):
         self.backend = Backend()
 
@@ -29,13 +29,12 @@ class Server:
             msg = "target_location is not writable. Please specify a different path."
             raise RuntimeError(msg)
 
-        res_zip = self.backend.read_mqtbench_all_zip(skip_question, self.target_location)
+        res_zip = self.backend.read_mqtbench_all_zip(self.target_location, skip_question)
         if not res_zip:
             msg = "Error while reading the MQTBench_all.zip file."
             raise RuntimeError(msg)
-
-        res_db = self.backend.init_database()
-        if not res_db:
+        self.backend.init_database()
+        if self.backend.database is None:
             msg = "Error while initializing the database."
             raise RuntimeError(msg)
 
@@ -56,11 +55,10 @@ PREFIX = "/mqtbench/"
 @app.route(f"{PREFIX}/index", methods=["POST", "GET"])
 def index() -> Any:
     """Return the index.html file together with the benchmarks and nonscalable benchmarks."""
-
     return render_template(
         "index.html",
-        benchmarks=SERVER.backend.benchmarks,
-        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
+        benchmarks=SERVER.backend.benchmarks,  # type: ignore[attr-defined]
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,  # type: ignore[attr-defined]
     )
 
 
@@ -68,7 +66,7 @@ def index() -> Any:
 def download_pre_gen_zip() -> Any:
     filename = "MQTBench_all.zip"
 
-    if SERVER.activate_logging:
+    if SERVER.activate_logging:  # type: ignore[attr-defined]
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         app.logger.info("###### Start ######")
         app.logger.info("Timestamp: %s", timestamp)
@@ -78,8 +76,8 @@ def download_pre_gen_zip() -> Any:
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
-    return send_from_directory(
-        directory=SERVER.target_location,
+    return send_from_directory(  # type: ignore[call-arg]
+        directory=SERVER.target_location,  # type: ignore[attr-defined]
         path=filename,
         as_attachment=True,
         mimetype="application/zip",
@@ -92,11 +90,11 @@ def download_data() -> Any:
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
-        prepared_data = SERVER.backend.prepare_form_input(data)
-        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
+        prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-        if SERVER.activate_logging:
+        if SERVER.activate_logging:  # type: ignore[attr-defined]
             app.logger.info("###### Start ######")
             app.logger.info("Timestamp: %s", timestamp)
             headers = str(request.headers)
@@ -108,7 +106,7 @@ def download_data() -> Any:
 
         if file_paths:
             return app.response_class(
-                SERVER.backend.generate_zip_ephemeral_chunks(file_paths),
+                SERVER.backend.generate_zip_ephemeral_chunks(file_paths),  # type: ignore[attr-defined]
                 mimetype="application/zip",
                 headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
                 direct_passthrough=True,
@@ -116,8 +114,8 @@ def download_data() -> Any:
 
     return render_template(
         "index.html",
-        benchmarks=SERVER.backend.benchmarks,
-        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
+        benchmarks=SERVER.backend.benchmarks,  # type: ignore[attr-defined]
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,  # type: ignore[attr-defined]
     )
 
 
@@ -148,8 +146,8 @@ def benchmark_description() -> Any:
 def get_num_benchmarks() -> Any:
     if request.method == "POST":
         data = request.form
-        prepared_data = SERVER.backend.prepare_form_input(data)
-        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
+        prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
         return jsonify({"num_selected": len(file_paths)})
     return jsonify({"num_selected": 0})
 
@@ -164,9 +162,9 @@ def start_server(
         target_location = str(resources.files("mqt.benchviewer") / "static" / "files")
 
     Server(
+        target_location=target_location,
         skip_question=skip_question,
         activate_logging=activate_logging,
-        target_location=target_location,
     )
     print(
         "Server is hosted at: http://127.0.0.1:5000" + PREFIX + ".",

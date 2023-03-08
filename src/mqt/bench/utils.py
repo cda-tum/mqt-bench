@@ -93,7 +93,7 @@ def get_supported_devices() -> list[str]:
     return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
 
 
-def get_default_qasm_output_path():
+def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
 
@@ -332,7 +332,7 @@ def get_cmap_from_devicename(device: str) -> list[list[int]]:
     raise ValueError(error_msg)
 
 
-def postprocess_single_oqc_file(filename: str):
+def postprocess_single_oqc_file(filename: str) -> None:
     with Path(filename).open() as f:
         lines = f.readlines()
     with Path(filename).open("w") as f:
@@ -343,7 +343,7 @@ def postprocess_single_oqc_file(filename: str):
                 f.write("opaque ecr q0,q1;\n")
 
 
-def create_zip_file():
+def create_zip_file() -> int:
     return subprocess.call(f"zip -rj {get_zip_file_path()} {get_default_qasm_output_path()}", shell=True)
 
 
@@ -417,7 +417,7 @@ def calc_supermarq_features(
     )
 
 
-def get_module_for_benchmark(benchmark_name) -> ModuleType:
+def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
         return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qgan":

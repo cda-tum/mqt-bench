@@ -57,7 +57,7 @@ class ParsedBenchmarkName:
 
 
 class Backend:
-    def __init__(self):
+    def __init__(self) -> None:
         self.benchmarks = [
             {"name": "Amplitude Estimation (AE)", "id": "1", "filename": "ae"},
             {"name": "Deutsch-Jozsa", "id": "2", "filename": "dj"},
@@ -123,9 +123,7 @@ class Backend:
         self.database: pd.DataFrame | None = None
         self.mqtbench_all_zip: ZipFile | None = None
 
-    def filter_database(
-        self, benchmark_config: BenchmarkConfiguration, database: pd.DataFrame
-    ) -> list[str]:
+    def filter_database(self, benchmark_config: BenchmarkConfiguration) -> list[str]:  # noqa: PLR0912
         """Filters the database according to the filter criteria.
 
         Keyword arguments:
@@ -141,7 +139,7 @@ class Backend:
         db_filtered["indep_flag"] = db_filtered["indep_flag"].astype(bool)
         db_filtered["nativegates_flag"] = db_filtered["nativegates_flag"].astype(bool)
         db_filtered["mapped_flag"] = db_filtered["mapped_flag"].astype(bool)
-        if len(database) == 0:
+        if self.database is None or self.database.empty:
             return []
 
         selected_scalable_benchmarks = []
@@ -156,13 +154,13 @@ class Backend:
                 name = self.nonscalable_benchmarks[identifier - 1 - len(self.benchmarks)]["filename"]
                 selected_nonscalable_benchmarks.append(name)
 
-        db_tmp = database.loc[
+        db_tmp = self.database.loc[
             (
-                (database["num_qubits"] >= benchmark_config.min_qubits)
-                & (database["num_qubits"] <= benchmark_config.max_qubits)
-                & (database["benchmark"].isin(selected_scalable_benchmarks))
+                (self.database["num_qubits"] >= benchmark_config.min_qubits)
+                & (self.database["num_qubits"] <= benchmark_config.max_qubits)
+                & (self.database["benchmark"].isin(selected_scalable_benchmarks))
             )
-            | (database["benchmark"].isin(selected_nonscalable_benchmarks))
+            | (self.database["benchmark"].isin(selected_nonscalable_benchmarks))
         ]
 
         if benchmark_config.indep_qiskit_compiler:
@@ -239,14 +237,15 @@ class Backend:
         Return values:
             Generator of bytes to send to the browser
         """
-        fileobj = self.NoSeekBytesIO(io.BytesIO())
+        fileobj = NoSeekBytesIO(io.BytesIO())
 
-        with ZipFile(fileobj, mode="w") as zf:
+        with ZipFile(fileobj, mode="w") as zf:  # type: ignore[arg-type]
             for individual_file in filenames:
                 individual_file_as_path = Path(individual_file)
+                assert self.mqtbench_all_zip is not None
                 zf.writestr(
                     individual_file_as_path.name,
-                    data=self.mqtbench_all_zip.read(individual_file_as_path.name),
+                    data=self.mqtbench_all_zip.read(individual_file),
                     compress_type=ZIP_DEFLATED,
                     compresslevel=3,
                 )
@@ -258,18 +257,19 @@ class Backend:
         yield fileobj.read()
         fileobj.close()
 
-    def get_selected_file_paths(self, prepared_data: tuple):
-        """Extracts all file paths according to the prepared user's filter criteria.
+    def init_database(self) -> bool:
+        """Generates the database and saves it into a global variable."""
 
-        Keyword arguments:
-        prepared_data -- user's filter criteria after preparation step
+        assert self.mqtbench_all_zip is not None
 
-        Return values:
-        file_paths -- list of filter criteria for each selected benchmark
-        """
+        print("Initiating database...")
+        self.database = create_database(self.mqtbench_all_zip)
+        print(f"... done: {len(self.database)} benchmarks.")
 
-        if prepared_data:
-            return self.filter_database(prepared_data)
+        if not self.database.empty:
+            return True
+
+        print("Database initialization failed.")
         return False
 
     def prepare_form_input(self, form_data: dict[str, str]) -> BenchmarkConfiguration:
@@ -344,9 +344,9 @@ class Backend:
 
     def read_mqtbench_all_zip(  # noqa: PLR0912
         self,
+        target_location: str,
         skip_question: bool = False,
-        target_location: str = None,
-    ):
+    ) -> bool:
         huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
         try:
@@ -411,8 +411,7 @@ class Backend:
         print("Start downloading benchmarks...")
 
         r = requests.get(download_url)
-        total_length = r.headers.get("content-length")
-        total_length = int(total_length)
+        total_length = cast(float, r.headers.get("content-length"))
         fname = target_location + "/MQTBench_all.zip"
 
         Path(target_location).mkdir(parents=True, exist_ok=True)
@@ -427,6 +426,17 @@ class Backend:
                 size = f.write(data)
                 bar.update(size)
         print(f"Download completed to {fname}. Server is starting now.")
+
+    def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
+        """Extracts all file paths according to the prepared user's filter criteria.
+
+        Keyword arguments:
+        prepared_data -- user's filter criteria after preparation step
+
+        Return values:
+        file_paths -- list of filter criteria for each selected benchmark
+        """
+        return self.filter_database(prepared_data)
 
 
 def parse_data(filename: str) -> ParsedBenchmarkName:
@@ -459,22 +469,6 @@ def parse_data(filename: str) -> ParsedBenchmarkName:
         target_device=target_device,
         filename=filename,
     )
-
-
-def init_database(self) -> bool:
-    """Generates the database and saves it into a global variable."""
-
-    assert self.mqtbench_all_zip is not None
-
-    print("Initiating database...")
-    self.database = create_database(self.mqtbench_all_zip)
-    print(f"... done: {len(self.database)} benchmarks.")
-
-    if not self.database.empty:
-        return True
-
-    print("Database initialization failed.")
-    return False
 
 
 class NoSeekBytesIO:
@@ -513,18 +507,6 @@ class NoSeekBytesIO:
 
     def flush(self) -> None:
         return self.fp.flush()
-
-
-def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
-    """Extracts all file paths according to the prepared user's filter criteria.
-
-    Keyword arguments:
-    prepared_data -- user's filter criteria after preparation step
-
-    Return values:
-    file_paths -- list of filter criteria for each selected benchmark
-    """
-    return self.filter_database(prepared_data, self.database)
 
 
 def parse_benchmark_id_from_form_key(k: str) -> int | None:
@@ -617,7 +599,7 @@ def get_opt_level(filename: str) -> int:
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
     num = m.group()[-1:] if m else -1
-    return int(num)
+    return int(cast(str, num))
 
 
 def get_num_qubits(filename: str) -> int:
@@ -631,10 +613,10 @@ def get_num_qubits(filename: str) -> int:
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
     num = m.group()[0:-1] if m else -1
-    return int(num)
+    return int(cast(str, num))
 
 
-def get_tket_settings(filename: str):
+def get_tket_settings(filename: str) -> str | None:
     if "mapped" not in filename:
         return None
     if "line" in filename:
@@ -645,7 +627,7 @@ def get_tket_settings(filename: str):
     raise ValueError(error_msg)
 
 
-def get_gate_set(filename: str):
+def get_gate_set(filename: str) -> str:
     if "oqc" in filename:
         return "oqc"
     if "ionq" in filename:

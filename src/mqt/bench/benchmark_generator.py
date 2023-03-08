@@ -5,9 +5,10 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pytket.circuit import Circuit
     from qiskit import QuantumCircuit
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
@@ -20,7 +21,7 @@ from mqt.bench import qiskit_helper, tket_helper, utils
 
 
 class BenchmarkGenerator:
-    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None):
+    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None) -> None:
         with Path(cfg_path).open() as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
@@ -38,7 +39,7 @@ class BenchmarkGenerator:
         )
         return True
 
-    def generate_benchmark(self, benchmark):  # noqa: PLR0912
+    def generate_benchmark(self, benchmark: dict[str, Any]) -> None:  # noqa: PLR0912
         lib = utils.get_module_for_benchmark(benchmark["name"])
         file_precheck = benchmark["precheck_possible"]
         if benchmark["include"]:
@@ -101,8 +102,8 @@ class BenchmarkGenerator:
                     if not success_flag:
                         break
 
-    def generate_target_dep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck):
-        compilation_paths = [
+    def generate_target_dep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
+        compilation_paths: list[tuple[str, list[tuple[str, int]]]] = [
             ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
             ("rigetti", [("rigetti_aspen_m2", 80)]),
             ("ionq", [("ionq11", 11)]),
@@ -191,13 +192,15 @@ class BenchmarkGenerator:
                         num_generated_benchmarks += 1
         return num_generated_benchmarks != 0
 
-    def start_benchmark_generation(self, create_circuit_function, parameters, file_precheck) -> bool:
+    def start_benchmark_generation(
+        self, create_circuit_function: Callable[..., QuantumCircuit], parameters: list[Any], file_precheck: bool
+    ) -> bool:
         res_qc_creation = timeout_watcher(create_circuit_function, self.timeout, parameters)
         if not res_qc_creation:
             return False
         return self.generate_circuits_on_all_levels(res_qc_creation, res_qc_creation.num_qubits, file_precheck)
 
-    def generate_circuits_on_all_levels(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool):
+    def generate_circuits_on_all_levels(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
         success_generated_circuits_t_indep = self.generate_target_indep_level_circuit(qc, num_qubits, file_precheck)
 
         if not success_generated_circuits_t_indep:
@@ -230,13 +233,13 @@ class BenchmarkGenerator:
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
-    circuit_size: int = None,
-    benchmark_instance_name: str = None,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
     compiler: str | None = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] | None = None,
+    compiler_settings: dict[str, dict[str, Any]] | None = None,
     gate_set_name: str | None = "ibm",
     device_name: str | None = "ibm_washington",
-):
+) -> QuantumCircuit | Circuit:
     """Returns one benchmark as a Qiskit::QuantumCircuit Object.
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
@@ -268,7 +271,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if benchmark_instance_name is not None and not isinstance(benchmark_instance_name, str):
-        msg = "benchmark_instance_name must be None or str."
+        msg = "benchmark_instance_name must be None or str."  # type:ignore[unreachable]
         raise ValueError(msg)
 
     if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
@@ -276,7 +279,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is not None and not isinstance(compiler_settings, dict):
-        msg = "compiler_settings must be None or dict[str, dict[str, any]]."
+        msg = "compiler_settings must be None or dict[str, dict[str, any]]."  # type:ignore[unreachable]
         raise ValueError(msg)
 
     if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
@@ -340,6 +343,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
 
     native_gates_level = 2
     if level == "nativegates" or level == native_gates_level:
+        assert gate_set_name is not None
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
             return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
@@ -348,6 +352,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
 
     mapped_level = 3
     if level == "mapped" or level == mapped_level:
+        assert gate_set_name is not None
+        assert device_name is not None
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
             return qiskit_helper.get_mapped_level(
@@ -376,7 +382,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     raise ValueError(msg)
 
 
-def generate(num_jobs: int = -1):
+def generate(num_jobs: int = -1) -> None:
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
     args = parser.parse_args()
@@ -384,11 +390,12 @@ def generate(num_jobs: int = -1):
     benchmark_generator.create_benchmarks_from_config(num_jobs)
 
 
-def timeout_watcher(func, timeout, args):
+# add a type hint for the function func which takes arbitrary methods as its value
+def timeout_watcher(func: Callable[..., Any], timeout: int, args: list[Any]) -> Any:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum, _frame):  # Custom signal handler
+    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
         raise TimeoutException()
 
     # Change the behavior of SIGALRM

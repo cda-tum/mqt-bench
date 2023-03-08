@@ -50,7 +50,7 @@ def create_circuit(choice: str) -> QuantumCircuit:
     return qc
 
 
-def get_molecule(benchmark_instance_name: str):
+def get_molecule(benchmark_instance_name: str) -> list[str]:
     """Returns a Molecule object depending on the parameter value."""
     m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
     m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]

@@ -50,10 +50,27 @@ from qiskit import QuantumCircuit
 
 
 @pytest.fixture()
-def output_path():
+def output_path() -> str:
     output_path = Path("./tests/test_output/")
     output_path.mkdir(parents=True, exist_ok=True)
     return str(output_path)
+
+
+@pytest.fixture()
+def sample_filenames() -> list[str]:
+    return [
+        "ae_indep_qiskit_10.qasm",
+        "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
+        "ae_indep_tket_93.qasm",
+        "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
+        "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
+        "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
+        "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
+        "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
+        "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
+        "qgan_mapped_ionq11_qiskit_opt3_3.qasm",
+        "qgan_mapped_oqc_lucy_tket_line_2.qasm",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -662,7 +679,7 @@ def test_get_benchmark(
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
 
 
-def test_get_benchmark_faulty_parameters():
+def test_get_benchmark_faulty_parameters() -> None:
     match = "Selected benchmark is not supported. Valid benchmarks are"
     with pytest.raises(ValueError, match=match):
         get_benchmark("wrong_name", 2, 6)
@@ -671,7 +688,7 @@ def test_get_benchmark_faulty_parameters():
         get_benchmark(
             "qpeexact",
             8,
-            "wrong_size",
+            "wrong_size",  # type: ignore[arg-type]
             None,
             "qiskit",
             {
@@ -716,7 +733,7 @@ def test_get_benchmark_faulty_parameters():
             3,
             None,
             "qiskit",
-            "wrong_compiler_settings",
+            "wrong_compiler_settings",  # type: ignore[arg-type]
             "rigetti",
             "rigetti_aspen_m2",
         )
@@ -750,7 +767,7 @@ def test_get_benchmark_faulty_parameters():
         )
 
 
-def test_create_benchmarks_from_config(output_path):
+def test_create_benchmarks_from_config(output_path: str) -> None:
     config = {
         "timeout": 120,
         "benchmarks": [
@@ -773,7 +790,7 @@ def test_create_benchmarks_from_config(output_path):
     file.unlink()
 
 
-def test_configure_end(output_path):
+def test_configure_end(output_path: str) -> None:
     # delete all files in the test directory and the directory itself
     for f in Path(output_path).iterdir():
         f.unlink()
@@ -905,21 +922,6 @@ def test_evaluate_qasm_file() -> None:
     path.unlink()
 
 
-FILENAMES = [
-    "ae_indep_qiskit_10.qasm",
-    "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
-    "ae_indep_tket_93.qasm",
-    "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
-    "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
-    "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
-    "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
-    "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
-    "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
-    "qgan_mapped_ionq11_qiskit_opt3_3.qasm",
-    "qgan_mapped_oqc_lucy_tket_line_2.qasm",
-]
-
-
 @pytest.mark.parametrize(
     ("search_str", "expected_val"),
     [
@@ -935,8 +937,8 @@ FILENAMES = [
         ("mapped_ionq11", 1),
     ],
 )
-def test_count_occurrences(search_str: str, expected_val: int) -> None:
-    assert evaluation.count_occurrences(FILENAMES, search_str) == expected_val
+def test_count_occurrences(search_str: str, expected_val: int, sample_filenames: list[str]) -> None:
+    assert evaluation.count_occurrences(sample_filenames, search_str) == expected_val
 
 
 @pytest.mark.parametrize(
@@ -946,8 +948,8 @@ def test_count_occurrences(search_str: str, expected_val: int) -> None:
         ("tket", [93, 2]),
     ],
 )
-def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int]) -> None:
-    assert evaluation.count_qubit_numbers_per_compiler(FILENAMES, compiler) == expected_val
+def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
+    assert evaluation.count_qubit_numbers_per_compiler(sample_filenames, compiler) == expected_val
 
 
 def test_calc_supermarq_features() -> None:
@@ -964,7 +966,7 @@ def test_BenchmarkGenerator() -> None:
 
 
 # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
-def endless_loop(arg1: TestObject, run_forever: bool) -> None:  # noqa: ARG001
+def endless_loop(arg1: TestObject, run_forever: bool) -> bool:  # noqa: ARG001
     while run_forever:
         pass
     return True
@@ -989,10 +991,9 @@ def test_get_module_for_benchmark() -> None:
 def test_benchmark_helper() -> None:
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
     for elem in shor_instances:
-        res = shor.get_instance(elem)
-        assert res is not None
-
+        res_shor = shor.get_instance(elem)
+        assert res_shor
     groundstate_instances = ["small", "medium", "large"]
     for elem in groundstate_instances:
-        res = groundstate.get_molecule(elem)
-        assert res is not None
+        res_groundstate = groundstate.get_molecule(elem)
+        assert res_groundstate
