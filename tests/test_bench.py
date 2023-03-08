@@ -718,21 +718,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             1,
             3,
-            2,
-            "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
-            "rigetti",
-            "rigetti_aspen_m2",
-        )
-    match = "benchmark_instance_name must be None or str."
-    with pytest.raises(ValueError, match=match):
-        get_benchmark(
-            "dj",
-            1,
-            3,
-            2,
+            2,  # type: ignore[arg-type]
             "qiskit",
             {
                 "qiskit": {"optimization_level": 1},
@@ -1030,5 +1016,5 @@ def test_benchmark_helper() -> None:
 
 
 def test_get_cmap_from_devicename() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Device wrong_name is not supported"):
         utils.get_cmap_from_devicename("wrong_name")

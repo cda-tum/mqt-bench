@@ -289,10 +289,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
-    if benchmark_instance_name is not None and not isinstance(benchmark_instance_name, str):
-        msg = "benchmark_instance_name must be None or str."  # type:ignore[unreachable]
-        raise ValueError(msg)
-
     if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
         msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
         raise ValueError(msg)
