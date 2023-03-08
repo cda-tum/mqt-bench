@@ -93,9 +93,6 @@ class BenchmarkGenerator:
                     if not success_flag:
                         break
             else:
-                assert benchmark.min_qubits is not None
-                assert benchmark.max_qubits is not None
-                assert benchmark.stepsize is not None
                 for n in range(
                     benchmark["min_qubits"],
                     benchmark["max_qubits"],
@@ -349,6 +346,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         assert gate_set_name is not None
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
+            assert isinstance(opt_level, int)
             return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
@@ -359,6 +357,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         assert device_name is not None
         if compiler == "qiskit":
             opt_level = compiler_settings["qiskit"]["optimization_level"]
+            assert isinstance(opt_level, int)
             return qiskit_helper.get_mapped_level(
                 qc,
                 gate_set_name,
@@ -369,6 +368,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
                 True,
             )
         if compiler == "tket":
+            assert isinstance(compiler_settings["tket"]["placement"], str)
             placement = compiler_settings["tket"]["placement"].lower()
             lineplacement = placement == "lineplacement"
             return tket_helper.get_mapped_level(
