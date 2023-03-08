@@ -12,7 +12,7 @@ from qiskit.primitives import Estimator
 from qiskit_nature.second_q.drivers import PySCFDriver
 from qiskit_nature.second_q.mappers import JordanWignerMapper, QubitConverter
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

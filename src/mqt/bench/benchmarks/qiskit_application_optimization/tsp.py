@@ -12,7 +12,7 @@ from qiskit.utils import algorithm_globals
 from qiskit_optimization.applications import Tsp
 from qiskit_optimization.converters import QuadraticProgramToQubo
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

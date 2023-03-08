@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from mqt.bench.utils import get_estimation_problem
 from qiskit.algorithms import AmplitudeEstimation
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

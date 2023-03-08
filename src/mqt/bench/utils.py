@@ -25,7 +25,7 @@ else:
     import importlib_metadata as metadata
     import importlib_resources as resources
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit.circuit import QuantumRegister, Qubit
     from qiskit_optimization import QuadraticProgram
 

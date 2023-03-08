@@ -11,7 +11,7 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_finance.circuit.library import UniformDistribution
 from qiskit_machine_learning.algorithms import QGAN, NumPyDiscriminator
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
     from qiskit.circuit.parameter import Parameter
 

@@ -7,7 +7,7 @@ import pytest
 from mqt.benchviewer import Backend, BenchmarkConfiguration, Server, backend
 from mqt.benchviewer.main import app
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
 else:
     import importlib_resources as resources

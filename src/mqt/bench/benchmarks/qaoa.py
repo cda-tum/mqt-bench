@@ -10,7 +10,7 @@ from qiskit.algorithms.optimizers import SLSQP
 from qiskit.primitives import Sampler
 from qiskit_optimization import QuadraticProgram
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

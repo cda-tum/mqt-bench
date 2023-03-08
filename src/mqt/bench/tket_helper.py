@@ -18,7 +18,7 @@ from pytket.placement import GraphPlacement, LinePlacement  # type: ignore[attr-
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pytket.circuit import Circuit
     from pytket.passes import RebaseCustom  # type: ignore[attr-defined]
 

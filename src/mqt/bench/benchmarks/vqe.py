@@ -11,7 +11,7 @@ from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
 from qiskit_optimization import QuadraticProgram
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

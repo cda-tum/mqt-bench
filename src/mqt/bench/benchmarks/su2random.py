@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from qiskit.circuit.library import EfficientSU2
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

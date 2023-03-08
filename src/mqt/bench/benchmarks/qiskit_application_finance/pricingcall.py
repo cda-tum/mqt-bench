@@ -9,7 +9,7 @@ from qiskit.algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.applications.estimation import EuropeanCallPricing
 from qiskit_finance.circuit.library import LogNormalDistribution
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

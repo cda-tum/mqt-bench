@@ -10,7 +10,7 @@ from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import (
     TridiagonalToeplitz,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

@@ -12,7 +12,7 @@ from qiskit.primitives import Estimator
 from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

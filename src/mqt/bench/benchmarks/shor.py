@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from qiskit.algorithms.factorizers import Shor
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 

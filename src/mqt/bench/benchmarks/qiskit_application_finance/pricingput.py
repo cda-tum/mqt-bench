@@ -9,7 +9,7 @@ from qiskit.algorithms import EstimationProblem, IterativeAmplitudeEstimation
 from qiskit.circuit.library import LinearAmplitudeFunction
 from qiskit_finance.circuit.library import LogNormalDistribution
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
 
