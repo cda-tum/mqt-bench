@@ -711,6 +711,36 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m2",
         )
+
+    match = "benchmark_instance_name must be defined for this benchmark."
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "shor",
+            1,
+            3,
+            2,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+    match = "benchmark_instance_name must be None or str."
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "dj",
+            1,
+            3,
+            2,
+            "qiskit",
+            {
+                "qiskit": {"optimization_level": 1},
+            },
+            "rigetti",
+            "rigetti_aspen_m2",
+        )
+
     match = "Selected compiler must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -997,3 +1027,8 @@ def test_benchmark_helper() -> None:
     for elem in groundstate_instances:
         res_groundstate = groundstate.get_molecule(elem)
         assert res_groundstate
+
+
+def test_get_cmap_from_devicename() -> None:
+    with pytest.raises(ValueError):
+        utils.get_cmap_from_devicename("wrong_name")
