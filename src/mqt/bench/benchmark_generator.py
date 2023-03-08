@@ -5,7 +5,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, TypedDict
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket.circuit import Circuit
@@ -16,8 +16,26 @@ if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
 else:
     import importlib_resources as resources
 
+
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
+
+
+class Benchmark(TypedDict, total=False):
+    name: str
+    include: bool
+    min_qubits: int
+    max_qubits: int
+    min_nodes: int
+    max_nodes: int
+    min_index: int
+    max_index: int
+    min_uncertainty: int
+    max_uncertainty: int
+    instances: list[str]
+    ancillary_mode: list[str]
+    stepsize: int
+    precheck_possible: bool
 
 
 class BenchmarkGenerator:
@@ -34,12 +52,13 @@ class BenchmarkGenerator:
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
     def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
-        Parallel(n_jobs=num_jobs, verbose=100)(
-            delayed(self.generate_benchmark)(benchmark) for benchmark in self.cfg["benchmarks"]
-        )
+        benchmarks = [Benchmark(**benchmark) for benchmark in self.cfg["benchmarks"]]  # type:ignore[misc]
+        print(benchmarks, type(benchmarks[0]))
+
+        Parallel(n_jobs=num_jobs, verbose=100)(delayed(self.generate_benchmark)(benchmark) for benchmark in benchmarks)
         return True
 
-    def generate_benchmark(self, benchmark: dict[str, Any]) -> None:  # noqa: PLR0912
+    def generate_benchmark(self, benchmark: Benchmark) -> None:  # noqa: PLR0912
         lib = utils.get_module_for_benchmark(benchmark["name"])
         file_precheck = benchmark["precheck_possible"]
         if benchmark["include"]:
