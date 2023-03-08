@@ -220,6 +220,9 @@ def get_mapped_level(
         print("TKET Exception Mapped: ", e)
         return False
 
+    diff = max(list(map(max, cmap))) + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
+    qc_tket.add_blank_wires(diff)
+
     native_gatenames = get_rebase(gate_set_name, True)
     native_gate_set_rebase = get_rebase(gate_set_name)
     arch = architecture.Architecture(cmap)
@@ -234,13 +237,6 @@ def get_mapped_level(
     if not qc_tket.valid_connectivity(arch, directed=True):
         CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
-
-    max_index = 0
-    for elem in qc_tket.qubits:
-        tmp = elem.index[0]
-        max_index = tmp if tmp > max_index else max_index
-    diff = max(list(map(max, cmap))) + 1 - max_index
-    qc_tket.add_blank_wires(diff)
 
     if return_qc:
         return qc_tket
