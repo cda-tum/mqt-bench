@@ -239,7 +239,7 @@ def get_mapped_level(
     for elem in qc_tket.qubits:
         tmp = elem.index[0]
         max_index = tmp if tmp > max_index else max_index
-    diff = max(cmap) - max_index
+    diff = max(list(map(max, cmap))) + 1 - max_index
     qc_tket.add_blank_wires(diff)
 
     if return_qc:
