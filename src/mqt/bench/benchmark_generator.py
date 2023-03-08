@@ -93,6 +93,9 @@ class BenchmarkGenerator:
                     if not success_flag:
                         break
             else:
+                assert benchmark.min_qubits is not None
+                assert benchmark.max_qubits is not None
+                assert benchmark.stepsize is not None
                 for n in range(
                     benchmark["min_qubits"],
                     benchmark["max_qubits"],
@@ -222,7 +225,7 @@ class BenchmarkGenerator:
         return num_generated_benchmarks != 0
 
     def start_benchmark_generation(
-        self, create_circuit_function: Callable[..., QuantumCircuit], parameters: list[Any], file_precheck: bool
+        self, create_circuit_function: Callable[..., QuantumCircuit], parameters: list[int | str], file_precheck: bool
     ) -> bool:
         res_qc_creation = timeout_watcher(create_circuit_function, self.timeout, parameters)
         if not res_qc_creation:
@@ -236,7 +239,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
     compiler: str | None = "qiskit",
-    compiler_settings: dict[str, dict[str, Any]] | None = None,
+    compiler_settings: dict[str, dict[str, int | str]] | None = None,
     gate_set_name: str | None = "ibm",
     device_name: str | None = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
@@ -391,7 +394,7 @@ def generate(num_jobs: int = -1) -> None:
 
 
 # add a type hint for the function func which takes arbitrary methods as its value
-def timeout_watcher(func: Callable[..., Any], timeout: int, args: list[Any]) -> Any:
+def timeout_watcher(func: Callable[..., bool | QuantumCircuit], timeout: int, args: list[Any]) -> Any:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
