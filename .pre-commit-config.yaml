@@ -89,3 +89,4 @@ repos:
           - types-tqdm
           - types-flask
           - pytket-qiskit
+          - qiskit[all]
