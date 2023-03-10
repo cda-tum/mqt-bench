@@ -7,6 +7,9 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, TypedDict
 
+from joblib import Parallel, delayed
+from mqt.bench import qiskit_helper, tket_helper, utils
+
 if TYPE_CHECKING:  # pragma: no cover
     from pytket.circuit import Circuit
     from qiskit import QuantumCircuit
@@ -15,10 +18,6 @@ if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
 else:
     import importlib_resources as resources
-
-
-from joblib import Parallel, delayed
-from mqt.bench import qiskit_helper, tket_helper, utils
 
 
 class Benchmark(TypedDict, total=False):
