@@ -26,7 +26,7 @@ def create_circuit(choice: str) -> QuantumCircuit:
     driver = PySCFDriver(atom=molecule)
     es_problem = driver.run()
 
-    converter = QubitConverter(JordanWignerMapper())
+    converter = QubitConverter(JordanWignerMapper())  # type: ignore[no-untyped-call]
     second_q_op = es_problem.second_q_ops()
     operator = converter.convert_only(second_q_op[0])
 
