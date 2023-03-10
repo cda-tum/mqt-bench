@@ -22,7 +22,6 @@ else:
 from dataclasses import dataclass
 
 
-
 class Benchmark(TypedDict, total=False):
     name: str
     include: bool
@@ -70,7 +69,7 @@ class BenchmarkGenerator:
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
     def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
-        benchmarks = [Benchmark(benchmark) for benchmark in self.cfg["benchmarks"]] # type: ignore[misc]
+        benchmarks = [Benchmark(benchmark) for benchmark in self.cfg["benchmarks"]]  # type: ignore[misc]
         Parallel(n_jobs=num_jobs, verbose=100)(delayed(self.generate_benchmark)(benchmark) for benchmark in benchmarks)
         return True
 
@@ -81,9 +80,9 @@ class BenchmarkGenerator:
             if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
                 for anc_mode in benchmark["ancillary_mode"]:
                     for n in range(
-                            benchmark["min_qubits"],
-                            benchmark["max_qubits"],
-                            benchmark["stepsize"],
+                        benchmark["min_qubits"],
+                        benchmark["max_qubits"],
+                        benchmark["stepsize"],
                     ):
                         success_flag = self.start_benchmark_generation(lib.create_circuit, [n, anc_mode], file_precheck)
                         if not success_flag:
@@ -129,9 +128,9 @@ class BenchmarkGenerator:
                         break
             else:
                 for n in range(
-                        benchmark["min_qubits"],
-                        benchmark["max_qubits"],
-                        benchmark["stepsize"],
+                    benchmark["min_qubits"],
+                    benchmark["max_qubits"],
+                    benchmark["stepsize"],
                 ):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [n], file_precheck)
                     if not success_flag:
