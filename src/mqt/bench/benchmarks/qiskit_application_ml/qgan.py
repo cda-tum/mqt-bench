@@ -25,7 +25,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     seed = 10
     np.random.seed(seed)
-    algorithm_globals.random_seed = 10
+    algorithm_globals.random_seed = seed
 
     # Number training data samples
     n = 100
