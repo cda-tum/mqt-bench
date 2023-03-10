@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, overload
 
 from mqt.bench import utils
 from pytket import OpType
@@ -59,6 +59,30 @@ def get_ibm_rebase(get_gatenames: bool = False) -> RebaseCustom:
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.CX, OpType.Measure})
 
 
+@overload
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[True] = True,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[False] = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
+
+
 def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
@@ -106,6 +130,32 @@ def get_indep_level(
         filename_indep,
         target_directory=target_directory,
     )
+
+
+@overload
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[True] = True,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[False] = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
 
 
 def get_native_gates_level(
@@ -169,6 +219,36 @@ def get_native_gates_level(
         native_gatenames,
         target_directory=target_directory,
     )
+
+
+@overload
+def get_mapped_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    device_name: str,
+    lineplacement: bool,
+    file_precheck: bool,
+    return_qc: Literal[True] = True,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_mapped_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    device_name: str,
+    lineplacement: bool,
+    file_precheck: bool,
+    return_qc: Literal[False] = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
 
 
 def get_mapped_level(
