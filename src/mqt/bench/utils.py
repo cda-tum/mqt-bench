@@ -18,6 +18,7 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit.transpiler.passes import RemoveBarriers
+from qiskit_optimization.applications import Maxcut
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
@@ -103,18 +104,13 @@ def get_zip_file_path() -> str:
     return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
 
 
-def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram | None:
+def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
     Keyword arguments:
     n_nodes -- number of graph nodes (and also number of qubits)
     degree -- edges per node
     """
-    try:
-        from qiskit_optimization.applications import Maxcut
-    except Exception:
-        print("Please install qiskit_optimization.")
-        return None
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
