@@ -108,7 +108,7 @@ def download_data() -> str | Response:
             app.logger.info("###### End ######")
 
         if file_paths:
-            return app.response_class( # type: ignore[no-any-return]
+            return app.response_class(  # type: ignore[no-any-return]
                 SERVER.backend.generate_zip_ephemeral_chunks(file_paths),  # type: ignore[attr-defined]
                 mimetype="application/zip",
                 headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
@@ -151,8 +151,8 @@ def get_num_benchmarks() -> Response:
         data = request.form
         prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
         file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
-        return jsonify({"num_selected": len(file_paths)}) # type: ignore[no-any-return]
-    return jsonify({"num_selected": 0}) # type: ignore[no-any-return]
+        return jsonify({"num_selected": len(file_paths)})  # type: ignore[no-any-return]
+    return jsonify({"num_selected": 0})  # type: ignore[no-any-return]
 
 
 def start_server(
