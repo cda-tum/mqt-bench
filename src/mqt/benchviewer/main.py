@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 from mqt.benchviewer.backend import Backend
@@ -13,6 +13,9 @@ if TYPE_CHECKING or sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources
 else:
     from importlib import resources
+
+if TYPE_CHECKING:  # pragma: no cover
+    from flask import Response
 
 
 class Server:
@@ -63,7 +66,7 @@ def index() -> str:
 
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
-def download_pre_gen_zip() -> Any:
+def download_pre_gen_zip() -> Response:
     filename = "MQTBench_all.zip"
 
     if SERVER.activate_logging:  # type: ignore[attr-defined]
@@ -86,7 +89,7 @@ def download_pre_gen_zip() -> Any:
 
 
 @app.route(f"{PREFIX}/download", methods=["POST", "GET"])
-def download_data() -> Any:
+def download_data() -> str | Response:
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
@@ -105,7 +108,7 @@ def download_data() -> Any:
             app.logger.info("###### End ######")
 
         if file_paths:
-            return app.response_class(
+            return app.response_class( # type: ignore[no-any-return]
                 SERVER.backend.generate_zip_ephemeral_chunks(file_paths),  # type: ignore[attr-defined]
                 mimetype="application/zip",
                 headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
@@ -143,13 +146,13 @@ def benchmark_description() -> str:
 
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
-def get_num_benchmarks() -> Any:
+def get_num_benchmarks() -> Response:
     if request.method == "POST":
         data = request.form
         prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
         file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
-        return jsonify({"num_selected": len(file_paths)})
-    return jsonify({"num_selected": 0})
+        return jsonify({"num_selected": len(file_paths)}) # type: ignore[no-any-return]
+    return jsonify({"num_selected": 0}) # type: ignore[no-any-return]
 
 
 def start_server(
