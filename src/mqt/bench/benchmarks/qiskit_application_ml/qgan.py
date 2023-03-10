@@ -40,8 +40,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     upper_bound_value = 2**num_qubits - 1
     bounds = np.array([0.0, upper_bound_value])
     # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
-    num_qubits_as_list = [num_qubits]
-
     # Set number of training epochs
     # Note: The algorithm's runtime can be shortened by reducing the number of training epochs.
     num_epochs = 5
@@ -49,7 +47,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     batch_size = 10
 
     # Initialize qGAN
-    qgan = QGAN(real_data, bounds, num_qubits_as_list, batch_size, num_epochs, snapshot_dir=None)
+    qgan = QGAN(real_data, bounds, [num_qubits], batch_size, num_epochs, snapshot_dir=None)
     qgan.seed = 10
     # Set quantum instance to run the quantum generator
     quantum_instance = QuantumInstance(
@@ -60,10 +58,10 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     )
 
     # Set an initial state for the generator circuit
-    init_dist = UniformDistribution(sum(num_qubits_as_list))
+    init_dist = UniformDistribution(num_qubits)
 
     # Set the ansatz circuit
-    ansatz = TwoLocal(int(np.sum(num_qubits_as_list)), "ry", "cz", reps=1)  # entanglement=entangler_map,
+    ansatz = TwoLocal(num_qubits, "ry", "cz", reps=1)  # entanglement=entangler_map,
 
     # You can increase the number of training epochs and use random initial parameters.
     init_params = np.random.rand(ansatz.num_parameters_settable) * 2 * np.pi
@@ -80,7 +78,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qgan._generator._free_parameters = sorted(g_circuit.parameters, key=fct)
     # Set classical discriminator neural network
-    discriminator = NumPyDiscriminator(len(num_qubits_as_list))
+    discriminator = NumPyDiscriminator(num_qubits)
     qgan.set_discriminator(discriminator)
 
     qgan.run(quantum_instance)
