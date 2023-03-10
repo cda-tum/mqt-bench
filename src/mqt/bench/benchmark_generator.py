@@ -310,7 +310,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is not None and not isinstance(compiler_settings, CompilerSettings):
-        msg = "compiler_settings must be CompilerSettings."  # type:ignore[unreachable]
+        msg = "compiler_settings must be of type CompilerSettings or None."  # type:ignore[unreachable]
         raise ValueError(msg)
 
     if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
