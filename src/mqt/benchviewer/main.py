@@ -50,7 +50,7 @@ class Server:
 
 
 app = Flask(__name__, static_url_path="/mqtbench")
-SERVER = None
+SERVER: Server = None  # type: ignore[assignment]
 PREFIX = "/mqtbench/"
 
 
@@ -60,8 +60,8 @@ def index() -> str:
     """Return the index.html file together with the benchmarks and nonscalable benchmarks."""
     return render_template(
         "index.html",
-        benchmarks=SERVER.backend.benchmarks,  # type: ignore[attr-defined]
-        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,  # type: ignore[attr-defined]
+        benchmarks=SERVER.backend.benchmarks,
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
     )
 
 
@@ -69,7 +69,7 @@ def index() -> str:
 def download_pre_gen_zip() -> Response:
     filename = "MQTBench_all.zip"
 
-    if SERVER.activate_logging:  # type: ignore[attr-defined]
+    if SERVER.activate_logging:
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         app.logger.info("###### Start ######")
         app.logger.info("Timestamp: %s", timestamp)
@@ -79,9 +79,9 @@ def download_pre_gen_zip() -> Response:
         app.logger.info("Download of pre-generated zip")
         app.logger.info("###### End ######")
 
-    return send_from_directory(  # type: ignore[call-arg]
-        directory=SERVER.target_location,  # type: ignore[attr-defined]
-        path=filename,
+    return send_from_directory(
+        SERVER.target_location,
+        filename,
         as_attachment=True,
         mimetype="application/zip",
         download_name="MQTBench_all.zip",
@@ -93,11 +93,11 @@ def download_data() -> str | Response:
     """Triggers the downloading process of all benchmarks according to the user's input."""
     if request.method == "POST":
         data = request.form
-        prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
-        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
+        prepared_data = SERVER.backend.prepare_form_input(data)
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-        if SERVER.activate_logging:  # type: ignore[attr-defined]
+        if SERVER.activate_logging:
             app.logger.info("###### Start ######")
             app.logger.info("Timestamp: %s", timestamp)
             headers = str(request.headers)
@@ -109,7 +109,7 @@ def download_data() -> str | Response:
 
         if file_paths:
             return app.response_class(  # type: ignore[no-any-return]
-                SERVER.backend.generate_zip_ephemeral_chunks(file_paths),  # type: ignore[attr-defined]
+                SERVER.backend.generate_zip_ephemeral_chunks(file_paths),
                 mimetype="application/zip",
                 headers={"Content-Disposition": f'attachment; filename="MQTBench_{timestamp}.zip"'},
                 direct_passthrough=True,
@@ -117,8 +117,8 @@ def download_data() -> str | Response:
 
     return render_template(
         "index.html",
-        benchmarks=SERVER.backend.benchmarks,  # type: ignore[attr-defined]
-        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,  # type: ignore[attr-defined]
+        benchmarks=SERVER.backend.benchmarks,
+        nonscalable_benchmarks=SERVER.backend.nonscalable_benchmarks,
     )
 
 
@@ -149,8 +149,8 @@ def benchmark_description() -> str:
 def get_num_benchmarks() -> Response:
     if request.method == "POST":
         data = request.form
-        prepared_data = SERVER.backend.prepare_form_input(data)  # type: ignore[attr-defined]
-        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)  # type: ignore[attr-defined]
+        prepared_data = SERVER.backend.prepare_form_input(data)
+        file_paths = SERVER.backend.get_selected_file_paths(prepared_data)
         return jsonify({"num_selected": len(file_paths)})  # type: ignore[no-any-return]
     return jsonify({"num_selected": 0})  # type: ignore[no-any-return]
 
