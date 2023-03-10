@@ -5,7 +5,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, TypedDict
 
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
@@ -22,8 +22,8 @@ else:
 from dataclasses import dataclass
 
 
-@dataclass
-class Benchmark:
+
+class Benchmark(TypedDict, total=False):
     name: str
     include: bool
     min_qubits: int
@@ -70,27 +70,27 @@ class BenchmarkGenerator:
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
     def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
-        benchmarks = [Benchmark(**benchmark) for benchmark in self.cfg["benchmarks"]]
+        benchmarks = [Benchmark(benchmark) for benchmark in self.cfg["benchmarks"]] # type: ignore[misc]
         Parallel(n_jobs=num_jobs, verbose=100)(delayed(self.generate_benchmark)(benchmark) for benchmark in benchmarks)
         return True
 
     def generate_benchmark(self, benchmark: Benchmark) -> None:  # noqa: PLR0912
-        lib = utils.get_module_for_benchmark(benchmark.name)
-        file_precheck = benchmark.precheck_possible
-        if benchmark.include:
-            if benchmark.name == "grover" or benchmark.name == "qwalk":
-                for anc_mode in benchmark.ancillary_mode:
+        lib = utils.get_module_for_benchmark(benchmark["name"])
+        file_precheck = benchmark["precheck_possible"]
+        if benchmark["include"]:
+            if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
+                for anc_mode in benchmark["ancillary_mode"]:
                     for n in range(
-                        benchmark.min_qubits,
-                        benchmark.max_qubits,
-                        benchmark.stepsize,
+                            benchmark["min_qubits"],
+                            benchmark["max_qubits"],
+                            benchmark["stepsize"],
                     ):
                         success_flag = self.start_benchmark_generation(lib.create_circuit, [n, anc_mode], file_precheck)
                         if not success_flag:
                             break
 
-            elif benchmark.name == "shor":
-                for choice in benchmark.instances:
+            elif benchmark["name"] == "shor":
+                for choice in benchmark["instances"]:
                     to_be_factored_number, a_value = lib.get_instance(choice)
                     success_flag = self.start_benchmark_generation(
                         lib.create_circuit, [to_be_factored_number, a_value], file_precheck
@@ -98,40 +98,40 @@ class BenchmarkGenerator:
                     if not success_flag:
                         break
 
-            elif benchmark.name == "hhl":
-                for i in range(benchmark.min_index, benchmark.max_index):
+            elif benchmark["name"] == "hhl":
+                for i in range(benchmark["min_index"], benchmark["max_index"]):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [i], file_precheck)
                     if not success_flag:
                         break
 
-            elif benchmark.name == "routing":
-                for nodes in range(benchmark.min_nodes, benchmark.max_nodes):
+            elif benchmark["name"] == "routing":
+                for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes, 2], file_precheck)
                     if not success_flag:
                         break
 
-            elif benchmark.name == "tsp":
-                for nodes in range(benchmark.min_nodes, benchmark.max_nodes):
+            elif benchmark["name"] == "tsp":
+                for nodes in range(benchmark["min_nodes"], benchmark["max_nodes"]):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
                     if not success_flag:
                         break
 
-            elif benchmark.name == "groundstate":
-                for choice in benchmark.instances:
+            elif benchmark["name"] == "groundstate":
+                for choice in benchmark["instances"]:
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [choice], file_precheck)
                     if not success_flag:
                         break
 
-            elif benchmark.name == "pricingcall" or benchmark.name == "pricingput":
-                for nodes in range(benchmark.min_uncertainty, benchmark.max_uncertainty):
+            elif benchmark["name"] == "pricingcall" or benchmark["name"] == "pricingput":
+                for nodes in range(benchmark["min_uncertainty"], benchmark["max_uncertainty"]):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [nodes], file_precheck)
                     if not success_flag:
                         break
             else:
                 for n in range(
-                    benchmark.min_qubits,
-                    benchmark.max_qubits,
-                    benchmark.stepsize,
+                        benchmark["min_qubits"],
+                        benchmark["max_qubits"],
+                        benchmark["stepsize"],
                 ):
                     success_flag = self.start_benchmark_generation(lib.create_circuit, [n], file_precheck)
                     if not success_flag:
