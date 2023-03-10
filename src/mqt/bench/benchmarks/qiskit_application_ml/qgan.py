@@ -78,7 +78,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qgan._generator._free_parameters = sorted(g_circuit.parameters, key=fct)
     # Set classical discriminator neural network
-    discriminator = NumPyDiscriminator(num_qubits)
+    discriminator = NumPyDiscriminator()
     qgan.set_discriminator(discriminator)
 
     qgan.run(quantum_instance)
