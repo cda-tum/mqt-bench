@@ -53,7 +53,7 @@ PREFIX = "/mqtbench/"
 
 @app.route(f"{PREFIX}/", methods=["POST", "GET"])
 @app.route(f"{PREFIX}/index", methods=["POST", "GET"])
-def index() -> Any:
+def index() -> str:
     """Return the index.html file together with the benchmarks and nonscalable benchmarks."""
     return render_template(
         "index.html",
@@ -120,21 +120,21 @@ def download_data() -> Any:
 
 
 @app.route(f"{PREFIX}/legal")
-def legal() -> Any:
+def legal() -> str:
     """Return the legal.html file."""
 
     return render_template("legal.html")
 
 
 @app.route(f"{PREFIX}/description")
-def description() -> Any:
+def description() -> str:
     """Return the description.html file in which the file formats are described."""
 
     return render_template("description.html")
 
 
 @app.route(f"{PREFIX}/benchmark_description")
-def benchmark_description() -> Any:
+def benchmark_description() -> str:
     """Return the benchmark_description.html file together in which all benchmark algorithms
     are described in detail.
     """
