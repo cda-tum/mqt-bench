@@ -204,6 +204,55 @@ def test_prepare_form_input() -> None:
     backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
 
+    form_data = {
+        "all_benchmarks": "true",
+        "minQubits": "75",
+        "maxQubits": "110",
+        "indep_qiskit_compiler": "true",
+        "indep_tket_compiler": "true",
+        "nativegates_qiskit_compiler": "true",
+        "nativegates_qiskit_compiler_opt0": "true",
+        "nativegates_qiskit_compiler_opt1": "true",
+        "nativegates_qiskit_compiler_opt2": "true",
+        "nativegates_qiskit_compiler_opt3": "true",
+        "nativegates_tket_compiler value=": "on",
+        "nativegates_ibm": "true",
+        "nativegates_rigetti": "true",
+        "nativegates_oqc": "true",
+        "nativegates_ionq": "true",
+        "mapped_qiskit_compiler": "true",
+        "mapped_qiskit_compiler_opt0": "true",
+        "mapped_qiskit_compiler_opt1": "true",
+        "mapped_qiskit_compiler_opt2": "true",
+        "mapped_qiskit_compiler_opt3": "true",
+        "mapped_tket_compiler": "true",
+        "mapped_tket_compiler_graph": "true",
+        "mapped_tket_compiler_line": "true",
+        "device_ibm_washington": "true",
+        "device_ibm_montreal": "true",
+        "device_rigetti_aspen_m2": "true",
+        "device_oqc_lucy": "true",
+        "device_ionq_ionq11": "true",
+    }
+    expected_res = BenchmarkConfiguration(
+        min_qubits=75,
+        max_qubits=110,
+        indices_benchmarks=[],
+        indep_qiskit_compiler=True,
+        indep_tket_compiler=True,
+        nativegates_qiskit_compiler=True,
+        native_qiskit_opt_lvls=[0, 1, 2, 3],
+        nativegates_tket_compiler=True,
+        native_gatesets=["ibm", "rigetti", "oqc", "ionq"],
+        mapped_qiskit_compiler=True,
+        mapped_qiskit_opt_lvls=[0, 1, 2, 3],
+        mapped_tket_compiler=True,
+        mapped_tket_placements=["graph", "line"],
+        mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
+    )
+    backend = Backend()
+    assert backend.prepare_form_input(form_data) == expected_res
+
 
 benchviewer = resources.files("mqt.benchviewer")
 
