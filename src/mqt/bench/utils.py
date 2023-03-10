@@ -15,7 +15,6 @@ import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
-from qiskit.algorithms import EstimationProblem
 from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit.transpiler.passes import RemoveBarriers
 from qiskit_optimization.applications import Maxcut
@@ -114,50 +113,6 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
-
-
-class BernoulliA(QuantumCircuit):
-    """A circuit representing the Bernoulli A operator."""
-
-    def __init__(self, probability: float) -> None:
-        super().__init__(1)  # circuit on 1 qubit
-
-        theta_p = 2 * np.arcsin(np.sqrt(probability))
-        self.ry(theta_p, 0)
-
-
-class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
-    """A circuit representing the Bernoulli Q operator."""
-
-    def __init__(self, probability: float) -> None:
-        super().__init__(1)  # circuit on 1 qubit
-
-        self._theta_p = 2 * np.arcsin(np.sqrt(probability))
-        self.ry(2 * self._theta_p, 0)
-
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
-
-    def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
-        # implement the efficient power of Q
-        q_k = QuantumCircuit(1)
-        q_k.ry(2 * power * self._theta_p, 0)
-        return q_k
-
-
-def get_estimation_problem() -> EstimationProblem:
-    """Returns a estimation problem instance for a fixed p value."""
-
-    p = 0.2
-
-    a = BernoulliA(p)
-    q = BernoulliQ(p)
-
-    return EstimationProblem(
-        state_preparation=a,  # A operator
-        grover_operator=q,  # Q operator
-        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
-    )
 
 
 def get_rigetti_aspen_m2_map() -> list[list[int]]:
