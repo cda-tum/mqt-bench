@@ -511,6 +511,7 @@ class NoSeekBytesIO:
     def flush(self) -> None:
         return self.fp.flush()
 
+
 def parse_benchmark_id_from_form_key(k: str) -> int | bool:
     pat = re.compile(r"_\d+")
     m = pat.search(k)
