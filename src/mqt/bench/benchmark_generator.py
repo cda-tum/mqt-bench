@@ -52,8 +52,6 @@ class BenchmarkGenerator:
 
     def create_benchmarks_from_config(self, num_jobs: int = -1) -> bool:
         benchmarks = [Benchmark(**benchmark) for benchmark in self.cfg["benchmarks"]]  # type:ignore[misc]
-        print(benchmarks, type(benchmarks[0]))
-
         Parallel(n_jobs=num_jobs, verbose=100)(delayed(self.generate_benchmark)(benchmark) for benchmark in benchmarks)
         return True
 
