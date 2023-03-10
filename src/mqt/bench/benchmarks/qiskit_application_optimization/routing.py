@@ -12,8 +12,6 @@ from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
 from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.problems.linear_expression import LinearExpression
-from qiskit_optimization.problems.quadratic_expression import QuadraticExpression
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
@@ -108,8 +106,8 @@ class QuantumOptimizer:
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
 
-        qp.objective.quadratic = QuadraticExpression(qp, Q)
-        qp.objective.linear = LinearExpression(qp, g)
+        qp.objective.quadratic = Q  # type: ignore[assignment]
+        qp.objective.linear = g  # type: ignore[assignment]
         qp.objective.constant = c
         return qp
 
