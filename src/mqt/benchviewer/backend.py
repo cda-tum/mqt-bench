@@ -511,84 +511,12 @@ class NoSeekBytesIO:
     def flush(self) -> None:
         return self.fp.flush()
 
-
-def parse_benchmark_id_from_form_key(k: str) -> int | None:
+def parse_benchmark_id_from_form_key(k: str) -> int | bool:
     pat = re.compile(r"_\d+")
     m = pat.search(k)
     if m:
         return int(m.group()[1:])
-    return None
-
-
-def prepare_form_input(form_data: dict[str, str]) -> BenchmarkConfiguration:
-    """Formats the formData extracted from the user's inputs."""
-    min_qubits = 2
-    max_qubits = 130
-    indices_benchmarks = []
-    indep_qiskit_compiler = False
-    indep_tket_compiler = False
-    nativegates_qiskit_compiler = False
-    nativegates_tket_compiler = False
-    native_qiskit_opt_lvls = []
-    native_gatesets = []
-    mapped_qiskit_compiler = False
-    mapped_tket_compiler = False
-    mapped_qiskit_opt_lvls = []
-    mapped_tket_placements = []
-    mapped_devices = []
-
-    for k, v in form_data.items():
-        if "select" in k:
-            found_benchmark_id = parse_benchmark_id_from_form_key(k)
-            if found_benchmark_id:
-                indices_benchmarks.append(found_benchmark_id)
-        min_qubits = int(v) if "minQubits" in k and v != "" else min_qubits
-        max_qubits = int(v) if "maxQubits" in k and v != "" else max_qubits
-
-        indep_qiskit_compiler = "indep_qiskit_compiler" in k or indep_qiskit_compiler
-        indep_tket_compiler = "indep_tket_compiler" in k or indep_tket_compiler
-
-        nativegates_qiskit_compiler = "nativegates_qiskit_compiler" in k or nativegates_qiskit_compiler
-        nativegates_tket_compiler = "nativegates_tket_compiler" in k or nativegates_tket_compiler
-        native_qiskit_opt_lvls.append(0) if "nativegates_qiskit_compiler_opt0" in k else None
-        native_qiskit_opt_lvls.append(1) if "nativegates_qiskit_compiler_opt1" in k else None
-        native_qiskit_opt_lvls.append(2) if "nativegates_qiskit_compiler_opt2" in k else None
-        native_qiskit_opt_lvls.append(3) if "nativegates_qiskit_compiler_opt3" in k else None
-        native_gatesets.append("ibm") if "nativegates_ibm" in k else None
-        native_gatesets.append("rigetti") if "nativegates_rigetti" in k else None
-        native_gatesets.append("oqc") if "nativegates_oqc" in k else None
-        native_gatesets.append("ionq") if "nativegates_ionq" in k else None
-
-        mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
-        mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
-        mapped_qiskit_opt_lvls.append(0) if "mapped_qiskit_compiler_opt0" in k else None
-        mapped_qiskit_opt_lvls.append(1) if "mapped_qiskit_compiler_opt1" in k else None
-        mapped_qiskit_opt_lvls.append(2) if "mapped_qiskit_compiler_opt2" in k else None
-        mapped_qiskit_opt_lvls.append(3) if "mapped_qiskit_compiler_opt3" in k else None
-        mapped_tket_placements.append("graph") if "mapped_tket_compiler_graph" in k else None
-        mapped_tket_placements.append("line") if "mapped_tket_compiler_line" in k else None
-        mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
-        mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
-        mapped_devices.append("rigetti_aspen") if "device_rigetti_aspen" in k else None
-        mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
-        mapped_devices.append("ionq11") if "device_ionq_ionq11" in k else None
-
-    return BenchmarkConfiguration(
-        min_qubits=min_qubits,
-        max_qubits=max_qubits,
-        indices_benchmarks=indices_benchmarks,
-        indep_qiskit_compiler=indep_qiskit_compiler,
-        indep_tket_compiler=indep_tket_compiler,
-        nativegates_qiskit_compiler=nativegates_qiskit_compiler,
-        nativegates_tket_compiler=nativegates_tket_compiler,
-        native_qiskit_opt_lvls=native_qiskit_opt_lvls,
-        native_gatesets=native_gatesets,
-        mapped_qiskit_compiler=mapped_qiskit_compiler,
-        mapped_tket_compiler=mapped_tket_compiler,
-        mapped_qiskit_opt_lvls=mapped_qiskit_opt_lvls,
-        mapped_tket_placements=mapped_tket_placements,
-        mapped_devices=mapped_devices,
-    )
+    return False
 
 
 def get_opt_level(filename: str) -> int:
