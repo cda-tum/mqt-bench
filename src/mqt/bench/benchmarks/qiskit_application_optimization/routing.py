@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from qiskit.algorithms.minimum_eigensolvers import VQE
@@ -14,6 +14,7 @@ from qiskit_optimization import QuadraticProgram
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
+    from numpy.typing import NDArray
 
 
 class Initializer:
@@ -23,9 +24,9 @@ class Initializer:
     def generate_instance(
         self,
     ) -> tuple[
-        np.ndarray[Any, np.dtype[np.float64]],
-        np.ndarray[Any, np.dtype[np.float64]],
-        np.ndarray[Any, np.dtype[np.float64]],
+        NDArray[np.float_],
+        NDArray[np.float_],
+        NDArray[np.float_],
     ]:
         n = self.n
         np.random.seed(10)
@@ -43,12 +44,13 @@ class Initializer:
 
 
 class QuantumOptimizer:
-    def __init__(self, instance: np.ndarray[Any, np.dtype[np.float64]], n: int, K: int) -> None:
+    def __init__(self, instance: NDArray[np.float_], n: int, K: int) -> None:
         self.instance = instance
         self.n = n
         self.K = K
 
-    def binary_representation(self, x_sol: Any = 0) -> tuple[Any, Any, Any, float]:
+    def binary_representation(self, x_sol: NDArray[np.float_] = np.array(0)) -> \
+            tuple[NDArray[np.float_], NDArray[np.float_], float, float]:
         instance = self.instance
         n = self.n
         K = self.K
@@ -95,16 +97,16 @@ class QuantumOptimizer:
             max(x_sol)
 
             # Evaluates the cost distance from a binary representation of a path
-            def fun(x: Any) -> Any:
-                return np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c
+            def fun(x: NDArray[np.float_]) -> float:
+                return cast(float, np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c)
 
             cost = fun(x_sol)
         except Exception:
             cost = 0
 
-        return Q, g, c, cost
+        return cast(NDArray[np.float_], Q), cast(NDArray[np.float_],g), cast(float, c), cost
 
-    def construct_problem(self, Q: Any, g: Any, c: float) -> QuadraticProgram:
+    def construct_problem(self, Q: NDArray[np.float_], g: NDArray[np.float_], c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
