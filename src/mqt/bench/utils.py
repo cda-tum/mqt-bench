@@ -116,7 +116,7 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     return maxcut.to_quadratic_program()
 
 
-class BernoulliA(QuantumCircuit):  # type: ignore[misc]
+class BernoulliA(QuantumCircuit):
     """A circuit representing the Bernoulli A operator."""
 
     def __init__(self, probability: float) -> None:
@@ -349,8 +349,8 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
         if qargs[index] not in reg:
             offset += reg.size
         else:
-            qubit_index = offset + reg.index(qargs[index])
-            return cast(int, qubit_index)
+            qubit_index: int = offset + reg.index(qargs[index])
+            return qubit_index
     error_msg = f"Global qubit index for local qubit {index} index not found."
     raise ValueError(error_msg)
 
