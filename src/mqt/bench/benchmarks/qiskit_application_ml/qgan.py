@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from qiskit import Aer
@@ -73,8 +73,8 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     qgan.set_generator(generator_circuit=g_circuit, generator_init_params=init_params)
     # The parameters have an order issue that following is a temp. workaround
 
-    def fct(p: Parameter) -> Any:
-        return p.name
+    def fct(p: Parameter) -> str:
+        return cast(str, p.name)
 
     qgan._generator._free_parameters = sorted(g_circuit.parameters, key=fct)
     # Set classical discriminator neural network
