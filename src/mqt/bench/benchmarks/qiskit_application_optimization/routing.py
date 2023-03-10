@@ -13,8 +13,8 @@ from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
 
 if TYPE_CHECKING:  # pragma: no cover
-    from qiskit import QuantumCircuit
     from numpy.typing import NDArray
+    from qiskit import QuantumCircuit
 
 
 class Initializer:
@@ -23,11 +23,7 @@ class Initializer:
 
     def generate_instance(
         self,
-    ) -> tuple[
-        NDArray[np.float_],
-        NDArray[np.float_],
-        NDArray[np.float_],
-    ]:
+    ) -> tuple[NDArray[np.float_], NDArray[np.float_], NDArray[np.float_],]:
         n = self.n
         np.random.seed(10)
 
@@ -49,8 +45,9 @@ class QuantumOptimizer:
         self.n = n
         self.K = K
 
-    def binary_representation(self, x_sol: NDArray[np.float_] = np.array(0)) -> \
-            tuple[NDArray[np.float_], NDArray[np.float_], float, float]:
+    def binary_representation(
+        self, x_sol: NDArray[np.float_] = np.array(0)
+    ) -> tuple[NDArray[np.float_], NDArray[np.float_], float, float]:
         instance = self.instance
         n = self.n
         K = self.K
@@ -104,7 +101,7 @@ class QuantumOptimizer:
         except Exception:
             cost = 0
 
-        return cast(NDArray[np.float_], Q), cast(NDArray[np.float_],g), cast(float, c), cost
+        return cast(NDArray[np.float_], Q), cast(NDArray[np.float_], g), cast(float, c), cost
 
     def construct_problem(self, Q: NDArray[np.float_], g: NDArray[np.float_], c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
