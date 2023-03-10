@@ -698,7 +698,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m2",
         )
-    match = "compiler_settings must be None"
+    match = "compiler_settings must be of type CompilerSettings or None"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
