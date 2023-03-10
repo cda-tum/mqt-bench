@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any, Callable, TypedDict
 
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
+from qiskit import QuantumCircuit
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket.circuit import Circuit
-    from qiskit import QuantumCircuit
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
@@ -243,6 +243,7 @@ class BenchmarkGenerator:
         res_qc_creation = timeout_watcher(create_circuit_function, self.timeout, parameters)
         if not res_qc_creation:
             return False
+        assert isinstance(res_qc_creation, QuantumCircuit)
         return self.generate_circuits_on_all_levels(res_qc_creation, res_qc_creation.num_qubits, file_precheck)
 
 
@@ -405,8 +406,9 @@ def generate(num_jobs: int = -1) -> None:
     benchmark_generator.create_benchmarks_from_config(num_jobs)
 
 
-# add a type hint for the function func which takes arbitrary methods as its value
-def timeout_watcher(func: Callable[..., bool | QuantumCircuit], timeout: int, args: list[Any]) -> Any:
+def timeout_watcher(
+    func: Callable[..., bool | QuantumCircuit], timeout: int, args: list[Any]
+) -> bool | QuantumCircuit | Circuit:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
