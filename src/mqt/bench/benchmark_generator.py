@@ -40,6 +40,22 @@ class Benchmark:
     precheck_possible: bool
 
 
+@dataclass
+class QiskitSettings:
+    optimization_level: int
+
+
+@dataclass
+class TKETSettings:
+    placement: str
+
+
+@dataclass
+class CompilerSettings:
+    qiskit: QiskitSettings | None = None
+    tket: TKETSettings | None = None
+
+
 class BenchmarkGenerator:
     def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None) -> None:
         with Path(cfg_path).open() as jsonfile:
@@ -256,7 +272,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
     compiler: str | None = "qiskit",
-    compiler_settings: dict[str, dict[str, int | str]] | None = None,
+    compiler_settings: CompilerSettings | None = None,
     gate_set_name: str | None = "ibm",
     device_name: str | None = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
@@ -267,7 +283,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     circuit_size -- Input for the benchmark creation, in most cases this is equal to the qubit number
     benchmark_instance_name -- Input selection for some benchmarks, namely "groundstate" and "shor"
     compiler -- "qiskit" or "tket"
-    compiler_settings -- Dictionary containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
+    CompilerSettings -- Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
     device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", ""oqc_lucy""
     Return values:
@@ -294,8 +310,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
         raise ValueError(msg)
 
-    if compiler_settings is not None and not isinstance(compiler_settings, dict):
-        msg = "compiler_settings must be None or dict[str, dict[str, any]]."  # type:ignore[unreachable]
+    if compiler_settings is not None and not isinstance(compiler_settings, CompilerSettings):
+        msg = "compiler_settings must be CompilerSettings."  # type:ignore[unreachable]
         raise ValueError(msg)
 
     if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
@@ -345,10 +361,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is None:
-        compiler_settings = {
-            "qiskit": {"optimization_level": 1},
-            "tket": {"placement": "lineplacement"},
-        }
+        compiler_settings = CompilerSettings(QiskitSettings(1), TKETSettings("lineplacement"))
+    assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
 
     independent_level = 1
     if level == "indep" or level == independent_level:
@@ -361,8 +375,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     if level == "nativegates" or level == native_gates_level:
         assert gate_set_name is not None
         if compiler == "qiskit":
-            opt_level = compiler_settings["qiskit"]["optimization_level"]
-            assert isinstance(opt_level, int)
+            assert compiler_settings.qiskit is not None
+            opt_level = compiler_settings.qiskit.optimization_level
             return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
@@ -372,7 +386,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         assert gate_set_name is not None
         assert device_name is not None
         if compiler == "qiskit":
-            opt_level = compiler_settings["qiskit"]["optimization_level"]
+            assert compiler_settings.qiskit is not None
+            opt_level = compiler_settings.qiskit.optimization_level
             assert isinstance(opt_level, int)
             return qiskit_helper.get_mapped_level(
                 qc,
@@ -384,8 +399,8 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
                 True,
             )
         if compiler == "tket":
-            assert isinstance(compiler_settings["tket"]["placement"], str)
-            placement = compiler_settings["tket"]["placement"].lower()
+            assert compiler_settings.tket is not None
+            placement = compiler_settings.tket.placement.lower()
             lineplacement = placement == "lineplacement"
             return tket_helper.get_mapped_level(
                 qc,

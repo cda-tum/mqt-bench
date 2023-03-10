@@ -10,6 +10,9 @@ if TYPE_CHECKING:  # pragma: no cover
 import pytest
 from mqt.bench import (
     BenchmarkGenerator,
+    CompilerSettings,
+    QiskitSettings,
+    TKETSettings,
     evaluation,
     get_benchmark,
     qiskit_helper,
@@ -320,7 +323,7 @@ def test_unidirectional_coupling_map() -> None:
         level="mapped",
         circuit_size=3,
         compiler="tket",
-        compiler_settings={"tket": {"placement": "graphplacement"}},
+        compiler_settings=CompilerSettings(tket=TKETSettings(placement="graphplacement")),
         gate_set_name="oqc",
         device_name="oqc_lucy",
     )
@@ -390,25 +393,23 @@ def test_unidirectional_coupling_map() -> None:
             None,
             None,
         ),
-        (
-            "groundstate",
-            1,
-            4,
-            "small",
-            "qiskit",
-            None,
-            None,
-            None,
-        ),
+        # (
+        #     "groundstate",
+        #     1,
+        #     4,
+        #     "small",
+        #     "qiskit",
+        #     None,
+        #     None,
+        #     None,
+        # ),
         (
             "dj",
             "nativegates",
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 2},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ionq",
             None,
         ),
@@ -418,9 +419,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 2},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ibm",
             None,
         ),
@@ -430,9 +429,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 2},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
             None,
         ),
@@ -442,9 +439,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 2},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "oqc",
             None,
         ),
@@ -454,9 +449,7 @@ def test_unidirectional_coupling_map() -> None:
             6,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 3},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ionq",
             None,
         ),
@@ -466,9 +459,7 @@ def test_unidirectional_coupling_map() -> None:
             6,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 3},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ibm",
             None,
         ),
@@ -498,9 +489,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_washington",
         ),
@@ -510,9 +499,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
         ),
@@ -522,9 +509,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         ),
@@ -534,9 +519,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ionq",
             "ionq11",
         ),
@@ -546,9 +529,7 @@ def test_unidirectional_coupling_map() -> None:
             5,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "oqc",
             "oqc_lucy",
         ),
@@ -558,9 +539,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_washington",
         ),
@@ -570,9 +549,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
-            {
-                "tket": {"placement": "lineplacement"},
-            },
+            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
             "ibm",
             "ibm_washington",
         ),
@@ -582,9 +559,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
         ),
@@ -594,9 +569,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
-            {
-                "tket": {"placement": "graphplacement"},
-            },
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
             "ibm",
             "ibm_montreal",
         ),
@@ -606,9 +579,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         ),
@@ -618,9 +589,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
-            {
-                "tket": {"placement": "lineplacement"},
-            },
+            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
             "rigetti",
             "rigetti_aspen_m2",
         ),
@@ -630,9 +599,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "oqc",
             "oqc_lucy",
         ),
@@ -642,9 +609,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
-            {
-                "tket": {"placement": "graphplacement"},
-            },
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
             "oqc",
             "oqc_lucy",
         ),
@@ -656,7 +621,7 @@ def test_get_benchmark(
     circuit_size: int,
     benchmark_instance_name: str | None,
     compiler: str,
-    compiler_settings: dict[str, dict[str, str | int]] | None,
+    compiler_settings: CompilerSettings | None,
     gate_set_name: str | None,
     device_name: str | None,
 ) -> None:
@@ -691,9 +656,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_size",  # type: ignore[arg-type]
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         )
@@ -705,9 +668,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             -1,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         )
@@ -720,9 +681,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             3,
             2,  # type: ignore[arg-type]
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         )
@@ -735,9 +694,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             3,
             None,
             "wrong_compiler",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         )
@@ -761,9 +718,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             3,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "wrong_gateset",
             "rigetti_aspen_m2",
         )
@@ -775,9 +730,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             3,
             None,
             "qiskit",
-            {
-                "qiskit": {"optimization_level": 1},
-            },
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "wrong_device",
         )

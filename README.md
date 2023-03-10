@@ -175,7 +175,7 @@ def get_benchmark(
     circuit_size: int = None,
     benchmark_instance_name: str = None,
     compiler: str = "qiskit",
-    compiler_settings: dict[str, dict[str, any]] = None,
+    compiler_settings: mqt.bench.CompilerSettings = None,
     gate_set_name: str = "ibm",
     device_name: str = "ibm_washington",
 ):
@@ -195,17 +195,12 @@ The available parameters are:
 - `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), exemplary shown:
 
 ```python
-compiler_settings = {
-    "qiskit": {"optimization_level": 1},
-}
-```
+from mqt.bench import CompilerSettings
 
-or
-
-```python
-compiler_settings = {
-    "tket": {"placement": "lineplacement"},
-}
+compiler_settings = CompilerSettings(
+    qiskit={"optimization_level": 1},
+    tket={"placement": "lineplacement"},
+)
 ```
 
 - `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
