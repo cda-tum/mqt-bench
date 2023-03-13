@@ -64,7 +64,7 @@ def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     file_precheck: bool,
-    return_qc: Literal[True] = True,
+    return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> Circuit:
@@ -76,7 +76,7 @@ def get_indep_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     file_precheck: bool,
-    return_qc: Literal[False] = False,
+    return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> bool:
@@ -138,7 +138,7 @@ def get_native_gates_level(
     gate_set_name: str,
     num_qubits: int | None,
     file_precheck: bool,
-    return_qc: Literal[True] = True,
+    return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> Circuit:
@@ -151,7 +151,7 @@ def get_native_gates_level(
     gate_set_name: str,
     num_qubits: int | None,
     file_precheck: bool,
-    return_qc: Literal[False] = False,
+    return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> bool:
@@ -229,7 +229,7 @@ def get_mapped_level(
     device_name: str,
     lineplacement: bool,
     file_precheck: bool,
-    return_qc: Literal[True] = True,
+    return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> Circuit:
@@ -244,7 +244,7 @@ def get_mapped_level(
     device_name: str,
     lineplacement: bool,
     file_precheck: bool,
-    return_qc: Literal[False] = False,
+    return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
 ) -> bool:
