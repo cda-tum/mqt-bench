@@ -360,7 +360,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         raise ValueError(msg)
 
     if compiler_settings is None:
-        compiler_settings = CompilerSettings(QiskitSettings(1), TKETSettings("lineplacement"))
+        compiler_settings = CompilerSettings(QiskitSettings(), TKETSettings())
     assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
 
     independent_level = 1
