@@ -41,12 +41,12 @@ class Benchmark(TypedDict, total=False):
 
 @dataclass
 class QiskitSettings:
-    optimization_level: int
+    optimization_level: int = 1
 
 
 @dataclass
 class TKETSettings:
-    placement: str
+    placement: str = "lineplacement"
 
 
 @dataclass
