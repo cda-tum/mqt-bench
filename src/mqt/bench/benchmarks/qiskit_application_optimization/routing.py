@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 import numpy as np
-from numpy.typing import NDArray
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.circuit.library import RealAmplitudes
@@ -14,6 +13,7 @@ from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
 
 if TYPE_CHECKING:  # pragma: no cover
+    from numpy.typing import NDArray
     from qiskit import QuantumCircuit
 
 
@@ -99,7 +99,7 @@ class QuantumOptimizer:
         except Exception:
             cost = 0
 
-        return cast(NDArray[np.float_], Q), cast(NDArray[np.float_], g), cast(float, c), cost
+        return Q, g, cast(float, c), cost
 
     def construct_problem(self, Q: NDArray[np.float_], g: NDArray[np.float_], c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
