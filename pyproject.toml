@@ -83,6 +83,25 @@ precision = 1
 [tool.black]
 line-length = 120
 
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+files = ["src", "tests", "setup.py"]
+python_version = "3.9"
+strict = true
+show_error_codes = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+explicit_package_bases = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = ["pytket.*"]
+implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = ["qiskit.*", "qiskit_nature.*", "qiskit_machine_learning.*", "qiskit_finance.*","qiskit_optimization.*", "joblib.*", "networkx.*", "pandas.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 select = [
     "E", "F", "W", # flake8

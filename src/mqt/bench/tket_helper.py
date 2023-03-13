@@ -1,23 +1,29 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Literal, overload
 
 from mqt.bench import utils
-from pytket import OpType, architecture, circuit
+from pytket import OpType
+from pytket.architecture import Architecture  # type: ignore[attr-defined]
 from pytket.extensions.qiskit import qiskit_to_tk
-from pytket.passes import (
+from pytket.passes import (  # type: ignore[attr-defined]
     CXMappingPass,
     FullPeepholeOptimise,
     PlacementPass,
     RoutingPass,
     auto_rebase_pass,
 )
-from pytket.placement import GraphPlacement, LinePlacement
+from pytket.placement import GraphPlacement, LinePlacement  # type: ignore[attr-defined]
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
+if TYPE_CHECKING:  # pragma: no cover
+    from pytket.circuit import Circuit
+    from pytket.passes import RebaseCustom  # type: ignore[attr-defined]
 
-def get_rebase(gate_set_name: str, get_gatenames: bool = False):
+
+def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
     if gate_set_name == "ionq":
         return get_ionq_rebase(get_gatenames)
     if gate_set_name == "oqc":
@@ -29,38 +35,62 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False):
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
-def get_ionq_rebase(get_gatenames: bool = False):
+def get_ionq_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
 
 
-def get_oqc_rebase(get_gatenames: bool = False):
+def get_oqc_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "sx", "x", "ecr", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure})
 
 
-def get_rigetti_rebase(get_gatenames: bool = False):
+def get_rigetti_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "rx", "cz", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Rx, OpType.CZ, OpType.Measure})
 
 
-def get_ibm_rebase(get_gatenames: bool = False):
+def get_ibm_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "sx", "x", "cx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.CX, OpType.Measure})
 
 
+@overload
 def get_indep_level(
     qc: QuantumCircuit,
-    num_qubits: int,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
+
+
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-independent level.
 
     Keyword arguments:
@@ -102,15 +132,41 @@ def get_indep_level(
     )
 
 
+@overload
 def get_native_gates_level(
-    qc: circuit,
+    qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
+
+
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Keyword arguments:
@@ -165,17 +221,47 @@ def get_native_gates_level(
     )
 
 
+@overload
 def get_mapped_level(
-    qc: circuit,
+    qc: QuantumCircuit,
     gate_set_name: str,
-    num_qubits: int,
+    num_qubits: int | None,
+    device_name: str,
+    lineplacement: bool,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_mapped_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
+    device_name: str,
+    lineplacement: bool,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+) -> bool:
+    ...
+
+
+def get_mapped_level(
+    qc: QuantumCircuit,
+    gate_set_name: str,
+    num_qubits: int | None,
     device_name: str,
     lineplacement: bool,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-):
+) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
     Keyword arguments:
@@ -222,7 +308,7 @@ def get_mapped_level(
 
     native_gatenames = get_rebase(gate_set_name, True)
     native_gate_set_rebase = get_rebase(gate_set_name)
-    arch = architecture.Architecture(cmap)
+    arch = Architecture(cmap)
 
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)

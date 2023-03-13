@@ -4,10 +4,10 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
-from mqt.benchviewer import Backend, Server, backend
+from mqt.benchviewer import Backend, BenchmarkConfiguration, Server, backend
 from mqt.benchviewer.main import app
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
 else:
     import importlib_resources as resources
@@ -23,7 +23,7 @@ else:
         ("HHL_indep_5.qasm", -1),
     ],
 )
-def test_get_opt_level(filename, expected_res):
+def test_get_opt_level(filename: str, expected_res: int) -> None:
     assert int(backend.get_opt_level(filename)) == expected_res
 
 
@@ -37,7 +37,7 @@ def test_get_opt_level(filename, expected_res):
         ("HHL_indep_5.qasm", 5),
     ],
 )
-def test_get_num_qubits(filename, expected_res):
+def test_get_num_qubits(filename: str, expected_res: int) -> None:
     assert int(backend.get_num_qubits(filename)) == expected_res
 
 
@@ -46,86 +46,86 @@ def test_get_num_qubits(filename, expected_res):
     [
         (
             "shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
-            [
-                "shor",
-                18,
-                False,
-                True,
-                False,
-                "qiskit",
-                0,
-                "rigetti",
-                None,
-                "shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
-            ],
+            backend.ParsedBenchmarkName(
+                benchmark="shor",
+                num_qubits=18,
+                indep_flag=False,
+                nativegates_flag=True,
+                mapped_flag=False,
+                compiler="qiskit",
+                compiler_settings=0,
+                gate_set="rigetti",
+                target_device=None,
+                filename="shor_15_4_nativegates_rigetti_qiskit_opt0_18.qasm",
+            ),
         ),
         (
             "dj_mapped_ibm_washington_qiskit_opt3_103.qasm",
-            [
-                "dj",
-                103,
-                False,
-                False,
-                True,
-                "qiskit",
-                3,
-                "ibm",
-                "ibm_washington",
-                "dj_mapped_ibm_washington_qiskit_opt3_103.qasm",
-            ],
+            backend.ParsedBenchmarkName(
+                benchmark="dj",
+                num_qubits=103,
+                indep_flag=False,
+                nativegates_flag=False,
+                mapped_flag=True,
+                compiler="qiskit",
+                compiler_settings=3,
+                gate_set="ibm",
+                target_device="ibm_washington",
+                filename="dj_mapped_ibm_washington_qiskit_opt3_103.qasm",
+            ),
         ),
         (
             "pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
-            [
-                "pricingcall",
-                5,
-                False,
-                False,
-                True,
-                "tket",
-                "line",
-                "oqc",
-                "oqc_lucy",
-                "pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
-            ],
+            backend.ParsedBenchmarkName(
+                benchmark="pricingcall",
+                num_qubits=5,
+                indep_flag=False,
+                nativegates_flag=False,
+                mapped_flag=True,
+                compiler="tket",
+                compiler_settings="line",
+                gate_set="oqc",
+                target_device="oqc_lucy",
+                filename="pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
+            ),
         ),
         (
             "portfoliovqe_nativegates_ionq_qiskit_opt1_3.qasm",
-            [
-                "portfoliovqe",
-                3,
-                False,
-                True,
-                False,
-                "qiskit",
-                1,
-                "ionq",
-                None,
-                "portfoliovqe_nativegates_ionq_qiskit_opt1_3.qasm",
-            ],
+            backend.ParsedBenchmarkName(
+                benchmark="portfoliovqe",
+                num_qubits=3,
+                indep_flag=False,
+                nativegates_flag=True,
+                mapped_flag=False,
+                compiler="qiskit",
+                compiler_settings=1,
+                gate_set="ionq",
+                target_device=None,
+                filename="portfoliovqe_nativegates_ionq_qiskit_opt1_3.qasm",
+            ),
         ),
         (
             "HHL_indep_qiskit_5.qasm",
-            [
-                "hhl",
-                5,
-                True,
-                False,
-                False,
-                "qiskit",
-                -1,
-                None,
-                None,
-                "HHL_indep_qiskit_5.qasm",
-            ],
+            backend.ParsedBenchmarkName(
+                benchmark="hhl",
+                num_qubits=5,
+                indep_flag=True,
+                nativegates_flag=False,
+                mapped_flag=False,
+                compiler="qiskit",
+                compiler_settings=-1,
+                gate_set=None,
+                target_device=None,
+                filename="HHL_indep_qiskit_5.qasm",
+            ),
         ),
     ],
 )
-def test_parse_data(filename, expected_res):
+def test_parse_data(filename: str, expected_res: backend.ParsedBenchmarkName) -> None:
     assert backend.parse_data(filename) == expected_res
 
 
-def test_prepare_form_input():
+def test_prepare_form_input() -> None:
     form_data = {
         "all_benchmarks": "true",
         "minQubits": "75",
@@ -185,51 +185,70 @@ def test_prepare_form_input():
         "device_ionq_ionq11": "true",
     }
 
-    expected_res = (
-        (75, 110),
-        [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-        ],
-        (True, True),
-        ((True, True), [0, 1, 2, 3], ["ibm", "rigetti", "oqc", "ionq"]),
-        (
-            (True, True),
-            ([0, 1, 2, 3], ["graph", "line"]),
-            [
-                "ibm_washington",
-                "ibm_montreal",
-                "rigetti_aspen",
-                "oqc_lucy",
-                "ionq11",
-            ],
-        ),
+    expected_res = BenchmarkConfiguration(
+        min_qubits=75,
+        max_qubits=110,
+        indices_benchmarks=list(range(1, 29)),
+        indep_qiskit_compiler=True,
+        indep_tket_compiler=True,
+        nativegates_qiskit_compiler=True,
+        native_qiskit_opt_lvls=[0, 1, 2, 3],
+        nativegates_tket_compiler=True,
+        native_gatesets=["ibm", "rigetti", "oqc", "ionq"],
+        mapped_qiskit_compiler=True,
+        mapped_qiskit_opt_lvls=[0, 1, 2, 3],
+        mapped_tket_compiler=True,
+        mapped_tket_placements=["graph", "line"],
+        mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
+    )
+    backend = Backend()
+    assert backend.prepare_form_input(form_data) == expected_res
+
+    form_data = {
+        "all_benchmarks": "true",
+        "minQubits": "75",
+        "maxQubits": "110",
+        "indep_qiskit_compiler": "true",
+        "indep_tket_compiler": "true",
+        "nativegates_qiskit_compiler": "true",
+        "nativegates_qiskit_compiler_opt0": "true",
+        "nativegates_qiskit_compiler_opt1": "true",
+        "nativegates_qiskit_compiler_opt2": "true",
+        "nativegates_qiskit_compiler_opt3": "true",
+        "nativegates_tket_compiler value=": "on",
+        "nativegates_ibm": "true",
+        "nativegates_rigetti": "true",
+        "nativegates_oqc": "true",
+        "nativegates_ionq": "true",
+        "mapped_qiskit_compiler": "true",
+        "mapped_qiskit_compiler_opt0": "true",
+        "mapped_qiskit_compiler_opt1": "true",
+        "mapped_qiskit_compiler_opt2": "true",
+        "mapped_qiskit_compiler_opt3": "true",
+        "mapped_tket_compiler": "true",
+        "mapped_tket_compiler_graph": "true",
+        "mapped_tket_compiler_line": "true",
+        "device_ibm_washington": "true",
+        "device_ibm_montreal": "true",
+        "device_rigetti_aspen_m2": "true",
+        "device_oqc_lucy": "true",
+        "device_ionq_ionq11": "true",
+    }
+    expected_res = BenchmarkConfiguration(
+        min_qubits=75,
+        max_qubits=110,
+        indices_benchmarks=[],
+        indep_qiskit_compiler=True,
+        indep_tket_compiler=True,
+        nativegates_qiskit_compiler=True,
+        native_qiskit_opt_lvls=[0, 1, 2, 3],
+        nativegates_tket_compiler=True,
+        native_gatesets=["ibm", "rigetti", "oqc", "ionq"],
+        mapped_qiskit_compiler=True,
+        mapped_qiskit_opt_lvls=[0, 1, 2, 3],
+        mapped_tket_compiler=True,
+        mapped_tket_placements=["graph", "line"],
+        mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
     )
     backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
@@ -238,14 +257,14 @@ def test_prepare_form_input():
 benchviewer = resources.files("mqt.benchviewer")
 
 
-def test_read_mqtbench_all_zip():
+def test_read_mqtbench_all_zip() -> None:
     backend = Backend()
     with resources.as_file(benchviewer) as benchviewer_path:
         target_location = str(benchviewer_path / "static/files")
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
-def test_create_database():
+def test_create_database() -> None:
     backend = Backend()
 
     res_zip = backend.read_mqtbench_all_zip(
@@ -253,65 +272,96 @@ def test_create_database():
     )
     assert res_zip
 
-    database = backend.init_database()
-    assert database
+    assert backend.database is None
+    backend.init_database()
 
-    input_data = (
-        (2, 5),
-        ["4"],
-        (True, False),
-        ((False, False), [], []),
-        ((False, False), ([], []), []),
+    input_data = BenchmarkConfiguration(
+        min_qubits=2,
+        max_qubits=5,
+        indices_benchmarks=[4],
+        indep_qiskit_compiler=True,
+        indep_tket_compiler=False,
+        nativegates_qiskit_compiler=False,
+        nativegates_tket_compiler=False,
+        mapped_qiskit_compiler=False,
+        mapped_tket_compiler=False,
     )
+
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 3
 
-    input_data = (
-        (110, 120),
-        ["3"],
-        (False, False),
-        ((False, True), [], ["rigetti", "ionq"]),
-        ((False, False), ([], []), []),
+    input_data = BenchmarkConfiguration(
+        min_qubits=110,
+        max_qubits=120,
+        indices_benchmarks=[3],
+        indep_qiskit_compiler=False,
+        indep_tket_compiler=False,
+        nativegates_qiskit_compiler=False,
+        nativegates_tket_compiler=True,
+        mapped_qiskit_compiler=False,
+        mapped_tket_compiler=False,
+        native_gatesets=["rigetti", "ionq"],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 15
 
-    input_data = (
-        (75, 110),
-        ["2"],
-        (False, False),
-        ((False, False), [], ["rigetti", "ionq"]),
-        ((True, True), ([1, 3], ["graph"]), ["ibm_washington", "rigetti_aspen_m2"]),
+    input_data = BenchmarkConfiguration(
+        min_qubits=75,
+        max_qubits=110,
+        indices_benchmarks=[2],
+        indep_qiskit_compiler=False,
+        indep_tket_compiler=False,
+        nativegates_qiskit_compiler=False,
+        nativegates_tket_compiler=False,
+        mapped_qiskit_compiler=True,
+        mapped_tket_compiler=True,
+        native_gatesets=["rigetti", "ionq"],
+        mapped_devices=["ibm_washington", "rigetti_aspen_m2"],
+        mapped_tket_placements=["graph"],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 20
 
-    input_data = (
-        (2, 5),
-        ["23"],
-        (True, True),
-        ((True, False), [1, 3], ["rigetti", "ionq", "oqc", "ibm"]),
-        (
-            (True, True),
-            ([1, 3], ["graph", "line"]),
-            ["ibm_montreal", "rigetti_aspen", "ionq11", "ocq_lucy"],
-        ),
+    input_data = BenchmarkConfiguration(
+        min_qubits=2,
+        max_qubits=5,
+        indices_benchmarks=[23],
+        indep_qiskit_compiler=True,
+        indep_tket_compiler=True,
+        nativegates_qiskit_compiler=True,
+        nativegates_tket_compiler=False,
+        mapped_qiskit_compiler=True,
+        mapped_tket_compiler=True,
+        native_gatesets=["rigetti", "ionq", "oqc", "ibm"],
+        mapped_devices=["ibm_montreal", "rigetti_aspen", "ionq11", "ocq_lucy"],
+        mapped_tket_placements=["graph", "line"],
+        native_qiskit_opt_lvls=[0, 3],
+        mapped_qiskit_opt_lvls=[0, 3],
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert len(res) > 20
 
-    input_data = (
-        (2, 130),
-        ["1"],
-        (False, False),
-        ((True, True), [], []),
-        ((True, True), ([], []), []),
+    input_data = BenchmarkConfiguration(
+        min_qubits=2,
+        max_qubits=130,
+        indices_benchmarks=[1],
+        indep_qiskit_compiler=False,
+        indep_tket_compiler=False,
+        nativegates_qiskit_compiler=True,
+        nativegates_tket_compiler=True,
+        mapped_qiskit_compiler=True,
+        mapped_tket_compiler=True,
     )
     res = backend.get_selected_file_paths(input_data)
+    assert isinstance(res, list)
     assert res == []
 
 
-def test_streaming_zip():
+def test_streaming_zip() -> None:
     backend = Backend()
     backend.read_mqtbench_all_zip(
         skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
@@ -323,12 +373,12 @@ def test_streaming_zip():
         assert not list(backend.generate_zip_ephemeral_chunks(filenames=["not_existing_file.qasm"]))
 
 
-def test_flask_server():
+def test_flask_server() -> None:
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(benchviewer_location / "static/files")
 
-    assert Server(
+    Server(
         skip_question=True,
         activate_logging=False,
         target_location=target_location,

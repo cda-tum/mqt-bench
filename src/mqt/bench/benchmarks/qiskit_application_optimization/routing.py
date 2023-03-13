@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, cast
+
 import numpy as np
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SLSQP
@@ -10,14 +12,20 @@ from qiskit.primitives import Estimator
 from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
 
+if TYPE_CHECKING:  # pragma: no cover
+    from numpy.typing import NDArray
+    from qiskit import QuantumCircuit
+
 
 class Initializer:
-    def __init__(self, n):
+    def __init__(self, n: int) -> None:
         self.n = n
 
-    def generate_instance(self):
+    def generate_instance(
+        self,
+    ) -> tuple[NDArray[np.float_], NDArray[np.float_], NDArray[np.float_],]:
         n = self.n
-        np.random.seed = 10
+        np.random.seed(10)
 
         xc = (np.random.rand(n) - 0.5) * 10
         yc = (np.random.rand(n) - 0.5) * 10
@@ -32,12 +40,14 @@ class Initializer:
 
 
 class QuantumOptimizer:
-    def __init__(self, instance, n, K):
+    def __init__(self, instance: NDArray[np.float_], n: int, K: int) -> None:
         self.instance = instance
         self.n = n
         self.K = K
 
-    def binary_representation(self, x_sol=0):
+    def binary_representation(
+        self, x_sol: NDArray[np.float_]
+    ) -> tuple[NDArray[np.float_], NDArray[np.float_], float, float]:
         instance = self.instance
         n = self.n
         K = self.K
@@ -81,28 +91,27 @@ class QuantumOptimizer:
         c = 2 * A * (n - 1) + 2 * A * (K**2)
 
         try:
-            max(x_sol)
-
             # Evaluates the cost distance from a binary representation of a path
-            def fun(x):
-                return np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c
+            def fun(x: NDArray[np.float_]) -> float:
+                return cast(float, np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c)
 
             cost = fun(x_sol)
         except Exception:
             cost = 0
 
-        return Q, g, c, cost
+        return Q, g, cast(float, c), cost
 
-    def construct_problem(self, Q, g, c) -> QuadraticProgram:
+    def construct_problem(self, Q: NDArray[np.float_], g: NDArray[np.float_], c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
-        qp.objective.quadratic = Q
-        qp.objective.linear = g
+
+        qp.objective.quadratic = Q  # type: ignore[assignment]
+        qp.objective.linear = g  # type: ignore[assignment]
         qp.objective.constant = c
         return qp
 
-    def solve_problem(self, qp):
+    def solve_problem(self, qp: QuadraticProgram) -> QuantumCircuit:
         algorithm_globals.random_seed = 10
 
         ansatz = RealAmplitudes(self.n)
@@ -111,7 +120,7 @@ class QuantumOptimizer:
         return vqe.ansatz.bind_parameters(vqe_result.optimal_point)
 
 
-def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
+def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit solving a routing problem.
 
     Keyword arguments:
@@ -127,7 +136,7 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2):
     xc, yc, instance = initializer.generate_instance()
 
     quantum_optimizer = QuantumOptimizer(instance, n, k)
-    q, g, c, binary_cost = quantum_optimizer.binary_representation()
+    q, g, c, binary_cost = quantum_optimizer.binary_representation(x_sol=np.array(0.0, dtype=float))
     qp = quantum_optimizer.construct_problem(q, g, c)
     # Instantiate the quantum optimizer class with parameters:
     qc = quantum_optimizer.solve_problem(qp)
