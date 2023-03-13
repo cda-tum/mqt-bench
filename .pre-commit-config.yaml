@@ -56,7 +56,7 @@ repos:
       - id: nb-clean
   # Check for spelling
   - repo: https://github.com/codespell-project/codespell
-    rev: "v2.2.2"
+    rev: "v2.2.4"
     hooks:
       - id: codespell
         args: ["-L", "wille,linz"]
@@ -76,7 +76,7 @@ repos:
         args: ["--fix"]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.1
+    rev: v1.1.1
     hooks:
       - id: mypy
         files: ^(src|tests|setup.py)
