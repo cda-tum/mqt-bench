@@ -14,7 +14,7 @@ import requests
 from packaging import version
 from tqdm import tqdm
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata
 else:
     import importlib_metadata as metadata
