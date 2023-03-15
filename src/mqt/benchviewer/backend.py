@@ -305,8 +305,8 @@ class Backend:
                 found_benchmark_id = parse_benchmark_id_from_form_key(k)
                 if found_benchmark_id:
                     indices_benchmarks.append(found_benchmark_id)
-            min_qubits = int(v) if "minQubits" in k and v != "" else min_qubits
-            max_qubits = int(v) if "maxQubits" in k and v != "" else max_qubits
+            min_qubits = int(v) if "minQubits" in k and v else min_qubits
+            max_qubits = int(v) if "maxQubits" in k and v else max_qubits
 
             indep_qiskit_compiler = "indep_qiskit_compiler" in k or indep_qiskit_compiler
             indep_tket_compiler = "indep_tket_compiler" in k or indep_tket_compiler
@@ -403,7 +403,7 @@ class Backend:
                                     )
                                 )
                                 response = input("Would you like to downloaded the file? (Y/n)")
-                            if skip_question or response.lower() == "y" or response == "":
+                            if skip_question or response.lower() == "y" or not response:
                                 self.handle_downloading_benchmarks(target_location, download_url)
                                 break
                 if version_found:
