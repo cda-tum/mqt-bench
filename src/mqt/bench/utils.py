@@ -318,7 +318,7 @@ def calc_supermarq_features(
         connectivity_collection.append([])
 
     for instruction, qargs, _ in qc.data:
-        if instruction.name != "barrier" or instruction.name != "measure":
+        if instruction.name == "barrier" or instruction.name == "measure":
             continue
         liveness_A_matrix += len(qargs)
         first_qubit = calc_qubit_index(qargs, qc.qregs, 0)
