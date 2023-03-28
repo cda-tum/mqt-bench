@@ -318,17 +318,18 @@ def calc_supermarq_features(
         connectivity_collection.append([])
 
     for instruction, qargs, _ in qc.data:
-        if instruction.name != "barrier" and instruction.name != "measure":
-            liveness_A_matrix += len(qargs)
-            first_qubit = calc_qubit_index(qargs, qc.qregs, 0)
-            all_indices = [first_qubit]
-            if len(qargs) == 2:
-                second_qubit = calc_qubit_index(qargs, qc.qregs, 1)
-                all_indices.append(second_qubit)
-            for qubit_index in all_indices:
-                to_be_added_entries = all_indices.copy()
-                to_be_added_entries.remove(int(qubit_index))
-                connectivity_collection[int(qubit_index)].extend(to_be_added_entries)
+        if instruction.name != "barrier" or instruction.name != "measure":
+            continue
+        liveness_A_matrix += len(qargs)
+        first_qubit = calc_qubit_index(qargs, qc.qregs, 0)
+        all_indices = [first_qubit]
+        if len(qargs) == 2:
+            second_qubit = calc_qubit_index(qargs, qc.qregs, 1)
+            all_indices.append(second_qubit)
+        for qubit_index in all_indices:
+            to_be_added_entries = all_indices.copy()
+            to_be_added_entries.remove(int(qubit_index))
+            connectivity_collection[int(qubit_index)].extend(to_be_added_entries)
 
     connectivity: list[int] = []
     for i in range(qc.num_qubits):
