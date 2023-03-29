@@ -29,7 +29,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     qaoa_result = qaoa.compute_minimum_eigenvalue(qp.to_ising()[0])
     qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
 
-    qc.measure_all()
     qc.name = "qaoa"
 
     return qc
