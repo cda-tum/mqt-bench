@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import SPSA
 from qiskit.circuit.library import TwoLocal
@@ -10,8 +12,11 @@ from qiskit.utils import algorithm_globals
 from qiskit_optimization.applications import Tsp
 from qiskit_optimization.converters import QuadraticProgramToQubo
 
+if TYPE_CHECKING:  # pragma: no cover
+    from qiskit import QuantumCircuit
 
-def create_circuit(num_nodes: int):
+
+def create_circuit(num_nodes: int) -> QuantumCircuit:
     """Returns a quantum circuit solving the Travelling Salesman Problem (TSP).
 
     Keyword arguments:

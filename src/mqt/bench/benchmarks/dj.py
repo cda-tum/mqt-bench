@@ -6,12 +6,12 @@ import numpy as np
 from qiskit import QuantumCircuit
 
 
-def dj_oracle(case, n):
+def dj_oracle(case: str, n: int) -> QuantumCircuit:
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
 
     if case == "balanced":
-        np.random.seed = 10
+        np.random.seed(10)
         b_str = ""
         for _ in range(n):
             b = np.random.randint(0, 2)
@@ -38,7 +38,7 @@ def dj_oracle(case, n):
     return oracle_gate
 
 
-def dj_algorithm(oracle, n):
+def dj_algorithm(oracle: QuantumCircuit, n: int) -> QuantumCircuit:
     dj_circuit = QuantumCircuit(n + 1, n)
 
     dj_circuit.x(n)
@@ -59,7 +59,7 @@ def dj_algorithm(oracle, n):
     return dj_circuit
 
 
-def create_circuit(n: int, balanced: bool = True):
+def create_circuit(n: int, balanced: bool = True) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Deutsch-Josza algorithm.
 
     Keyword arguments:

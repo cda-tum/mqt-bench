@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, cast
+
 import numpy as np
 from qiskit import Aer
 from qiskit.circuit.library import TwoLocal
@@ -9,8 +11,12 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_finance.circuit.library import UniformDistribution
 from qiskit_machine_learning.algorithms import QGAN, NumPyDiscriminator
 
+if TYPE_CHECKING:  # pragma: no cover
+    from qiskit import QuantumCircuit
+    from qiskit.circuit.parameter import Parameter
 
-def create_circuit(num_qubits: int):
+
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Generative Adversarial Networks algorithm.
 
     Keyword arguments:
@@ -18,7 +24,7 @@ def create_circuit(num_qubits: int):
     """
 
     seed = 10
-    np.random.seed = seed
+    np.random.seed(seed)
     algorithm_globals.random_seed = seed
 
     # Number training data samples
@@ -34,8 +40,6 @@ def create_circuit(num_qubits: int):
     upper_bound_value = 2**num_qubits - 1
     bounds = np.array([0.0, upper_bound_value])
     # Set number of qubits per data dimension as list of k qubit values[#q_0,...,#q_k-1]
-    num_qubits = [num_qubits]
-
     # Set number of training epochs
     # Note: The algorithm's runtime can be shortened by reducing the number of training epochs.
     num_epochs = 5
@@ -43,7 +47,7 @@ def create_circuit(num_qubits: int):
     batch_size = 10
 
     # Initialize qGAN
-    qgan = QGAN(real_data, bounds, num_qubits, batch_size, num_epochs, snapshot_dir=None)
+    qgan = QGAN(real_data, bounds, [num_qubits], batch_size, num_epochs, snapshot_dir=None)
     qgan.seed = 10
     # Set quantum instance to run the quantum generator
     quantum_instance = QuantumInstance(
@@ -54,10 +58,10 @@ def create_circuit(num_qubits: int):
     )
 
     # Set an initial state for the generator circuit
-    init_dist = UniformDistribution(sum(num_qubits))
+    init_dist = UniformDistribution(num_qubits)
 
     # Set the ansatz circuit
-    ansatz = TwoLocal(int(np.sum(num_qubits)), "ry", "cz", reps=1)  # entanglement=entangler_map,
+    ansatz = TwoLocal(num_qubits, "ry", "cz", reps=1)  # entanglement=entangler_map,
 
     # You can increase the number of training epochs and use random initial parameters.
     init_params = np.random.rand(ansatz.num_parameters_settable) * 2 * np.pi
@@ -68,9 +72,13 @@ def create_circuit(num_qubits: int):
     # Set quantum generator
     qgan.set_generator(generator_circuit=g_circuit, generator_init_params=init_params)
     # The parameters have an order issue that following is a temp. workaround
-    qgan._generator._free_parameters = sorted(g_circuit.parameters, key=lambda p: p.name)
+
+    def fct(p: Parameter) -> str:
+        return cast(str, p.name)
+
+    qgan._generator._free_parameters = sorted(g_circuit.parameters, key=fct)
     # Set classical discriminator neural network
-    discriminator = NumPyDiscriminator(len(num_qubits))
+    discriminator = NumPyDiscriminator()
     qgan.set_discriminator(discriminator)
 
     qgan.run(quantum_instance)

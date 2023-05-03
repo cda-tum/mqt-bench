@@ -8,7 +8,7 @@ def create_circuit(
     depth: int = 3,
     coin_state_preparation: QuantumCircuit = None,
     ancillary_mode: str = "noancilla",
-):
+) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Quantum Walk algorithm.
 
     Keyword arguments:

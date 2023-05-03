@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from qiskit.algorithms.minimum_eigensolvers import VQE
 from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
@@ -10,8 +12,11 @@ from qiskit.primitives import Estimator
 from qiskit_nature.second_q.drivers import PySCFDriver
 from qiskit_nature.second_q.mappers import JordanWignerMapper, QubitConverter
 
+if TYPE_CHECKING:  # pragma: no cover
+    from qiskit import QuantumCircuit
 
-def create_circuit(choice):
+
+def create_circuit(choice: str) -> QuantumCircuit:
     """Returns a quantum circuit implementing Ground State Estimation.
 
     Keyword arguments:
@@ -45,7 +50,7 @@ def create_circuit(choice):
     return qc
 
 
-def get_molecule(benchmark_instance_name: str):
+def get_molecule(benchmark_instance_name: str) -> list[str]:
     """Returns a Molecule object depending on the parameter value."""
     m_1 = ["H 0.0 0.0 0.0", "H 0.0 0.0 0.735"]
     m_2 = ["Li 0.0 0.0 0.0", "H 0.0 0.0 2.5"]

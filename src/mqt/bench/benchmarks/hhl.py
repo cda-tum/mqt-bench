@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 from qiskit.algorithms.linear_solvers.hhl import HHL
 from qiskit.algorithms.linear_solvers.matrices.tridiagonal_toeplitz import (
     TridiagonalToeplitz,
 )
 
+if TYPE_CHECKING:  # pragma: no cover
+    from qiskit import QuantumCircuit
 
-def create_circuit(num_qubits: int):
+
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the HHL algorithm for a specific example matrix.
 
     Keyword arguments:

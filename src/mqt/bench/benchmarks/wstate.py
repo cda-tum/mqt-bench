@@ -4,7 +4,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 
 
-def create_circuit(num_qubits: int):
+def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the W state.
 
     Keyword arguments:
@@ -14,7 +14,7 @@ def create_circuit(num_qubits: int):
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q, name="wstate")
 
-    def f_gate(qc: QuantumCircuit, q: QuantumRegister, i: int, j: int, n: int, k: int):
+    def f_gate(qc: QuantumCircuit, q: QuantumRegister, i: int, j: int, n: int, k: int) -> None:
         theta = np.arccos(np.sqrt(1 / (n - k + 1)))
         qc.ry(-theta, q[j])
         qc.cz(q[i], q[j])
