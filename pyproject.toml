@@ -19,7 +19,7 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
-    "pytket-qiskit>=0.34.0,<0.39.0",  #  manages the dependencies for qiskit and tket in a combined fashion
+    "pytket-qiskit>=0.34.0,<0.40.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "qiskit[all]",  # this is merely to get the [all] dependencies. The versioning is covered by pytket-qiskit
     "pandas>=1.0.0",
     "flask>=2.0.0",
