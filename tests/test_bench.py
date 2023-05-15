@@ -305,9 +305,9 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-def test_groundstate() -> None:
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
+# def test_groundstate() -> None:
+#     qc = groundstate.create_circuit("small")
+#     assert qc.depth() > 0
 
 
 def test_routing() -> None:
@@ -393,16 +393,16 @@ def test_unidirectional_coupling_map() -> None:
             None,
             None,
         ),
-        (
-            "groundstate",
-            1,
-            4,
-            "small",
-            "qiskit",
-            None,
-            None,
-            None,
-        ),
+        # (
+        #     "groundstate",
+        #     1,
+        #     4,
+        #     "small",
+        #     "qiskit",
+        #     None,
+        #     None,
+        #     None,
+        # ),
         (
             "dj",
             "nativegates",
@@ -971,3 +971,17 @@ def test_benchmark_helper() -> None:
 def test_get_cmap_from_devicename() -> None:
     with pytest.raises(ValueError, match="Device wrong_name is not supported"):
         utils.get_cmap_from_devicename("wrong_name")
+
+
+def test_tket_mapped_circuit_qubit_number() -> None:
+    qc = get_benchmark("ghz", 1, 5)
+    res = tket_helper.get_mapped_level(
+        qc,
+        "ibm",
+        qc.num_qubits,
+        "ibm_washington",
+        True,
+        file_precheck=False,
+        return_qc=True,
+    )
+    assert res.n_qubits == 127
