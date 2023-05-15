@@ -305,9 +305,9 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-# def test_groundstate() -> None:
-#     qc = groundstate.create_circuit("small")
-#     assert qc.depth() > 0
+def test_groundstate() -> None:
+    qc = groundstate.create_circuit("small")
+    assert qc.depth() > 0
 
 
 def test_routing() -> None:
@@ -393,16 +393,16 @@ def test_unidirectional_coupling_map() -> None:
             None,
             None,
         ),
-        # (
-        #     "groundstate",
-        #     1,
-        #     4,
-        #     "small",
-        #     "qiskit",
-        #     None,
-        #     None,
-        #     None,
-        # ),
+        (
+            "groundstate",
+            1,
+            4,
+            "small",
+            "qiskit",
+            None,
+            None,
+            None,
+        ),
         (
             "dj",
             "nativegates",
