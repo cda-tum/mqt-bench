@@ -8,10 +8,11 @@ from pytket import OpType
 from pytket.architecture import Architecture  # type: ignore[attr-defined]
 from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (  # type: ignore[attr-defined]
+    CliffordSimp,
     CXMappingPass,
     FullPeepholeOptimise,
-    PlacementPass,
-    RoutingPass,
+    KAKDecomposition,
+    SynthesiseTket,
     auto_rebase_pass,
 )
 from pytket.placement import GraphPlacement, LinePlacement  # type: ignore[attr-defined]
@@ -310,20 +311,20 @@ def get_mapped_level(
     native_gate_set_rebase = get_rebase(gate_set_name)
     arch = Architecture(cmap)
 
+    # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
+    highest_used_qubit_index = max(max(sublist) for sublist in cmap)
+    diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
+    qc_tket.add_blank_wires(diff)
+
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
-    PlacementPass(placer).apply(qc_tket)
-    RoutingPass(arch).apply(qc_tket)
-    FullPeepholeOptimise(target_2qb_gate=OpType.TK2, allow_swaps=False).apply(qc_tket)
+    CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
+    SynthesiseTket().apply(qc_tket)
+    KAKDecomposition(allow_swaps=False).apply(qc_tket)
+    CliffordSimp(allow_swaps=False).apply(qc_tket)
+    SynthesiseTket().apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
-    if not qc_tket.valid_connectivity(arch, directed=True):
-        CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
-        native_gate_set_rebase.apply(qc_tket)
-
-    highest_used_qubit_index = max(list(map(max, cmap)))
-    diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
-    qc_tket.add_blank_wires(diff)
 
     if return_qc:
         return qc_tket
