@@ -20,7 +20,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     np.random.seed(10)
     qc = TwoLocal(num_qubits, "ry", "cx", entanglement="full", reps=3)
     num_params = qc.num_parameters
-    qc = qc.bind_parameters(np.random.rand(num_params))
+    qc = qc.bind_parameters(2*np.pi*np.random.rand(num_params))
     qc.measure_all()
     qc.name = "twolocalrandom"
 
