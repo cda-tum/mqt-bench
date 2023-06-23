@@ -49,7 +49,7 @@ from mqt.bench.benchmarks import (
     wstate,
 )
 from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import QuantumCircuit
+from qiskit import qasm2
 
 
 @pytest.fixture()
@@ -835,7 +835,7 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(str(path))
+    assert qasm2.load(str(path))
     path.unlink()
 
     tket_helper.get_mapped_level(
@@ -849,7 +849,7 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(str(path))
+    assert qasm2.load(str(path))
     path.unlink()
 
     qiskit_helper.get_native_gates_level(
@@ -862,7 +862,7 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(str(path))
+    assert qasm2.load(str(path))
     path.unlink()
 
     qiskit_helper.get_mapped_level(
@@ -876,7 +876,7 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    assert QuantumCircuit.from_qasm_file(str(path))
+    assert qasm2.load(str(path))
     path.unlink()
 
 
