@@ -49,7 +49,7 @@ from mqt.bench.benchmarks import (
     wstate,
 )
 from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import qasm2
+from qiskit import QuantumCircuit
 
 
 @pytest.fixture()
@@ -836,10 +836,10 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    #assert qasm2.load(str(path))
-    from qiskit import QuantumCircuit
-#    assert QuantumCircuit.from_qasm_file(str(path))
-    #path.unlink()
+    # assert qasm2.load(str(path))
+
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
 
     directory = "."
     filename = "ghz_oqc2"
@@ -856,8 +856,8 @@ def test_oqc_postprocessing() -> None:
         target_filename=filename,
     )
     assert QuantumCircuit.from_qasm_file(str(path))
-   # assert qasm2.load(str(path))
-    #path.unlink()
+    # assert qasm2.load(str(path))
+    path.unlink()
     directory = "."
     filename = "ghz_oqc3"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -872,8 +872,8 @@ def test_oqc_postprocessing() -> None:
         target_filename=filename,
     )
     assert QuantumCircuit.from_qasm_file(str(path))
-   # assert qasm2.load(str(path))
-    #path.unlink()
+    # assert qasm2.load(str(path))
+    path.unlink()
     directory = "."
     filename = "ghz_oqc4"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -888,9 +888,10 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-  #  assert QuantumCircuit.from_qasm_file(str(path))
-  #  assert qasm2.load(str(path))
-    #path.unlink()
+
+    #  assert qasm2.load(str(path))
+    assert QuantumCircuit.from_qasm_file(str(path))
+    path.unlink()
 
 
 def test_evaluate_qasm_file() -> None:
