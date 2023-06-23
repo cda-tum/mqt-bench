@@ -78,7 +78,7 @@ class Backend:
             },
             {"name": "Quantum Fourier Transformation (QFT)", "id": "10", "filename": "qft"},
             {"name": "QFT Entangled", "id": "11", "filename": "qftentangled"},
-            {"name": "Quantum Generative Adversarial Network", "id": "12", "filename": "qgan"},
+            {"name": "Quantum Neural Network", "id": "12", "filename": "qnn"},
             {
                 "name": "Quantum Phase Estimation (QPE) exact",
                 "id": "13",
@@ -91,28 +91,28 @@ class Backend:
             },
             {"name": "Quantum Walk (no ancilla)", "id": "15", "filename": "qwalk-noancilla"},
             {"name": "Quantum Walk (v-chain)", "id": "16", "filename": "qwalk-v-chain"},
-            {"name": "Variational Quantum Eigensolver (VQE)", "id": "17", "filename": "vqe"},
+            {"name": "Random Circuit", "id": "17", "filename": "random"},
+            {"name": "Variational Quantum Eigensolver (VQE)", "id": "18", "filename": "vqe"},
             {
                 "name": "Efficient SU2 ansatz with Random Parameters",
-                "id": "18",
+                "id": "19",
                 "filename": "su2random",
             },
             {
                 "name": "Real Amplitudes ansatz with Random Parameters",
-                "id": "19",
+                "id": "20",
                 "filename": "realamprandom",
             },
             {
                 "name": "Two Local ansatz with Random Parameters",
-                "id": "20",
+                "id": "21",
                 "filename": "twolocalrandom",
             },
-            {"name": "W-State", "id": "21", "filename": "wstate"},
+            {"name": "W-State", "id": "22", "filename": "wstate"},
         ]
 
         self.nonscalable_benchmarks = [
-            {"name": "Ground State", "id": "22", "filename": "groundstate"},
-            {"name": "HHL", "id": "23", "filename": "hhl"},
+            {"name": "Ground State", "id": "23", "filename": "groundstate"},
             {"name": "Pricing Call Option", "id": "24", "filename": "pricingcall"},
             {"name": "Pricing Put Option", "id": "25", "filename": "pricingput"},
             {"name": "Routing", "id": "26", "filename": "routing"},
