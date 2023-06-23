@@ -56,18 +56,18 @@ def get_supported_benchmarks() -> list[str]:
         "qaoa",
         "qft",
         "qftentangled",
-        "qgan",
+        "qnn",
         "qpeexact",
         "qpeinexact",
         "qwalk-noancilla",
         "qwalk-v-chain",
+        "random",
         "realamprandom",
         "su2random",
         "twolocalrandom",
         "vqe",
         "wstate",
         "shor",
-        "hhl",
         "pricingcall",
         "pricingput",
         "groundstate",
@@ -373,8 +373,8 @@ def calc_supermarq_features(
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
         return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
-    if benchmark_name == "qgan":
-        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qgan")
+    if benchmark_name == "qnn":
+        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
     if benchmark_name == "groundstate":
         return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
     if benchmark_name == "routing":

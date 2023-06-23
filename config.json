@@ -35,7 +35,7 @@
     },
     {
       "name": "groundstate",
-      "include": true,
+      "include": false,
       "instances": ["small", "medium"],
       "precheck_possible": false
     },
@@ -46,13 +46,6 @@
       "max_qubits": 130,
       "stepsize": 1,
       "ancillary_mode": ["noancilla", "v-chain"],
-      "precheck_possible": false
-    },
-    {
-      "name": "hhl",
-      "include": true,
-      "min_index": 1,
-      "max_index": 10,
       "precheck_possible": false
     },
     {
@@ -110,12 +103,12 @@
       "precheck_possible": true
     },
     {
-      "name": "qgan",
+      "name": "qnn",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 130,
       "stepsize": 1,
-      "precheck_possible": false
+      "precheck_possible": true
     },
     {
       "name": "qpeexact",
@@ -141,6 +134,14 @@
       "stepsize": 1,
       "ancillary_mode": ["noancilla", "v-chain"],
       "precheck_possible": false
+    },
+    {
+      "name": "random",
+      "include": true,
+      "min_qubits": 2,
+      "max_qubits": 130,
+      "stepsize": 1,
+      "precheck_possible": true
     },
     {
       "name": "realamprandom",
