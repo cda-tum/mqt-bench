@@ -21,5 +21,4 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qc.name = "qnn"
     qc.measure_all()
-    qc.draw()
     return qc
