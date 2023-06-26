@@ -402,3 +402,13 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     if benchmark_name == "tsp":
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
+
+
+def get_compilation_paths() -> list[tuple[str, list[tuple[str, int]]]]:
+    return [
+        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
+        ("rigetti", [("rigetti_aspen_m2", 80)]),
+        ("ionq", [("ionq_harmony", 11), ("ionq_aria1", 25)]),
+        ("oqc", [("oqc_lucy", 8)]),
+        ("quantinuum", [("quantinuum_h2", 32)]),
+    ]

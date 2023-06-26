@@ -166,12 +166,7 @@ class BenchmarkGenerator:
         return num_generated_circuits != 0
 
     def generate_target_dep_level_circuit(self, qc: QuantumCircuit, num_qubits: int, file_precheck: bool) -> bool:
-        compilation_paths: list[tuple[str, list[tuple[str, int]]]] = [
-            ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-            ("rigetti", [("rigetti_aspen_m2", 80)]),
-            ("ionq", [("ionq11", 11)]),
-            ("oqc", [("oqc_lucy", 8)]),
-        ]
+        compilation_paths = utils.get_compilation_paths()
         num_generated_benchmarks = 0
         for gate_set_name, devices in compilation_paths:
             # Creating the circuit on both target-dependent levels for qiskit
@@ -284,7 +279,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     compiler -- "qiskit" or "tket"
     CompilerSettings -- Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", or "oqc"
-    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", ""oqc_lucy""
+    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", ""oqc_lucy"", ""quantinuum_lucy"",
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
