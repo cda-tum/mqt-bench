@@ -11,6 +11,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
 import requests
+from mqt.bench.utils import get_supported_devices
 from packaging import version
 from tqdm import tqdm
 
@@ -199,7 +200,6 @@ class Backend:
             and benchmark_config.mapped_devices
         ):
             for opt_lvl in benchmark_config.mapped_qiskit_opt_lvls:
-                print(benchmark_config.mapped_devices)
                 for device in benchmark_config.mapped_devices:
                     db_tmp5 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
@@ -572,24 +572,15 @@ def get_gate_set(filename: str) -> str:
         return "ibm"
     if "rigetti" in filename:
         return "rigetti"
+    if "quantinuum" in filename:
+        return "quantinuum"
     raise ValueError("Unknown gate set: " + filename)
 
 
 def get_target_device(filename: str) -> str:
-    if "ibm_washington" in filename:
-        return "ibm_washington"
-    if "ibm_montreal" in filename:
-        return "ibm_montreal"
-    if "rigetti_aspen" in filename:
-        return "rigetti_aspen"
-    if "ionq_harmony" in filename:
-        return "ionq_harmony"
-    if "ionq_aria1" in filename:
-        return "ionq_aria1"
-    if "oqc_lucy" in filename:
-        return "oqc_lucy"
-    if "quantinuum_h2" in filename:
-        return "quantinuum_h2"
+    for device in get_supported_devices():
+        if device in filename:
+            return device
     raise ValueError("Unknown target device: " + filename)
 
 
