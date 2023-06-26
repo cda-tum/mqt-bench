@@ -170,6 +170,7 @@ def test_prepare_form_input() -> None:
         "nativegates_rigetti": "true",
         "nativegates_oqc": "true",
         "nativegates_ionq": "true",
+        "nativegates_quantinuum": "true",
         "mapped_qiskit_compiler": "true",
         "mapped_qiskit_compiler_opt0": "true",
         "mapped_qiskit_compiler_opt1": "true",
@@ -182,7 +183,9 @@ def test_prepare_form_input() -> None:
         "device_ibm_montreal": "true",
         "device_rigetti_aspen_m2": "true",
         "device_oqc_lucy": "true",
-        "device_ionq_ionq11": "true",
+        "device_ionq_harmony": "true",
+        "device_ionq_aria1": "true",
+        "device_quantinuum_h2": "true",
     }
 
     expected_res = BenchmarkConfiguration(
@@ -194,12 +197,20 @@ def test_prepare_form_input() -> None:
         nativegates_qiskit_compiler=True,
         native_qiskit_opt_lvls=[0, 1, 2, 3],
         nativegates_tket_compiler=True,
-        native_gatesets=["ibm", "rigetti", "oqc", "ionq"],
+        native_gatesets=["ibm", "rigetti", "oqc", "ionq", "quantinuum"],
         mapped_qiskit_compiler=True,
         mapped_qiskit_opt_lvls=[0, 1, 2, 3],
         mapped_tket_compiler=True,
         mapped_tket_placements=["graph", "line"],
-        mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
+        mapped_devices=[
+            "ibm_washington",
+            "ibm_montreal",
+            "rigetti_aspen",
+            "oqc_lucy",
+            "ionq_harmony",
+            "ionq_aria1",
+            "quantinuum_h2",
+        ],
     )
     backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
@@ -220,6 +231,7 @@ def test_prepare_form_input() -> None:
         "nativegates_rigetti": "true",
         "nativegates_oqc": "true",
         "nativegates_ionq": "true",
+        "nativegates_quantinuum": "true",
         "mapped_qiskit_compiler": "true",
         "mapped_qiskit_compiler_opt0": "true",
         "mapped_qiskit_compiler_opt1": "true",
@@ -232,7 +244,9 @@ def test_prepare_form_input() -> None:
         "device_ibm_montreal": "true",
         "device_rigetti_aspen_m2": "true",
         "device_oqc_lucy": "true",
-        "device_ionq_ionq11": "true",
+        "device_ionq_harmony": "true",
+        "device_ionq_aria1": "true",
+        "device_quantinuum_h2": "true",
     }
     expected_res = BenchmarkConfiguration(
         min_qubits=75,
@@ -243,12 +257,20 @@ def test_prepare_form_input() -> None:
         nativegates_qiskit_compiler=True,
         native_qiskit_opt_lvls=[0, 1, 2, 3],
         nativegates_tket_compiler=True,
-        native_gatesets=["ibm", "rigetti", "oqc", "ionq"],
+        native_gatesets=["ibm", "rigetti", "oqc", "ionq", "quantinuum"],
         mapped_qiskit_compiler=True,
         mapped_qiskit_opt_lvls=[0, 1, 2, 3],
         mapped_tket_compiler=True,
         mapped_tket_placements=["graph", "line"],
-        mapped_devices=["ibm_washington", "ibm_montreal", "rigetti_aspen", "oqc_lucy", "ionq11"],
+        mapped_devices=[
+            "ibm_washington",
+            "ibm_montreal",
+            "rigetti_aspen",
+            "oqc_lucy",
+            "ionq_harmony",
+            "ionq_aria1",
+            "quantinuum_h2",
+        ],
     )
     backend = Backend()
     assert backend.prepare_form_input(form_data) == expected_res
@@ -335,8 +357,8 @@ def test_create_database() -> None:
         nativegates_tket_compiler=False,
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
-        native_gatesets=["rigetti", "ionq", "oqc", "ibm"],
-        mapped_devices=["ibm_montreal", "rigetti_aspen", "ionq11", "ocq_lucy"],
+        native_gatesets=["rigetti", "ionq", "oqc", "ibm", "quantinuum"],
+        mapped_devices=["ibm_montreal", "rigetti_aspen", "ionq_harmony", "ionq_aria1", "ocq_lucy", "quantinuum_h2"],
         mapped_tket_placements=["graph", "line"],
         native_qiskit_opt_lvls=[0, 3],
         mapped_qiskit_opt_lvls=[0, 3],

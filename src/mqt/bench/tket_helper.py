@@ -34,6 +34,8 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
         return get_ibm_rebase(get_gatenames)
     if gate_set_name == "rigetti":
         return get_rigetti_rebase(get_gatenames)
+    if gate_set_name == "quantinuum":
+        return get_quantinuum_rebase(get_gatenames)
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
@@ -41,6 +43,12 @@ def get_ionq_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
+
+
+def get_quantinuum_rebase(get_gatenames: bool = False) -> RebaseCustom:
+    if get_gatenames:
+        return ["rz", "ry", "rx", "rzz", "measure"]
+    return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.ZZPhase, OpType.Measure})
 
 
 def get_oqc_rebase(get_gatenames: bool = False) -> RebaseCustom:

@@ -85,11 +85,19 @@ def get_supported_compilers() -> list[str]:
 
 
 def get_supported_gatesets() -> list[str]:
-    return ["ibm", "rigetti", "ionq", "oqc"]
+    return ["ibm", "rigetti", "ionq", "oqc", "quantinuum"]
 
 
 def get_supported_devices() -> list[str]:
-    return ["ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq11", "oqc_lucy"]
+    return [
+        "ibm_washington",
+        "ibm_montreal",
+        "rigetti_aspen_m2",
+        "ionq_harmony",
+        "ionq_aria1",
+        "oqc_lucy",
+        "quantinuum_h2",
+    ]
 
 
 def get_default_qasm_output_path() -> str:
@@ -150,13 +158,13 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
     return c_map_rigetti
 
 
-def get_ionq11_c_map() -> list[list[int]]:
-    ionq11_c_map = []
-    for i in range(0, 11):
-        for j in range(0, 11):
+def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
+    c_map = []
+    for i in range(0, num_qubits):
+        for j in range(0, num_qubits):
             if i != j:
-                ionq11_c_map.append([i, j])
-    return ionq11_c_map
+                c_map.append([i, j])
+    return c_map
 
 
 def get_openqasm_gates() -> list[str]:
@@ -268,16 +276,28 @@ def get_cmap_oqc_lucy() -> list[list[int]]:
 
 
 def get_cmap_from_devicename(device: str) -> list[list[int]]:
-    if device == "ibm_washington":
-        return cast(list[list[int]], FakeWashington().configuration().coupling_map)
-    if device == "ibm_montreal":
-        return cast(list[list[int]], FakeMontreal().configuration().coupling_map)
-    if device == "rigetti_aspen_m2":
-        return get_rigetti_aspen_m2_map()
-    if device == "oqc_lucy":
-        return get_cmap_oqc_lucy()
-    if device == "ionq11":
-        return get_ionq11_c_map()
+    c_map_functions = {
+        "ibm_washington": FakeWashington,
+        "ibm_montreal": FakeMontreal,
+        "rigetti_aspen_m2": get_rigetti_aspen_m2_map,
+        "oqc_lucy": get_cmap_oqc_lucy,
+        "ionq_harmony": get_fully_connected_cmap,
+        "ionq_aria1": get_fully_connected_cmap,
+        "quantinuum_h2": get_fully_connected_cmap,
+    }
+    # get_compilation_paths()
+    if device in c_map_functions:
+        if device == "ibm_washington" or device == "ibm_montreal":
+            cmap = c_map_functions[device]().configuration().coupling_map
+        elif device == "ionq_harmony":
+            cmap = c_map_functions[device](11)
+        elif device == "ionq_aria1":
+            cmap = c_map_functions[device](25)
+        elif device == "quantinuum_h2":
+            cmap = c_map_functions[device](32)
+        else:
+            cmap = c_map_functions[device]()
+        return cast(list[list[int]], cmap)
     error_msg = f"Device {device} is not supported."
     raise ValueError(error_msg)
 

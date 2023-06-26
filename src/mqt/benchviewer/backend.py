@@ -199,6 +199,7 @@ class Backend:
             and benchmark_config.mapped_devices
         ):
             for opt_lvl in benchmark_config.mapped_qiskit_opt_lvls:
+                print(benchmark_config.mapped_devices)
                 for device in benchmark_config.mapped_devices:
                     db_tmp5 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
@@ -321,6 +322,7 @@ class Backend:
             native_gatesets.append("rigetti") if "nativegates_rigetti" in k else None
             native_gatesets.append("oqc") if "nativegates_oqc" in k else None
             native_gatesets.append("ionq") if "nativegates_ionq" in k else None
+            native_gatesets.append("quantinuum") if "nativegates_quantinuum" in k else None
 
             mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
             mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
@@ -334,7 +336,9 @@ class Backend:
             mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
             mapped_devices.append("rigetti_aspen") if "device_rigetti_aspen" in k else None
             mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
-            mapped_devices.append("ionq11") if "device_ionq_ionq11" in k else None
+            mapped_devices.append("ionq_harmony") if "device_ionq_harmony" in k else None
+            mapped_devices.append("ionq_aria1") if "device_ionq_aria1" in k else None
+            mapped_devices.append("quantinuum_h2") if "device_quantinuum_h2" in k else None
 
         return BenchmarkConfiguration(
             min_qubits=min_qubits,
@@ -578,10 +582,14 @@ def get_target_device(filename: str) -> str:
         return "ibm_montreal"
     if "rigetti_aspen" in filename:
         return "rigetti_aspen"
-    if "ionq11" in filename:
-        return "ionq11"
+    if "ionq_harmony" in filename:
+        return "ionq_harmony"
+    if "ionq_aria1" in filename:
+        return "ionq_aria1"
     if "oqc_lucy" in filename:
         return "oqc_lucy"
+    if "quantinuum_h2" in filename:
+        return "quantinuum_h2"
     raise ValueError("Unknown target device: " + filename)
 
 
