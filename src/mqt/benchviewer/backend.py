@@ -11,7 +11,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import pandas as pd
 import requests
-from mqt.bench.utils import get_supported_devices
 from packaging import version
 from tqdm import tqdm
 
@@ -578,7 +577,16 @@ def get_gate_set(filename: str) -> str:
 
 
 def get_target_device(filename: str) -> str:
-    for device in get_supported_devices():
+    devices = [
+        "ibm_washington",
+        "ibm_montreal",
+        "rigetti_aspen_m2",
+        "ionq_harmony",
+        "ionq_aria1",
+        "oqc_lucy",
+        "quantinuum_h2",
+    ]
+    for device in devices:
         if device in filename:
             return device
     raise ValueError("Unknown target device: " + filename)

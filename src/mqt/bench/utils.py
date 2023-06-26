@@ -88,18 +88,6 @@ def get_supported_gatesets() -> list[str]:
     return ["ibm", "rigetti", "ionq", "oqc", "quantinuum"]
 
 
-def get_supported_devices() -> list[str]:
-    return [
-        "ibm_washington",
-        "ibm_montreal",
-        "rigetti_aspen_m2",
-        "ionq_harmony",
-        "ionq_aria1",
-        "oqc_lucy",
-        "quantinuum_h2",
-    ]
-
-
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
@@ -411,4 +399,16 @@ def get_compilation_paths() -> list[tuple[str, list[tuple[str, int]]]]:
         ("ionq", [("ionq_harmony", 11), ("ionq_aria1", 25)]),
         ("oqc", [("oqc_lucy", 8)]),
         ("quantinuum", [("quantinuum_h2", 32)]),
+    ]
+
+
+def get_supported_devices() -> list[str]:
+    return [
+        "ibm_washington",
+        "ibm_montreal",
+        "rigetti_aspen_m2",
+        "ionq_harmony",
+        "ionq_aria1",
+        "oqc_lucy",
+        "quantinuum_h2",
     ]
