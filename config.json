@@ -1,5 +1,5 @@
 {
-  "timeout": 120,
+  "timeout": 300,
   "benchmarks": [
     {
       "name": "ae",
@@ -35,7 +35,7 @@
     },
     {
       "name": "groundstate",
-      "include": false,
+      "include": true,
       "instances": ["small", "medium"],
       "precheck_possible": false
     },
