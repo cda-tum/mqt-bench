@@ -145,9 +145,8 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
         c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
 
     inverted = [[item[1], item[0]] for item in c_map_rigetti]
-    c_map_rigetti = c_map_rigetti + inverted
+    return c_map_rigetti + inverted
 
-    return c_map_rigetti
 
 
 def get_ionq11_c_map() -> list[list[int]]:

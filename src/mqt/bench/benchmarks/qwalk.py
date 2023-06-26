@@ -6,7 +6,7 @@ from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
 def create_circuit(
     n: int,
     depth: int = 3,
-    coin_state_preparation: QuantumCircuit = None,
+    coin_state_preparation: QuantumCircuit | None = None,
     ancillary_mode: str = "noancilla",
 ) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Quantum Walk algorithm.
