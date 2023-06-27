@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from joblib import Parallel, delayed
 from mqt.bench import utils
-from qiskit import qasm2
+from qiskit import QuantumCircuit
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
@@ -38,7 +38,7 @@ class EvaluationResult:
 
 
 def evaluate_qasm_file(filename: str) -> EvaluationResult:
-    qc = qasm2.load(filename)
+    qc = QuantumCircuit.from_qasm_file(filename)
     return EvaluationResult(
         filename=filename,
         num_qubits=int(str(filename).split("_")[-1].split(".")[0]),
