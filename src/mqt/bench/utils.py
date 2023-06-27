@@ -273,7 +273,7 @@ def get_cmap_from_devicename(device: str) -> list[list[int]]:
         "ionq_aria1": get_fully_connected_cmap,
         "quantinuum_h2": get_fully_connected_cmap,
     }
-    # get_compilation_paths()
+
     if device in c_map_functions:
         if device == "ibm_washington" or device == "ibm_montreal":
             cmap = c_map_functions[device]().configuration().coupling_map
