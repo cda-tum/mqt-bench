@@ -183,8 +183,8 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
-        for opt_level in [0, 1, 2, 3]:
-            for gate_set in utils.get_supported_gatesets():
+        for gate_set in utils.get_supported_gatesets():
+            for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                     if not qc:
