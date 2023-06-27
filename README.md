@@ -128,6 +128,7 @@ So far, MQT Bench supports the following native gate-sets:
 2. Rigetti gate-set: _\['rx', 'rz', 'cz', 'measure'\]_
 3. IonQ gate-set: _\['rxx', 'rz', 'ry', 'rx', 'measure'\]_
 4. OQC gate-set: _\['rz', 'sx', 'x', 'ecr', 'measure'\]_
+5. Quantinuum gate-set: _\['rzz', 'rz', 'ry', 'rx', 'measure'\]_
 
 ## Device Support
 
@@ -205,13 +206,13 @@ compiler_settings = CompilerSettings(
 )
 ```
 
-- `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
-- `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"rigetti_aspen_m2"`, `"ionq_harmony"`, `"ionq_aria1"`, `"oqc_lucy"`, `"quantinuum_h2"`
+- `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, `"oqc"`, or `"quantinuum"`
+- `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"rigetti_aspen_m2"`, `"ionq_harmony"`, `"ionq_aria1"`, `"oqc_lucy"`, or `"quantinuum_h2"`
 
 Hereby, the mappings between shortened `benchmark_name` and actual benchmarks are:
 
 | `benchmark_name`     | Actual Benchmark                                    |
-| -------------------- | --------------------------------------------------- | --- |
+| -------------------- | --------------------------------------------------- |
 | `"ae"`               | Amplitude Estimation (AE)                           |
 | `"dj"`               | Deutsch-Jozsa                                       |
 | `"grover-noancilla"` | Grover's (no ancilla)                               |
@@ -234,7 +235,7 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 | `"twolocalrandom"`   | Two Local ansatz with Random Parameters             |
 | `"vqe"`              | Variational Quantum Eigensolver (VQE)               |
 | `"wstate"`           | W-State                                             |
-| `"shor"`             | Shor's                                              |     |
+| `"shor"`             | Shor's                                              |
 | `"pricingcall"`      | Pricing Call Option                                 |
 | `"pricingput"`       | Pricing Put Option                                  |
 | `"groundstate"`      | Ground State                                        |
