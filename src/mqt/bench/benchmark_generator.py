@@ -205,7 +205,7 @@ class BenchmarkGenerator:
                     )
                     if not res:
                         break
-        for gate_set in utils.get_supported_gatesets():
+
             for parameter_instance in parameter_space:
                 qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                 if not qc:
