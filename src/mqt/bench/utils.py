@@ -344,7 +344,12 @@ def calc_supermarq_features(
         connectivity.append(len(set(connectivity_collection[i])))
 
     count_ops = qc.count_ops()
-    num_gates = sum(count_ops.values()) - count_ops.get("measure") - count_ops.get("barrier")
+    num_gates = sum(count_ops.values())
+    # before subtracting the measure and barrier gates, check whether it is in the dict
+    if "measure" in count_ops:
+        num_gates -= count_ops.get("measure")
+    if "barrier" in count_ops:
+        num_gates -= count_ops.get("barrier")
     num_multiple_qubit_gates = qc.num_nonlocal_gates()
     depth = qc.depth(lambda x: x[0].name != "barrier" and x[0].name != "measure")
     program_communication = np.sum(connectivity) / (qc.num_qubits * (qc.num_qubits - 1))
