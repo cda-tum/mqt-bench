@@ -17,7 +17,6 @@ def create_circuit(
     coin_state_preparation -- optional quantum circuit for state preparation
     ancillary_mode -- defining the decomposition scheme
     """
-
     n = n - 1  # because one qubit is needed for the coin
     coin = QuantumRegister(1, "coin")
     node = QuantumRegister(n, "node")
@@ -91,5 +90,6 @@ def create_circuit(
             qc.x(coin)
 
     qc.measure_all()
+    qc.name = qc.name + "-" + ancillary_mode
 
     return qc
