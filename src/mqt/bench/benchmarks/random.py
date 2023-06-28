@@ -9,7 +9,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     Keyword arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-    qc = random_circuit(num_qubits, num_qubits * 2, measure=True, seed=10)
+    qc = random_circuit(num_qubits, num_qubits * 2, measure=False, seed=10)
     gates = list(set(utils.get_openqasm_gates()) - {"rccx", "csx", "cu"})
     qc = transpile(
         qc,
@@ -17,5 +17,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
         seed_transpiler=10,
         optimization_level=1,
     )
+    qc.measure_all()
     qc.name = "random"
     return qc
