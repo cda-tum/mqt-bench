@@ -303,9 +303,9 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-# def test_groundstate() -> None:
-#     qc = groundstate.create_circuit("small")
-#     assert qc.depth() > 0
+def test_groundstate() -> None:
+    qc = groundstate.create_circuit("small")
+    assert qc.depth() > 0
 
 
 def test_routing() -> None:
@@ -391,16 +391,16 @@ def test_unidirectional_coupling_map() -> None:
             None,
             None,
         ),
-        # (
-        #     "groundstate",
-        #     1,
-        #     4,
-        #     "small",
-        #     "qiskit",
-        #     None,
-        #     None,
-        #     None,
-        # ),
+        (
+            "groundstate",
+            1,
+            4,
+            "small",
+            "qiskit",
+            None,
+            None,
+            None,
+        ),
         (
             "dj",
             "nativegates",
@@ -873,7 +873,6 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
-    # assert qasm2.load(str(path))
 
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
@@ -893,7 +892,6 @@ def test_oqc_postprocessing() -> None:
         target_filename=filename,
     )
     assert QuantumCircuit.from_qasm_file(str(path))
-    # assert qasm2.load(str(path))
     path.unlink()
     directory = "."
     filename = "ghz_oqc3"
@@ -909,7 +907,6 @@ def test_oqc_postprocessing() -> None:
         target_filename=filename,
     )
     assert QuantumCircuit.from_qasm_file(str(path))
-    # assert qasm2.load(str(path))
     path.unlink()
     directory = "."
     filename = "ghz_oqc4"
@@ -926,7 +923,6 @@ def test_oqc_postprocessing() -> None:
         target_filename=filename,
     )
 
-    #  assert qasm2.load(str(path))
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
 
