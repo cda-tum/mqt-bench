@@ -121,7 +121,7 @@ class BenchmarkGenerator:
         self.generate_native_gates_levels(file_precheck, lib, parameter_space)
         self.generate_mapped_levels(file_precheck, lib, parameter_space)
 
-    def generate_mapped_levels(
+    def generate_mapped_levels(  # noqa: PLR0912
         self,
         file_precheck: bool,
         lib: ModuleType,
@@ -152,6 +152,8 @@ class BenchmarkGenerator:
                             )
                             if not res:
                                 break
+                        else:
+                            break
 
                 for lineplacement in (False, True):
                     for parameter_instance in parameter_space:
@@ -176,6 +178,8 @@ class BenchmarkGenerator:
                             )
                             if not res:
                                 break
+                        else:
+                            break
 
     def generate_native_gates_levels(
         self,
