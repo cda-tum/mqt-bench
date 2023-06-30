@@ -24,6 +24,7 @@ dependencies = [
     "pandas>=1.0.0",
     "flask>=2.0.0",
     "networkx>=2.0.0",
+    "scipy<1.11.0",
     "pyscf>=2.1.0",
     "packaging>=21.0",
     "tqdm>=4.0.0",
