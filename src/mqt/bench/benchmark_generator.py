@@ -268,7 +268,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     compiler -- "qiskit" or "tket"
     CompilerSettings -- Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", "oqc", or "quantinuum"
-    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", ""oqc_lucy"", ""quantinuum_lucy"",
+    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", ""oqc_lucy"", ""quantinuum_h2"",
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
