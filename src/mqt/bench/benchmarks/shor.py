@@ -23,8 +23,6 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate, Instruction, ParameterVector
 from qiskit.circuit.library import QFT
-from qiskit.providers import Backend
-from qiskit.utils.quantum_instance import QuantumInstance
 from qiskit.utils.validation import validate_min
 
 
@@ -55,7 +53,6 @@ def get_instance(choice: str) -> list[int]:
 
 
 class Shor:
-
     @staticmethod
     def _get_angles(a: int, n: int) -> NDArray[np.float_]:
         """Calculates the array of angles to be used in the addition in Fourier Space."""
