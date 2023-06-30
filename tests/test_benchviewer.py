@@ -205,7 +205,7 @@ def test_prepare_form_input() -> None:
         mapped_devices=[
             "ibm_washington",
             "ibm_montreal",
-            "rigetti_aspen",
+            "rigetti_aspen_m2",
             "oqc_lucy",
             "ionq_harmony",
             "ionq_aria1",
@@ -265,7 +265,7 @@ def test_prepare_form_input() -> None:
         mapped_devices=[
             "ibm_washington",
             "ibm_montreal",
-            "rigetti_aspen",
+            "rigetti_aspen_m2",
             "oqc_lucy",
             "ionq_harmony",
             "ionq_aria1",
@@ -358,7 +358,7 @@ def test_create_database() -> None:
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
         native_gatesets=["rigetti", "ionq", "oqc", "ibm", "quantinuum"],
-        mapped_devices=["ibm_montreal", "rigetti_aspen", "ionq_harmony", "ionq_aria1", "ocq_lucy", "quantinuum_h2"],
+        mapped_devices=["ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "ocq_lucy", "quantinuum_h2"],
         mapped_tket_placements=["graph", "line"],
         native_qiskit_opt_lvls=[0, 3],
         mapped_qiskit_opt_lvls=[0, 3],
