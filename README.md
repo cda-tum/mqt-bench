@@ -212,7 +212,7 @@ compiler_settings = CompilerSettings(
 Hereby, the mappings between shortened `benchmark_name` and actual benchmarks are:
 
 | `benchmark_name`     | Actual Benchmark                                    |
-| -------------------- | --------------------------------------------------- |
+| -------------------- |-----------------------------------------------------|
 | `"ae"`               | Amplitude Estimation (AE)                           |
 | `"dj"`               | Deutsch-Jozsa                                       |
 | `"grover-noancilla"` | Grover's (no ancilla)                               |
@@ -224,7 +224,7 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 | `"qaoa"`             | Quantum Approximation Optimization Algorithm (QAOA) |
 | `"qft"`              | Quantum Fourier Transformation (QFT)                |
 | `"qftentangled"`     | QFT Entangled                                       |
-| `"qnn"`              | Quantum Neural Network                              |
+| `"qnn"`              | Quantum Neural Network (QNN)                        |
 | `"qpeexact"`         | Quantum Phase Estimation (QPE) exact                |
 | `"qpeinexact"`       | Quantum Phase Estimation (QPE) inexact              |
 | `"qwalk-noancilla"`  | Quantum Walk (no ancilla)                           |
