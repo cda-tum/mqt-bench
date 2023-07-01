@@ -78,7 +78,7 @@ class Backend:
             },
             {"name": "Quantum Fourier Transformation (QFT)", "id": "10", "filename": "qft"},
             {"name": "QFT Entangled", "id": "11", "filename": "qftentangled"},
-            {"name": "Quantum Neural Network", "id": "12", "filename": "qnn"},
+            {"name": "Quantum Neural Network (QNN)", "id": "12", "filename": "qnn"},
             {
                 "name": "Quantum Phase Estimation (QPE) exact",
                 "id": "13",

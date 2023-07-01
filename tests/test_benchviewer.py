@@ -141,7 +141,7 @@ def test_prepare_form_input() -> None:
         "selectBench_9": "Quantum Approximation Optimization Algorithm (QAOA)",
         "selectBench_10": "Quantum Fourier Transformation (QFT)",
         "selectBench_11": "QFT Entangled",
-        "selectBench_12": "Quantum Neural Network",
+        "selectBench_12": "Quantum Neural Network (QNN)",
         "selectBench_13": "Quantum Phase Estimation (QPE) exact",
         "selectBench_14": "Quantum Phase Estimation (QPE) inexact",
         "selectBench_15": "Quantum Walk (no ancilla)",
