@@ -87,7 +87,7 @@
         available across those levels. The MQT Benchmark Library (MQT Bench)
         provides a single benchmark suite which offers the same benchmark
         algorithms on different levels of abstractions. At the moment, MQT Bench
-        comprises around 50,000 benchmark circuits ranging from 2 up to 130
+        comprises around 70,000 benchmark circuits ranging from 2 up to 130
         qubits on four abstraction levels.
       </p>
 
@@ -276,38 +276,56 @@
             </p>
             <div class="row">
               <div class="col-md-12 align-items-center">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="true"
-                  id="nativegates_ibm"
-                  name="nativegates_ibm"
-                />
-                <label for="nativegates_ibm">IBM</label>
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="true"
-                  id="nativegates_rigetti"
-                  name="nativegates_rigetti"
-                />
-                <label for="nativegates_rigetti">Rigetti</label>
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="true"
-                  id="nativegates_oqc"
-                  name="nativegates_oqc"
-                />
-                <label for="nativegates_oqc">OQC</label>
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value="true"
-                  id="nativegates_ionq"
-                  name="nativegates_ionq"
-                />
-                <label for="nativegates_ionq">IonQ</label>
+                <div class="form-group">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="nativegates_ibm"
+                    name="nativegates_ibm"
+                  />
+                  <label for="nativegates_ibm">IBM</label>
+                </div>
+                <div class="form-group">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="nativegates_rigetti"
+                    name="nativegates_rigetti"
+                  />
+                  <label for="nativegates_rigetti">Rigetti</label>
+                </div>
+                <div class="form-group">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="nativegates_oqc"
+                    name="nativegates_oqc"
+                  />
+                  <label for="nativegates_oqc">OQC</label>
+                </div>
+                <div class="form-group">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="nativegates_ionq"
+                    name="nativegates_ionq"
+                  />
+                  <label for="nativegates_ionq">IonQ</label>
+                </div>
+                <div class="form-group">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="nativegates_quantinuum"
+                    name="nativegates_quantinuum"
+                  />
+                  <label for="nativegates_quantinuum">Quantinuum</label>
+                </div>
               </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
@@ -442,12 +460,36 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    id="device_ionq_ionq11"
+                    id="device_ionq_harmony"
                     value="true"
-                    name="device_ionq_ionq11"
+                    name="device_ionq_harmony"
                   />
-                  <label for="device_ionq_ionq11"
+                  <label for="device_ionq_harmony"
                     >IonQ Harmony (11 Qubits)
+                  </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="device_ionq_aria1"
+                    value="true"
+                    name="device_ionq_aria1"
+                  />
+                  <label for="device_ionq_aria1"
+                    >IonQ Aria 1 (25 Qubits)
+                  </label>
+                </div>
+                <div>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="device_quantinuum_h2"
+                    value="true"
+                    name="device_quantinuum_h2"
+                  />
+                  <label for="device_quantinuum_h2"
+                    >Quantinuum H2 (32 Qubits)
                   </label>
                 </div>
               </div>

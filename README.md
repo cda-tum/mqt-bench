@@ -89,18 +89,18 @@ So far, the following benchmarks are implemented and provided:
 - Ground State
 - Grover's (no ancilla)
 - Grover's (v-chain)
-- HHL
 - Portfolio Optimization with QAOA
 - Portfolio Optimization with VQE
 - Pricing Call Option
 - Pricing Put Option
 - Quantum Fourier Transformation (QFT)
 - QFT Entangled
-- Quantum Generative Adversarial Network (QGAN)
+- Quantum Neural Network (QNN)
 - Quantum Phase Estimation (QPE) Exact
 - Quantum Phase Estimation (QPE) Inexact
 - Quantum Walk (no ancilla)
 - Quantum Walk (-chain)
+- Random Circuit
 - Routing
 - Shor's
 - Travelling Salesman
@@ -128,6 +128,7 @@ So far, MQT Bench supports the following native gate-sets:
 2. Rigetti gate-set: _\['rx', 'rz', 'cz', 'measure'\]_
 3. IonQ gate-set: _\['rxx', 'rz', 'ry', 'rx', 'measure'\]_
 4. OQC gate-set: _\['rz', 'sx', 'x', 'ecr', 'measure'\]_
+5. Quantinuum gate-set: _\['rzz', 'rz', 'ry', 'rx', 'measure'\]_
 
 ## Device Support
 
@@ -136,8 +137,10 @@ So far, MQT Bench supports the following devices:
 1. IBMQ Washington with 127 qubits
 2. IBMQ Montreal with 27 qubits
 3. Rigetti Aspen-M2 with 80 qubits
-4. IonQ with 11 qubits
-5. OQC Lucy with 8 qubits
+4. IonQ Harmony with 11 qubits
+5. IonQ Aria 1 with 25 qubits
+6. OQC Lucy with 8 qubits
+7. Quantinuum H2 with 32 qubits
 
 # Repository Structure
 
@@ -184,9 +187,9 @@ def get_benchmark(
 The available parameters are:
 
 - `benchmark_name`: `"ae"`, `"dj"`, `"grover-noancilla"`, `"grover-v-chain"`, `"ghz"`, `"graphstate"`, `"portfolioqaoa"`,
-  `"portfoliovqe"`, `"qaoa"`, `"qft"`, `"qftentangled"`, `"qgan"`, `"qpeexact"`, `"qpeinexact"`,
-  `"qwalk-noancilla"`, `"qwalk-v-chain"`, `"realamprandom"`, `"su2random"`, `"twolocalrandom"`, `"vqe"`,
-  `"wstate"`, `"shor"`, `"hhl"`, `"pricingcall"`, `"pricingput"`, `"groundstate"`, `"routing"`,
+  `"portfoliovqe"`, `"qaoa"`, `"qft"`, `"qftentangled"`, `"qnn"`, `"qpeexact"`, `"qpeinexact"`,
+  `"qwalk-noancilla"`, `"qwalk-v-chain"`, `"random"`, `"realamprandom"`, `"su2random"`, `"twolocalrandom"`, `"vqe"`,
+  `"wstate"`, `"shor"`, `"pricingcall"`, `"pricingput"`, `"groundstate"`, `"routing"`,
   `"tsp"`
 - `level`: `0` or `"alg"`, `1` or `"indep"`, `2` or `"nativegates"`, `3` or `"mapped"`
 - `circuit_size`: for most of the cases this is equal to number of qubits
@@ -203,8 +206,8 @@ compiler_settings = CompilerSettings(
 )
 ```
 
-- `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, or `"oqc"`
-- `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"aspen_m1"`, `"ionq11"`, `"lucy"`
+- `gate_set_name`: `"ibm"`, `"rigetti"`, `"ionq"`, `"oqc"`, or `"quantinuum"`
+- `device_name`: `"ibm_washington"`, `"ibm_montreal"`, `"rigetti_aspen_m2"`, `"ionq_harmony"`, `"ionq_aria1"`, `"oqc_lucy"`, or `"quantinuum_h2"`
 
 Hereby, the mappings between shortened `benchmark_name` and actual benchmarks are:
 
@@ -221,18 +224,18 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 | `"qaoa"`             | Quantum Approximation Optimization Algorithm (QAOA) |
 | `"qft"`              | Quantum Fourier Transformation (QFT)                |
 | `"qftentangled"`     | QFT Entangled                                       |
-| `"qgan"`             | Quantum Generative Adversarial Network              |
+| `"qnn"`              | Quantum Neural Network (QNN)                        |
 | `"qpeexact"`         | Quantum Phase Estimation (QPE) exact                |
 | `"qpeinexact"`       | Quantum Phase Estimation (QPE) inexact              |
 | `"qwalk-noancilla"`  | Quantum Walk (no ancilla)                           |
 | `"qwalk-v-chain"`    | Quantum Walk (v-chain)                              |
+| `"random"`           | Random Quantum Circuit                              |
 | `"realamprandom"`    | Real Amplitudes ansatz with Random Parameters       |
 | `"su2random"`        | Efficient SU2 ansatz with Random Parameters         |
 | `"twolocalrandom"`   | Two Local ansatz with Random Parameters             |
 | `"vqe"`              | Variational Quantum Eigensolver (VQE)               |
 | `"wstate"`           | W-State                                             |
 | `"shor"`             | Shor's                                              |
-| `"hhl"`              | HHL                                                 |
 | `"pricingcall"`      | Pricing Call Option                                 |
 | `"pricingput"`       | Pricing Put Option                                  |
 | `"groundstate"`      | Ground State                                        |

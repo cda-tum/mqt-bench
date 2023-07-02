@@ -19,6 +19,8 @@ def get_native_gates(gate_set_name: str) -> list[str]:
         return get_ibm_native_gates()
     if gate_set_name == "rigetti":
         return get_rigetti_native_gates()
+    if gate_set_name == "quantinuum":
+        return get_quantinuum_native_gates()
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
@@ -36,6 +38,10 @@ def get_ionq_native_gates() -> list[str]:
 
 def get_oqc_native_gates() -> list[str]:
     return ["rz", "sx", "x", "ecr", "measure"]
+
+
+def get_quantinuum_native_gates() -> list[str]:
+    return ["rzz", "rz", "ry", "rx", "measure"]
 
 
 @overload

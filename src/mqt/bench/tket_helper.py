@@ -8,10 +8,9 @@ from pytket import OpType
 from pytket.architecture import Architecture  # type: ignore[attr-defined]
 from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (  # type: ignore[attr-defined]
-    CliffordSimp,
     CXMappingPass,
     FullPeepholeOptimise,
-    KAKDecomposition,
+    PeepholeOptimise2Q,
     PlacementPass,
     RoutingPass,
     SynthesiseTket,
@@ -35,6 +34,8 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
         return get_ibm_rebase(get_gatenames)
     if gate_set_name == "rigetti":
         return get_rigetti_rebase(get_gatenames)
+    if gate_set_name == "quantinuum":
+        return get_quantinuum_rebase(get_gatenames)
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
@@ -42,6 +43,12 @@ def get_ionq_rebase(get_gatenames: bool = False) -> RebaseCustom:
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
+
+
+def get_quantinuum_rebase(get_gatenames: bool = False) -> RebaseCustom:
+    if get_gatenames:
+        return ["rz", "ry", "rx", "rzz", "measure"]
+    return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.ZZPhase, OpType.Measure})
 
 
 def get_oqc_rebase(get_gatenames: bool = False) -> RebaseCustom:
@@ -323,9 +330,7 @@ def get_mapped_level(
     placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
     PlacementPass(placer).apply(qc_tket)
     RoutingPass(arch).apply(qc_tket)
-    SynthesiseTket().apply(qc_tket)
-    KAKDecomposition(allow_swaps=False).apply(qc_tket)
-    CliffordSimp(allow_swaps=False).apply(qc_tket)
+    PeepholeOptimise2Q(allow_swaps=False).apply(qc_tket)
     SynthesiseTket().apply(qc_tket)
     if not qc_tket.valid_connectivity(arch, directed=True):
         CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
