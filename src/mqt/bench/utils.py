@@ -144,7 +144,6 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
     return c_map_rigetti + inverted
 
 
-
 def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
     c_map = []
     for i in range(0, num_qubits):
