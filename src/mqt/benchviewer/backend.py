@@ -78,7 +78,7 @@ class Backend:
             },
             {"name": "Quantum Fourier Transformation (QFT)", "id": "10", "filename": "qft"},
             {"name": "QFT Entangled", "id": "11", "filename": "qftentangled"},
-            {"name": "Quantum Generative Adversarial Network", "id": "12", "filename": "qgan"},
+            {"name": "Quantum Neural Network (QNN)", "id": "12", "filename": "qnn"},
             {
                 "name": "Quantum Phase Estimation (QPE) exact",
                 "id": "13",
@@ -91,28 +91,28 @@ class Backend:
             },
             {"name": "Quantum Walk (no ancilla)", "id": "15", "filename": "qwalk-noancilla"},
             {"name": "Quantum Walk (v-chain)", "id": "16", "filename": "qwalk-v-chain"},
-            {"name": "Variational Quantum Eigensolver (VQE)", "id": "17", "filename": "vqe"},
+            {"name": "Random Circuit", "id": "17", "filename": "random"},
+            {"name": "Variational Quantum Eigensolver (VQE)", "id": "18", "filename": "vqe"},
             {
                 "name": "Efficient SU2 ansatz with Random Parameters",
-                "id": "18",
+                "id": "19",
                 "filename": "su2random",
             },
             {
                 "name": "Real Amplitudes ansatz with Random Parameters",
-                "id": "19",
+                "id": "20",
                 "filename": "realamprandom",
             },
             {
                 "name": "Two Local ansatz with Random Parameters",
-                "id": "20",
+                "id": "21",
                 "filename": "twolocalrandom",
             },
-            {"name": "W-State", "id": "21", "filename": "wstate"},
+            {"name": "W-State", "id": "22", "filename": "wstate"},
         ]
 
         self.nonscalable_benchmarks = [
-            {"name": "Ground State", "id": "22", "filename": "groundstate"},
-            {"name": "HHL", "id": "23", "filename": "hhl"},
+            {"name": "Ground State", "id": "23", "filename": "groundstate"},
             {"name": "Pricing Call Option", "id": "24", "filename": "pricingcall"},
             {"name": "Pricing Put Option", "id": "25", "filename": "pricingput"},
             {"name": "Routing", "id": "26", "filename": "routing"},
@@ -321,6 +321,7 @@ class Backend:
             native_gatesets.append("rigetti") if "nativegates_rigetti" in k else None
             native_gatesets.append("oqc") if "nativegates_oqc" in k else None
             native_gatesets.append("ionq") if "nativegates_ionq" in k else None
+            native_gatesets.append("quantinuum") if "nativegates_quantinuum" in k else None
 
             mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
             mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
@@ -332,9 +333,11 @@ class Backend:
             mapped_tket_placements.append("line") if "mapped_tket_compiler_line" in k else None
             mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
             mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
-            mapped_devices.append("rigetti_aspen") if "device_rigetti_aspen" in k else None
+            mapped_devices.append("rigetti_aspen_m2") if "device_rigetti_aspen_m2" in k else None
             mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
-            mapped_devices.append("ionq11") if "device_ionq_ionq11" in k else None
+            mapped_devices.append("ionq_harmony") if "device_ionq_harmony" in k else None
+            mapped_devices.append("ionq_aria1") if "device_ionq_aria1" in k else None
+            mapped_devices.append("quantinuum_h2") if "device_quantinuum_h2" in k else None
 
         return BenchmarkConfiguration(
             min_qubits=min_qubits,
@@ -568,20 +571,33 @@ def get_gate_set(filename: str) -> str:
         return "ibm"
     if "rigetti" in filename:
         return "rigetti"
+    if "quantinuum" in filename:
+        return "quantinuum"
     raise ValueError("Unknown gate set: " + filename)
 
 
 def get_target_device(filename: str) -> str:
-    if "ibm_washington" in filename:
-        return "ibm_washington"
-    if "ibm_montreal" in filename:
-        return "ibm_montreal"
-    if "rigetti_aspen" in filename:
-        return "rigetti_aspen"
+    devices = [
+        "ibm_washington",
+        "ibm_montreal",
+        "rigetti_aspen_m2",
+        "ionq_harmony",
+        "ionq_aria1",
+        "oqc_lucy",
+        "quantinuum_h2",
+    ]
     if "ionq11" in filename:
-        return "ionq11"
-    if "oqc_lucy" in filename:
-        return "oqc_lucy"
+        import warnings
+
+        warnings.warn(
+            "You are using a deprecated MQTBench version. Please re-install MQTBench or remove the MQTBench_all.zip file located at mqt/benchviewer/static/files/MQTBench_all.zip and re-start the server to download the latest benchmarks",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return "ionq_harmony"
+    for device in devices:
+        if device in filename:
+            return device
     raise ValueError("Unknown target device: " + filename)
 
 

@@ -27,7 +27,6 @@ from mqt.bench.benchmarks import (
     graphstate,
     groundstate,
     grover,
-    hhl,
     portfolioqaoa,
     portfoliovqe,
     pricingcall,
@@ -35,10 +34,11 @@ from mqt.bench.benchmarks import (
     qaoa,
     qft,
     qftentangled,
-    qgan,
+    qnn,
     qpeexact,
     qpeinexact,
     qwalk,
+    random,
     realamprandom,
     routing,
     shor,
@@ -71,8 +71,10 @@ def sample_filenames() -> list[str]:
         "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
         "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
         "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
-        "qgan_mapped_ionq11_qiskit_opt3_3.qasm",
-        "qgan_mapped_oqc_lucy_tket_line_2.qasm",
+        "qnn_mapped_ionq_harmony_qiskit_opt3_3.qasm",
+        "qnn_mapped_oqc_lucy_tket_line_2.qasm",
+        "qaoa_mapped_quantinuum_h2_tket_graph_2.qasm",
+        "dj_mapped_quantinuum_h2_qiskit_opt3_23.qasm",
     ]
 
 
@@ -84,15 +86,16 @@ def sample_filenames() -> list[str]:
         (dj, 3, True),
         (graphstate, 8, True),
         (grover, 5, False),
-        (hhl, 2, False),
         (qaoa, 5, True),
         (qft, 8, True),
         (qftentangled, 8, True),
+        (qnn, 8, True),
         (qpeexact, 8, True),
         (qpeinexact, 8, True),
         (tsp, 3, False),
         (qwalk, 5, False),
         (vqe, 5, True),
+        (random, 9, True),
         (realamprandom, 9, True),
         (su2random, 7, True),
         (twolocalrandom, 8, True),
@@ -102,7 +105,6 @@ def sample_filenames() -> list[str]:
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
-        (qgan, 5, True),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -161,11 +163,13 @@ def test_quantumcircuit_indep_level(
         (qaoa, 5, True),
         (qft, 8, True),
         (qftentangled, 8, True),
+        (qnn, 5, True),
         (qpeexact, 8, True),
         (qpeinexact, 8, True),
         (tsp, 3, False),
         (qwalk, 5, False),
         (vqe, 5, True),
+        (random, 9, True),
         (realamprandom, 3, True),
         (su2random, 7, True),
         (twolocalrandom, 5, True),
@@ -174,7 +178,6 @@ def test_quantumcircuit_indep_level(
         (portfoliovqe, 5, True),
         (pricingcall, 5, False),
         (pricingput, 5, False),
-        (qgan, 5, True),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(
@@ -187,12 +190,8 @@ def test_quantumcircuit_native_and_mapped_levels(
     if scalable:
         assert qc.num_qubits == input_value
 
-    compilation_paths = [
-        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m2", 80)]),
-        ("ionq", [("ionq11", 11)]),
-        ("oqc", [("oqc_lucy", 8)]),
-    ]
+    compilation_paths = utils.get_compilation_paths()
+
     for gate_set_name, devices in compilation_paths:
         opt_level = 1
         res = qiskit_helper.get_native_gates_level(
@@ -215,32 +214,32 @@ def test_quantumcircuit_native_and_mapped_levels(
             target_directory=output_path,
         )
         assert res
-        if gate_set_name != "ionq":
-            for device_name, max_qubits in devices:
-                # Creating the circuit on target-dependent: mapped level qiskit
-                if max_qubits >= qc.num_qubits:
-                    res = qiskit_helper.get_mapped_level(
-                        qc,
-                        gate_set_name,
-                        qc.num_qubits,
-                        device_name,
-                        opt_level,
-                        file_precheck=False,
-                        return_qc=False,
-                        target_directory=output_path,
-                    )
-                    assert res
-                    res = qiskit_helper.get_mapped_level(
-                        qc,
-                        gate_set_name,
-                        qc.num_qubits,
-                        device_name,
-                        opt_level,
-                        file_precheck=True,
-                        return_qc=False,
-                        target_directory=output_path,
-                    )
-                    assert res
+
+        for device_name, max_qubits in devices:
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if max_qubits >= qc.num_qubits:
+                res = qiskit_helper.get_mapped_level(
+                    qc,
+                    gate_set_name,
+                    qc.num_qubits,
+                    device_name,
+                    opt_level,
+                    file_precheck=False,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = qiskit_helper.get_mapped_level(
+                    qc,
+                    gate_set_name,
+                    qc.num_qubits,
+                    device_name,
+                    opt_level,
+                    file_precheck=True,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
 
     for gate_set_name, devices in compilation_paths:
         res = tket_helper.get_native_gates_level(
@@ -261,32 +260,31 @@ def test_quantumcircuit_native_and_mapped_levels(
             target_directory=output_path,
         )
         assert res
-        if gate_set_name != "ionq":
-            for device_name, max_qubits in devices:
-                # Creating the circuit on target-dependent: mapped level qiskit
-                if max_qubits >= qc.num_qubits:
-                    res = tket_helper.get_mapped_level(
-                        qc,
-                        gate_set_name,
-                        qc.num_qubits,
-                        device_name,
-                        True,
-                        file_precheck=False,
-                        return_qc=False,
-                        target_directory=output_path,
-                    )
-                    assert res
-                    res = tket_helper.get_mapped_level(
-                        qc,
-                        gate_set_name,
-                        qc.num_qubits,
-                        device_name,
-                        False,
-                        file_precheck=True,
-                        return_qc=False,
-                        target_directory=output_path,
-                    )
-                    assert res
+        for device_name, max_qubits in devices:
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if max_qubits >= qc.num_qubits:
+                res = tket_helper.get_mapped_level(
+                    qc,
+                    gate_set_name,
+                    qc.num_qubits,
+                    device_name,
+                    True,
+                    file_precheck=False,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = tket_helper.get_mapped_level(
+                    qc,
+                    gate_set_name,
+                    qc.num_qubits,
+                    device_name,
+                    False,
+                    file_precheck=True,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
 
 
 def test_openqasm_gates() -> None:
@@ -521,7 +519,27 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ionq",
-            "ionq11",
+            "ionq_harmony",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
+            "ionq",
+            "ionq_aria1",
+        ),
+        (
+            "qpeexact",
+            "mapped",
+            5,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+            "ionq",
+            "ionq_aria1",
         ),
         (
             "qpeexact",
@@ -612,6 +630,26 @@ def test_unidirectional_coupling_map() -> None:
             CompilerSettings(tket=TKETSettings(placement="graphplacement")),
             "oqc",
             "oqc_lucy",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "tket",
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "quantinuum",
+            "quantinuum_h2",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+            "quantinuum",
+            "quantinuum_h2",
         ),
     ],
 )
@@ -835,9 +873,13 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
+
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
 
+    directory = "."
+    filename = "ghz_oqc2"
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
     tket_helper.get_mapped_level(
         qc,
         "oqc",
@@ -851,7 +893,9 @@ def test_oqc_postprocessing() -> None:
     )
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
-
+    directory = "."
+    filename = "ghz_oqc3"
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_native_gates_level(
         qc,
         "oqc",
@@ -864,7 +908,9 @@ def test_oqc_postprocessing() -> None:
     )
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
-
+    directory = "."
+    filename = "ghz_oqc4"
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_mapped_level(
         qc,
         "oqc",
@@ -876,6 +922,7 @@ def test_oqc_postprocessing() -> None:
         target_directory=directory,
         target_filename=filename,
     )
+
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
 
@@ -894,16 +941,16 @@ def test_evaluate_qasm_file() -> None:
 @pytest.mark.parametrize(
     ("search_str", "expected_val"),
     [
-        ("qiskit", 9),
-        ("tket", 2),
+        ("qiskit", 10),
+        ("tket", 3),
         ("nativegates", 2),
         ("indep", 2),
-        ("mapped", 7),
+        ("mapped", 9),
         ("mapped_ibm_washington", 2),
         ("mapped_ibm_montreal", 1),
         ("mapped_oqc_lucy", 2),
         ("mapped_rigetti_aspen_m2", 1),
-        ("mapped_ionq11", 1),
+        ("mapped_ionq_harmony", 1),
     ],
 )
 def test_count_occurrences(search_str: str, expected_val: int, sample_filenames: list[str]) -> None:
@@ -913,8 +960,8 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
 @pytest.mark.parametrize(
     ("compiler", "expected_val"),
     [
-        ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3]),
-        ("tket", [93, 2]),
+        ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3, 23]),
+        ("tket", [93, 2, 2]),
     ],
 )
 def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
@@ -935,21 +982,21 @@ def test_BenchmarkGenerator() -> None:
 
 
 # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
-def endless_loop(arg1: TestObject, run_forever: bool) -> bool:  # noqa: ARG001
+def endless_loop(arg1: SampleObject, run_forever: bool) -> bool:  # noqa: ARG001
     while run_forever:
         pass
     return True
 
 
-class TestObject:
+class SampleObject:
     def __init__(self, name: str):
         self.name = name
 
 
 def test_timeout_watchers() -> None:
     timeout = 1
-    assert not timeout_watcher(endless_loop, timeout, [TestObject("test"), True])
-    assert timeout_watcher(endless_loop, timeout, [TestObject("test"), False])
+    assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
+    assert timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
 
 
 def test_get_module_for_benchmark() -> None:

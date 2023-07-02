@@ -37,8 +37,20 @@ class EvaluationResult:
     supermarq_features: utils.SupermarqFeatures
 
 
-def evaluate_qasm_file(filename: str) -> EvaluationResult:
-    qc = QuantumCircuit.from_qasm_file(filename)
+def evaluate_qasm_file(filename: str) -> EvaluationResult | None:
+    try:
+        qc = QuantumCircuit.from_qasm_file(filename)
+    except Exception as e:
+        print(f"Failed for {filename}: {e}")
+        return EvaluationResult(
+            filename=filename,
+            num_qubits=-1,
+            depth=-1,
+            num_gates=-1,
+            num_multiple_qubit_gates=-1,
+            supermarq_features=utils.SupermarqFeatures(-1, -1, -1, -1, -1),
+        )
+
     return EvaluationResult(
         filename=filename,
         num_qubits=int(str(filename).split("_")[-1].split(".")[0]),
