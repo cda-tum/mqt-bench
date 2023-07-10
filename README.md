@@ -198,11 +198,11 @@ The available parameters are:
 - `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), exemplary shown:
 
 ```python
-from mqt.bench import CompilerSettings
+from mqt.bench import CompilerSettings, QiskitSettings, TKETSettings
 
 compiler_settings = CompilerSettings(
-    qiskit={"optimization_level": 1},
-    tket={"placement": "lineplacement"},
+    qiskit=QiskitSettings(optimization_level=1),
+    tket=TKETSettings(placement="lineplacement"),
 )
 ```
 
