@@ -287,16 +287,17 @@ Afterwards, the package can be used as described [above](#Usage via pip package)
 In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
 
 ```bibtex
-@misc{quetschlich2022mqtbench,
-  title={{{MQT Bench}}: Benchmarking Software and Design Automation Tools for Quantum Computing},
+@article{quetschlich2023mqtbench,
+  title={{{MQT Bench}}: {Benchmarking Software and Design Automation Tools for Quantum Computing}},
   shorttitle = {{{MQT Bench}}},
+  journal = {{Quantum}},
   author={Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
-  year={2022},
-  eprint = {2204.13719},
-  eprinttype = {arxiv},
-  publisher = {arXiv},
+  year={2023},
   note={{{MQT Bench}} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
 }
 ```
+
+which is also available on arXiv:
+[![a](https://img.shields.io/static/v1?label=arXiv&message=2204.13719&color=inactive&style=flat-square)](https://arxiv.org/abs/2204.13719)
 
 [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021
