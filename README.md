@@ -289,7 +289,7 @@ In case you are using MQT Bench in your work, we would be thankful if you referr
 ```bibtex
 @article{quetschlich2023mqtbench,
   title={{{MQT Bench}}: {Benchmarking Software and Design Automation Tools for Quantum Computing}},
-  shorttitle = {{{MQT Bench}}},
+  shorttitle = {{MQT Bench}},
   journal = {{Quantum}},
   author={Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
   year={2023},
