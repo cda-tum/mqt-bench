@@ -287,7 +287,7 @@ Afterwards, the package can be used as described [above](#Usage via pip package)
 In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
 
 ```bibtex
-@article{quetschlich2022mqtbench,
+@article{quetschlich2023mqtbench,
   title={{{MQT Bench}}: {Benchmarking Software and Design Automation Tools for Quantum Computing}},
   shorttitle = {{MQT Bench}},
   journal = {{Quantum}},
