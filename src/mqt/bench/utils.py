@@ -273,7 +273,7 @@ def get_cmap_from_devicename(device: str) -> list[list[int]]:
     }
 
     if device in c_map_functions:
-        if device == "ibm_washington" or device == "ibm_montreal":
+        if device in ("ibm_washington", "ibm_montreal"):
             cmap = c_map_functions[device]().configuration().coupling_map
         elif device == "ionq_harmony":
             cmap = c_map_functions[device](11)
@@ -324,7 +324,7 @@ def calc_supermarq_features(
         connectivity_collection.append([])
 
     for instruction, qargs, _ in qc.data:
-        if instruction.name == "barrier" or instruction.name == "measure":
+        if instruction.name in ("barrier", "measure"):
             continue
         liveness_A_matrix += len(qargs)
         first_qubit = calc_qubit_index(qargs, qc.qregs, 0)
@@ -349,7 +349,7 @@ def calc_supermarq_features(
     if "barrier" in count_ops:
         num_gates -= count_ops.get("barrier")
     num_multiple_qubit_gates = qc.num_nonlocal_gates()
-    depth = qc.depth(lambda x: x[0].name != "barrier" and x[0].name != "measure")
+    depth = qc.depth(lambda x: x[0].name not in ("barrier", "measure"))
     program_communication = np.sum(connectivity) / (qc.num_qubits * (qc.num_qubits - 1))
 
     if num_multiple_qubit_gates == 0:
