@@ -82,7 +82,7 @@ class BenchmarkGenerator:
         file_precheck = benchmark["precheck_possible"]
         instances: list[tuple[int, str]] | list[int] | list[str] | range
         if benchmark["include"]:
-            if benchmark["name"] == "grover" or benchmark["name"] == "qwalk":
+            if benchmark["name"] in ("grover", "qwalk"):
                 instances_without_anc_mode = range(
                     benchmark["min_qubits"],
                     benchmark["max_qubits"],
@@ -97,13 +97,13 @@ class BenchmarkGenerator:
             elif benchmark["name"] == "shor":
                 instances = [lib.get_instance(choice) for choice in benchmark["instances"]]
 
-            elif benchmark["name"] == "routing" or benchmark["name"] == "tsp":
+            elif benchmark["name"] in ("routing", "tsp"):
                 instances = range(benchmark["min_nodes"], benchmark["max_nodes"])
 
             elif benchmark["name"] == "groundstate":
                 instances = benchmark["instances"]
 
-            elif benchmark["name"] == "pricingcall" or benchmark["name"] == "pricingput":
+            elif benchmark["name"] in ("pricingcall", "pricingput"):
                 instances = range(benchmark["min_uncertainty"], benchmark["max_uncertainty"])
 
             else:
@@ -330,7 +330,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     else:
         qc = lib.create_circuit(circuit_size)
 
-    if level == "alg" or level == 0:
+    if level in ("alg", 0):
         return qc
 
     if compiler is None:
@@ -348,14 +348,14 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
 
     independent_level = 1
-    if level == "indep" or level == independent_level:
+    if level in ("indep", independent_level):
         if compiler == "qiskit":
             return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
     native_gates_level = 2
-    if level == "nativegates" or level == native_gates_level:
+    if level in ("nativegates", native_gates_level):
         assert gate_set_name is not None
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
@@ -365,7 +365,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
 
     mapped_level = 3
-    if level == "mapped" or level == mapped_level:
+    if level in ("mapped", mapped_level):
         assert gate_set_name is not None
         assert device_name is not None
         if compiler == "qiskit":
