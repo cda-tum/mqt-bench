@@ -70,13 +70,13 @@ repos:
         types_or: [yaml, markdown, html, css, javascript, json]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.282
+    rev: v0.0.284
     hooks:
       - id: ruff
         args: ["--fix"]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+    rev: v1.5.0
     hooks:
       - id: mypy
         files: ^(src|tests|setup.py)
