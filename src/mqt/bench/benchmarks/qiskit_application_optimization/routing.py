@@ -106,8 +106,8 @@ class QuantumOptimizer:
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
 
-        qp.objective.quadratic = Q  # type: ignore[assignment]
-        qp.objective.linear = g  # type: ignore[assignment]
+        qp.objective.quadratic = Q
+        qp.objective.linear = g
         qp.objective.constant = c
         return qp
 
