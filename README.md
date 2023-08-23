@@ -171,7 +171,7 @@ MQT Bench is available via [PyPI](https://pypi.org/project/mqt.bench/)
 
 To generate a benchmark circuit on the algorithmic level, please use the `get_benchmark` method:
 
-```python3
+```python
 def get_benchmark(
     benchmark_name: str,
     level: Union[str, int],
@@ -182,6 +182,7 @@ def get_benchmark(
     gate_set_name: str = "ibm",
     device_name: str = "ibm_washington",
 ):
+    ...
 ```
 
 The available parameters are:
