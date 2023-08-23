@@ -20,7 +20,8 @@ dynamic = ["version"]
 
 dependencies = [
     "pytket-qiskit>=0.40.0,<0.44.0",  #  manages the dependencies for qiskit and tket in a combined fashion
-    "qiskit[all]",  # this is merely to get the [all] dependencies. The versioning is covered by pytket-qiskit
+    "qiskit_optimization",
+    "qiskit_nature", # this is merely to get the [all] dependencies. The versioning is covered by pytket-qiskit
     "pandas>=1.0.0",
     "flask>=2.0.0",
     "networkx>=2.0.0",
