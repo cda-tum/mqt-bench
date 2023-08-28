@@ -31,7 +31,7 @@ class Initializer:
         yc = (np.random.rand(n) - 0.5) * 10
 
         instance = np.zeros([n, n])
-        for ii in range(0, n):
+        for ii in range(n):
             for jj in range(ii + 1, n):
                 instance[ii, jj] = (xc[ii] - xc[jj]) ** 2 + (yc[ii] - yc[jj]) ** 2
                 instance[jj, ii] = instance[ii, jj]

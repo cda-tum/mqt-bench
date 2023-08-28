@@ -41,14 +41,14 @@ def create_circuit(
             qc.h(coin)
 
             # controlled increment
-            for i in range(0, n - 1):
+            for i in range(n - 1):
                 qc.mcx(coin[:] + node[i + 1 :], node[i], mode=ancillary_mode)
             qc.cx(coin, node[n - 1])
 
             # controlled decrement
             qc.x(coin)
             qc.x(node[1:])
-            for i in range(0, n - 1):
+            for i in range(n - 1):
                 qc.mcx(coin[:] + node[i + 1 :], node[i], mode=ancillary_mode)
             qc.cx(coin, node[n - 1])
             qc.x(node[1:])
@@ -66,7 +66,7 @@ def create_circuit(
             qc.h(coin)
 
             # controlled increment
-            for i in range(0, n - 1):
+            for i in range(n - 1):
                 qc.mcx(
                     coin[:] + node[i + 1 :],
                     node[i],
@@ -78,7 +78,7 @@ def create_circuit(
             # controlled decrement
             qc.x(coin)
             qc.x(node[1:])
-            for i in range(0, n - 1):
+            for i in range(n - 1):
                 qc.mcx(
                     coin[:] + node[i + 1 :],
                     node[i],
