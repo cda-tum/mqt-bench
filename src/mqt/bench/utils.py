@@ -114,7 +114,7 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
     """Returns a coupling map of Rigetti Aspen M2 chip."""
     c_map_rigetti = []
     for j in range(5):
-        for i in range(0, 7):
+        for i in range(7):
             c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
 
             if i == 6:
@@ -126,7 +126,7 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
 
     for j in range(5):
         m = 8 * j + 5 * 8
-        for i in range(0, 7):
+        for i in range(7):
             c_map_rigetti.append([i + m, i + 1 + m])
 
             if i == 6:
@@ -146,8 +146,8 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
 
 def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
     c_map = []
-    for i in range(0, num_qubits):
-        for j in range(0, num_qubits):
+    for i in range(num_qubits):
+        for j in range(num_qubits):
             if i != j:
                 c_map.append([i, j])
     return c_map
