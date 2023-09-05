@@ -700,10 +700,10 @@ def test_get_benchmark_faulty_parameters() -> None:
         get_benchmark("wrong_name", 2, 6)
     match = "Selected level must be in"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             8,
-            "wrong_size",  # type: ignore[arg-type]
+            "wrong_size",
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -725,11 +725,11 @@ def test_get_benchmark_faulty_parameters() -> None:
 
     match = "benchmark_instance_name must be defined for this benchmark."
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "shor",
             1,
             3,
-            2,  # type: ignore[arg-type]
+            2,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
@@ -738,7 +738,7 @@ def test_get_benchmark_faulty_parameters() -> None:
 
     match = "Selected compiler must be in"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             1,
             3,
@@ -750,13 +750,13 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
     match = "compiler_settings must be of type CompilerSettings or None"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             1,
             3,
             None,
             "qiskit",
-            "wrong_compiler_settings",  # type: ignore[arg-type]
+            "wrong_compiler_settings",
             "rigetti",
             "rigetti_aspen_m2",
         )

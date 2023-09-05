@@ -5,7 +5,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypedDict
+from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
 
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
@@ -247,6 +247,34 @@ class BenchmarkGenerator:
                 )
                 if not res:
                     break
+
+
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
+    compiler: Literal["qiskit"] | None = "qiskit",
+    compiler_settings: CompilerSettings | None = None,
+    gate_set_name: str | None = "ibm",
+    device_name: str | None = "ibm_washington",
+) -> QuantumCircuit:
+    ...
+
+
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
+    compiler: Literal["tket"] = "tket",
+    compiler_settings: CompilerSettings | None = None,
+    gate_set_name: str | None = "ibm",
+    device_name: str | None = "ibm_washington",
+) -> Circuit:
+    ...
 
 
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
