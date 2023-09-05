@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import pytket
 
@@ -117,7 +117,6 @@ def test_quantumcircuit_indep_level(
     else:
         qc = benchmark.create_circuit(input_value)
 
-    assert isinstance(qc, QuantumCircuit)
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
@@ -306,19 +305,16 @@ def test_rigetti_cmap_generator() -> None:
 
 def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
-    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
 def test_groundstate() -> None:
     qc = groundstate.create_circuit("small")
-    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
 def test_routing() -> None:
     qc = routing.create_circuit(4, 2)
-    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
@@ -409,8 +405,6 @@ def test_unidirectional_coupling_map() -> None:
             "small",
             "qiskit",
             None,
-            None,
-            None,
         ),
         (
             "dj",
@@ -420,7 +414,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ionq",
-            None,
         ),
         (
             "dj",
@@ -430,7 +423,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ibm",
-            None,
         ),
         (
             "dj",
@@ -440,7 +432,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
-            None,
         ),
         (
             "dj",
@@ -450,7 +441,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "oqc",
-            None,
         ),
         (
             "qft",
@@ -460,7 +450,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ionq",
-            None,
         ),
         (
             "qft",
@@ -470,7 +459,6 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ibm",
-            None,
         ),
         (
             "qft",
@@ -480,7 +468,6 @@ def test_unidirectional_coupling_map() -> None:
             "tket",
             None,
             "rigetti",
-            None,
         ),
         (
             "qft",
@@ -490,7 +477,6 @@ def test_unidirectional_coupling_map() -> None:
             "tket",
             None,
             "oqc",
-            None,
         ),
         (
             "qpeexact",
@@ -669,10 +655,10 @@ def test_get_benchmark(
     level: str | int,
     circuit_size: int,
     benchmark_instance_name: str | None,
-    compiler: str,
+    compiler: Literal["qiskit", "tket"],
     compiler_settings: CompilerSettings | None,
-    gate_set_name: str | None,
-    device_name: str | None,
+    gate_set_name: str,
+    device_name: str,
 ) -> None:
     qc = get_benchmark(
         benchmark_name,
@@ -684,11 +670,11 @@ def test_get_benchmark(
         gate_set_name,
         device_name,
     )
-    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
+        assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
@@ -841,7 +827,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
-    assert isinstance(qc, QuantumCircuit)
     res = qiskit_helper.get_mapped_level(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
     )
@@ -872,7 +857,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 
 def test_oqc_postprocessing() -> None:
     qc = get_benchmark("ghz", 1, 5)
-    assert isinstance(qc, QuantumCircuit)
     directory = "."
     filename = "ghz_oqc"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -942,7 +926,6 @@ def test_oqc_postprocessing() -> None:
 
 def test_evaluate_qasm_file() -> None:
     qc = get_benchmark("dj", 1, 5)
-    assert isinstance(qc, QuantumCircuit)
     filename = "test_5.qasm"
     qc.qasm(filename=filename)
     path = Path(filename)
@@ -1036,7 +1019,6 @@ def test_get_cmap_from_devicename() -> None:
 
 def test_tket_mapped_circuit_qubit_number() -> None:
     qc = get_benchmark("ghz", 1, 5)
-    assert isinstance(qc, QuantumCircuit)
     res = tket_helper.get_mapped_level(
         qc,
         "ibm",

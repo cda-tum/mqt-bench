@@ -255,10 +255,10 @@ def get_benchmark(
     level: str | int,
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
-    compiler: Literal["qiskit"] | None = "qiskit",
+    compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str | None = "ibm",
-    device_name: str | None = "ibm_washington",
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
 ) -> QuantumCircuit:
     ...
 
@@ -271,8 +271,8 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str | None = "ibm",
-    device_name: str | None = "ibm_washington",
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
 ) -> Circuit:
     ...
 
@@ -282,10 +282,10 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     level: str | int,
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
-    compiler: str | None = "qiskit",
+    compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str | None = "ibm",
-    device_name: str | None = "ibm_washington",
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
     """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
     Keyword arguments:
@@ -317,7 +317,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
-    if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
+    if compiler.lower() not in utils.get_supported_compilers():
         msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
         raise ValueError(msg)
 
@@ -325,11 +325,11 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = "compiler_settings must be of type CompilerSettings or None."  # type:ignore[unreachable]
         raise ValueError(msg)
 
-    if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
+    if gate_set_name not in utils.get_supported_gatesets():
         msg = f"Selected gate_set_name must be None or in {utils.get_supported_gatesets()}."
         raise ValueError(msg)
 
-    if device_name is not None and device_name not in utils.get_supported_devices():
+    if device_name not in utils.get_supported_devices():
         msg = f"Selected device_name must be None or in {utils.get_supported_devices()}."
         raise ValueError(msg)
 
@@ -360,10 +360,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
 
     if level in ("alg", 0):
         return qc
-
-    if compiler is None:
-        msg = "Compiler must be specified for non-algorithmic levels."
-        raise ValueError(msg)
 
     compiler = compiler.lower()
 
