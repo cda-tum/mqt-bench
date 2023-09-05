@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import pytket
+
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
@@ -114,6 +116,8 @@ def test_quantumcircuit_indep_level(
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
+
+    assert isinstance(qc, QuantumCircuit)
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
@@ -187,6 +191,8 @@ def test_quantumcircuit_native_and_mapped_levels(
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
+
+    assert isinstance(qc, QuantumCircuit)
     if scalable:
         assert qc.num_qubits == input_value
 
@@ -300,21 +306,24 @@ def test_rigetti_cmap_generator() -> None:
 
 def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
+    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
 def test_groundstate() -> None:
     qc = groundstate.create_circuit("small")
+    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
 def test_routing() -> None:
     qc = routing.create_circuit(4, 2)
+    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
 
 
 def test_unidirectional_coupling_map() -> None:
-    from pytket.architecture import Architecture  # type: ignore[attr-defined]
+    from pytket.architecture import Architecture
 
     qc = get_benchmark(
         benchmark_name="dj",
@@ -325,8 +334,10 @@ def test_unidirectional_coupling_map() -> None:
         gate_set_name="oqc",
         device_name="oqc_lucy",
     )
+    assert isinstance(qc, QuantumCircuit)
     # check that all gates in the circuit are in the coupling map
-    assert qc.valid_connectivity(arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True)
+    cmap_converted = [(i, j) for (j, i) in utils.get_cmap_oqc_lucy()]
+    assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -673,6 +684,7 @@ def test_get_benchmark(
         gate_set_name,
         device_name,
     )
+    assert isinstance(qc, QuantumCircuit)
     assert qc.depth() > 0
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
@@ -829,6 +841,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
+    assert isinstance(qc, QuantumCircuit)
     res = qiskit_helper.get_mapped_level(
         qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
     )
@@ -859,7 +872,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 
 def test_oqc_postprocessing() -> None:
     qc = get_benchmark("ghz", 1, 5)
-    assert qc
+    assert isinstance(qc, QuantumCircuit)
     directory = "."
     filename = "ghz_oqc"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -929,6 +942,7 @@ def test_oqc_postprocessing() -> None:
 
 def test_evaluate_qasm_file() -> None:
     qc = get_benchmark("dj", 1, 5)
+    assert isinstance(qc, QuantumCircuit)
     filename = "test_5.qasm"
     qc.qasm(filename=filename)
     path = Path(filename)
@@ -1022,6 +1036,7 @@ def test_get_cmap_from_devicename() -> None:
 
 def test_tket_mapped_circuit_qubit_number() -> None:
     qc = get_benchmark("ghz", 1, 5)
+    assert isinstance(qc, QuantumCircuit)
     res = tket_helper.get_mapped_level(
         qc,
         "ibm",
@@ -1031,4 +1046,5 @@ def test_tket_mapped_circuit_qubit_number() -> None:
         file_precheck=False,
         return_qc=True,
     )
+    assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127
