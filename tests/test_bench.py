@@ -330,7 +330,6 @@ def test_unidirectional_coupling_map() -> None:
         gate_set_name="oqc",
         device_name="oqc_lucy",
     )
-    assert isinstance(qc, QuantumCircuit)
     # check that all gates in the circuit are in the coupling map
     cmap_converted = [(i, j) for (j, i) in utils.get_cmap_oqc_lucy()]
     assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
@@ -355,8 +354,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "wstate",
@@ -365,8 +364,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "ghz",
@@ -375,8 +374,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "graphstate",
@@ -385,8 +384,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "graphstate",
@@ -395,8 +394,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         ("groundstate", 1, 4, "small", "qiskit", None, "", ""),
         (
@@ -427,7 +426,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
-            "",
+            "rigetti_aspen_m2",
         ),
         (
             "dj",
@@ -437,11 +436,29 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "oqc",
-            "",
+            "oqc_lucy",
         ),
-        ("qft", 2, 6, None, "qiskit", CompilerSettings(qiskit=QiskitSettings(optimization_level=3)), "ionq", ""),
-        ("qft", 2, 6, None, "qiskit", CompilerSettings(qiskit=QiskitSettings(optimization_level=3)), "ibm", ""),
-        ("qft", 2, 6, None, "tket", None, "rigetti", ""),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
+            "ionq",
+            "ionq_harmony1",
+        ),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
+            "ibm",
+            "ibm_montreal",
+        ),
+        ("qft", 2, 6, None, "tket", None, "rigetti", "rigetti_aspen_m2"),
         (
             "qft",
             2,
@@ -450,7 +467,7 @@ def test_unidirectional_coupling_map() -> None:
             "tket",
             None,
             "oqc",
-            "",
+            "oqc_lucy",
         ),
         (
             "qpeexact",
@@ -720,11 +737,11 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m2",
         )
-    match = "Selected gate_set_name must be None or in"
+    match = "Selected gate_set_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
-            1,
+            2,
             3,
             None,
             "qiskit",
@@ -732,11 +749,11 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_gateset",
             "rigetti_aspen_m2",
         )
-    match = "Selected device_name must be None or in"
+    match = "Selected device_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
-            1,
+            3,
             3,
             None,
             "qiskit",

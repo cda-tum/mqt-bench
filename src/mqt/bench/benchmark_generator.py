@@ -331,22 +331,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
-    if compiler.lower() not in utils.get_supported_compilers():
-        msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
-        raise ValueError(msg)
-
-    if compiler_settings is not None and not isinstance(compiler_settings, CompilerSettings):
-        msg = "compiler_settings must be of type CompilerSettings or None."  # type:ignore[unreachable]
-        raise ValueError(msg)
-
-    if gate_set_name not in utils.get_supported_gatesets():
-        msg = f"Selected gate_set_name must be None or in {utils.get_supported_gatesets()}."
-        raise ValueError(msg)
-
-    if device_name not in utils.get_supported_devices():
-        msg = f"Selected device_name must be None or in {utils.get_supported_devices()}."
-        raise ValueError(msg)
-
     lib = utils.get_module_for_benchmark(
         benchmark_name.split("-")[0]
     )  # split is used to filter the ancillary mode for grover and qwalk
@@ -377,12 +361,16 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
 
     compiler = compiler.lower()
 
-    if compiler not in utils.get_supported_compilers():
+    if compiler.lower() not in utils.get_supported_compilers():
         msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
         raise ValueError(msg)
 
     if compiler_settings is None:
         compiler_settings = CompilerSettings(QiskitSettings(), TKETSettings())
+    elif not isinstance(compiler_settings, CompilerSettings):
+        msg = "compiler_settings must be of type CompilerSettings or None."
+        raise ValueError(msg)
+
     assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
 
     independent_level = 1
@@ -391,6 +379,14 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
+
+    if compiler_settings is not None and not isinstance(compiler_settings, CompilerSettings):
+        msg = "compiler_settings must be of type CompilerSettings or None."  # type:ignore[unreachable]
+        raise ValueError(msg)
+
+    if gate_set_name not in utils.get_supported_gatesets():
+        msg = f"Selected gate_set_name must be in {utils.get_supported_gatesets()}."
+        raise ValueError(msg)
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
@@ -401,6 +397,10 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
+
+    if device_name not in utils.get_supported_devices():
+        msg = f"Selected device_name must be in {utils.get_supported_devices()}."
+        raise ValueError(msg)
 
     mapped_level = 3
     if level in ("mapped", mapped_level):
