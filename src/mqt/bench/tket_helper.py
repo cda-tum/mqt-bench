@@ -333,7 +333,7 @@ def get_mapped_level(
 
     native_gatenames = get_rebase(gate_set_name, True)
     native_gate_set_rebase = get_rebase(gate_set_name)
-    cmap_converted = [(i, j) for (j, i) in cmap]
+    cmap_converted = [(j, i) for (j, i) in cmap]
     arch = Architecture(cmap_converted)
 
     # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
