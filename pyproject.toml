@@ -80,8 +80,9 @@ source = ["mqt.bench", "mqt.benchviewer"]
 
 [tool.coverage.report]
 exclude_also = [
+    '\.\.\.',
     'if TYPE_CHECKING:',
-    '@overload',]
+]
 show_missing = true
 skip_empty = true
 precision = 1
