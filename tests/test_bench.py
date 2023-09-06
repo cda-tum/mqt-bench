@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import pytket
 
@@ -646,7 +646,7 @@ def test_get_benchmark(
     level: str | int,
     circuit_size: int,
     benchmark_instance_name: str | None,
-    compiler: str,
+    compiler: Literal["qiskit", "tket"],
     compiler_settings: CompilerSettings | None,
     gate_set_name: str,
     device_name: str,
@@ -715,7 +715,7 @@ def test_get_benchmark_faulty_parameters() -> None:
 
     match = "Selected compiler must be in"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             1,
             3,

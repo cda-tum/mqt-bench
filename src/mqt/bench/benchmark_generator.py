@@ -277,20 +277,6 @@ def get_benchmark(
     ...
 
 
-@overload
-def get_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int | None = None,
-    benchmark_instance_name: str | None = None,
-    compiler: str = "qiskit",
-    compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str = "ibm",
-    device_name: str = "ibm_washington",
-) -> QuantumCircuit | Circuit:
-    ...
-
-
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
