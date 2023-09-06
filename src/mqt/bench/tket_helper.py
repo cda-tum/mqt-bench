@@ -31,12 +31,7 @@ def get_rebase(gate_set_name: str, get_gatenames: Literal[True]) -> list[str]:
 
 
 @overload
-def get_rebase(gate_set_name: str, get_gatenames: Literal[False]) -> BasePass:
-    ...
-
-
-@overload
-def get_rebase(gate_set_name: str) -> BasePass:
+def get_rebase(gate_set_name: str, get_gatenames: Literal[False] = False) -> BasePass:
     ...
 
 
