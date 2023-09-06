@@ -89,3 +89,6 @@ repos:
           - types-tqdm
           - types-flask
           - pytket_qiskit
+          - qiskit_optimization
+          - qiskit_nature
+          - qiskit_finance

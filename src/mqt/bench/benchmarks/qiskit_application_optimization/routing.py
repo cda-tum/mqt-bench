@@ -11,6 +11,7 @@ from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
 from qiskit.utils import algorithm_globals
 from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.problems import LinearExpression, QuadraticExpression
 
 if TYPE_CHECKING:  # pragma: no cover
     from numpy.typing import NDArray
@@ -101,7 +102,7 @@ class QuantumOptimizer:
 
         return Q, g, cast(float, c), cost
 
-    def construct_problem(self, Q: NDArray[np.float_], g: NDArray[np.float_], c: float) -> QuadraticProgram:
+    def construct_problem(self, Q: QuadraticExpression, g: LinearExpression, c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
@@ -137,7 +138,9 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
 
     quantum_optimizer = QuantumOptimizer(instance, n, k)
     q, g, c, binary_cost = quantum_optimizer.binary_representation(x_sol=np.array(0.0, dtype=float))
-    qp = quantum_optimizer.construct_problem(q, g, c)
+    q_casted = cast(QuadraticExpression, q)
+    g_casted = cast(LinearExpression, g)
+    qp = quantum_optimizer.construct_problem(q_casted, g_casted, c)
     # Instantiate the quantum optimizer class with parameters:
     qc = quantum_optimizer.solve_problem(qp)
 
