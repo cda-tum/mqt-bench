@@ -5,7 +5,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypedDict
+from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
 
 from joblib import Parallel, delayed
 from mqt.bench import qiskit_helper, tket_helper, utils
@@ -249,17 +249,59 @@ class BenchmarkGenerator:
                     break
 
 
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
+    compiler: Literal["qiskit"] = "qiskit",
+    compiler_settings: CompilerSettings | None = None,
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
+) -> QuantumCircuit:
+    ...
+
+
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
+    compiler: Literal["tket"] = "tket",
+    compiler_settings: CompilerSettings | None = None,
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
+) -> Circuit:
+    ...
+
+
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
+    compiler: str = "qiskit",
+    compiler_settings: CompilerSettings | None = None,
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
+) -> QuantumCircuit | Circuit:
+    ...
+
+
 def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     benchmark_name: str,
     level: str | int,
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
-    compiler: str | None = "qiskit",
+    compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str | None = "ibm",
-    device_name: str | None = "ibm_washington",
+    gate_set_name: str = "ibm",
+    device_name: str = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
-    """Returns one benchmark as a Qiskit::QuantumCircuit Object.
+    """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
     Keyword arguments:
     benchmark_name -- name of the to be generated benchmark
     level -- Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
@@ -268,7 +310,7 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     compiler -- "qiskit" or "tket"
     CompilerSettings -- Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
     gate_set_name -- "ibm", "rigetti", "ionq", "oqc", or "quantinuum"
-    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", ""oqc_lucy"", ""quantinuum_h2"",
+    device_name -- "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2",
     Return values:
     Quantum Circuit Object -- Representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
@@ -287,22 +329,6 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
 
     if benchmark_name in ["shor", "groundstate"] and not isinstance(benchmark_instance_name, str):
         msg = "benchmark_instance_name must be defined for this benchmark."
-        raise ValueError(msg)
-
-    if compiler is not None and compiler.lower() not in utils.get_supported_compilers():
-        msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
-        raise ValueError(msg)
-
-    if compiler_settings is not None and not isinstance(compiler_settings, CompilerSettings):
-        msg = "compiler_settings must be of type CompilerSettings or None."  # type:ignore[unreachable]
-        raise ValueError(msg)
-
-    if gate_set_name is not None and gate_set_name not in utils.get_supported_gatesets():
-        msg = f"Selected gate_set_name must be None or in {utils.get_supported_gatesets()}."
-        raise ValueError(msg)
-
-    if device_name is not None and device_name not in utils.get_supported_devices():
-        msg = f"Selected device_name must be None or in {utils.get_supported_devices()}."
         raise ValueError(msg)
 
     lib = utils.get_module_for_benchmark(
@@ -333,18 +359,18 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
     if level in ("alg", 0):
         return qc
 
-    if compiler is None:
-        msg = "Compiler must be specified for non-algorithmic levels."
-        raise ValueError(msg)
-
     compiler = compiler.lower()
 
-    if compiler not in utils.get_supported_compilers():
+    if compiler.lower() not in utils.get_supported_compilers():
         msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
         raise ValueError(msg)
 
     if compiler_settings is None:
         compiler_settings = CompilerSettings(QiskitSettings(), TKETSettings())
+    elif not isinstance(compiler_settings, CompilerSettings):
+        msg = "compiler_settings must be of type CompilerSettings or None."  # type: ignore[unreachable]
+        raise ValueError(msg)
+
     assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
 
     independent_level = 1
@@ -353,6 +379,10 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
+
+    if gate_set_name not in utils.get_supported_gatesets():
+        msg = f"Selected gate_set_name must be in {utils.get_supported_gatesets()}."
+        raise ValueError(msg)
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
@@ -363,6 +393,10 @@ def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
             return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
+
+    if device_name not in utils.get_supported_devices():
+        msg = f"Selected device_name must be in {utils.get_supported_devices()}."
+        raise ValueError(msg)
 
     mapped_level = 3
     if level in ("mapped", mapped_level):

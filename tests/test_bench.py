@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import pytket
+
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
@@ -114,6 +116,7 @@ def test_quantumcircuit_indep_level(
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
+
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
@@ -187,6 +190,8 @@ def test_quantumcircuit_native_and_mapped_levels(
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
         qc = benchmark.create_circuit(input_value)
+
+    assert isinstance(qc, QuantumCircuit)
     if scalable:
         assert qc.num_qubits == input_value
 
@@ -314,7 +319,7 @@ def test_routing() -> None:
 
 
 def test_unidirectional_coupling_map() -> None:
-    from pytket.architecture import Architecture  # type: ignore[attr-defined]
+    from pytket.architecture import Architecture
 
     qc = get_benchmark(
         benchmark_name="dj",
@@ -326,7 +331,8 @@ def test_unidirectional_coupling_map() -> None:
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    assert qc.valid_connectivity(arch=Architecture(utils.get_cmap_oqc_lucy()), directed=True)
+    cmap_converted = [(j, i) for (j, i) in utils.get_cmap_oqc_lucy()]
+    assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -348,8 +354,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "wstate",
@@ -358,8 +364,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "ghz",
@@ -368,8 +374,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "graphstate",
@@ -378,8 +384,8 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "qiskit",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
         (
             "graphstate",
@@ -388,19 +394,10 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             None,
-            None,
-            None,
+            "",
+            "",
         ),
-        (
-            "groundstate",
-            1,
-            4,
-            "small",
-            "qiskit",
-            None,
-            None,
-            None,
-        ),
+        ("groundstate", 1, 4, "small", "qiskit", None, "", ""),
         (
             "dj",
             "nativegates",
@@ -409,7 +406,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ionq",
-            None,
+            "",
         ),
         (
             "dj",
@@ -419,7 +416,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ibm",
-            None,
+            "",
         ),
         (
             "dj",
@@ -429,7 +426,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
-            None,
+            "rigetti_aspen_m2",
         ),
         (
             "dj",
@@ -439,7 +436,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "oqc",
-            None,
+            "oqc_lucy",
         ),
         (
             "qft",
@@ -449,7 +446,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ionq",
-            None,
+            "ionq_harmony1",
         ),
         (
             "qft",
@@ -459,18 +456,9 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ibm",
-            None,
+            "ibm_montreal",
         ),
-        (
-            "qft",
-            2,
-            6,
-            None,
-            "tket",
-            None,
-            "rigetti",
-            None,
-        ),
+        ("qft", 2, 6, None, "tket", None, "rigetti", "rigetti_aspen_m2"),
         (
             "qft",
             2,
@@ -479,7 +467,7 @@ def test_unidirectional_coupling_map() -> None:
             "tket",
             None,
             "oqc",
-            None,
+            "oqc_lucy",
         ),
         (
             "qpeexact",
@@ -656,12 +644,12 @@ def test_unidirectional_coupling_map() -> None:
 def test_get_benchmark(
     benchmark_name: str,
     level: str | int,
-    circuit_size: int,
+    circuit_size: int | None,
     benchmark_instance_name: str | None,
     compiler: str,
     compiler_settings: CompilerSettings | None,
-    gate_set_name: str | None,
-    device_name: str | None,
+    gate_set_name: str,
+    device_name: str,
 ) -> None:
     qc = get_benchmark(
         benchmark_name,
@@ -677,6 +665,7 @@ def test_get_benchmark(
     if gate_set_name and "oqc" not in gate_set_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
+        assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
             assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
@@ -688,10 +677,10 @@ def test_get_benchmark_faulty_parameters() -> None:
         get_benchmark("wrong_name", 2, 6)
     match = "Selected level must be in"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             8,
-            "wrong_size",  # type: ignore[arg-type]
+            "wrong_size",
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -713,11 +702,11 @@ def test_get_benchmark_faulty_parameters() -> None:
 
     match = "benchmark_instance_name must be defined for this benchmark."
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "shor",
             1,
             3,
-            2,  # type: ignore[arg-type]
+            2,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
@@ -738,21 +727,21 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
     match = "compiler_settings must be of type CompilerSettings or None"
     with pytest.raises(ValueError, match=match):
-        get_benchmark(
+        get_benchmark(  # type: ignore[call-overload]
             "qpeexact",
             1,
             3,
             None,
             "qiskit",
-            "wrong_compiler_settings",  # type: ignore[arg-type]
+            "wrong_compiler_settings",
             "rigetti",
             "rigetti_aspen_m2",
         )
-    match = "Selected gate_set_name must be None or in"
+    match = "Selected gate_set_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
-            1,
+            2,
             3,
             None,
             "qiskit",
@@ -760,11 +749,11 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_gateset",
             "rigetti_aspen_m2",
         )
-    match = "Selected device_name must be None or in"
+    match = "Selected device_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
-            1,
+            3,
             3,
             None,
             "qiskit",
@@ -859,7 +848,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 
 def test_oqc_postprocessing() -> None:
     qc = get_benchmark("ghz", 1, 5)
-    assert qc
     directory = "."
     filename = "ghz_oqc"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -1031,4 +1019,5 @@ def test_tket_mapped_circuit_qubit_number() -> None:
         file_precheck=False,
         return_qc=True,
     )
+    assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127

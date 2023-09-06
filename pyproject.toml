@@ -19,7 +19,7 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
-    "pytket-qiskit>=0.40.0,<0.44.0",  #  manages the dependencies for qiskit and tket in a combined fashion
+    "pytket-qiskit>=0.40.0,<0.45.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "qiskit_optimization",
     "qiskit_nature",
     "qiskit_finance",
@@ -79,6 +79,10 @@ xfail_strict = true
 source = ["mqt.bench", "mqt.benchviewer"]
 
 [tool.coverage.report]
+exclude_also = [
+    '\.\.\.',
+    'if TYPE_CHECKING:',
+]
 show_missing = true
 skip_empty = true
 precision = 1
@@ -102,7 +106,7 @@ module = ["pytket.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_nature.*", "qiskit_machine_learning.*", "qiskit_finance.*","qiskit_optimization.*", "joblib.*", "networkx.*", "pandas.*"]
+module = ["qiskit.*", "qiskit_nature.*", "qiskit_finance.*","qiskit_optimization.*", "joblib.*", "networkx.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Literal, overload
 
 from mqt.bench import utils
 from pytket import OpType
-from pytket.architecture import Architecture  # type: ignore[attr-defined]
+from pytket.architecture import Architecture
 from pytket.extensions.qiskit import qiskit_to_tk
-from pytket.passes import (  # type: ignore[attr-defined]
+from pytket.passes import (
     CXMappingPass,
     FullPeepholeOptimise,
     PeepholeOptimise2Q,
@@ -16,16 +16,26 @@ from pytket.passes import (  # type: ignore[attr-defined]
     SynthesiseTket,
     auto_rebase_pass,
 )
-from pytket.placement import GraphPlacement, LinePlacement  # type: ignore[attr-defined]
+from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
-    from pytket.passes import RebaseCustom  # type: ignore[attr-defined]
 
 
-def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
+@overload
+def get_rebase(gate_set_name: str, get_gatenames: Literal[True]) -> list[str]:
+    ...
+
+
+@overload
+def get_rebase(gate_set_name: str, get_gatenames: Literal[False] = False) -> BasePass:
+    ...
+
+
+def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> BasePass | list[str]:
     if gate_set_name == "ionq":
         return get_ionq_rebase(get_gatenames)
     if gate_set_name == "oqc":
@@ -39,31 +49,31 @@ def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> RebaseCustom:
     raise ValueError("Unknown gate set name: " + gate_set_name)
 
 
-def get_ionq_rebase(get_gatenames: bool = False) -> RebaseCustom:
+def get_ionq_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
     if get_gatenames:
         return ["rz", "ry", "rx", "rxx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
 
 
-def get_quantinuum_rebase(get_gatenames: bool = False) -> RebaseCustom:
+def get_quantinuum_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
     if get_gatenames:
         return ["rz", "ry", "rx", "rzz", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.ZZPhase, OpType.Measure})
 
 
-def get_oqc_rebase(get_gatenames: bool = False) -> RebaseCustom:
+def get_oqc_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
     if get_gatenames:
         return ["rz", "sx", "x", "ecr", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure})
 
 
-def get_rigetti_rebase(get_gatenames: bool = False) -> RebaseCustom:
+def get_rigetti_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
     if get_gatenames:
         return ["rz", "rx", "cz", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.Rx, OpType.CZ, OpType.Measure})
 
 
-def get_ibm_rebase(get_gatenames: bool = False) -> RebaseCustom:
+def get_ibm_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
     if get_gatenames:
         return ["rz", "sx", "x", "cx", "measure"]
     return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.CX, OpType.Measure})
@@ -215,7 +225,7 @@ def get_native_gates_level(
         print("TKET Exception NativeGates: ", e)
         return False
 
-    native_gatenames = get_rebase(gate_set_name, True)
+    native_gatenames = get_rebase(gate_set_name, get_gatenames=True)
     native_gate_set_rebase = get_rebase(gate_set_name)
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
@@ -318,7 +328,8 @@ def get_mapped_level(
 
     native_gatenames = get_rebase(gate_set_name, True)
     native_gate_set_rebase = get_rebase(gate_set_name)
-    arch = Architecture(cmap)
+    cmap_converted = [(j, i) for (j, i) in cmap]
+    arch = Architecture(cmap_converted)
 
     # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
     highest_used_qubit_index = max(max(sublist) for sublist in cmap)
