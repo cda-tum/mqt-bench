@@ -331,7 +331,7 @@ def test_unidirectional_coupling_map() -> None:
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    cmap_converted = [(j, i) for (j, i) in utils.get_cmap_oqc_lucy()]
+    cmap_converted = list(utils.get_cmap_oqc_lucy())
     assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
 
 
