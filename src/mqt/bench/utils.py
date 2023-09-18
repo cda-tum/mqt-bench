@@ -415,3 +415,7 @@ def get_supported_devices() -> list[str]:
         "oqc_lucy",
         "quantinuum_h2",
     ]
+
+
+def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
+    return [(i, j) for (i, j) in c_map]  # noqa: C416
