@@ -418,4 +418,4 @@ def get_supported_devices() -> list[str]:
 
 
 def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
-    return [(i, j) for (i, j) in c_map]  # noqa: C416
+    return [(c[0], c[1]) for c in c_map]
