@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mqt.bench.benchmark_generator import (
     generate,
     get_benchmark,
@@ -8,8 +10,6 @@ from mqt.bench.benchmark_generator import (
     TKETSettings,
 )
 from mqt.bench import qiskit_helper, tket_helper, utils
-
-from mqt.bench._version import version as __version__
 
 __all__ = [
     "generate",
@@ -22,5 +22,4 @@ __all__ = [
     "CompilerSettings",
     "QiskitSettings",
     "TKETSettings",
-    "__version__",
 ]

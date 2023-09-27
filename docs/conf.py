@@ -10,20 +10,17 @@ ROOT = Path(__file__).parent.parent.resolve()
 
 
 try:
-    from mqt.bench import __version__ as version
+    version = metadata.version("mqt.bench")
 except ModuleNotFoundError:
-    try:
-        version = metadata.version("mqt.bench")
-    except ModuleNotFoundError:
-        msg = (
-            "Package should be installed to produce documentation! "
-            "Assuming a modern git archive was used for version discovery."
-        )
-        warnings.warn(msg, stacklevel=1)
+    msg = (
+        "Package should be installed to produce documentation! "
+        "Assuming a modern git archive was used for version discovery."
+    )
+    warnings.warn(msg, stacklevel=1)
 
-        from setuptools_scm import get_version
+    from setuptools_scm import get_version
 
-        version = get_version(root=str(ROOT), fallback_root=ROOT)
+    version = get_version(root=str(ROOT), fallback_root=ROOT)
 
 # Filter git details from version
 release = version.split("+")[0]
