@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mqt.bench.benchmark_generator import (
     generate,
     get_benchmark,
