@@ -71,7 +71,7 @@ dev = ["mqt.bench[coverage, docs]"]
 
 [project.urls]
 Homepage = "https://github.com/cda-tum/mqtbench"
-"Bug Tracker" = "https://github.com/cda-tum/mqtbench/issues"
+Issues = "https://github.com/cda-tum/mqtbench/issues"
 Discussions = "https://github.com/cda-tum/mqtbench/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum/"
 
