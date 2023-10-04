@@ -83,6 +83,9 @@ repos:
         args: []
         additional_dependencies:
           - pytket_qiskit
+          - qiskit_optimization
+          - qiskit_nature
+          - qiskit_finance
           - importlib_resources
           - pytest
           - types-setuptools
