@@ -82,13 +82,10 @@ repos:
         files: ^(src|tests|setup.py)
         args: []
         additional_dependencies:
+          - pytket_qiskit
           - importlib_resources
           - pytest
           - types-setuptools
           - types-requests
           - types-tqdm
           - types-flask
-          - pytket_qiskit
-          - qiskit_optimization
-          - qiskit_nature
-          - qiskit_finance
