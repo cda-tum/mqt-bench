@@ -115,7 +115,7 @@ module = ["pytket.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "joblib.*", "networkx.*", "pandas.*"]
+module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.ruff]
