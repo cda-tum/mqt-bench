@@ -117,6 +117,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
+extend-include = ["*.ipynb"]
 src = ["src"]
 unsafe-fixes = true
 
