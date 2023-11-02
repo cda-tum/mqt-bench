@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
-from mqt.bench import utils
 from pytket import OpType
 from pytket.architecture import Architecture
 from pytket.extensions.qiskit import qiskit_to_tk
@@ -19,6 +18,8 @@ from pytket.passes import (
 from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
+
+from mqt.bench import utils
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass

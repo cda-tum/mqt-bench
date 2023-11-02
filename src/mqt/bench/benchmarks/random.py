@@ -1,6 +1,9 @@
-from mqt.bench import utils
+from __future__ import annotations
+
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit.random import random_circuit
+
+from mqt.bench import utils
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:

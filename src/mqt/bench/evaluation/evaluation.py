@@ -7,8 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from joblib import Parallel, delayed
-from mqt.bench import utils
 from qiskit import QuantumCircuit
+
+from mqt.bench import utils
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources

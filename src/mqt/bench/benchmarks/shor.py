@@ -116,7 +116,14 @@ class Shor:
         return circuit
 
     def _controlled_multiple_mod_N(
-        self, n: int, N: int, a: int, c_phi_add_N: Gate, iphi_add_N: Gate, qft: Gate, iqft: Gate
+        self,
+        n: int,
+        N: int,
+        a: int,
+        c_phi_add_N: Gate,
+        iphi_add_N: Gate,
+        qft: Gate,
+        iqft: Gate,
     ) -> Instruction:
         """Implements modular multiplication by a as an instruction."""
         ctrl_qreg = QuantumRegister(1, "ctrl")
