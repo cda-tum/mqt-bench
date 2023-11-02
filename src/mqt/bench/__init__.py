@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmark_generator import (
-    generate,
-    get_benchmark,
     BenchmarkGenerator,
-    timeout_watcher,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
+    generate,
+    get_benchmark,
+    timeout_watcher,
 )
-from mqt.bench import qiskit_helper, tket_helper, utils
 
 __all__ = [
     "generate",

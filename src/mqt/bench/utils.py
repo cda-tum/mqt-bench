@@ -145,12 +145,7 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
 
 
 def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
-    c_map = []
-    for i in range(num_qubits):
-        for j in range(num_qubits):
-            if i != j:
-                c_map.append([i, j])
-    return c_map
+    return [[i, j] for i in range(num_qubits) for j in range(num_qubits) if i != j]
 
 
 def get_openqasm_gates() -> list[str]:
@@ -320,8 +315,7 @@ def calc_supermarq_features(
 ) -> SupermarqFeatures:
     connectivity_collection: list[list[int]] = []
     liveness_A_matrix = 0
-    for _ in range(qc.num_qubits):
-        connectivity_collection.append([])
+    connectivity_collection = [[] for _ in range(qc.num_qubits)]
 
     for instruction, qargs, _ in qc.data:
         if instruction.name in ("barrier", "measure"):
@@ -337,9 +331,7 @@ def calc_supermarq_features(
             to_be_added_entries.remove(int(qubit_index))
             connectivity_collection[int(qubit_index)].extend(to_be_added_entries)
 
-    connectivity: list[int] = []
-    for i in range(qc.num_qubits):
-        connectivity.append(len(set(connectivity_collection[i])))
+    connectivity: list[int] = [len(set(connectivity_collection[i])) for i in range(qc.num_qubits)]
 
     count_ops = qc.count_ops()
     num_gates = sum(count_ops.values())

@@ -63,20 +63,32 @@ class Backend:
             {"name": "Deutsch-Jozsa", "id": "2", "filename": "dj"},
             {"name": "Graph State", "id": "3", "filename": "graphstate"},
             {"name": "GHZ State", "id": "4", "filename": "ghz"},
-            {"name": "Grover's (no ancilla)", "id": "5", "filename": "grover-noancilla"},
+            {
+                "name": "Grover's (no ancilla)",
+                "id": "5",
+                "filename": "grover-noancilla",
+            },
             {"name": "Grover's (v-chain)", "id": "6", "filename": "grover-v-chain"},
             {
                 "name": "Portfolio Optimization with QAOA",
                 "id": "7",
                 "filename": "portfolioqaoa",
             },
-            {"name": "Portfolio Optimization with VQE", "id": "8", "filename": "portfoliovqe"},
+            {
+                "name": "Portfolio Optimization with VQE",
+                "id": "8",
+                "filename": "portfoliovqe",
+            },
             {
                 "name": "Quantum Approximation Optimization Algorithm (QAOA)",
                 "id": "9",
                 "filename": "qaoa",
             },
-            {"name": "Quantum Fourier Transformation (QFT)", "id": "10", "filename": "qft"},
+            {
+                "name": "Quantum Fourier Transformation (QFT)",
+                "id": "10",
+                "filename": "qft",
+            },
             {"name": "QFT Entangled", "id": "11", "filename": "qftentangled"},
             {"name": "Quantum Neural Network (QNN)", "id": "12", "filename": "qnn"},
             {
@@ -89,10 +101,18 @@ class Backend:
                 "id": "14",
                 "filename": "qpeinexact",
             },
-            {"name": "Quantum Walk (no ancilla)", "id": "15", "filename": "qwalk-noancilla"},
+            {
+                "name": "Quantum Walk (no ancilla)",
+                "id": "15",
+                "filename": "qwalk-noancilla",
+            },
             {"name": "Quantum Walk (v-chain)", "id": "16", "filename": "qwalk-v-chain"},
             {"name": "Random Circuit", "id": "17", "filename": "random"},
-            {"name": "Variational Quantum Eigensolver (VQE)", "id": "18", "filename": "vqe"},
+            {
+                "name": "Variational Quantum Eigensolver (VQE)",
+                "id": "18",
+                "filename": "vqe",
+            },
             {
                 "name": "Efficient SU2 ansatz with Random Parameters",
                 "id": "19",
@@ -123,7 +143,7 @@ class Backend:
         self.database: pd.DataFrame | None = None
         self.mqtbench_all_zip: ZipFile | None = None
 
-    def filter_database(self, benchmark_config: BenchmarkConfiguration) -> list[str]:  # noqa: PLR0912
+    def filter_database(self, benchmark_config: BenchmarkConfiguration) -> list[str]:
         """Filters the database according to the filter criteria.
 
         Keyword arguments:
@@ -356,7 +376,7 @@ class Backend:
             mapped_devices=mapped_devices,
         )
 
-    def read_mqtbench_all_zip(  # noqa: PLR0912
+    def read_mqtbench_all_zip(
         self,
         target_location: str,
         skip_question: bool = False,
@@ -376,9 +396,7 @@ class Backend:
             print("No benchmarks found. Querying GitHub...")
 
             version_found = False
-            available_versions = []
-            for elem in handle_github_api_request("tags").json():
-                available_versions.append(elem["name"])
+            available_versions = [elem["name"] for elem in handle_github_api_request("tags").json()]
 
             for possible_version in available_versions:
                 if version.parse(mqtbench_module_version) >= version.parse(possible_version):

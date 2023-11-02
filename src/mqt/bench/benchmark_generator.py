@@ -8,8 +8,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
 
 from joblib import Parallel, delayed
-from mqt.bench import qiskit_helper, tket_helper, utils
 from qiskit import QuantumCircuit
+
+from mqt.bench import qiskit_helper, tket_helper, utils
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -107,7 +108,11 @@ class BenchmarkGenerator:
                 instances = range(benchmark["min_uncertainty"], benchmark["max_uncertainty"])
 
             else:
-                instances = range(benchmark["min_qubits"], benchmark["max_qubits"], benchmark["stepsize"])
+                instances = range(
+                    benchmark["min_qubits"],
+                    benchmark["max_qubits"],
+                    benchmark["stepsize"],
+                )
 
             self.generate_all_benchmarks(lib, instances, file_precheck)
 
@@ -121,7 +126,7 @@ class BenchmarkGenerator:
         self.generate_native_gates_levels(file_precheck, lib, parameter_space)
         self.generate_mapped_levels(file_precheck, lib, parameter_space)
 
-    def generate_mapped_levels(  # noqa: PLR0912
+    def generate_mapped_levels(
         self,
         file_precheck: bool,
         lib: ModuleType,
@@ -243,7 +248,9 @@ class BenchmarkGenerator:
                     break
                 assert isinstance(qc, QuantumCircuit)
                 res = timeout_watcher(
-                    function, self.timeout, [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path]
+                    function,
+                    self.timeout,
+                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path],
                 )
                 if not res:
                     break
@@ -291,7 +298,7 @@ def get_benchmark(
     ...
 
 
-def get_benchmark(  # noqa: PLR0911, PLR0912, PLR0915
+def get_benchmark(
     benchmark_name: str,
     level: str | int,
     circuit_size: int | None = None,
@@ -442,13 +449,15 @@ def generate(num_jobs: int = -1) -> None:
 
 
 def timeout_watcher(
-    func: Callable[..., bool | QuantumCircuit], timeout: int, args: list[Any] | int | tuple[int, str] | str
+    func: Callable[..., bool | QuantumCircuit],
+    timeout: int,
+    args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
     class TimeoutException(Exception):  # Custom exception class
         pass
 
     def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
-        raise TimeoutException()
+        raise TimeoutException
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)

@@ -4,6 +4,7 @@ import sys
 from typing import TYPE_CHECKING
 
 import pytest
+
 from mqt.benchviewer import Backend, BenchmarkConfiguration, Server, backend
 from mqt.benchviewer.main import app
 
@@ -290,7 +291,8 @@ def test_create_database() -> None:
     backend = Backend()
 
     res_zip = backend.read_mqtbench_all_zip(
-        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+        skip_question=True,
+        target_location=str(resources.files("mqt.benchviewer") / "static" / "files"),
     )
     assert res_zip
 
@@ -358,7 +360,14 @@ def test_create_database() -> None:
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
         native_gatesets=["rigetti", "ionq", "oqc", "ibm", "quantinuum"],
-        mapped_devices=["ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "ocq_lucy", "quantinuum_h2"],
+        mapped_devices=[
+            "ibm_montreal",
+            "rigetti_aspen_m2",
+            "ionq_harmony",
+            "ionq_aria1",
+            "ocq_lucy",
+            "quantinuum_h2",
+        ],
         mapped_tket_placements=["graph", "line"],
         native_qiskit_opt_lvls=[0, 3],
         mapped_qiskit_opt_lvls=[0, 3],
@@ -386,7 +395,8 @@ def test_create_database() -> None:
 def test_streaming_zip() -> None:
     backend = Backend()
     backend.read_mqtbench_all_zip(
-        skip_question=True, target_location=str(resources.files("mqt.benchviewer") / "static" / "files")
+        skip_question=True,
+        target_location=str(resources.files("mqt.benchviewer") / "static" / "files"),
     )
     res = backend.generate_zip_ephemeral_chunks(filenames=["ae_indep_qiskit_2.qasm", "ae_indep_qiskit_3.qasm"])
     assert list(res)
