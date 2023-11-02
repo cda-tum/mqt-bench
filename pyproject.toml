@@ -169,6 +169,7 @@ isort.required-imports = ["from __future__ import annotations"]
     "D",    # pydocstyle
     "E402", # Allow imports to appear anywhere in Jupyter notebooks
     "I002", # Allow missing `from __future__ import annotations` import
+    "ISC001", # Added because of ruff-format warning
 ]
 
 [tool.ruff.pydocstyle]
