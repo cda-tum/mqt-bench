@@ -251,7 +251,7 @@ from mqt.bench import get_benchmark
 qc = get_benchmark("dj", "alg", 5)
 ```
 
-Examples can be found in the [notebooks/examples.ipynb](docs/source/Quickstart.ipynb) jupyter notebook.
+Examples can be found in the [notebooks/Quickstart.ipynb](notebooks/Quickstart.ipynb) jupyter notebook.
 
 ### Locally hosting the MQT Bench Viewer
 
