@@ -17,131 +17,139 @@
 MQT Bench is a quantum circuit benchmark suite with cross-level support, i.e., providing the same benchmark algorithms for different abstraction levels throughout the quantum computing
 software stack.
 
+<p align="center">
+  <a href="https://mqt.readthedocs.io/projects/bench">
+  <img width=30% src="https://img.shields.io/badge/documentation-blue?style=for-the-badge&logo=read%20the%20docs" alt="Documentation" />
+  </a>
+</p>
+
+If you have any questions, feel free to contact us via [quantum.cda@xcit.tum.de](mailto:quantum.cda@xcit.tum.de) or by creating an issue on [GitHub](https://github.com/cda-tum/mqt-bench/issues).
+
 MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/) and is hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
 [<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
 
 This documentation explains how to use MQT Bench to create and filter benchmarks.
 
-## Abstraction Levels
-
-It uses the structure proposed by the openQASM 3.0 specification [[1]](https://arxiv.org/abs/2104.14722) and offers benchmarks
-on four different abstraction levels:
-
-1. Algorithmic Level
-2. Target-independent Level
-3. Target-dependent Native Gates Level
-4. Target-dependent Mapped Level
-
-An example is given in the following:
-
-1. Algorithmic Level
-
-<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_1.png"  align="center" width="250">
-
-Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of
-applications. A respective circuit is shown above, it represents an example of an ansatz function
-frequently used for Variational Quantum Eigensolvers (VQEs), a subclass of VQAs. On this abstraction
-level, the circuit is parameterized by the angles θ<sub>i</sub> of the six single-qubit gates.
-
-2. Target-independent Level
-
-<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_2.png"  align="center" width="250">
-
-VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are
-iteratively updated by a classical optimizer analogous to conventional gradient-based optimization.
-Consider again the circuit from the previous figure. Assuming these parameters have been determined,
-e.g., θ<sub>i</sub> = −π for i = 0, ..., 5, they are now propagated and the resulting quantum circuit is
-shown above.
-
-3. Target-dependent Native Gates Level
-
-<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_3.png"  align="center" width="250"/>
-
-Different quantum computer realizations support
-different native gate-sets. In our example, we consider the
-IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates.
-Consequently, the Ry gates in the previous figure have to be converted using only these native gates. In this case,
-they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
-
-4. Target-dependent Mapped Level
-
-<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_4.png"  align="center" width="300"/>
-<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/arch.png"  align="right" width="100"/>
-
-The architecture of the IBMQ Manila device is shown
-above on the right and it defines between which qubits a two-qubit operation may be performed.
-Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits,
-there is no mapping directly matching the target architecture's layout. As a consequence,
-a non-trivial mapping followed by a round of optimization leads to the resulting circuit
-shown above on the left. This is also the reason for the different sequence of CX gates compared
-to the previous example.
-
-This circuit is now executable on the IBMQ Manila device, since all hardware induced requirements are fulfilled.
-
-## Benchmark Selection
-
-So far, the following benchmarks are implemented and provided:
-
-- Amplitude Estimation
-- Deutsch-Jozsa
-- GHZ State
-- Graph State
-- Ground State
-- Grover's (no ancilla)
-- Grover's (v-chain)
-- Portfolio Optimization with QAOA
-- Portfolio Optimization with VQE
-- Pricing Call Option
-- Pricing Put Option
-- Quantum Fourier Transformation (QFT)
-- QFT Entangled
-- Quantum Neural Network (QNN)
-- Quantum Phase Estimation (QPE) Exact
-- Quantum Phase Estimation (QPE) Inexact
-- Quantum Walk (no ancilla)
-- Quantum Walk (-chain)
-- Random Circuit
-- Routing
-- Shor's
-- Travelling Salesman
-- Variational Quantum Eigensolver (VQE)
-- VQE-ansätze with random values:
-  - Efficient SU2 ansatz with Random Parameters
-  - Real Amplitudes ansatz with Random Parameters
-  - Two Local ansatz with Random Parameters
-- W-State
-
-See the [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description) for further details on the individual benchmarks.
-
-## Quantum Circuit Compiler Support
-
-At the moment, two compilers are supported:
-
-1. [Qiskit](https://qiskit.org/documentation/) with the compiler settings: Optimization level 0 to 3
-2. [TKET](https://cqcl.github.io/tket/pytket/api/) with the compiler settings: Line placement and graph placement
-
-## Native Gate-Set Support
-
-So far, MQT Bench supports the following native gate-sets:
-
-1. IBMQ gate-set: _\['rz', 'sx', 'x', 'cx', 'measure'\]_
-2. Rigetti gate-set: _\['rx', 'rz', 'cz', 'measure'\]_
-3. IonQ gate-set: _\['rxx', 'rz', 'ry', 'rx', 'measure'\]_
-4. OQC gate-set: _\['rz', 'sx', 'x', 'ecr', 'measure'\]_
-5. Quantinuum gate-set: _\['rzz', 'rz', 'ry', 'rx', 'measure'\]_
-
-## Device Support
-
-So far, MQT Bench supports the following devices:
-
-1. IBMQ Washington with 127 qubits
-2. IBMQ Montreal with 27 qubits
-3. Rigetti Aspen-M2 with 80 qubits
-4. IonQ Harmony with 11 qubits
-5. IonQ Aria 1 with 25 qubits
-6. OQC Lucy with 8 qubits
-7. Quantinuum H2 with 32 qubits
+[//]: # "## Abstraction Levels"
+[//]: #
+[//]: # "It uses the structure proposed by the openQASM 3.0 specification [[1]](https://arxiv.org/abs/2104.14722) and offers benchmarks"
+[//]: # "on four different abstraction levels:"
+[//]: #
+[//]: # "1. Algorithmic Level"
+[//]: # "2. Target-independent Level"
+[//]: # "3. Target-dependent Native Gates Level"
+[//]: # "4. Target-dependent Mapped Level"
+[//]: #
+[//]: # "An example is given in the following:"
+[//]: #
+[//]: # "1. Algorithmic Level"
+[//]: #
+[//]: # '<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_1.png"  align="center" width="250">'
+[//]: #
+[//]: # "Variational Quantum Algorithms (VQAs) are an emerging class of quantum algorithms with a wide range of"
+[//]: # "applications. A respective circuit is shown above, it represents an example of an ansatz function"
+[//]: # "frequently used for Variational Quantum Eigensolvers (VQEs), a subclass of VQAs. On this abstraction"
+[//]: # "level, the circuit is parameterized by the angles θ<sub>i</sub> of the six single-qubit gates."
+[//]: #
+[//]: # "2. Target-independent Level"
+[//]: #
+[//]: # '<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_2.png"  align="center" width="250">'
+[//]: #
+[//]: # "VQAs are hybrid quantum-classical algorithms, where the parameters of the quantum ansatz are"
+[//]: # "iteratively updated by a classical optimizer analogous to conventional gradient-based optimization."
+[//]: # "Consider again the circuit from the previous figure. Assuming these parameters have been determined,"
+[//]: # "e.g., θ<sub>i</sub> = −π for i = 0, ..., 5, they are now propagated and the resulting quantum circuit is"
+[//]: # "shown above."
+[//]: #
+[//]: # "3. Target-dependent Native Gates Level"
+[//]: #
+[//]: # '<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_3.png"  align="center" width="250"/>'
+[//]: #
+[//]: # "Different quantum computer realizations support"
+[//]: # "different native gate-sets. In our example, we consider the"
+[//]: # "IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates."
+[//]: # "Consequently, the Ry gates in the previous figure have to be converted using only these native gates. In this case,"
+[//]: # "they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π)."
+[//]: #
+[//]: # "4. Target-dependent Mapped Level"
+[//]: #
+[//]: # '<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/level_4.png"  align="center" width="300"/>'
+[//]: # '<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/arch.png"  align="right" width="100"/>'
+[//]: #
+[//]: # "The architecture of the IBMQ Manila device is shown"
+[//]: # "above on the right and it defines between which qubits a two-qubit operation may be performed."
+[//]: # "Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits,"
+[//]: # "there is no mapping directly matching the target architecture's layout. As a consequence,"
+[//]: # "a non-trivial mapping followed by a round of optimization leads to the resulting circuit"
+[//]: # "shown above on the left. This is also the reason for the different sequence of CX gates compared"
+[//]: # "to the previous example."
+[//]: #
+[//]: # "This circuit is now executable on the IBMQ Manila device, since all hardware induced requirements are fulfilled."
+[//]: #
+[//]: # "## Benchmark Selection"
+[//]: #
+[//]: # "So far, the following benchmarks are implemented and provided:"
+[//]: #
+[//]: # "- Amplitude Estimation"
+[//]: # "- Deutsch-Jozsa"
+[//]: # "- GHZ State"
+[//]: # "- Graph State"
+[//]: # "- Ground State"
+[//]: # "- Grover's (no ancilla)"
+[//]: # "- Grover's (v-chain)"
+[//]: # "- Portfolio Optimization with QAOA"
+[//]: # "- Portfolio Optimization with VQE"
+[//]: # "- Pricing Call Option"
+[//]: # "- Pricing Put Option"
+[//]: # "- Quantum Fourier Transformation (QFT)"
+[//]: # "- QFT Entangled"
+[//]: # "- Quantum Neural Network (QNN)"
+[//]: # "- Quantum Phase Estimation (QPE) Exact"
+[//]: # "- Quantum Phase Estimation (QPE) Inexact"
+[//]: # "- Quantum Walk (no ancilla)"
+[//]: # "- Quantum Walk (-chain)"
+[//]: # "- Random Circuit"
+[//]: # "- Routing"
+[//]: # "- Shor's"
+[//]: # "- Travelling Salesman"
+[//]: # "- Variational Quantum Eigensolver (VQE)"
+[//]: # "- VQE-ansätze with random values:"
+[//]: # "  - Efficient SU2 ansatz with Random Parameters"
+[//]: # "  - Real Amplitudes ansatz with Random Parameters"
+[//]: # "  - Two Local ansatz with Random Parameters"
+[//]: # "- W-State"
+[//]: #
+[//]: # "See the [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description) for further details on the individual benchmarks."
+[//]: #
+[//]: # "## Quantum Circuit Compiler Support"
+[//]: #
+[//]: # "At the moment, two compilers are supported:"
+[//]: #
+[//]: # "1. [Qiskit](https://qiskit.org/documentation/) with the compiler settings: Optimization level 0 to 3"
+[//]: # "2. [TKET](https://cqcl.github.io/tket/pytket/api/) with the compiler settings: Line placement and graph placement"
+[//]: #
+[//]: # "## Native Gate-Set Support"
+[//]: #
+[//]: # "So far, MQT Bench supports the following native gate-sets:"
+[//]: #
+[//]: # "1. IBMQ gate-set: _['rz', 'sx', 'x', 'cx', 'measure']_"
+[//]: # "2. Rigetti gate-set: _['rx', 'rz', 'cz', 'measure']_"
+[//]: # "3. IonQ gate-set: _['rxx', 'rz', 'ry', 'rx', 'measure']_"
+[//]: # "4. OQC gate-set: _['rz', 'sx', 'x', 'ecr', 'measure']_"
+[//]: # "5. Quantinuum gate-set: _['rzz', 'rz', 'ry', 'rx', 'measure']_"
+[//]: #
+[//]: # "## Device Support"
+[//]: #
+[//]: # "So far, MQT Bench supports the following devices:"
+[//]: #
+[//]: # "1. IBMQ Washington with 127 qubits"
+[//]: # "2. IBMQ Montreal with 27 qubits"
+[//]: # "3. Rigetti Aspen-M2 with 80 qubits"
+[//]: # "4. IonQ Harmony with 11 qubits"
+[//]: # "5. IonQ Aria 1 with 25 qubits"
+[//]: # "6. OQC Lucy with 8 qubits"
+[//]: # "7. Quantinuum H2 with 32 qubits"
 
 # Repository Structure
 
@@ -242,37 +250,38 @@ Hereby, the mappings between shortened `benchmark_name` and actual benchmarks ar
 | `"pricingput"`       | Pricing Put Option                                  |
 | `"groundstate"`      | Ground State                                        |
 | `"routing"`          | Routing                                             |
-| `"tsp"`              | Travelling Salesman                                 |
 
-For example, in order to obtain the _5_-qubit Deutsch-Josza benchmark on algorithm level, use the following:
-
-```python
-from mqt.bench import get_benchmark
-
-qc = get_benchmark("dj", "alg", 5)
-```
-
-Examples can be found in the [docs/source/Quickstart.ipynb](docs/source/Quickstart.ipynb) jupyter notebook.
-
-### Locally hosting the MQT Bench Viewer
-
-Additionally, this python package includes the same webserver used for the hosting of the
-[MQT Bench webpage](https://www.cda.cit.tum.de/mqtbench).
-
-After the `mqt.bench` Python package is installed via
-
-```console
-(venv) $ pip install mqt.bench
-```
-
-the MQT Bench Viewer can be started from the terminal via
-
-```console
-(venv) $ mqt.bench
-```
-
-This first searches for the most recent version of the benchmark files on GitHub and offers to download them.
-Afterwards, the webserver is started locally.
+[//]: # '| `"tsp"`              | Travelling Salesman                                 |'
+[//]: #
+[//]: # "For example, in order to obtain the _5_-qubit Deutsch-Josza benchmark on algorithm level, use the following:"
+[//]: #
+[//]: # "```python"
+[//]: # "from mqt.bench import get_benchmark"
+[//]: #
+[//]: # 'qc = get_benchmark("dj", "alg", 5)'
+[//]: # "```"
+[//]: #
+[//]: # "Examples can be found in the [docs/source/Quickstart.ipynb](docs/source/Quickstart.ipynb) jupyter notebook."
+[//]: #
+[//]: # "### Locally hosting the MQT Bench Viewer"
+[//]: #
+[//]: # "Additionally, this python package includes the same webserver used for the hosting of the"
+[//]: # "[MQT Bench webpage](https://www.cda.cit.tum.de/mqtbench)."
+[//]: #
+[//]: # "After the `mqt.bench` Python package is installed via"
+[//]: #
+[//]: # "```console"
+[//]: # "(venv) $ pip install mqt.bench"
+[//]: # "```"
+[//]: #
+[//]: # "the MQT Bench Viewer can be started from the terminal via"
+[//]: #
+[//]: # "```console"
+[//]: # "(venv) $ mqt.bench"
+[//]: # "```"
+[//]: #
+[//]: # "This first searches for the most recent version of the benchmark files on GitHub and offers to download them."
+[//]: # "Afterwards, the webserver is started locally."
 
 ## Usage directly via this repository
 
