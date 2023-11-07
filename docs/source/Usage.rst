@@ -137,7 +137,7 @@ For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algor
 Examples can be found in the `docs/source/Quickstart.ipynb <docs/source/Quickstart.ipynb>`_ jupyter notebook.
 
 Locally hosting the MQT Bench Viewer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------
 
 Additionally, this python package includes the same webserver used for the hosting of the
 `MQT Bench webpage <https://www.cda.cit.tum.de/mqtbench>`_.
