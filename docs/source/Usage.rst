@@ -1,12 +1,5 @@
-Usage
---------------------------------
-MQT Bench is hosted at is hosted at `https://www.cda.cit.tum.de/mqtbench/ <https://www.cda.cit.tum.de/mqtbench/>`_.
-`\ :raw-html-m2r:`<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqtbench.png" align="center" width="500" >` <https://www.cda.cit.tum.de/mqtbench>`_
-
-
 Repository Usage
 ================
-
 There are three ways how to use this benchmark suite:
 
 
