@@ -62,7 +62,7 @@ Initial Setup
     If you use macOS, then pre-commit is in brew, use :code:`brew install pre-commit`.
 
 Building the Python module
-#############
+##########################
 
 The recommended way of building the Python module is to perform an editable install using `pip <https://pip.pypa.io/en/stable/>`_.
 

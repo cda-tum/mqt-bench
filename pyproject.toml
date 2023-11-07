@@ -66,7 +66,7 @@ docs = [
     "nbsphinx",
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
-    "qiskit-terra[visualization]",
+    "matplotlib",
 ]
 dev = ["mqt.bench[coverage, docs]"]
 
