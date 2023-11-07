@@ -7,8 +7,8 @@
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqt_light.png" width="60%">
-  <img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqt_dark.png" width="60%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/source/_static/mqt_light.png" width="60%">
+  <img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/source/_static/mqt_dark.png" width="60%">
 </picture>
 </p>
 
@@ -27,7 +27,7 @@ If you have any questions, feel free to contact us via [quantum.cda@xcit.tum.de]
 
 MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/) and is hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
-[<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/img/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
+[<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/source/_static/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
 
 ## Getting Started
 
