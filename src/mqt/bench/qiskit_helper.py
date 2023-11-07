@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Literal, overload
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
-from mqt.bench import utils
 from qiskit.compiler import transpile
+
+from mqt.bench import utils
 
 
 def get_native_gates(gate_set_name: str) -> list[str]:

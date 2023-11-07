@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mqt.bench.utils import get_examplary_max_cut_qp
 from qiskit.algorithms.minimum_eigensolvers import QAOA
 from qiskit.algorithms.optimizers import SLSQP
 from qiskit.primitives import Sampler
 from qiskit_optimization import QuadraticProgram
+
+from mqt.bench.utils import get_examplary_max_cut_qp
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit

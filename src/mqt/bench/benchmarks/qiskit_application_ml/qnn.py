@@ -1,4 +1,6 @@
 # inspired from https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html
+from __future__ import annotations
+
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap

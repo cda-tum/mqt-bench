@@ -24,7 +24,11 @@ class Initializer:
 
     def generate_instance(
         self,
-    ) -> tuple[NDArray[np.float_], NDArray[np.float_], NDArray[np.float_],]:
+    ) -> tuple[
+        NDArray[np.float_],
+        NDArray[np.float_],
+        NDArray[np.float_],
+    ]:
         n = self.n
         np.random.seed(10)
 
@@ -94,7 +98,10 @@ class QuantumOptimizer:
         try:
             # Evaluates the cost distance from a binary representation of a path
             def fun(x: NDArray[np.float_]) -> float:
-                return cast(float, np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c)
+                return cast(
+                    float,
+                    np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c,
+                )
 
             cost = fun(x_sol)
         except Exception:

@@ -10,6 +10,9 @@ if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
+from pytket.extensions.qiskit import tk_to_qiskit
+from qiskit import QuantumCircuit
+
 from mqt.bench import (
     BenchmarkGenerator,
     CompilerSettings,
@@ -50,8 +53,6 @@ from mqt.bench.benchmarks import (
     vqe,
     wstate,
 )
-from pytket.extensions.qiskit import tk_to_qiskit
-from qiskit import QuantumCircuit
 
 
 @pytest.fixture()
