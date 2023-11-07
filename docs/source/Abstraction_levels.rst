@@ -1,7 +1,7 @@
 Abstraction Levels
 ==================
 
-It uses the structure proposed by the openQASM 3.0 specification `[1] <https://arxiv.org/abs/2104.14722>`_ and offers benchmarks
+It uses the structure proposed by the openQASM 3.0 specification [1]_ and offers benchmarks
 on four different abstraction levels:
 
 
@@ -52,7 +52,7 @@ shown above.
 
 Different quantum computer realizations support
 different native gate-sets. In our example, we consider the
-IBMQ Manila device as the target device which natively supports I, X, √X, Rz and CX gates.
+`ibmq_manila` device as the target device which natively supports I, X, √X, Rz and CX gates.
 Consequently, the Ry gates in the previous figure have to be converted using only these native gates. In this case,
 they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
 
@@ -82,4 +82,4 @@ to the previous example.
 
 This circuit is now executable on the IBMQ Manila device, since all hardware induced requirements are fulfilled.
 
-[1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021
+[1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, `arXiv:2104.14722 <https://arxiv.org/abs/2104.14722>`_, 2021
