@@ -59,3 +59,5 @@ shown above on the left. This is also the reason for the different sequence of C
 to the previous example.
 
 This circuit is now executable on the IBMQ Manila device, since all hardware induced requirements are fulfilled.
+
+[1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, [arXiv:2104.14722](https://arxiv.org/abs/2104.14722), 2021
