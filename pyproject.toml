@@ -67,6 +67,7 @@ docs = [
     "sphinxext-opengraph",
     "sphinx-autodoc-typehints",
     "matplotlib",
+    "pylatexenc",
 ]
 dev = ["mqt.bench[coverage, docs]"]
 
