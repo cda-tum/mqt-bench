@@ -1,7 +1,7 @@
-Parameter Space for `mqt.bench.get_benchmark()`
+Parameter Space
 ================================================
 
-The ``get_benchmark`` method has the following signature:
+The ``mqt.bench.get_benchmark`` method has the following signature:
 
 .. code-block:: python
 
