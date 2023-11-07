@@ -62,6 +62,15 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_reftypes = ["*"]
 
+nbsphinx_execute = "auto"
+highlight_language = "python3"
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc=figure.dpi=200",
+]
+nbsphinx_kernel_name = "python3"
+
+
 myst_enable_extensions = [
     "colon_fence",
     "substitution",
