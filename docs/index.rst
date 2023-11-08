@@ -23,8 +23,8 @@ We appreciate any feedback and contributions to the project. If you want to cont
     Quickstart
     Usage
     Abstraction_levels
-    Benchmark_selection
     Parameter
+    Benchmark_selection
     Publications
 
  .. toctree::
