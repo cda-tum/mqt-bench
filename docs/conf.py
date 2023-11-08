@@ -129,6 +129,6 @@ html_theme_options = {
     "dark_logo": "mqt_light.png",
     "source_repository": "https://github.com/cda-tum/mqt-bench/",
     "source_branch": "main",
-    "source_directory": "docs/source",
+    "source_directory": "docs/",
     "navigation_with_keys": True,
 }
