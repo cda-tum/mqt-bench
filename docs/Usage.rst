@@ -32,7 +32,7 @@ For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algor
 
    qc = get_benchmark("dj", "alg", 5)
 
-Examples can be found in the `docs/source/Quickstart.ipynb <docs/source/Quickstart.ipynb>`_ jupyter notebook.
+Examples can be found in the `docs/Quickstart.ipynb <docs/Quickstart.ipynb>`_ jupyter notebook.
 
 Locally hosting the MQT Bench Viewer
 ------------------------------------
