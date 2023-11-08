@@ -115,6 +115,22 @@ copybutton_line_continuation_character = "\\"
 
 autosummary_generate = True
 
+autoapi_dirs = ["../src/mqt"]
+autoapi_python_use_implicit_namespaces = True
+autoapi_root = "api"
+autoapi_add_toctree_entry = False
+autoapi_ignore = [
+    "*/**/_version.py",
+]
+autoapi_options = [
+    "members",
+    "inherited-members",
+    "imported-members",
+    "show-inheritance",
+    "special-members",
+    "undoc-members",
+]
+
 typehints_use_rtype = False
 napoleon_use_rtype = False
 napoleon_google_docstring = True
