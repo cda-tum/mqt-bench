@@ -39,7 +39,6 @@ language = "en"
 project_copyright = "2023, Chair for Design Automation, Technical University of Munich"
 # -- General configuration ---------------------------------------------------
 extensions = [
-    "autoapi.extension",
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -54,6 +53,7 @@ extensions = [
     "nbsphinx",
     "sphinxext.opengraph",
     "sphinx_autodoc_typehints",
+    "autoapi.extension",
 ]
 
 pygments_style = "colorful"
@@ -116,7 +116,7 @@ copybutton_line_continuation_character = "\\"
 
 autosummary_generate = True
 
-autoapi_dirs = ["../src/mqt"]
+autoapi_dirs = ["../../src/mqt"]
 autoapi_python_use_implicit_namespaces = True
 autoapi_root = "api"
 autoapi_add_toctree_entry = False
