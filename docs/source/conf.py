@@ -39,6 +39,7 @@ language = "en"
 project_copyright = "2023, Chair for Design Automation, Technical University of Munich"
 # -- General configuration ---------------------------------------------------
 extensions = [
+    "autoapi.extension",
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
