@@ -1,5 +1,5 @@
 Quantum Circuit Compiler Support
---------------------------------
+================================
 
 At the moment, two compilers are supported:
 
