@@ -2,6 +2,7 @@ Welcome to MQT Bench's documentation!
 =====================================
 
 MQT Bench is a tool for benchmarking quantum software tools developed as part of the `Munich Quantum Toolkit <https://mqt.readthedocs.io>`_ (*MQT*) by the `Chair for Design Automation <https://www.cda.cit.tum.de/>`_ at the `Technical University of Munich <https://www.tum.de>`_.
+
 We recommend you to start with the :doc:`quickstart guide <Quickstart>`.
 If you are interested in the theory behind MQT Bench, have a look at the publications in the :doc:`publication list <Publications>`.
 
