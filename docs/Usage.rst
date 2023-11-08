@@ -20,19 +20,8 @@ MQT Bench is available via `PyPI <https://pypi.org/project/mqt.bench/>`_
 
 To generate a benchmark circuit, use the ``get_benchmark`` method:
 
-.. code-block:: python
-
-   def get_benchmark(
-       benchmark_name: str,
-       level: Union[str, int],
-       circuit_size: int = None,
-       benchmark_instance_name: str = None,
-       compiler: str = "qiskit",
-       compiler_settings: mqt.bench.CompilerSettings = None,
-       gate_set_name: str = "ibm",
-       device_name: str = "ibm_washington",
-   ):
-       ...
+    .. automodule:: mqt.bench.benchmark_generator
+        :members: get_benchmark
 
 The available parameters are described on the :doc:`parameter space description page <Parameter>` and the algorithms are described on the :doc:`algorithm page <Benchmark_selection>`.
 For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algorithm level, use the following:
@@ -46,7 +35,7 @@ For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algor
 Examples can be found in the `docs/source/Quickstart.ipynb <docs/source/Quickstart.ipynb>`_ jupyter notebook.
 
 Locally hosting the MQT Bench Viewer
-----------------------------------
+------------------------------------
 
 Additionally, this python package includes the same webserver used for the hosting of the
 `MQT Bench webpage <https://www.cda.cit.tum.de/mqtbench>`_.

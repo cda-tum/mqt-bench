@@ -68,8 +68,6 @@ docs = [
     "sphinx-autodoc-typehints",
     "matplotlib",
     "pylatexenc",
-    "sphinx-autodoc-typehints",
-    "sphinx-autoapi",
 ]
 dev = ["mqt.bench[coverage, docs]"]
 

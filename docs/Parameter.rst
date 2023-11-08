@@ -3,20 +3,8 @@ Parameter Space
 
 The ``mqt.bench.get_benchmark`` method has the following signature:
 
-.. code-block:: python
-
-   def get_benchmark(
-       benchmark_name: str,
-       level: Union[str, int],
-       circuit_size: int = None,
-       benchmark_instance_name: str = None,
-       compiler: str = "qiskit",
-       compiler_settings: mqt.bench.CompilerSettings = None,
-       gate_set_name: str = "ibm",
-       device_name: str = "ibm_washington",
-   ):
-       ...
-
+    .. automodule:: mqt.bench.benchmark_generator
+        :members: get_benchmark
 
 * ``benchmark_name``\ : ``"ae"``\ , ``"dj"``\ , ``"grover-noancilla"``\ , ``"grover-v-chain"``\ , ``"ghz"``\ , ``"graphstate"``\ , ``"portfolioqaoa"``\ ,
   ``"portfoliovqe"``\ , ``"qaoa"``\ , ``"qft"``\ , ``"qftentangled"``\ , ``"qnn"``\ , ``"qpeexact"``\ , ``"qpeinexact"``\ ,
@@ -38,6 +26,9 @@ The ``mqt.bench.get_benchmark`` method has the following signature:
        tket=TKETSettings(placement="lineplacement"),
    )
 
+with
+    .. automodule:: mqt.bench.benchmark_generator
+        :members: CompilerSettings, QiskitSettings, TKETSettings
 
 * ``gate_set_name``\ : ``"ibm"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"oqc"``\ , or ``"quantinuum"``
 * ``device_name``\ : ``"ibm_washington"``\ , ``"ibm_montreal"``\ , ``"rigetti_aspen_m2"``\ , ``"ionq_harmony"``\ , ``"ionq_aria1"``\ , ``"oqc_lucy"``\ , or ``"quantinuum_h2"``
