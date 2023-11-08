@@ -49,7 +49,7 @@ Core Guidelines
 - If you fixed a bug, you should add tests that demonstrate that the bug has been fixed.
 - Document your code thoroughly and write readable code.
 - Keep your code clean. Remove any debug statements, left-over comments, or code unrelated to your contribution.
-- Run :code:`nox -rs lint` to check your code for style and linting errors before committing.
+- Run :code:`pre-commit run -a` to check your code for style and linting errors before committing.
 
 Pull Request Workflow
 #####################
