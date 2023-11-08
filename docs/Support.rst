@@ -1,1 +1,1 @@
-.. include:: ../../.github/support.rst
+.. include:: ../.github/support.rst

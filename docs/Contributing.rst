@@ -1,1 +1,1 @@
-.. include:: ../../.github/contributing.rst
+.. include:: ../.github/contributing.rst
