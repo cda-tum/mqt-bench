@@ -16,7 +16,7 @@ We appreciate any feedback and contributions to the project. If you want to cont
     self
 
  .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: User Guide
     :glob:
 
@@ -29,7 +29,7 @@ We appreciate any feedback and contributions to the project. If you want to cont
     Publications
 
  .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Developers
     :glob:
 
