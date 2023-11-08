@@ -10,15 +10,15 @@ We appreciate any feedback and contributions to the project. If you want to cont
 
 ----
 
-    .. toctree::
-        :hidden:
+ .. toctree::
+    :hidden:
 
-        self
+    self
 
-    .. toctree::
-        :maxdepth: 2
-        :caption: User Guide
-        :glob:
+ .. toctree::
+    :maxdepth: 2
+    :caption: User Guide
+    :glob:
 
     Quickstart
     Usage
@@ -28,13 +28,13 @@ We appreciate any feedback and contributions to the project. If you want to cont
     Support_Setup
     Publications
 
-    .. toctree::
-        :maxdepth: 2
-        :caption: Developers
-        :glob:
+ .. toctree::
+    :maxdepth: 2
+    :caption: Developers
+    :glob:
 
-        Contributing
-        DevelopmentGuide
-        Support
+    Contributing
+    DevelopmentGuide
+    Support
 
 ----
