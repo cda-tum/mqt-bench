@@ -25,7 +25,6 @@ We appreciate any feedback and contributions to the project. If you want to cont
     Abstraction_levels
     Benchmark_selection
     Parameter
-    Support_Setup
     Publications
 
  .. toctree::
