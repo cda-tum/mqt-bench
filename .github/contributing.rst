@@ -32,7 +32,7 @@ You can contribute in several ways:
 🎉 Get Started
 ##############
 
-Ready to contribute? Check out the :doc:`Development Guide <DevelopmentGuide>` to set up bench for local development and learn about the style guidelines and conventions used throughout the project.
+Ready to contribute? Check out the :doc:`Development Guide <DevelopmentGuide>` to set up mqt-bench for local development and learn about the style guidelines and conventions used throughout the project.
 
 We value contributions from people with all levels of experience.
 In particular if this is your first PR not everything has to be perfect.
