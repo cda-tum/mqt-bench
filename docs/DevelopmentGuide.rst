@@ -91,8 +91,7 @@ Python Code Formatting and Linting
 The Python code is formatted and linted using a collection of `pre-commit hooks <https://pre-commit.com/>`_.
 This collection includes:
 
-- `black <https://docs.astral.sh/ruff/>`_ -- a code linter and formatter that automatically formats Python code according to the `PEP 8 style guide <https://www.python.org/dev/peps/pep-0008/>`_
-- `isort <https://pycqa.github.io/isort/>`_ -- a tool that automatically sorts Python imports according to the `PEP 8 style guide <https://www.python.org/dev/peps/pep-0008/>`_
+- `ruff <https://docs.astral.sh/ruff/>`_ -- an extremely fast Python linter and formatter, written in Rust.
 - `mypy <http://mypy-lang.org/>`_ -- a static type checker for Python code
 
 There are two ways of using these hooks:
