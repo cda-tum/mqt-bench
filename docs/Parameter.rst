@@ -1,5 +1,5 @@
 Parameter Space
-================================================
+=============
 
 The ``mqt.bench.get_benchmark`` method has the following signature:
 
