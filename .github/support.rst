@@ -5,7 +5,7 @@ If you are stuck with a problem using mqt-bench or have questions, please do get
 
 You can save time by following this procedure when reporting a problem:
 
-- Do try to solve the problem on your own first. Make sure to consult the `Documentation <https://mqt.readthedocs.io/projects/mqt-bench>`_.
+- Do try to solve the problem on your own first. Make sure to consult the `Documentation <https://mqt.readthedocs.io/projects/bench>`_.
 - Search through past `Issues <https://github.com/cda-tum/mqt-bench/issues>`_ to see if someone else already had the same problem.
 - Before filing a bug report, try to create a minimal working example (MWE) that reproduces the problem. It's much easier to identify the cause for the problem if a handful of lines suffice to show that something isn't working.
 
