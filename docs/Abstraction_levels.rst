@@ -16,7 +16,7 @@ An example is given in the following:
 1. Algorithmic Level
 --------------------
 
-.. image:: /img/level_1.png
+.. image:: /_static/level_1.png
    :width: 50%
    :alt: Illustration of the algorithmic level
    :align: center
@@ -30,7 +30,7 @@ level, the circuit is parameterized by the angles :math:`\theta_i` of the six si
 2. Target-independent Level
 ----------------------------
 
-.. image:: /img/level_2.png
+.. image:: /_static/level_2.png
    :width: 50%
    :alt: Illustration of the target-independent level
    :align: center
@@ -45,7 +45,7 @@ shown above.
 3. Target-dependent Native Gates Level
 ---------------------------------------
 
-.. image:: /img/level_3.png
+.. image:: /_static/level_3.png
    :width: 50%
    :alt: Illustration of the target-dependent native gates level
    :align: center
@@ -61,7 +61,7 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 ---------------------------------
 
 
-.. image:: /img/arch.png
+.. image:: /_static/arch.png
    :width: 15%
    :alt: Illustration of the `ibmq_manila` device
    :align: center
@@ -72,7 +72,7 @@ there is no mapping directly matching the target architecture's layout. As a con
 a non-trivial mapping followed by a round of optimization leads to the resulting circuit
 shown below.
 
-.. image:: /img/level_4.png
+.. image:: /_static/level_4.png
    :width: 50%
    :alt: Illustration of the target-dependent mapped level
    :align: center
