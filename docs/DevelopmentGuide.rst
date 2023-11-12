@@ -94,10 +94,9 @@ This collection includes:
 - `ruff <https://docs.astral.sh/ruff/>`_ -- an extremely fast Python linter and formatter, written in Rust.
 - `mypy <http://mypy-lang.org/>`_ -- a static type checker for Python code
 
-There are two ways of using these hooks:
 
-- You can install the hooks manually by running :code:`pre-commit install` in the project root directory.
-  The hooks will then be executed automatically when committing changes.
+You can install the hooks manually by running :code:`pre-commit install` in the project root directory.
+The hooks will then be executed automatically when committing changes.
 
     .. code-block:: console
 
