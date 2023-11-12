@@ -1,7 +1,7 @@
 Abstraction Levels
 ==================
 
-MQT Bench uses the structure proposed by the OpenQASM 3.0 specification [1]_ and offers benchmarks
+MQT Bench uses the structure proposed by the OpenQASM 3.0 specification :cite:labelpar:`Cross_2022` and offers benchmarks
 on four different abstraction levels:
 
 
@@ -81,5 +81,3 @@ This is also the reason for the different sequence of CX gates compared
 to the previous example.
 
 This circuit is now executable on the `ibmq_manila` device, since all hardware induced requirements are fulfilled.
-
-.. [1] A.Cross et al., OpenQASM 3: A broader and deeper quantum assembly language, `arXiv:2104.14722 <https://arxiv.org/abs/2104.14722>`_, 2021
