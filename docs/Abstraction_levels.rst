@@ -1,7 +1,7 @@
 Abstraction Levels
 ==================
 
-It uses the structure proposed by the openQASM 3.0 specification [1]_ and offers benchmarks
+MQT Bench uses the structure proposed by the OpenQASM 3.0 specification [1]_ and offers benchmarks
 on four different abstraction levels:
 
 
