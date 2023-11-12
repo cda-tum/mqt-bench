@@ -31,7 +31,7 @@ MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair fo
 
 ## Getting Started
 
-QCEC is available via [PyPI](https://pypi.org/project/mqt.bench/).
+`mqt-bench` is available via [PyPI](https://pypi.org/project/mqt.bench/).
 
 ```console
 (venv) $ pip install mqt.bench
