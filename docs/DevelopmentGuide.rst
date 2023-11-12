@@ -68,7 +68,7 @@ The recommended way of building the Python module is to perform an editable inst
 
     .. code-block:: console
 
-        (venv) $ pip install --editable .
+        (venv) $ pip install -e .
 
 The :code:`--editable` flag ensures that changes in the Python code are instantly available without re-running the command.
 
@@ -80,10 +80,10 @@ The corresponding test files can be found in the :code:`tests/` directory.
 
     .. code-block:: console
 
+        (venv) $ pip install -e ".[test]"
         (venv) $ pytest
 
-This installs all dependencies for running the tests in an isolated environment, builds the Python package, and then runs the tests.
-The :code:`-r` flag ensures that the environment is reused for subsequent runs.
+This installs all dependencies necessary to run the tests in an isolated environment, builds the Python package, and then runs the tests.
 
 Python Code Formatting and Linting
 ----------------------------------
@@ -100,4 +100,4 @@ The hooks will then be executed automatically when committing changes.
 
     .. code-block:: console
 
-        (venv) $ pre-commit run --all-files
+        (venv) $ pre-commit run -a
