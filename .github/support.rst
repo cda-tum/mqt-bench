@@ -1,7 +1,7 @@
 Support
 =======
 
-If you are stuck with a problem using MQT Bench or are having questions, please do get in touch at our `Issues <https://github.com/cda-tum/mqt-bench/issues>`_ or `Discussions <https://github.com/cda-tum/mqt-qcec/discussions>`_. We'd love to help.
+If you are stuck with a problem using mqt-bench or have questions, please do get in touch at our `Issues <https://github.com/cda-tum/mqt-bench/issues>`_ or `Discussions <https://github.com/cda-tum/mqt-bench/discussions>`_. We'd love to help.
 
 You can save time by following this procedure when reporting a problem:
 
