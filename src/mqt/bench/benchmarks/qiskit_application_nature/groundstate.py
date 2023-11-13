@@ -10,7 +10,7 @@ from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
 from qiskit.primitives import Estimator
 from qiskit_nature.second_q.drivers import PySCFDriver
-from qiskit_nature.second_q.mappers import JordanWignerMapper, QubitConverter
+from qiskit_nature.second_q.mappers import JordanWignerMapper
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
@@ -26,9 +26,9 @@ def create_circuit(choice: str) -> QuantumCircuit:
     driver = PySCFDriver(atom=molecule)
     es_problem = driver.run()
 
-    converter = QubitConverter(JordanWignerMapper())
+    mapper = JordanWignerMapper()
     second_q_op = es_problem.second_q_ops()
-    operator = converter.convert_only(second_q_op[0])
+    operator = mapper.map(second_q_op[0])
 
     tl_circuit = TwoLocal(
         rotation_blocks=["h", "rx"],
