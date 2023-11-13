@@ -27,12 +27,12 @@ You can contribute in several ways:
     Look through the `GitHub Issues <https://github.com/cda-tum/mqt-bench/issues>`_ for features. Anything tagged with "feature" is open to whoever wants to implement it. We highly appreciate external contributions to the project.
 
 - 📝 Write Documentation
-    mqt-bench could always use some more `documentation <https://mqt.readthedocs.io/projects/bench>`_, and we appreciate any help with that.
+    MQT Bench could always use some more `documentation <https://mqt.readthedocs.io/projects/bench>`_, and we appreciate any help with that.
 
 🎉 Get Started
 ##############
 
-Ready to contribute? Check out the :doc:`Development Guide <DevelopmentGuide>` to set up mqt-bench for local development and learn about the style guidelines and conventions used throughout the project.
+Ready to contribute? Check out the :doc:`Development Guide <DevelopmentGuide>` to set up MQT Bench for local development and learn about the style guidelines and conventions used throughout the project.
 
 We value contributions from people with all levels of experience.
 In particular if this is your first PR not everything has to be perfect.
