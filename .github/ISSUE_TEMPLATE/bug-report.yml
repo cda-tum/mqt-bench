@@ -15,11 +15,11 @@ body:
     attributes:
       label: Environment information
       description: >-
-        Please provide information about your environment. For example, OS, C++ compiler, mqt.core version etc.
+        Please provide information about your environment. For example, OS, Python version, mqt-bench version etc.
       placeholder: |
         - OS:
-        - C++ compiler:
-        - mqt.core version:
+        - Python version:
+        - mqt-bench version:
         - Additional environment information:
     validations:
       required: true
