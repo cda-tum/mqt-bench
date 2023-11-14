@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: MQT Bench
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Robert
+    family-names: Wille
+  - given-names: Lukas
+    family-names: Burgholzer
+  - given-names: Nils
+    family-names: Quetschlich
+identifiers:
+  - type: doi
+    value: 10.22331/q-2023-07-20-1062
+  - type: other
+    value: 'https://www.arxiv-vanity.com/papers/2204.13719/'
+    description: arXiv
