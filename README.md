@@ -49,6 +49,9 @@ qc_algorithmic_level = get_benchmark(benchmark_name="dj", level="alg", circuit_s
 print(qc_algorithmic_level.draw())
 ```
 
+**Detailed documentation and examples are available at [ReadTheDocs](https://mqt.readthedocs.io/projects/bench).**
+
+
 # Repository Structure
 
 - src/mqt/: main source directory
@@ -58,20 +61,3 @@ print(qc_algorithmic_level.draw())
     [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/))
 - tests: Directory for the tests for MQT Bench
 
-# References:
-
-In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
-
-```bibtex
-@article{quetschlich2023mqtbench,
-  title={{{MQT Bench}}: {Benchmarking Software and Design Automation Tools for Quantum Computing}},
-  shorttitle = {{MQT Bench}},
-  journal = {{Quantum}},
-  author={Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
-  year={2023},
-  note={{{MQT Bench}} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
-}
-```
-
-which is also available on arXiv:
-[![a](https://img.shields.io/static/v1?label=arXiv&message=2204.13719&color=inactive&style=flat-square)](https://arxiv.org/abs/2204.13719)
