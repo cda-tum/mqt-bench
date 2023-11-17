@@ -49,7 +49,7 @@ Initial Setup
 
     .. code-block:: console
 
-        (venv) $ pip install --upgrade pip, setuptools, wheel
+        (venv) $ pip install --upgrade pip setuptools wheel
 
 
 6. (Optional) Install `pre-commit <https://pre-commit.com/>`_ to automatically run a set of checks before each commit.
