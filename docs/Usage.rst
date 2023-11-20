@@ -9,6 +9,8 @@ There are three ways how to use this benchmark suite:
 
 Since the first way is rather self-explanatory, the other two ways are explained in more detail in the following.
 
+.. _pip_usage:
+
 Usage via pip package
 ---------------------
 
@@ -22,6 +24,7 @@ To generate a benchmark circuit, use the ``get_benchmark`` method:
 
     .. automodule:: mqt.bench.benchmark_generator
         :members: get_benchmark
+        :no-index:
 
 The available parameters are described on the :doc:`parameter space description page <Parameter>` and the algorithms are described on the :doc:`algorithm page <Benchmark_selection>`.
 For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algorithm level, use the following:
@@ -66,4 +69,4 @@ For that, the repository must be cloned and installed:
    cd MQTBench
    pip install .
 
-Afterwards, the package can be used as described `above <#Usage via pip package>`_.
+Afterwards, the package can be used as described :ref:`above <pip_usage>`.
