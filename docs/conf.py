@@ -38,6 +38,12 @@ author = "Chair for Design Automation, Technical University of Munich"
 language = "en"
 project_copyright = "2023, Chair for Design Automation, Technical University of Munich"
 # -- General configuration ---------------------------------------------------
+
+master_doc = "index"
+
+templates_path = ["_templates"]
+html_css_files = ["custom.css"]
+
 extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
