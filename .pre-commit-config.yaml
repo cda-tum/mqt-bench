@@ -30,7 +30,7 @@ repos:
 
   # Handling unwanted unicode characters
   - repo: https://github.com/sirosen/texthooks
-    rev: "0.6.2"
+    rev: "0.6.3"
     hooks:
       - id: fix-ligatures
       - id: fix-smartquotes
@@ -72,7 +72,7 @@ repos:
         additional_dependencies: [black==23.*]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.7.0
+    rev: v1.7.1
     hooks:
       - id: mypy
         files: ^(src|tests|setup.py)
