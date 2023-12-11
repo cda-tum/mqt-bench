@@ -11,7 +11,7 @@ def test_import_v1_backend() -> None:
 
     assert device.name == backend.name()
     assert device.num_qubits == backend.configuration().n_qubits
-    assert device.coupling_map == [(a, b) for a, b in backend.configuration().coupling_map]
+    assert device.coupling_map == [[a, b] for a, b in backend.configuration().coupling_map]
     assert device.basis_gates == backend.configuration().basis_gates
 
 
