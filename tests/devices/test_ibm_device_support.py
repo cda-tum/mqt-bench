@@ -32,8 +32,8 @@ def test_get_ibm_washington_device() -> None:
     """
     Test getting the IBM Washington device.
     """
-    device = IBMProvider.get_device("washington")
-    assert device.name == "washington"
+    device = IBMProvider.get_device("ibm_washington")
+    assert device.name == "ibm_washington"
     assert device.num_qubits == 127  # noqa: PLR2004
 
 
@@ -41,6 +41,6 @@ def test_get_ibmq_montreal_device() -> None:
     """
     Test getting the IBM Montreal device.
     """
-    device = IBMProvider.get_device("montreal")
-    assert device.name == "montreal"
+    device = IBMProvider.get_device("ibm_montreal")
+    assert device.name == "ibm_montreal"
     assert device.num_qubits == 27  # noqa: PLR2004

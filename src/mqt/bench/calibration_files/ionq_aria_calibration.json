@@ -270,5 +270,5 @@
     "reset": 0.00002
   },
   "id": "769af2c3-923f-43d7-bbfe-71dfcb961d83",
-  "backend": "aria"
+  "backend": "ionq_aria1"
 }

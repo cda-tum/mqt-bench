@@ -1,5 +1,5 @@
 {
-  "name": "washington",
+  "name": "ibm_washington",
   "num_qubits": 127,
   "connectivity": [
     [0, 1],

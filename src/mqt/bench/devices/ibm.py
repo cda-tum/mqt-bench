@@ -52,7 +52,7 @@ class IBMProvider(Provider):
         """
         Get the names of all available IBM devices.
         """
-        return ["washington", "montreal"]
+        return ["ibm_washington", "ibm_montreal"]
 
     @classmethod
     def get_max_qubits(cls) -> int:

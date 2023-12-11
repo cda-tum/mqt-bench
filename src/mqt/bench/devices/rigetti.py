@@ -66,7 +66,7 @@ class RigettiProvider(Provider):
         """
         Get the names of all available Rigetti devices.
         """
-        return ["aspen-m2"]
+        return ["rigetti_aspen_m2"]
 
     @classmethod
     def get_max_qubits(cls) -> int:

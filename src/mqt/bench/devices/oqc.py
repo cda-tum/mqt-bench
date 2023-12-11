@@ -71,7 +71,7 @@ class OQCProvider(Provider):
         """
         Get the names of all available OQC devices.
         """
-        return ["lucy"]
+        return ["oqc_lucy"]
 
     @classmethod
     def get_max_qubits(cls) -> int:

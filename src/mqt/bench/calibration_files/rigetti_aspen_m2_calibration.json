@@ -1,5 +1,5 @@
 {
-  "name": "aspen-m2",
+  "name": "rigetti_aspen_m2",
   "qubitCount": 80,
   "connectivity": [
     [0, 1],

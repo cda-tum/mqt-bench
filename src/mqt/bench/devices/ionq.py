@@ -46,7 +46,7 @@ class IonQProvider(Provider):
         """
         Get the names of all available IonQ devices.
         """
-        return ["harmony", "aria"]
+        return ["ionq_harmony", "ionq_aria1"]
 
     @classmethod
     def get_max_qubits(cls) -> int:

@@ -5,6 +5,6 @@ def test_oqc_lucy_device() -> None:
     """
     Test the import of the OQC Lucy quantum computer.
     """
-    device = OQCProvider.get_device("lucy")
-    assert device.name == "lucy"
+    device = OQCProvider.get_device("oqc_lucy")
+    assert device.name == "oqc_lucy"
     assert device.num_qubits == 8  # noqa: PLR2004

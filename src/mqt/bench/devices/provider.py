@@ -74,7 +74,7 @@ class Provider(ABC):
             msg = f"Device {name} not found."
             raise ValueError(msg)
 
-        ref = resources.files("mqt.bench") / "calibration_files" / f"{cls.provider_name}_{name}_calibration.json"
+        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
         with resources.as_file(ref) as json_path:
             device = cls.import_backend(json_path)
             if sanitize_device:
