@@ -19,7 +19,7 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
-from mqt.bench import utils
+from mqt.bench import utils, devices
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
@@ -312,7 +312,19 @@ def get_mapped_level(
     if file_precheck and path.is_file():
         return True
 
-    cmap = utils.get_cmap_from_devicename(device_name)
+    device = None
+    for provider in devices.get_available_providers():
+        try:
+            device = provider.get_device(device_name)
+            break
+        except ValueError:
+            continue
+
+    if device is None:
+        raise Exception(f"Device '{device_name}' not found among available providers.")
+
+    cmap = device.coupling_map
+
     try:
         gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
         qc = transpile(

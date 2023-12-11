@@ -8,7 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from qiskit.compiler import transpile
 
-from mqt.bench import utils
+from mqt.bench import utils, devices
 
 
 def get_native_gates(gate_set_name: str) -> list[str]:
@@ -249,7 +249,19 @@ def get_mapped_level(
     """
 
     gate_set = get_native_gates(gate_set_name)
-    c_map = utils.get_cmap_from_devicename(device_name)
+
+    device = None
+    for provider in devices.get_available_providers():
+        try:
+            device = provider.get_device(device_name)
+            break
+        except ValueError:
+            continue
+
+    if device is None:
+        raise Exception(f"Device '{device_name}' not found among available providers.")
+
+    c_map = device.coupling_map
 
     if not target_filename:
         filename_mapped = qc.name + "_mapped_" + device_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)

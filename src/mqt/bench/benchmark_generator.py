@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
-from mqt.bench import qiskit_helper, tket_helper, utils
+from mqt.bench import qiskit_helper, tket_helper, utils, devices
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -403,8 +403,8 @@ def get_benchmark(
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
 
-    if device_name not in utils.get_supported_devices():
-        msg = f"Selected device_name must be in {utils.get_supported_devices()}."
+    if device_name not in devices.get_available_device_names():
+        msg = f"Selected device_name must be in {devices.get_available_device_names()}."
         raise ValueError(msg)
 
     mapped_level = 3
