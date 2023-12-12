@@ -90,17 +90,21 @@ addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
 log_cli_level = "INFO"
 xfail_strict = true
 
-[tool.coverage.run]
-source = ["mqt.bench", "mqt.benchviewer"]
-
-[tool.coverage.report]
-exclude_also = [
+[tool.coverage]
+run.source = ["mqt.bench", "mqt.benchviewer"]
+report.exclude_also = [
     '\.\.\.',
     'if TYPE_CHECKING:',
+    'raise AssertionError',
+    'raise NotImplementedError',
 ]
+
 show_missing = true
 skip_empty = true
 precision = 1
+
+
+
 
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
