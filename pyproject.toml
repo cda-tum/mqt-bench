@@ -103,9 +103,6 @@ show_missing = true
 skip_empty = true
 precision = 1
 
-
-
-
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 files = ["src", "tests", "setup.py"]
