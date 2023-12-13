@@ -1,20 +1,13 @@
 from __future__ import annotations
 
 import pickle
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
 from mqt.bench import utils
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    pass
-else:
-    pass
 
 
 def create_statistics(source_directory: Path | None = None, target_directory: Path | None = None) -> None:
