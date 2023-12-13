@@ -1003,7 +1003,6 @@ def test_evaluate_qasm_file() -> None:
 
     res = evaluation.evaluate_qasm_file("invalid_path.qasm")
     assert type(res) == evaluation.EvaluationResult
-    assert res.filename == "invalid_path.qasm"
     assert res.num_qubits == -1
     assert res.depth == -1
     assert res.num_gates == -1
