@@ -12,19 +12,21 @@ from qiskit import QuantumCircuit
 from mqt.bench import utils
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import resources
+    pass
 else:
-    import importlib_resources as resources
+    pass
 
 
-def create_statistics() -> None:
-    source_circuits_list = [
-        file for file in Path(utils.get_default_qasm_output_path()).iterdir() if file.suffix == ".qasm"
-    ]
+def create_statistics(source_directory: Path | None = None, target_directory: Path | None = None) -> None:
+    if source_directory is None:
+        source_directory = Path(utils.get_default_qasm_output_path())
+    if target_directory is None:
+        target_directory = Path(utils.get_default_evaluation_output_path())
+    source_circuits_list = [file for file in source_directory.iterdir() if file.suffix == ".qasm"]
     res_dicts = Parallel(n_jobs=-1, verbose=100)(
         delayed(evaluate_qasm_file)(str(filename)) for filename in source_circuits_list
     )
-    with (resources.files("mqt.bench") / "evaluation" / "evaluation_data.pkl").open("wb") as f:
+    with (target_directory / "evaluation_data.pkl").open("wb") as f:
         pickle.dump(res_dicts, f)
 
 
