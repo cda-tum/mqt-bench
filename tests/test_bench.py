@@ -294,6 +294,11 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
 
 
+def test_get_default_evaluation_output_path() -> None:
+    path = utils.get_default_evaluation_output_path()
+    assert Path(path).exists()
+
+
 def test_openqasm_gates() -> None:
     openqasm_gates = utils.get_openqasm_gates()
     num_openqasm_gates = 42
@@ -817,7 +822,7 @@ def test_get_benchmark_faulty_parameters() -> None:
 
 def test_create_benchmarks_from_config(output_path: str) -> None:
     config = {
-        "timeout": 120,
+        "timeout": 1,
         "benchmarks": [
             {
                 "name": "ghz",
@@ -836,11 +841,11 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
                 "ancillary_mode": ["noancilla"],
                 "precheck_possible": False,
             },
-            {"name": "shor", "include": True, "instances": ["xsmall"], "precheck_possible": False},
-            {"name": "tsp", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
+            {"name": "shor", "include": True, "instances": ["small"], "precheck_possible": False},
+            {"name": "routing", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
             {"name": "groundstate", "include": True, "instances": ["small"], "precheck_possible": False},
             {
-                "name": "pricingcall",
+                "name": "pricingput",
                 "include": True,
                 "min_uncertainty": 2,
                 "max_uncertainty": 3,
