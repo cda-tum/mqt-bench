@@ -19,7 +19,7 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
-from mqt.bench import utils, devices
+from mqt.bench import devices, utils
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
@@ -321,7 +321,8 @@ def get_mapped_level(
             continue
 
     if device is None:
-        raise Exception(f"Device '{device_name}' not found among available providers.")
+        msg = f"Device '{device_name}' not found among available providers."
+        raise Exception(msg)
 
     cmap = device.coupling_map
 

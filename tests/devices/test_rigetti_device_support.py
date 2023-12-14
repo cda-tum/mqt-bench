@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mqt.bench.devices import RigettiProvider
 
 
@@ -7,4 +9,4 @@ def test_rigetti_aspen_m2_device() -> None:
     """
     device = RigettiProvider.get_device("rigetti_aspen_m2")
     assert device.name == "rigetti_aspen_m2"
-    assert device.num_qubits == 80  # noqa: PLR2004
+    assert device.num_qubits == 80

@@ -9,8 +9,9 @@ if TYPE_CHECKING:
     from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
 from qiskit.providers import BackendV1, BackendV2
+
+from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class QubitProperties(TypedDict):
@@ -135,7 +136,7 @@ class IBMProvider(Provider):
                 qubit = gate.qubits[0]
                 calibration.single_qubit_gate_fidelity[qubit][gate.gate] = 1 - error
                 calibration.single_qubit_gate_duration[qubit][gate.gate] = duration
-            elif len(gate.qubits) == 2:  # noqa: PLR2004
+            elif len(gate.qubits) == 2:
                 qubit1, qubit2 = gate.qubits
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
                     calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {}
@@ -201,7 +202,7 @@ class IBMProvider(Provider):
             elif len(qargs) == 1:
                 calibration.single_qubit_gate_fidelity[qubit][instruction.name] = 1 - error
                 calibration.single_qubit_gate_duration[qubit][instruction.name] = duration
-            elif len(qargs) == 2:  # noqa: PLR2004
+            elif len(qargs) == 2:
                 qubit1, qubit2 = qargs
                 calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][instruction.name] = 1 - error
                 calibration.two_qubit_gate_duration[(qubit1, qubit2)][instruction.name] = duration

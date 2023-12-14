@@ -13,10 +13,8 @@ class Statistics(TypedDict):
     mean: float
 
 
-Fidelity = TypedDict("Fidelity", {"1q": Statistics, "2q": Statistics, "spam": Statistics})  # noqa: UP013
-Timing = TypedDict(  # noqa: UP013
-    "Timing", {"t1": float, "t2": float, "1q": float, "2q": float, "readout": float, "reset": float}
-)
+Fidelity = TypedDict("Fidelity", {"1q": Statistics, "2q": Statistics, "spam": Statistics})
+Timing = TypedDict("Timing", {"t1": float, "t2": float, "1q": float, "2q": float, "readout": float, "reset": float})
 
 
 class IonQCalibration(TypedDict):
@@ -29,7 +27,7 @@ class IonQCalibration(TypedDict):
     connectivity: list[list[int]]
     date: int
     fidelity: Fidelity
-    id: str  # noqa: A003
+    id: str
     qubits: int
     timing: Timing
 

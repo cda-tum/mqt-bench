@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
-from mqt.bench import qiskit_helper, tket_helper, utils, devices
+from mqt.bench import devices, qiskit_helper, tket_helper, utils
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
