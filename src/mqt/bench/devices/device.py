@@ -23,7 +23,7 @@ class Device:
     name: str = ""
     num_qubits: int = 0
     basis_gates: list[str] = field(default_factory=list)
-    coupling_map: list[tuple[int, int]] = field(default_factory=list)
+    coupling_map: list[list[int, int]] = field(default_factory=list)
     calibration: DeviceCalibration | None = None
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
@@ -149,6 +149,15 @@ class Device:
             for qubit1, qubit2 in self.coupling_map
             for gate in self.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
         }
+
+    def get_all_gates(self) -> set[str]:
+        """
+        Get the set of all gates supported by the device.
+
+        Returns
+        list of all gates
+        """
+        return self.get_single_qubit_gates() | self.get_two_qubit_gates()
 
     def sanitize_device(self) -> None:
         """
