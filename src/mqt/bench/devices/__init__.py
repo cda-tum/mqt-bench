@@ -8,6 +8,7 @@ from mqt.bench.devices.ionq import IonQProvider
 from mqt.bench.devices.oqc import OQCProvider
 from mqt.bench.devices.rigetti import RigettiProvider
 from mqt.bench.devices.quantinuum import QuantinuumProvider
+from mqt.bench.devices.rigetti import RigettiProvider
 
 
 def get_available_providers() -> list[Provider]:

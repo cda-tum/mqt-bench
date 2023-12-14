@@ -1,7 +1,6 @@
 ignore:
   - "benchviewer/*"
-  - "mqt/bench/tests/*"
-  - "mqt/bench/benchmark_generator.py"
+  - "tests/**/*"
 
 coverage:
   range: 60..90

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -291,6 +292,11 @@ def test_quantumcircuit_native_and_mapped_levels(
                     target_directory=output_path,
                 )
                 assert res
+
+
+def test_get_default_evaluation_output_path() -> None:
+    path = utils.get_default_evaluation_output_path()
+    assert Path(path).exists()
 
 
 def test_openqasm_gates() -> None:
@@ -640,6 +646,56 @@ def test_unidirectional_coupling_map() -> None:
             "quantinuum",
             "quantinuum_h2",
         ),
+        (
+            "grover-noancilla",
+            "alg",
+            5,
+            None,
+            "qiskit",
+            None,
+            "",
+            "",
+        ),
+        (
+            "qwalk-noancilla",
+            "alg",
+            5,
+            None,
+            "qiskit",
+            None,
+            "",
+            "",
+        ),
+        (
+            "grover-v-chain",
+            "alg",
+            5,
+            None,
+            "qiskit",
+            None,
+            "",
+            "",
+        ),
+        (
+            "qwalk-v-chain",
+            "alg",
+            5,
+            None,
+            "qiskit",
+            None,
+            "",
+            "",
+        ),
+        (
+            "shor",
+            "alg",
+            None,
+            "xsmall",
+            "qiskit",
+            None,
+            "",
+            "",
+        ),
     ],
 )
 def test_get_benchmark(
@@ -766,7 +822,7 @@ def test_get_benchmark_faulty_parameters() -> None:
 
 def test_create_benchmarks_from_config(output_path: str) -> None:
     config = {
-        "timeout": 120,
+        "timeout": 1,
         "benchmarks": [
             {
                 "name": "ghz",
@@ -775,6 +831,25 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
                 "max_qubits": 3,
                 "stepsize": 1,
                 "precheck_possible": True,
+            },
+            {
+                "name": "grover",
+                "include": True,
+                "min_qubits": 2,
+                "max_qubits": 3,
+                "stepsize": 1,
+                "ancillary_mode": ["noancilla"],
+                "precheck_possible": False,
+            },
+            {"name": "shor", "include": True, "instances": ["small"], "precheck_possible": False},
+            {"name": "routing", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
+            {"name": "groundstate", "include": True, "instances": ["small"], "precheck_possible": False},
+            {
+                "name": "pricingput",
+                "include": True,
+                "min_uncertainty": 2,
+                "max_uncertainty": 3,
+                "precheck_possible": False,
             },
         ],
     }
@@ -785,6 +860,12 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
     generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
     generator.create_benchmarks_from_config(num_jobs=1)
     file.unlink()
+
+    evaluation.create_statistics(source_directory=Path(output_path), target_directory=Path(output_path))
+
+    with (Path(output_path) / "evaluation_data.pkl").open("rb") as f:
+        res_dicts = pickle.load(f)
+    assert len(res_dicts) > 0
 
 
 def test_configure_end(output_path: str) -> None:
@@ -923,8 +1004,15 @@ def test_evaluate_qasm_file() -> None:
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
     assert type(res) == evaluation.EvaluationResult
-
     path.unlink()
+
+    res = evaluation.evaluate_qasm_file("invalid_path.qasm")
+    assert type(res) == evaluation.EvaluationResult
+    assert res.num_qubits == -1
+    assert res.depth == -1
+    assert res.num_gates == -1
+    assert res.num_multiple_qubit_gates == -1
+    assert res.supermarq_features == utils.SupermarqFeatures(-1.0, -1.0, -1.0, -1.0, -1.0)
 
 
 @pytest.mark.parametrize(

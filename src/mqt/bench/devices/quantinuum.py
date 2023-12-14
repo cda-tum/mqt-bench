@@ -87,7 +87,9 @@ class QuantinuumProvider(Provider):
             calibration.t2[qubit] = quantinuum_calibration["timing"]["t2"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"rxx": quantinuum_calibration["fidelity"]["2q"]["mean"]}
+            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
+                "rxx": quantinuum_calibration["fidelity"]["2q"]["mean"]
+            }
             calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"rxx": quantinuum_calibration["timing"]["2q"]}
         device.calibration = calibration
         return device
