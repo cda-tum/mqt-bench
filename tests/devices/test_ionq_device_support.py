@@ -10,7 +10,7 @@ def test_ionq_harmony_device() -> None:
     assert device.num_qubits == 11  # noqa: PLR2004
 
 
-def test_ionq_aria_device() -> None:
+def test_ionq_aria1_device() -> None:
     """
     Test the import of the IonQ Aria quantum computer.
     """
