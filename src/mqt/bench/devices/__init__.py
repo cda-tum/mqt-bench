@@ -7,13 +7,14 @@ from mqt.bench.devices.ionq import IonQProvider
 from mqt.bench.devices.oqc import OQCProvider
 from mqt.bench.devices.provider import Provider
 from mqt.bench.devices.rigetti import RigettiProvider
+from mqt.bench.devices.quantinuum import QuantinuumProvider
 
 
 def get_available_providers() -> list[Provider]:
     """
     Get a list of all available providers
     """
-    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider()]
+    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider()]
 
 
 def get_available_devices(sanitize_device: bool = False) -> list[Device]:
@@ -43,6 +44,7 @@ __all__ = [
     "IonQProvider",
     "OQCProvider",
     "RigettiProvider",
+    "QuantinuumProvider",
     "get_available_providers",
     "get_available_devices",
     "get_available_device_names",
