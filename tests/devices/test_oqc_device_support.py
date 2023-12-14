@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mqt.bench.devices import OQCProvider
 
 
@@ -7,4 +9,4 @@ def test_oqc_lucy_device() -> None:
     """
     device = OQCProvider.get_device("oqc_lucy")
     assert device.name == "oqc_lucy"
-    assert device.num_qubits == 8  # noqa: PLR2004
+    assert device.num_qubits == 8

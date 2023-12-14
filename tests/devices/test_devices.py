@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from typing import cast
 
 import pytest
+
 from mqt.bench.devices import Device, get_available_devices
 
 

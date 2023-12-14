@@ -1,5 +1,8 @@
-from mqt.bench.devices import IBMProvider
+from __future__ import annotations
+
 from qiskit.providers.fake_provider import FakeMontreal, FakeMontrealV2
+
+from mqt.bench.devices import IBMProvider
 
 
 def test_import_v1_backend() -> None:
@@ -34,7 +37,7 @@ def test_get_ibm_washington_device() -> None:
     """
     device = IBMProvider.get_device("ibm_washington")
     assert device.name == "ibm_washington"
-    assert device.num_qubits == 127  # noqa: PLR2004
+    assert device.num_qubits == 127
 
 
 def test_get_ibmq_montreal_device() -> None:
@@ -43,4 +46,4 @@ def test_get_ibmq_montreal_device() -> None:
     """
     device = IBMProvider.get_device("ibm_montreal")
     assert device.name == "ibm_montreal"
-    assert device.num_qubits == 27  # noqa: PLR2004
+    assert device.num_qubits == 27

@@ -38,9 +38,7 @@ class TwoQubitProperties(TypedDict):
     fXY_std_err: float
 
 
-Properties = TypedDict(  # noqa: UP013
-    "Properties", {"1Q": dict[str, QubitProperties], "2Q": dict[str, TwoQubitProperties]}
-)
+Properties = TypedDict("Properties", {"1Q": dict[str, QubitProperties], "2Q": dict[str, TwoQubitProperties]})
 
 
 class RigettiCalibration(TypedDict):
