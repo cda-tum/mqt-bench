@@ -78,7 +78,7 @@ class IBMProvider(Provider):
         device.name = ibm_calibration["name"]
         device.num_qubits = ibm_calibration["num_qubits"]
         device.basis_gates = ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
-        device.coupling_map = [[a, b] for a, b in ibm_calibration["connectivity"]]
+        device.coupling_map = list(ibm_calibration["connectivity"])
 
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
@@ -161,7 +161,7 @@ class IBMProvider(Provider):
         device.name = backend.name()
         device.num_qubits = backend.configuration().n_qubits
         device.basis_gates = backend.configuration().basis_gates
-        device.coupling_map = [[a, b] for a, b in backend.configuration().coupling_map]
+        device.coupling_map = list(backend.configuration().coupling_map)
         device.calibration = cls.__import_backend_properties(backend.properties())
         return device
 

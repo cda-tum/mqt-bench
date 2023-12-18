@@ -260,7 +260,7 @@ def get_mapped_level(
 
     if device is None:
         msg = f"Device '{device_name}' not found among available providers."
-        raise Exception(msg)
+        raise utils.DeviceNotFoundError(msg)
 
     c_map = device.coupling_map
 

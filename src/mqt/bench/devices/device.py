@@ -23,7 +23,7 @@ class Device:
     name: str = ""
     num_qubits: int = 0
     basis_gates: list[str] = field(default_factory=list)
-    coupling_map: list[list[int, int]] = field(default_factory=list)
+    coupling_map: list[list[int]] = field(default_factory=list)
     calibration: DeviceCalibration | None = None
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
@@ -188,7 +188,7 @@ class Device:
         self.coupling_map = [
             edge
             for edge in self.coupling_map
-            if all(fidelity != 0 for fidelity in self.calibration.two_qubit_gate_fidelity[edge].values())
+            if all(fidelity != 0 for fidelity in self.calibration.two_qubit_gate_fidelity[tuple(edge)].values())
         ]
 
         # ensure that all two-qubit gates have fidelity data for all edges in the coupling map
@@ -196,12 +196,12 @@ class Device:
             avg_fidelity = self.calibration.compute_average_two_qubit_gate_fidelity(gate)
             for edge in self.coupling_map:
                 if (
-                    gate not in self.calibration.two_qubit_gate_fidelity[edge]
-                    or self.calibration.two_qubit_gate_fidelity[edge][gate] == 0
+                    gate not in self.calibration.two_qubit_gate_fidelity[tuple(edge)]
+                    or self.calibration.two_qubit_gate_fidelity[tuple(edge)][gate] == 0
                 ):
-                    self.calibration.two_qubit_gate_fidelity[edge][gate] = avg_fidelity
+                    self.calibration.two_qubit_gate_fidelity[tuple(edge)][gate] = avg_fidelity
 
         # remove any fidelity data for edges that are not in the coupling map
         self.calibration.two_qubit_gate_fidelity = {
-            edge: self.calibration.two_qubit_gate_fidelity[edge] for edge in self.coupling_map
+            tuple(edge): self.calibration.two_qubit_gate_fidelity[tuple(edge)] for edge in self.coupling_map
         }

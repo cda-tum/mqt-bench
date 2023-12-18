@@ -22,8 +22,8 @@ class DeviceCalibration:
 
     single_qubit_gate_fidelity: dict[int, dict[str, float]] = field(default_factory=dict)
     single_qubit_gate_duration: dict[int, dict[str, float]] = field(default_factory=dict)
-    two_qubit_gate_fidelity: dict[tuple[int, int], dict[str, float]] = field(default_factory=dict)
-    two_qubit_gate_duration: dict[tuple[int, int], dict[str, float]] = field(default_factory=dict)
+    two_qubit_gate_fidelity: dict[tuple[int, ...], dict[str, float]] = field(default_factory=dict)
+    two_qubit_gate_duration: dict[tuple[int, ...], dict[str, float]] = field(default_factory=dict)
     readout_fidelity: dict[int, float] = field(default_factory=dict)
     readout_duration: dict[int, float] = field(default_factory=dict)
     t1: dict[int, float] = field(default_factory=dict)

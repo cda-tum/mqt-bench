@@ -68,9 +68,7 @@ class QuantinuumProvider(Provider):
         device.name = quantinuum_calibration["machine"]
         device.num_qubits = quantinuum_calibration["qubits"]
         device.basis_gates = ["rxx", "rz", "ry", "rx", "measure", "barrier"]
-        device.coupling_map = [[a, b] for a, b in quantinuum_calibration["connectivity"]] + [
-            [b, a] for a, b in quantinuum_calibration["connectivity"]
-        ]
+        device.coupling_map = list(quantinuum_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = {

@@ -48,7 +48,7 @@ class RigettiCalibration(TypedDict):
 
     name: str
     qubitCount: int
-    connectivity: list[list[int]]
+    connectivity: list[tuple[int, int]]
     properties: Properties
 
 

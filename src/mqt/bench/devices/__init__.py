@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from mqt.bench.devices.calibration import DeviceCalibration
 from mqt.bench.devices.device import Device
-from mqt.bench.devices.ibm import IBMProvider
-from mqt.bench.devices.ionq import IonQProvider
-from mqt.bench.devices.oqc import OQCProvider
 from mqt.bench.devices.provider import Provider
-from mqt.bench.devices.quantinuum import QuantinuumProvider
-from mqt.bench.devices.rigetti import RigettiProvider
+from mqt.bench.devices.vendors.ibm import IBMProvider
+from mqt.bench.devices.vendors.ionq import IonQProvider
+from mqt.bench.devices.vendors.oqc import OQCProvider
+from mqt.bench.devices.vendors.quantinuum import QuantinuumProvider
+from mqt.bench.devices.vendors.rigetti import RigettiProvider
 
 
 def get_available_providers() -> list[Provider]:

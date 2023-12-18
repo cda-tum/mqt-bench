@@ -132,8 +132,8 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
-        for gate_set_name, devices in utils.get_compilation_paths():
-            for device_name, max_qubits in devices:
+        for gate_set_name, devices_ in utils.get_compilation_paths():
+            for device_name, max_qubits in devices_:
                 for opt_level in range(4):
                     for parameter_instance in parameter_space:
                         qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
