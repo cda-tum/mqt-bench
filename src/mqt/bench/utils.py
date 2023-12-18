@@ -41,10 +41,6 @@ class SupermarqFeatures:
     liveness: float
 
 
-class DeviceNotFoundError(Exception):
-    """Raised when a device is not found."""
-
-
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 

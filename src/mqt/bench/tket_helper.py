@@ -312,17 +312,7 @@ def get_mapped_level(
     if file_precheck and path.is_file():
         return True
 
-    device = None
-    for provider in devices.get_available_providers():
-        try:
-            device = provider.get_device(device_name)
-            break
-        except ValueError:
-            continue
-
-    if device is None:
-        msg = f"Device '{device_name}' not found among available providers."
-        raise utils.DeviceNotFoundError(msg)
+    device = devices.get_device_by_name(device_name)
 
     cmap = device.coupling_map
 
