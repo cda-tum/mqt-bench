@@ -5,6 +5,7 @@ import sys
 from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
+from warnings import warn
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -266,6 +267,11 @@ def get_cmap_oqc_lucy() -> list[list[int]]:
 
 
 def get_cmap_from_devicename(device: str) -> list[list[int]]:
+    """
+    DEPRECATED: Returns the coupling map of a specific device.
+    """
+    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
+
     c_map_functions = {
         "ibm_washington": FakeWashington,
         "ibm_montreal": FakeMontreal,
