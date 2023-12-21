@@ -150,15 +150,6 @@ class Device:
             for gate in self.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
         }
 
-    def get_all_gates(self) -> set[str]:
-        """
-        Get the set of all gates supported by the device.
-
-        Returns
-        list of all gates
-        """
-        return self.get_single_qubit_gates() | self.get_two_qubit_gates()
-
     def sanitize_device(self) -> None:
         """
         Tries to sanitize the device information so that it produces the least amount of problems when used.
