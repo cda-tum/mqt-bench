@@ -1,4 +1,6 @@
 {
+  "name": "ionq_harmony",
+  "num_qubits": 11,
   "connectivity": [
     [0, 1],
     [0, 2],
@@ -111,7 +113,6 @@
     [10, 8],
     [10, 9]
   ],
-  "qubits": 11,
   "fidelity": {
     "1q": { "mean": 0.9986 },
     "2q": { "mean": 0.985 },
@@ -124,8 +125,5 @@
     "2q": 0.0002,
     "readout": 0.00013,
     "reset": 0.00002
-  },
-  "date": 1675512005,
-  "id": "63c1ddba-7e81-4918-962f-c77721b6af4f",
-  "backend": "ionq_harmony"
+  }
 }

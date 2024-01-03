@@ -47,7 +47,7 @@ class RigettiCalibration(TypedDict):
     """
 
     name: str
-    qubitCount: int
+    num_qubits: int
     connectivity: list[tuple[int, int]]
     properties: Properties
 
@@ -125,7 +125,7 @@ class RigettiProvider(Provider):
 
         device = Device()
         device.name = rigetti_calibration["name"]
-        device.num_qubits = rigetti_calibration["qubitCount"]
+        device.num_qubits = rigetti_calibration["num_qubits"]
         device.basis_gates = ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]
         device.coupling_map = [
             [cls.__from_rigetti_index(a), cls.__from_rigetti_index(b)] for a, b in rigetti_calibration["connectivity"]

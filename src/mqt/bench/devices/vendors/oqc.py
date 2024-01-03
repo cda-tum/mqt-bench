@@ -54,7 +54,7 @@ class OQCCalibration(TypedDict):
     """
 
     name: str
-    qubitCount: int
+    num_qubits: int
     connectivity: list[list[int]]
     properties: Properties
 
@@ -94,7 +94,7 @@ class OQCProvider(Provider):
 
         device = Device()
         device.name = oqc_calibration["name"]
-        device.num_qubits = oqc_calibration["qubitCount"]
+        device.num_qubits = oqc_calibration["num_qubits"]
         device.basis_gates = ["rz", "sx", "x", "ecr", "measure", "barrier"]
         device.coupling_map = list(oqc_calibration["connectivity"])
 

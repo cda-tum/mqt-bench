@@ -1,6 +1,6 @@
 {
   "name": "oqc_lucy",
-  "qubitCount": 8,
+  "num_qubits": 8,
   "connectivity": [
     [0, 1],
     [0, 7],

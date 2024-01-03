@@ -1,4 +1,6 @@
 {
+  "name": "ionq_aria1",
+  "num_qubits": 23,
   "connectivity": [
     [0, 1],
     [0, 2],
@@ -254,8 +256,6 @@
     [20, 22],
     [21, 22]
   ],
-  "date": 1675512005,
-  "qubits": 23,
   "fidelity": {
     "1q": { "mean": 0.9829 },
     "2q": { "mean": 0.996 },
@@ -268,7 +268,5 @@
     "2q": 0.0007,
     "readout": 0.00013,
     "reset": 0.00002
-  },
-  "id": "769af2c3-923f-43d7-bbfe-71dfcb961d83",
-  "backend": "ionq_aria1"
+  }
 }

@@ -22,11 +22,10 @@ class QuantinuumCalibration(TypedDict):
     Follows https://docs.quantinuum.com/#tag/characterizations
     """
 
-    machine: str
+    name: str
     connectivity: list[list[int]]
-    date: int
     fidelity: Fidelity
-    qubits: int
+    num_qubits: int
 
 
 class QuantinuumProvider(Provider):
@@ -63,8 +62,8 @@ class QuantinuumProvider(Provider):
             quantinuum_calibration = cast(QuantinuumCalibration, json.load(json_file))
 
         device = Device()
-        device.name = quantinuum_calibration["machine"]
-        device.num_qubits = quantinuum_calibration["qubits"]
+        device.name = quantinuum_calibration["name"]
+        device.num_qubits = quantinuum_calibration["num_qubits"]
         device.basis_gates = ["rzz", "rz", "ry", "rx", "measure", "barrier"]
         device.coupling_map = list(quantinuum_calibration["connectivity"])
         calibration = DeviceCalibration()

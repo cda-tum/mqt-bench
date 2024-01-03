@@ -1,6 +1,6 @@
 {
   "name": "quantinuum_h2",
-  "qubits": 32,
+  "num_qubits": 32,
   "connectivity": [
     [0, 1],
     [0, 2],
@@ -999,7 +999,5 @@
     "1q": { "mean": 0.99997502 },
     "2q": { "mean": 0.998166 },
     "spam": { "mean": 0.998437 }
-  },
-  "date": "1678402800",
-  "machine": "quantinuum_h2"
+  }
 }

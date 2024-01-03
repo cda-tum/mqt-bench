@@ -23,12 +23,10 @@ class IonQCalibration(TypedDict):
     Follows https://docs.ionq.com/#tag/characterizations
     """
 
-    backend: str
+    name: str
     connectivity: list[list[int]]
-    date: int
     fidelity: Fidelity
-    id: str
-    qubits: int
+    num_qubits: int
     timing: Timing
 
 
@@ -66,8 +64,8 @@ class IonQProvider(Provider):
             ionq_calibration = cast(IonQCalibration, json.load(json_file))
 
         device = Device()
-        device.name = ionq_calibration["backend"]
-        device.num_qubits = ionq_calibration["qubits"]
+        device.name = ionq_calibration["name"]
+        device.num_qubits = ionq_calibration["num_qubits"]
         device.basis_gates = ["rxx", "rz", "ry", "rx", "measure", "barrier"]
         device.coupling_map = list(ionq_calibration["connectivity"])
         calibration = DeviceCalibration()

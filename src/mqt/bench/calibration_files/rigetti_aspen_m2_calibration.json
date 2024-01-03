@@ -1,6 +1,6 @@
 {
   "name": "rigetti_aspen_m2",
-  "qubitCount": 80,
+  "num_qubits": 80,
   "connectivity": [
     [0, 1],
     [0, 7],
