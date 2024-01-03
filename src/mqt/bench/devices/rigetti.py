@@ -48,6 +48,7 @@ class RigettiCalibration(TypedDict):
 
     name: str
     num_qubits: int
+    basis_gates: list[str]
     connectivity: list[tuple[int, int]]
     properties: Properties
 
@@ -65,6 +66,15 @@ class RigettiProvider(Provider):
         Get the names of all available Rigetti devices.
         """
         return ["rigetti_aspen_m2"]
+
+    @classmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get the names of all available Rigetti basis gates.
+        """
+        return [
+            ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"],  # aspen_m2
+        ]
 
     @classmethod
     def get_max_qubits(cls) -> int:
@@ -126,7 +136,7 @@ class RigettiProvider(Provider):
         device = Device()
         device.name = rigetti_calibration["name"]
         device.num_qubits = rigetti_calibration["num_qubits"]
-        device.basis_gates = ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]
+        device.basis_gates = rigetti_calibration["basis_gates"]
         device.coupling_map = [
             [cls.__from_rigetti_index(a), cls.__from_rigetti_index(b)] for a, b in rigetti_calibration["connectivity"]
         ]

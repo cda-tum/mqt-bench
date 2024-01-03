@@ -1,6 +1,7 @@
 {
   "name": "oqc_lucy",
   "num_qubits": 8,
+  "basis_gates": ["rz", "sx", "x", "ecr", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [0, 7],

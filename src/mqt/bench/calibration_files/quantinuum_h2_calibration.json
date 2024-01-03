@@ -1,6 +1,7 @@
 {
   "name": "quantinuum_h2",
   "num_qubits": 32,
+  "basis_gates": ["rzz", "rz", "ry", "rx", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [0, 2],

@@ -54,6 +54,7 @@ class OQCCalibration(TypedDict):
     """
 
     name: str
+    basis_gates: list[str]
     num_qubits: int
     connectivity: list[list[int]]
     properties: Properties
@@ -72,6 +73,15 @@ class OQCProvider(Provider):
         Get the names of all available OQC devices.
         """
         return ["oqc_lucy"]
+
+    @classmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get the names of all available OQC basis gates.
+        """
+        return [
+            ["rz", "sx", "x", "ecr", "measure", "barrier"],  # lucy
+        ]
 
     @classmethod
     def get_max_qubits(cls) -> int:
@@ -95,7 +105,7 @@ class OQCProvider(Provider):
         device = Device()
         device.name = oqc_calibration["name"]
         device.num_qubits = oqc_calibration["num_qubits"]
-        device.basis_gates = ["rz", "sx", "x", "ecr", "measure", "barrier"]
+        device.basis_gates = oqc_calibration["basis_gates"]
         device.coupling_map = list(oqc_calibration["connectivity"])
 
         calibration = DeviceCalibration()

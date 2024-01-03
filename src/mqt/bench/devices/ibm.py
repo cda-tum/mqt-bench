@@ -36,6 +36,7 @@ class IBMCalibration(TypedDict):
     """
 
     name: str
+    basis_gates: list[str]
     num_qubits: int
     connectivity: list[list[int]]
     properties: dict[str, QubitProperties]
@@ -54,6 +55,15 @@ class IBMProvider(Provider):
         Get the names of all available IBM devices.
         """
         return ["ibm_washington", "ibm_montreal"]
+
+    @classmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get the names of all available IBM basis gates.
+        """
+        return [
+            ["id", "rz", "sx", "x", "cx", "measure", "barrier"],  # washington, montreal
+        ]
 
     @classmethod
     def get_max_qubits(cls) -> int:
@@ -77,7 +87,7 @@ class IBMProvider(Provider):
         device = Device()
         device.name = ibm_calibration["name"]
         device.num_qubits = ibm_calibration["num_qubits"]
-        device.basis_gates = ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
+        device.basis_gates = ibm_calibration["basis_gates"]
         device.coupling_map = list(ibm_calibration["connectivity"])
 
         calibration = DeviceCalibration()

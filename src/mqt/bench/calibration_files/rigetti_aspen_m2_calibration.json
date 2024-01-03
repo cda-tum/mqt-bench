@@ -1,6 +1,7 @@
 {
   "name": "rigetti_aspen_m2",
   "num_qubits": 80,
+  "basis_gates": ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [0, 7],

@@ -24,6 +24,7 @@ class IonQCalibration(TypedDict):
     """
 
     name: str
+    basis_gates: list[str]
     connectivity: list[list[int]]
     fidelity: Fidelity
     num_qubits: int
@@ -43,6 +44,15 @@ class IonQProvider(Provider):
         Get the names of all available IonQ devices.
         """
         return ["ionq_harmony", "ionq_aria1"]
+
+    @classmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get the names of all available IonQ basis gates.
+        """
+        return [
+            ["rxx", "rz", "ry", "rx", "measure", "barrier"],  # harmony, aria1
+        ]
 
     @classmethod
     def get_max_qubits(cls) -> int:
@@ -66,7 +76,7 @@ class IonQProvider(Provider):
         device = Device()
         device.name = ionq_calibration["name"]
         device.num_qubits = ionq_calibration["num_qubits"]
-        device.basis_gates = ["rxx", "rz", "ry", "rx", "measure", "barrier"]
+        device.basis_gates = ionq_calibration["basis_gates"]
         device.coupling_map = list(ionq_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):

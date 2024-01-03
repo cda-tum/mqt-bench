@@ -1,6 +1,7 @@
 {
   "name": "ionq_harmony",
   "num_qubits": 11,
+  "basis_gates": ["rxx", "rz", "ry", "rx", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [0, 2],

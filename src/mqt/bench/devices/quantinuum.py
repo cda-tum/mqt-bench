@@ -23,6 +23,7 @@ class QuantinuumCalibration(TypedDict):
     """
 
     name: str
+    basis_gates: list[str]
     connectivity: list[list[int]]
     fidelity: Fidelity
     num_qubits: int
@@ -41,6 +42,15 @@ class QuantinuumProvider(Provider):
         Get the names of all available Quantinuum devices.
         """
         return ["quantinuum_h2"]
+
+    @classmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get the names of all available Quantinuum basis gates.
+        """
+        return [
+            ["rzz", "rz", "ry", "rx", "measure", "barrier"],  # h2
+        ]
 
     @classmethod
     def get_max_qubits(cls) -> int:
@@ -64,7 +74,7 @@ class QuantinuumProvider(Provider):
         device = Device()
         device.name = quantinuum_calibration["name"]
         device.num_qubits = quantinuum_calibration["num_qubits"]
-        device.basis_gates = ["rzz", "rz", "ry", "rx", "measure", "barrier"]
+        device.basis_gates = quantinuum_calibration["basis_gates"]
         device.coupling_map = list(quantinuum_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):

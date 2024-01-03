@@ -49,6 +49,13 @@ class Provider(ABC):
 
     @classmethod
     @abstractmethod
+    def get_available_basis_gates(cls) -> list[list[str]]:
+        """
+        Get a list of all available basis gates.
+        """
+
+    @classmethod
+    @abstractmethod
     def get_max_qubits(cls) -> int:
         """
         Get the maximum number of qubits offered by a device from the provider.
