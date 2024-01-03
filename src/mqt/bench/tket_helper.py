@@ -19,65 +19,33 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
-from mqt.bench import devices, utils
+from mqt.bench import utils
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
 
-
-@overload
-def get_rebase(gate_set_name: str, get_gatenames: Literal[True]) -> list[str]:
-    ...
+    from mqt.bench.devices import Device, Provider
 
 
-@overload
-def get_rebase(gate_set_name: str, get_gatenames: Literal[False] = False) -> BasePass:
-    ...
-
-
-def get_rebase(gate_set_name: str, get_gatenames: bool = False) -> BasePass | list[str]:
-    if gate_set_name == "ionq":
-        return get_ionq_rebase(get_gatenames)
-    if gate_set_name == "oqc":
-        return get_oqc_rebase(get_gatenames)
-    if gate_set_name == "ibm":
-        return get_ibm_rebase(get_gatenames)
-    if gate_set_name == "rigetti":
-        return get_rigetti_rebase(get_gatenames)
-    if gate_set_name == "quantinuum":
-        return get_quantinuum_rebase(get_gatenames)
-    raise ValueError("Unknown gate set name: " + gate_set_name)
-
-
-def get_ionq_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
-    if get_gatenames:
-        return ["rz", "ry", "rx", "rxx", "measure"]
-    return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.XXPhase, OpType.Measure})
-
-
-def get_quantinuum_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
-    if get_gatenames:
-        return ["rz", "ry", "rx", "rzz", "measure"]
-    return auto_rebase_pass({OpType.Rz, OpType.Ry, OpType.Rx, OpType.ZZPhase, OpType.Measure})
-
-
-def get_oqc_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
-    if get_gatenames:
-        return ["rz", "sx", "x", "ecr", "measure"]
-    return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.ECR, OpType.Measure})
-
-
-def get_rigetti_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
-    if get_gatenames:
-        return ["rz", "rx", "cz", "measure"]
-    return auto_rebase_pass({OpType.Rz, OpType.Rx, OpType.CZ, OpType.Measure})
-
-
-def get_ibm_rebase(get_gatenames: bool = False) -> BasePass | list[str]:
-    if get_gatenames:
-        return ["rz", "sx", "x", "cx", "measure"]
-    return auto_rebase_pass({OpType.Rz, OpType.SX, OpType.X, OpType.CX, OpType.Measure})
+def get_rebase(gate_set: list[str]) -> BasePass:
+    op_dict = {
+        "rx": OpType.Rx,
+        "ry": OpType.Ry,
+        "rz": OpType.Rz,
+        "rxx": OpType.XXPhase,
+        "rzz": OpType.ZZPhase,
+        "sx": OpType.SX,
+        "x": OpType.X,
+        "cx": OpType.CX,
+        "cz": OpType.CZ,
+        "ecr": OpType.ECR,
+        "measure": OpType.Measure,
+    }
+    ops = [op_dict[key] for key in gate_set if key in op_dict]
+    if ops:
+        return auto_rebase_pass(set(ops))
+    raise ValueError("Unknown gate set: " + str(gate_set))
 
 
 @overload
@@ -156,7 +124,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    provider: Provider,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[True],
@@ -169,7 +137,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    provider: Provider,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[False],
@@ -181,7 +149,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    provider: Provider,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
@@ -192,7 +160,7 @@ def get_native_gates_level(
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
-    gate_set_name -- name of this gate set
+    provider -- determines the native gate set
     num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
     return_qc -- flag if the actual circuit shall be returned
@@ -205,7 +173,7 @@ def get_native_gates_level(
     """
 
     if not target_filename:
-        filename_native = qc.name + "_nativegates_" + gate_set_name + "_tket_" + str(num_qubits)
+        filename_native = qc.name + "_nativegates_" + provider.provider_name + "_tket_" + str(num_qubits)
     else:
         filename_native = target_filename
 
@@ -226,8 +194,8 @@ def get_native_gates_level(
         print("TKET Exception NativeGates: ", e)
         return False
 
-    native_gatenames = get_rebase(gate_set_name, get_gatenames=True)
-    native_gate_set_rebase = get_rebase(gate_set_name)
+    gate_set = provider.get_native_gates()
+    native_gate_set_rebase = get_rebase(gate_set)
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     native_gate_set_rebase.apply(qc_tket)
@@ -237,7 +205,7 @@ def get_native_gates_level(
     return utils.save_as_qasm(
         circuit_to_qasm_str(qc_tket),
         filename_native,
-        native_gatenames,
+        gate_set,
         target_directory=target_directory,
     )
 
@@ -245,9 +213,9 @@ def get_native_gates_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    gate_set: list[str],
     num_qubits: int | None,
-    device_name: str,
+    device: Device,
     lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[True],
@@ -260,9 +228,9 @@ def get_mapped_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    gate_set: list[str],
     num_qubits: int | None,
-    device_name: str,
+    device: Device,
     lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[False],
@@ -274,9 +242,9 @@ def get_mapped_level(
 
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set_name: str,
+    gate_set: list[str],
     num_qubits: int | None,
-    device_name: str,
+    device: Device,
     lineplacement: bool,
     file_precheck: bool,
     return_qc: bool = False,
@@ -287,9 +255,9 @@ def get_mapped_level(
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
-    gate_set_name -- name of the gate set
+    gate_set -- basis gate set
     num_qubits -- number of qubits
-    device_name -- -- name of the target device
+    device -- target device
     lineplacement -- if true line placement is used, else graph placement
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
     return_qc -- flag if the actual circuit shall be returned
@@ -304,17 +272,13 @@ def get_mapped_level(
     placement = "line" if lineplacement else "graph"
 
     if not target_filename:
-        filename_mapped = qc.name + "_mapped_" + device_name + "_tket_" + placement + "_" + str(num_qubits)
+        filename_mapped = qc.name + "_mapped_" + device.name + "_tket_" + placement + "_" + str(num_qubits)
     else:
         filename_mapped = target_filename
 
     path = Path(target_directory, filename_mapped + ".qasm")
     if file_precheck and path.is_file():
         return True
-
-    device = devices.get_device_by_name(device_name)
-
-    cmap = device.coupling_map
 
     try:
         gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
@@ -330,8 +294,7 @@ def get_mapped_level(
         print("TKET Exception Mapped: ", e)
         return False
 
-    native_gatenames = get_rebase(gate_set_name, True)
-    native_gate_set_rebase = get_rebase(gate_set_name)
+    cmap = device.coupling_map
     cmap_converted = utils.convert_cmap_to_tuple_list(cmap)
     arch = Architecture(cmap_converted)
 
@@ -340,6 +303,7 @@ def get_mapped_level(
     diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
     qc_tket.add_blank_wires(diff)
 
+    native_gate_set_rebase = get_rebase(gate_set)
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
@@ -356,7 +320,7 @@ def get_mapped_level(
     return utils.save_as_qasm(
         circuit_to_qasm_str(qc_tket),
         filename_mapped,
-        native_gatenames,
+        gate_set,
         True,
         cmap,
         target_directory,

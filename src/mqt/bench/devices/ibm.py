@@ -66,6 +66,13 @@ class IBMProvider(Provider):
         ]
 
     @classmethod
+    def get_native_gates(cls) -> list[str]:
+        """
+        Get a list of provider specific native gates.
+        """
+        return cls.get_available_basis_gates()[0]
+
+    @classmethod
     def get_max_qubits(cls) -> int:
         """
         Get the maximum number of qubits of all available IBM devices.

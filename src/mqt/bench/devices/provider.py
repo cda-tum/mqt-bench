@@ -49,6 +49,13 @@ class Provider(ABC):
 
     @classmethod
     @abstractmethod
+    def get_native_gates(cls) -> list[str]:
+        """
+        Get a list of provider specific native gates.
+        """
+
+    @classmethod
+    @abstractmethod
     def get_available_basis_gates(cls) -> list[list[str]]:
         """
         Get a list of all available basis gates.

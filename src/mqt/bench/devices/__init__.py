@@ -12,8 +12,8 @@ from mqt.bench.devices.quantinuum import QuantinuumProvider
 from mqt.bench.devices.rigetti import RigettiProvider
 
 
-class DeviceNotFoundError(Exception):
-    """Raised when a device is not found within the available provider."""
+class NotFoundError(Exception):
+    """Raised when a device or provider is not found within the available ones."""
 
 
 def get_available_providers() -> list[Provider]:
@@ -21,6 +21,33 @@ def get_available_providers() -> list[Provider]:
     Get a list of all available providers
     """
     return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider()]
+
+
+def get_available_provider_names() -> list[str]:
+    """
+    Get a list of all available provider names
+    """
+    return [prov.provider_name for prov in get_available_providers()]
+
+
+def get_provider_by_name(provider_name: str) -> Provider:
+    """
+    Get a provider by its name
+
+    Args:
+        provider_name: the name of the provider
+    """
+    provider = None
+    for prov in get_available_providers():
+        if prov.provider_name == provider_name:
+            provider = prov
+            break
+
+    if provider is None:
+        msg = f"Provider '{provider_name}' not found among available providers."
+        raise NotFoundError(msg)
+
+    return provider
 
 
 def get_available_devices(sanitize_device: bool = False) -> list[Device]:
@@ -59,7 +86,7 @@ def get_device_by_name(device_name: str) -> Device:
 
     if device is None:
         msg = f"Device '{device_name}' not found among available providers."
-        raise DeviceNotFoundError(msg)
+        raise NotFoundError(msg)
 
     return device
 
@@ -74,6 +101,8 @@ __all__ = [
     "RigettiProvider",
     "QuantinuumProvider",
     "get_available_providers",
+    "get_available_provider_names",
+    "get_provider_by_name",
     "get_available_devices",
     "get_available_device_names",
     "get_device_by_name",

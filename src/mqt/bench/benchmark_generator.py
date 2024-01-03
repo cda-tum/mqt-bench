@@ -11,6 +11,7 @@ from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
 from mqt.bench import devices, qiskit_helper, tket_helper, utils
+from mqt.bench.devices import get_available_provider_names, get_available_providers, get_provider_by_name
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -132,23 +133,24 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
-        for gate_set_name, devices_ in utils.get_compilation_paths():
-            for device_name, max_qubits in devices_:
+        for provider in get_available_providers():
+            gate_set = provider.get_native_gates()
+            for device in provider.get_available_devices():
                 for opt_level in range(4):
                     for parameter_instance in parameter_space:
                         qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                         if not qc:
                             break
                         assert isinstance(qc, QuantumCircuit)
-                        if qc.num_qubits <= max_qubits:
+                        if qc.num_qubits <= device.num_qubits:
                             res = timeout_watcher(
                                 qiskit_helper.get_mapped_level,
                                 self.timeout,
                                 [
                                     qc,
-                                    gate_set_name,
+                                    gate_set,
                                     qc.num_qubits,
-                                    device_name,
+                                    device,
                                     opt_level,
                                     file_precheck,
                                     False,
@@ -166,15 +168,15 @@ class BenchmarkGenerator:
                         if not qc:
                             break
                         assert isinstance(qc, QuantumCircuit)
-                        if qc.num_qubits <= max_qubits:
+                        if qc.num_qubits <= device.num_qubits:
                             res = timeout_watcher(
                                 tket_helper.get_mapped_level,
                                 self.timeout,
                                 [
                                     qc,
-                                    gate_set_name,
+                                    gate_set,
                                     qc.num_qubits,
-                                    device_name,
+                                    device,
                                     lineplacement,
                                     file_precheck,
                                     False,
@@ -264,7 +266,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str = "ibm",
+    provider_name: str = "ibm",
     device_name: str = "ibm_washington",
 ) -> QuantumCircuit:
     ...
@@ -278,7 +280,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str = "ibm",
+    provider_name: str = "ibm",
     device_name: str = "ibm_washington",
 ) -> Circuit:
     ...
@@ -292,7 +294,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str = "ibm",
+    provider_name: str = "ibm",
     device_name: str = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
     ...
@@ -305,7 +307,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gate_set_name: str = "ibm",
+    provider_name: str = "ibm",
     device_name: str = "ibm_washington",
 ) -> QuantumCircuit | Circuit:
     """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
@@ -317,7 +319,7 @@ def get_benchmark(
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
         CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
-        gate_set_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum"
+        provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum"
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2",
 
     Returns:
@@ -389,19 +391,20 @@ def get_benchmark(
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
-    if gate_set_name not in utils.get_supported_gatesets():
-        msg = f"Selected gate_set_name must be in {utils.get_supported_gatesets()}."
+    if provider_name not in get_available_provider_names():
+        msg = f"Selected provider_name must be in {get_available_provider_names()}."
         raise ValueError(msg)
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
-        assert gate_set_name is not None
+        assert provider_name is not None
+        provider = get_provider_by_name(provider_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
-            return qiskit_helper.get_native_gates_level(qc, gate_set_name, circuit_size, opt_level, False, True)
+            return qiskit_helper.get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
         if compiler == "tket":
-            return tket_helper.get_native_gates_level(qc, gate_set_name, circuit_size, False, True)
+            return tket_helper.get_native_gates_level(qc, provider, circuit_size, False, True)
 
     if device_name not in devices.get_available_device_names():
         msg = f"Selected device_name must be in {devices.get_available_device_names()}."
@@ -409,17 +412,20 @@ def get_benchmark(
 
     mapped_level = 3
     if level in ("mapped", mapped_level):
-        assert gate_set_name is not None
+        assert provider_name is not None
+        provider = get_provider_by_name(provider_name)
+        gate_set = provider.get_native_gates()
         assert device_name is not None
+        device = provider.get_device(device_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
             assert isinstance(opt_level, int)
             return qiskit_helper.get_mapped_level(
                 qc,
-                gate_set_name,
+                gate_set,
                 circuit_size,
-                device_name,
+                device,
                 opt_level,
                 False,
                 True,
@@ -430,9 +436,9 @@ def get_benchmark(
             lineplacement = placement == "lineplacement"
             return tket_helper.get_mapped_level(
                 qc,
-                gate_set_name,
+                gate_set,
                 circuit_size,
-                device_name,
+                device,
                 lineplacement,
                 False,
                 True,

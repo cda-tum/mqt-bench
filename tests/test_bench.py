@@ -54,6 +54,7 @@ from mqt.bench.benchmarks import (
     vqe,
     wstate,
 )
+from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
 
 
 @pytest.fixture()
@@ -197,13 +198,12 @@ def test_quantumcircuit_native_and_mapped_levels(
     if scalable:
         assert qc.num_qubits == input_value
 
-    compilation_paths = utils.get_compilation_paths()
-
-    for gate_set_name, devices in compilation_paths:
+    providers = get_available_providers()
+    for provider in providers:
         opt_level = 1
         res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             opt_level,
             file_precheck=False,
@@ -213,7 +213,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
         res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             opt_level,
             file_precheck=True,
@@ -222,14 +222,15 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
-        for device_name, max_qubits in devices:
+        gate_set = provider.get_native_gates()
+        for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            if max_qubits >= qc.num_qubits:
+            if device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
+                    gate_set,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     opt_level,
                     file_precheck=False,
                     return_qc=False,
@@ -238,9 +239,9 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
+                    gate_set,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     opt_level,
                     file_precheck=True,
                     return_qc=False,
@@ -248,10 +249,10 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
 
-    for gate_set_name, devices in compilation_paths:
+    for provider in providers:
         res = tket_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             file_precheck=False,
             return_qc=False,
@@ -260,21 +261,23 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
         res = tket_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             file_precheck=True,
             return_qc=False,
             target_directory=output_path,
         )
         assert res
-        for device_name, max_qubits in devices:
+
+        gate_set = provider.get_native_gates()
+        for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            if max_qubits >= qc.num_qubits:
+            if device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
+                    gate_set,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     True,
                     file_precheck=False,
                     return_qc=False,
@@ -283,9 +286,9 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
+                    gate_set,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     False,
                     file_precheck=True,
                     return_qc=False,
@@ -334,7 +337,7 @@ def test_unidirectional_coupling_map() -> None:
         circuit_size=3,
         compiler="tket",
         compiler_settings=CompilerSettings(tket=TKETSettings(placement="graphplacement")),
-        gate_set_name="oqc",
+        provider_name="oqc",
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
@@ -350,7 +353,7 @@ def test_unidirectional_coupling_map() -> None:
         "benchmark_instance_name",
         "compiler",
         "compiler_settings",
-        "gate_set_name",
+        "provider_name",
         "device_name",
     ),
     [
@@ -705,7 +708,7 @@ def test_get_benchmark(
     benchmark_instance_name: str | None,
     compiler: str,
     compiler_settings: CompilerSettings | None,
-    gate_set_name: str,
+    provider_name: str,
     device_name: str,
 ) -> None:
     qc = get_benchmark(
@@ -715,17 +718,18 @@ def test_get_benchmark(
         benchmark_instance_name,
         compiler,
         compiler_settings,
-        gate_set_name,
+        provider_name,
         device_name,
     )
     assert qc.depth() > 0
-    if gate_set_name and "oqc" not in gate_set_name:
+    if provider_name and "oqc" not in provider_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
-            assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
+            provider = get_provider_by_name(provider_name)
+            assert gate_type in provider.get_native_gates() or gate_type == "barrier"
 
 
 def test_get_benchmark_faulty_parameters() -> None:
@@ -794,7 +798,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m2",
         )
-    match = "Selected gate_set_name must be in"
+    match = "Selected provider_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
@@ -901,7 +905,15 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
     res = qiskit_helper.get_mapped_level(
-        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+        qc,
+        IBMProvider.get_native_gates(),
+        qc.num_qubits,
+        IBMProvider.get_device("ibm_washington"),
+        1,
+        False,
+        False,
+        directory,
+        filename,
     )
     assert res
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -913,9 +925,9 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     assert qc
     res = tket_helper.get_mapped_level(
         qc,
-        "ibm",
+        IBMProvider.get_native_gates(),
         qc.num_qubits,
-        "ibm_washington",
+        IBMProvider.get_device("ibm_washington"),
         False,
         False,
         False,
@@ -936,7 +948,7 @@ def test_oqc_postprocessing() -> None:
 
     tket_helper.get_native_gates_level(
         qc,
-        "oqc",
+        OQCProvider(),
         qc.num_qubits,
         file_precheck=False,
         return_qc=False,
@@ -952,9 +964,9 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     tket_helper.get_mapped_level(
         qc,
-        "oqc",
+        OQCProvider.get_native_gates(),
         qc.num_qubits,
-        "oqc_lucy",
+        OQCProvider().get_device("oqc_lucy"),
         lineplacement=False,
         file_precheck=False,
         return_qc=False,
@@ -968,7 +980,7 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_native_gates_level(
         qc,
-        "oqc",
+        OQCProvider(),
         qc.num_qubits,
         opt_level=1,
         file_precheck=False,
@@ -983,9 +995,9 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_mapped_level(
         qc,
-        "oqc",
+        OQCProvider.get_native_gates(),
         qc.num_qubits,
-        "oqc_lucy",
+        OQCProvider().get_device("oqc_lucy"),
         opt_level=1,
         file_precheck=False,
         return_qc=False,
@@ -1101,9 +1113,9 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     qc = get_benchmark("ghz", 1, 5)
     res = tket_helper.get_mapped_level(
         qc,
-        "ibm",
+        IBMProvider.get_native_gates(),
         qc.num_qubits,
-        "ibm_washington",
+        IBMProvider().get_device("ibm_washington"),
         True,
         file_precheck=False,
         return_qc=True,
