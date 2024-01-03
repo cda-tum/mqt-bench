@@ -117,7 +117,11 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
 
 
 def get_rigetti_aspen_m2_map() -> list[list[int]]:
-    """Returns a coupling map of Rigetti Aspen M2 chip."""
+    """
+    DEPRECATED: Returns a coupling map of Rigetti Aspen M2 chip.
+    """
+    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
+
     c_map_rigetti = []
     for j in range(5):
         for i in range(7):
@@ -151,6 +155,11 @@ def get_rigetti_aspen_m2_map() -> list[list[int]]:
 
 
 def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
+    """
+    DEPRECATED: Returns a coupling map of a fully connected device.
+    """
+    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
+
     return [[i, j] for i in range(num_qubits) for j in range(num_qubits) if i != j]
 
 
@@ -255,7 +264,11 @@ def save_as_qasm(
 
 
 def get_cmap_oqc_lucy() -> list[list[int]]:
-    """Returns the coupling map of the OQC Lucy quantum computer."""
+    """
+    DEPRECATED: Returns the coupling map of the OQC Lucy quantum computer.
+    """
+    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
+
     # source: https://github.com/aws/amazon-braket-examples/blob/main/examples/braket_features/Verbatim_Compilation.ipynb
 
     # Connections are NOT bidirectional, this is not an accident

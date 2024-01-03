@@ -69,9 +69,7 @@ class IonQProvider(Provider):
         device.name = ionq_calibration["backend"]
         device.num_qubits = ionq_calibration["qubits"]
         device.basis_gates = ["rxx", "rz", "ry", "rx", "measure", "barrier"]
-        device.coupling_map = list(ionq_calibration["connectivity"]) + [
-            [b, a] for a, b in ionq_calibration["connectivity"]
-        ]
+        device.coupling_map = list(ionq_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = {
