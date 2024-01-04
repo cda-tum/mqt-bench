@@ -13,11 +13,21 @@ def test_ionq_harmony_device() -> None:
 
     assert device.name == "ionq_harmony"
     assert device.num_qubits == 11
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
 
 
 def test_ionq_aria1_device() -> None:
@@ -30,8 +40,18 @@ def test_ionq_aria1_device() -> None:
 
     assert device.name == "ionq_aria1"
     assert device.num_qubits == 23
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))

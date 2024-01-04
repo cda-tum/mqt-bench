@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from qiskit.providers.fake_provider import FakeMontreal, FakeMontrealV2
 
 from mqt.bench.devices import IBMProvider
@@ -18,11 +19,21 @@ def test_import_v1_backend() -> None:
     assert device.num_qubits == backend.configuration().n_qubits
     assert device.coupling_map == [[a, b] for a, b in backend.configuration().coupling_map]
     assert device.basis_gates == backend.configuration().basis_gates
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
 
 
 def test_import_v2_backend() -> None:
@@ -38,11 +49,21 @@ def test_import_v2_backend() -> None:
     assert device.num_qubits == backend.num_qubits
     assert device.coupling_map == backend.coupling_map.get_edges()
     assert device.basis_gates == backend.operation_names
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
 
 
 def test_get_ibm_washington_device() -> None:
@@ -55,11 +76,22 @@ def test_get_ibm_washington_device() -> None:
 
     assert device.name == "ibm_washington"
     assert device.num_qubits == 127
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+                device.get_single_qubit_gate_duration(gate, q)
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
 
 
 def test_get_ibmq_montreal_device() -> None:
@@ -72,8 +104,19 @@ def test_get_ibmq_montreal_device() -> None:
 
     assert device.name == "ibm_montreal"
     assert device.num_qubits == 27
+
     assert all(isinstance(gate, str) for gate in single_qubit_gates)
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
-    assert isinstance(device.get_readout_fidelity(0), (float, int))
-    assert all(isinstance(device.get_single_qubit_gate_fidelity(gate, 0), (float, int)) for gate in single_qubit_gates)
-    assert all(isinstance(device.get_two_qubit_gate_fidelity(gate, 0, 1), (float, int)) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_duration(q), (float, int))
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+                device.get_single_qubit_gate_duration(gate, q)
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
