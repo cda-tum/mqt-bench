@@ -5,6 +5,20 @@ import pytest
 from mqt.bench.devices import OQCProvider
 
 
+def test_oqc_provider_methods() -> None:
+    # Test get_available_device_names method
+    assert OQCProvider.get_available_device_names() == ["oqc_lucy"]
+
+    # Test get_available_basis_gates method
+    assert OQCProvider.get_available_basis_gates() == [["rz", "sx", "x", "ecr", "measure", "barrier"]]
+
+    # Test get_native_gates method
+    assert OQCProvider.get_native_gates() == ["rz", "sx", "x", "ecr", "measure", "barrier"]
+
+    # Test get_max_qubits method
+    assert OQCProvider.get_max_qubits() == 8
+
+
 def test_oqc_lucy_device() -> None:
     """
     Test the import of the OQC Lucy quantum computer.

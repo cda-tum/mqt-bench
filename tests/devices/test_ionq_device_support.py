@@ -3,6 +3,20 @@ from __future__ import annotations
 from mqt.bench.devices import IonQProvider
 
 
+def test_ionq_provider_methods() -> None:
+    # Test get_available_device_names method
+    assert IonQProvider.get_available_device_names() == ["ionq_harmony", "ionq_aria1"]
+
+    # Test get_available_basis_gates method
+    assert IonQProvider.get_available_basis_gates() == [["rxx", "rz", "ry", "rx", "measure", "barrier"]]
+
+    # Test get_native_gates method
+    assert IonQProvider.get_native_gates() == ["rxx", "rz", "ry", "rx", "measure", "barrier"]
+
+    # Test get_max_qubits method
+    assert IonQProvider.get_max_qubits() == 23
+
+
 def test_ionq_harmony_device() -> None:
     """
     Test the import of the IonQ Harmony quantum computer.

@@ -5,6 +5,20 @@ import pytest
 from mqt.bench.devices import RigettiProvider
 
 
+def test_rigetti_provider_methods() -> None:
+    # Test get_available_device_names method
+    assert RigettiProvider.get_available_device_names() == ["rigetti_aspen_m2"]
+
+    # Test get_available_basis_gates method
+    assert RigettiProvider.get_available_basis_gates() == [["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]]
+
+    # Test get_native_gates method
+    assert RigettiProvider.get_native_gates() == ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]
+
+    # Test get_max_qubits method
+    assert RigettiProvider.get_max_qubits() == 80
+
+
 def test_rigetti_aspen_m2_device() -> None:
     """
     Test the import of the Rigetti Aspen-M2 quantum computer.

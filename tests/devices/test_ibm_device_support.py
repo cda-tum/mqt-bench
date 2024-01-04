@@ -6,6 +6,20 @@ from qiskit.providers.fake_provider import FakeMontreal, FakeMontrealV2
 from mqt.bench.devices import IBMProvider
 
 
+def test_ibm_provider_methods() -> None:
+    # Test get_available_device_names method
+    assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]
+
+    # Test get_available_basis_gates method
+    assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
+
+    # Test get_native_gates method
+    assert IBMProvider.get_native_gates() == ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
+
+    # Test get_max_qubits method
+    assert IBMProvider.get_max_qubits() == 127
+
+
 def test_import_v1_backend() -> None:
     """
     Test importing a Qiskit `BackendV1` object.
