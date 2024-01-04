@@ -268,8 +268,8 @@ def get_benchmark(
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
-    gate_set_name: str | None = None,
     device_name: str = "ibm_washington",
+    **kwargs: str,
 ) -> QuantumCircuit:
     ...
 
@@ -283,8 +283,8 @@ def get_benchmark(
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
-    gate_set_name: str | None = None,
     device_name: str = "ibm_washington",
+    **kwargs: str,
 ) -> Circuit:
     ...
 
@@ -298,8 +298,8 @@ def get_benchmark(
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
-    gate_set_name: str | None = None,
     device_name: str = "ibm_washington",
+    **kwargs: str,
 ) -> QuantumCircuit | Circuit:
     ...
 
@@ -312,8 +312,8 @@ def get_benchmark(
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
-    gate_set_name: str | None = None,
     device_name: str = "ibm_washington",
+    **kwargs: str,
 ) -> QuantumCircuit | Circuit:
     """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
 
@@ -331,10 +331,10 @@ def get_benchmark(
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
 
-    if gate_set_name is not None:
+    if "gate_set_name" in kwargs:
         msg = "gate_set_name is deprecated and will be removed in a future release. Use provider_name instead."
         warn(msg, DeprecationWarning, stacklevel=2)
-        provider_name = gate_set_name
+        provider_name = kwargs["gate_set_name"]
 
     if benchmark_name not in utils.get_supported_benchmarks():
         msg = f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
