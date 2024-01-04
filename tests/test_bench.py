@@ -308,11 +308,6 @@ def test_openqasm_gates() -> None:
     assert len(openqasm_gates) == num_openqasm_gates
 
 
-def test_rigetti_cmap_generator() -> None:
-    num_edges = 212
-    assert len(utils.get_rigetti_aspen_m2_map()) == num_edges
-
-
 def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
@@ -341,8 +336,8 @@ def test_unidirectional_coupling_map() -> None:
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    cmap_converted = utils.convert_cmap_to_tuple_list(utils.get_cmap_oqc_lucy())
-    assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
+    cmap = utils.convert_cmap_to_tuple_list(OQCProvider.get_device("oqc_lucy").coupling_map)
+    assert qc.valid_connectivity(arch=Architecture(cmap), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -1102,11 +1097,6 @@ def test_benchmark_helper() -> None:
     for elem in groundstate_instances:
         res_groundstate = groundstate.get_molecule(elem)
         assert res_groundstate
-
-
-def test_get_cmap_from_devicename() -> None:
-    with pytest.raises(ValueError, match="Device wrong_name is not supported"):
-        utils.get_cmap_from_devicename("wrong_name")
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:

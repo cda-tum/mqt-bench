@@ -4,8 +4,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
-from warnings import warn
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -16,7 +15,6 @@ import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
-from qiskit.providers.fake_provider import FakeMontreal, FakeWashington
 from qiskit_optimization.applications import Maxcut
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
@@ -116,53 +114,6 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     return maxcut.to_quadratic_program()
 
 
-def get_rigetti_aspen_m2_map() -> list[list[int]]:
-    """
-    DEPRECATED: Returns a coupling map of Rigetti Aspen M2 chip.
-    """
-    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
-
-    c_map_rigetti = []
-    for j in range(5):
-        for i in range(7):
-            c_map_rigetti.append([i + j * 8, i + 1 + j * 8])
-
-            if i == 6:
-                c_map_rigetti.append([0 + j * 8, 7 + j * 8])
-
-        if j != 0:
-            c_map_rigetti.append([j * 8 - 6, j * 8 + 5])
-            c_map_rigetti.append([j * 8 - 7, j * 8 + 6])
-
-    for j in range(5):
-        m = 8 * j + 5 * 8
-        for i in range(7):
-            c_map_rigetti.append([i + m, i + 1 + m])
-
-            if i == 6:
-                c_map_rigetti.append([0 + m, 7 + m])
-
-        if j != 0:
-            c_map_rigetti.append([m - 6, m + 5])
-            c_map_rigetti.append([m - 7, m + 6])
-
-    for n in range(5):
-        c_map_rigetti.append([n * 8 + 3, n * 8 + 5 * 8])
-        c_map_rigetti.append([n * 8 + 4, n * 8 + 7 + 5 * 8])
-
-    inverted = [[item[1], item[0]] for item in c_map_rigetti]
-    return c_map_rigetti + inverted
-
-
-def get_fully_connected_cmap(num_qubits: int) -> list[list[int]]:
-    """
-    DEPRECATED: Returns a coupling map of a fully connected device.
-    """
-    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
-
-    return [[i, j] for i in range(num_qubits) for j in range(num_qubits) if i != j]
-
-
 def get_openqasm_gates() -> list[str]:
     """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
     # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
@@ -258,53 +209,9 @@ def save_as_qasm(
         f.write(qc_str)
     f.close()
 
-    if gate_set == ["rz", "sx", "x", "ecr", "measure"]:
+    if gate_set == ["rz", "sx", "x", "ecr", "measure", "barrier"]:
         postprocess_single_oqc_file(str(file))
     return True
-
-
-def get_cmap_oqc_lucy() -> list[list[int]]:
-    """
-    DEPRECATED: Returns the coupling map of the OQC Lucy quantum computer.
-    """
-    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
-
-    # source: https://github.com/aws/amazon-braket-examples/blob/main/examples/braket_features/Verbatim_Compilation.ipynb
-
-    # Connections are NOT bidirectional, this is not an accident
-    return [[0, 1], [0, 7], [1, 2], [2, 3], [7, 6], [6, 5], [4, 3], [4, 5]]
-
-
-def get_cmap_from_devicename(device: str) -> list[list[int]]:
-    """
-    DEPRECATED: Returns the coupling map of a specific device.
-    """
-    warn("This function is deprecated. Please use Provider class methods instead.", DeprecationWarning, stacklevel=2)
-
-    c_map_functions = {
-        "ibm_washington": FakeWashington,
-        "ibm_montreal": FakeMontreal,
-        "rigetti_aspen_m2": get_rigetti_aspen_m2_map,
-        "oqc_lucy": get_cmap_oqc_lucy,
-        "ionq_harmony": get_fully_connected_cmap,
-        "ionq_aria1": get_fully_connected_cmap,
-        "quantinuum_h2": get_fully_connected_cmap,
-    }
-
-    if device in c_map_functions:
-        if device in ("ibm_washington", "ibm_montreal"):
-            cmap = c_map_functions[device]().configuration().coupling_map
-        elif device == "ionq_harmony":
-            cmap = c_map_functions[device](11)
-        elif device == "ionq_aria1":
-            cmap = c_map_functions[device](25)
-        elif device == "quantinuum_h2":
-            cmap = c_map_functions[device](32)
-        else:
-            cmap = c_map_functions[device]()
-        return cast(list[list[int]], cmap)
-    error_msg = f"Device {device} is not supported."
-    raise ValueError(error_msg)
 
 
 def postprocess_single_oqc_file(filename: str) -> None:
@@ -409,28 +316,6 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     if benchmark_name == "tsp":
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
-
-
-def get_compilation_paths() -> list[tuple[str, list[tuple[str, int]]]]:
-    return [
-        ("ibm", [("ibm_washington", 127), ("ibm_montreal", 27)]),
-        ("rigetti", [("rigetti_aspen_m2", 80)]),
-        ("ionq", [("ionq_harmony", 11), ("ionq_aria1", 25)]),
-        ("oqc", [("oqc_lucy", 8)]),
-        ("quantinuum", [("quantinuum_h2", 32)]),
-    ]
-
-
-def get_supported_devices() -> list[str]:
-    return [
-        "ibm_washington",
-        "ibm_montreal",
-        "rigetti_aspen_m2",
-        "ionq_harmony",
-        "ionq_aria1",
-        "oqc_lucy",
-        "quantinuum_h2",
-    ]
 
 
 def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
