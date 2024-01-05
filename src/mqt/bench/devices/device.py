@@ -191,8 +191,3 @@ class Device:
                     or self.calibration.two_qubit_gate_fidelity[tuple(edge)][gate] == 0
                 ):
                     self.calibration.two_qubit_gate_fidelity[tuple(edge)][gate] = avg_fidelity
-
-        # remove any fidelity data for edges that are not in the coupling map
-        self.calibration.two_qubit_gate_fidelity = {
-            tuple(edge): self.calibration.two_qubit_gate_fidelity[tuple(edge)] for edge in self.coupling_map
-        }
