@@ -6,16 +6,16 @@ from mqt.bench.devices import QuantinuumProvider
 
 
 def test_quantinuum_provider_methods() -> None:
-    # Test get_available_device_names method
+    """
+    Test the methods of the QuantinuumProvider class:
+    - get_available_device_names
+    - get_available_basis_gates
+    - get_native_gates
+    - get_max_qubits
+    """
     assert QuantinuumProvider.get_available_device_names() == ["quantinuum_h2"]
-
-    # Test get_available_basis_gates method
     assert QuantinuumProvider.get_available_basis_gates() == [["rzz", "rz", "ry", "rx", "measure", "barrier"]]
-
-    # Test get_native_gates method
     assert QuantinuumProvider.get_native_gates() == ["rzz", "rz", "ry", "rx", "measure", "barrier"]
-
-    # Test get_max_qubits method
     assert QuantinuumProvider.get_max_qubits() == 32
 
 

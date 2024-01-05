@@ -6,16 +6,16 @@ from mqt.bench.devices import OQCProvider
 
 
 def test_oqc_provider_methods() -> None:
-    # Test get_available_device_names method
+    """
+    Test the methods of the OQCrovider class:
+    - get_available_device_names
+    - get_available_basis_gates
+    - get_native_gates
+    - get_max_qubits
+    """
     assert OQCProvider.get_available_device_names() == ["oqc_lucy"]
-
-    # Test get_available_basis_gates method
     assert OQCProvider.get_available_basis_gates() == [["rz", "sx", "x", "ecr", "measure", "barrier"]]
-
-    # Test get_native_gates method
     assert OQCProvider.get_native_gates() == ["rz", "sx", "x", "ecr", "measure", "barrier"]
-
-    # Test get_max_qubits method
     assert OQCProvider.get_max_qubits() == 8
 
 

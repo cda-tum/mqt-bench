@@ -7,16 +7,16 @@ from mqt.bench.devices import IBMProvider
 
 
 def test_ibm_provider_methods() -> None:
-    # Test get_available_device_names method
+    """
+    Test the methods of the IBMProvider class:
+    - get_available_device_names
+    - get_available_basis_gates
+    - get_native_gates
+    - get_max_qubits
+    """
     assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]
-
-    # Test get_available_basis_gates method
     assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
-
-    # Test get_native_gates method
     assert IBMProvider.get_native_gates() == ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
-
-    # Test get_max_qubits method
     assert IBMProvider.get_max_qubits() == 127
 
 
