@@ -18,6 +18,8 @@ def test_ibm_provider_methods() -> None:
     assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
     assert IBMProvider.get_native_gates() == ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
     assert IBMProvider.get_max_qubits() == 127
+    with pytest.raises(ValueError, match="Device ibm_unknown not found."):
+        IBMProvider.get_device("ibm_unknown")
 
 
 def test_import_v1_backend() -> None:
@@ -40,14 +42,27 @@ def test_import_v1_backend() -> None:
     for q in range(device.num_qubits):
         assert isinstance(device.get_readout_fidelity(q), (float, int))
         assert isinstance(device.get_readout_duration(q), (float, int))
+        if device.calibration is not None:
+            assert isinstance(device.calibration.get_t1(q), (float, int))
+            assert isinstance(device.calibration.get_t2(q), (float, int))
+
         for gate in single_qubit_gates:
             assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
             assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+            if device.calibration is not None:
+                assert isinstance(device.calibration.compute_average_single_qubit_gate_duration(gate), (float, int))
+                assert isinstance(device.calibration.compute_average_single_qubit_gate_fidelity(gate), (float, int))
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
             assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
+            if device.calibration is not None:
+                assert isinstance(device.calibration.compute_average_two_qubit_gate_duration(gate), (float, int))
+                assert isinstance(device.calibration.compute_average_two_qubit_gate_fidelity(gate), (float, int))
+    if device.calibration is not None:
+        assert isinstance(device.calibration.compute_average_readout_fidelity(), (float, int))
+        assert isinstance(device.calibration.compute_average_readout_duration(), (float, int))
 
 
 def test_import_v2_backend() -> None:
@@ -70,14 +85,27 @@ def test_import_v2_backend() -> None:
     for q in range(device.num_qubits):
         assert isinstance(device.get_readout_fidelity(q), (float, int))
         assert isinstance(device.get_readout_duration(q), (float, int))
+        if device.calibration is not None:
+            assert isinstance(device.calibration.get_t1(q), (float, int))
+            assert isinstance(device.calibration.get_t2(q), (float, int))
+
         for gate in single_qubit_gates:
             assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
             assert isinstance(device.get_single_qubit_gate_duration(gate, q), (float, int))
+            if device.calibration is not None:
+                assert isinstance(device.calibration.compute_average_single_qubit_gate_duration(gate), (float, int))
+                assert isinstance(device.calibration.compute_average_single_qubit_gate_fidelity(gate), (float, int))
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
             assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
+            if device.calibration is not None:
+                assert isinstance(device.calibration.compute_average_two_qubit_gate_duration(gate), (float, int))
+                assert isinstance(device.calibration.compute_average_two_qubit_gate_fidelity(gate), (float, int))
+    if device.calibration is not None:
+        assert isinstance(device.calibration.compute_average_readout_fidelity(), (float, int))
+        assert isinstance(device.calibration.compute_average_readout_duration(), (float, int))
 
 
 def test_get_ibm_washington_device() -> None:

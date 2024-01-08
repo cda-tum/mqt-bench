@@ -42,10 +42,7 @@ def get_rebase(gate_set: list[str]) -> BasePass:
         "ecr": OpType.ECR,
         "measure": OpType.Measure,
     }
-    ops = [op_dict[key] for key in gate_set if key in op_dict]
-    if ops:
-        return auto_rebase_pass(set(ops))
-    raise ValueError("Unknown gate set: " + str(gate_set))
+    return auto_rebase_pass({op_dict[key] for key in gate_set if key in op_dict})
 
 
 @overload

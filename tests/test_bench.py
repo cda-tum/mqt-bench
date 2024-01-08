@@ -318,6 +318,21 @@ def test_routing() -> None:
     assert qc.depth() > 0
 
 
+def test_get_benchmark_deprecation_warning() -> None:
+    with pytest.warns(
+        DeprecationWarning,
+        match="gate_set_name is deprecated and will be removed in a future release. Use provider_name instead.",
+    ):
+        get_benchmark(
+            benchmark_name="dj",
+            level="mapped",
+            circuit_size=3,
+            compiler="tket",
+            device_name="oqc_lucy",
+            gate_set_name="oqc",
+        )
+
+
 def test_unidirectional_coupling_map() -> None:
     from pytket.architecture import Architecture
 
