@@ -43,30 +43,14 @@ class IonQProvider(Provider):
         """
         Get the names of all available IonQ devices.
         """
-        return ["ionq_harmony", "ionq_aria1"]
-
-    @classmethod
-    def get_available_basis_gates(cls) -> list[list[str]]:
-        """
-        Get the names of all available IonQ basis gates.
-        """
-        return [
-            ["rxx", "rz", "ry", "rx", "measure", "barrier"],  # harmony, aria1
-        ]
+        return ["ionq_harmony", "ionq_aria1"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
         """
         Get a list of provider specific native gates.
         """
-        return cls.get_available_basis_gates()[0]
-
-    @classmethod
-    def get_max_qubits(cls) -> int:
-        """
-        Get the maximum number of qubits of all available IonQ devices.
-        """
-        return 23
+        return ["rxx", "rz", "ry", "rx", "measure", "barrier"]  # harmony, aria1
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:

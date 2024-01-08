@@ -41,30 +41,14 @@ class QuantinuumProvider(Provider):
         """
         Get the names of all available Quantinuum devices.
         """
-        return ["quantinuum_h2"]
-
-    @classmethod
-    def get_available_basis_gates(cls) -> list[list[str]]:
-        """
-        Get the names of all available Quantinuum basis gates.
-        """
-        return [
-            ["rzz", "rz", "ry", "rx", "measure", "barrier"],  # h2
-        ]
+        return ["quantinuum_h2"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
         """
         Get a list of provider specific native gates.
         """
-        return cls.get_available_basis_gates()[0]
-
-    @classmethod
-    def get_max_qubits(cls) -> int:
-        """
-        Get the maximum number of qubits of all available Quantinuum devices.
-        """
-        return 32
+        return ["rzz", "rz", "ry", "rx", "measure", "barrier"]  # h2
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:

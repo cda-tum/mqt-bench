@@ -65,30 +65,14 @@ class RigettiProvider(Provider):
         """
         Get the names of all available Rigetti devices.
         """
-        return ["rigetti_aspen_m2"]
-
-    @classmethod
-    def get_available_basis_gates(cls) -> list[list[str]]:
-        """
-        Get the names of all available Rigetti basis gates.
-        """
-        return [
-            ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"],  # aspen_m2
-        ]
+        return ["rigetti_aspen_m2"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
         """
         Get a list of provider specific native gates.
         """
-        return cls.get_available_basis_gates()[0]
-
-    @classmethod
-    def get_max_qubits(cls) -> int:
-        """
-        Get the maximum number of qubits of all available Rigetti devices.
-        """
-        return 80
+        return ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]  # aspen_m2
 
     @classmethod
     def __from_rigetti_index(cls, rigetti_index: int) -> int:
