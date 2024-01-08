@@ -135,9 +135,8 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         for provider in get_available_providers():
-            gate_set = provider.get_native_gates()
             for device in provider.get_available_devices():
-                for opt_level in range(4):
+                for opt_level in [0, 1, 2, 3]:
                     for parameter_instance in parameter_space:
                         qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                         if not qc:
@@ -149,7 +148,6 @@ class BenchmarkGenerator:
                                 self.timeout,
                                 [
                                     qc,
-                                    gate_set,
                                     qc.num_qubits,
                                     device,
                                     opt_level,
@@ -175,7 +173,6 @@ class BenchmarkGenerator:
                                 self.timeout,
                                 [
                                     qc,
-                                    gate_set,
                                     qc.num_qubits,
                                     device,
                                     lineplacement,
@@ -195,7 +192,7 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
-        for gate_set in utils.get_supported_gatesets():
+        for provider in get_available_providers():
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
@@ -207,7 +204,7 @@ class BenchmarkGenerator:
                         self.timeout,
                         [
                             qc,
-                            gate_set,
+                            provider,
                             qc.num_qubits,
                             opt_level,
                             file_precheck,
@@ -228,7 +225,7 @@ class BenchmarkGenerator:
                     self.timeout,
                     [
                         qc,
-                        gate_set,
+                        provider,
                         qc.num_qubits,
                         file_precheck,
                         False,
@@ -424,7 +421,6 @@ def get_benchmark(
     if level in ("mapped", mapped_level):
         assert provider_name is not None
         provider = get_provider_by_name(provider_name)
-        gate_set = provider.get_native_gates()
         assert device_name is not None
         device = provider.get_device(device_name)
         if compiler == "qiskit":
@@ -433,7 +429,6 @@ def get_benchmark(
             assert isinstance(opt_level, int)
             return qiskit_helper.get_mapped_level(
                 qc,
-                gate_set,
                 circuit_size,
                 device,
                 opt_level,
@@ -446,7 +441,6 @@ def get_benchmark(
             lineplacement = placement == "lineplacement"
             return tket_helper.get_mapped_level(
                 qc,
-                gate_set,
                 circuit_size,
                 device,
                 lineplacement,

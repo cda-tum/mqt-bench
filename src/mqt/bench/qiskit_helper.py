@@ -160,7 +160,6 @@ def get_native_gates_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     opt_level: int,
@@ -175,7 +174,6 @@ def get_mapped_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     opt_level: int,
@@ -189,7 +187,6 @@ def get_mapped_level(
 
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     opt_level: int,
@@ -202,7 +199,6 @@ def get_mapped_level(
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
-    gate_set -- basis gate set
     num_qubits -- number of qubits
     device -- target device
     opt_level -- optimization level
@@ -229,7 +225,7 @@ def get_mapped_level(
     compiled_with_architecture = transpile(
         qc,
         optimization_level=opt_level,
-        basis_gates=gate_set,
+        basis_gates=device.basis_gates,
         coupling_map=c_map,
         seed_transpiler=10,
     )
@@ -238,7 +234,7 @@ def get_mapped_level(
     return utils.save_as_qasm(
         compiled_with_architecture.qasm(),
         filename_mapped,
-        gate_set,
+        device.basis_gates,
         True,
         c_map,
         target_directory,

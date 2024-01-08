@@ -222,13 +222,12 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
-        gate_set = provider.get_native_gates()
+        provider.get_native_gates()
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set,
                     qc.num_qubits,
                     device,
                     opt_level,
@@ -239,7 +238,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set,
                     qc.num_qubits,
                     device,
                     opt_level,
@@ -269,13 +267,11 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
-        gate_set = provider.get_native_gates()
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set,
                     qc.num_qubits,
                     device,
                     True,
@@ -286,7 +282,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set,
                     qc.num_qubits,
                     device,
                     False,
@@ -901,7 +896,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     assert qc
     res = qiskit_helper.get_mapped_level(
         qc,
-        IBMProvider.get_native_gates(),
         qc.num_qubits,
         IBMProvider.get_device("ibm_washington"),
         1,
@@ -920,7 +914,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     assert qc
     res = tket_helper.get_mapped_level(
         qc,
-        IBMProvider.get_native_gates(),
         qc.num_qubits,
         IBMProvider.get_device("ibm_washington"),
         False,
@@ -959,7 +952,6 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     tket_helper.get_mapped_level(
         qc,
-        OQCProvider.get_native_gates(),
         qc.num_qubits,
         OQCProvider().get_device("oqc_lucy"),
         lineplacement=False,
@@ -990,7 +982,6 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_mapped_level(
         qc,
-        OQCProvider.get_native_gates(),
         qc.num_qubits,
         OQCProvider().get_device("oqc_lucy"),
         opt_level=1,
@@ -1103,7 +1094,6 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     qc = get_benchmark("ghz", 1, 5)
     res = tket_helper.get_mapped_level(
         qc,
-        IBMProvider.get_native_gates(),
         qc.num_qubits,
         IBMProvider().get_device("ibm_washington"),
         True,

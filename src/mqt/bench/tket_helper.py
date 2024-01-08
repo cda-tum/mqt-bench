@@ -213,7 +213,6 @@ def get_native_gates_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     lineplacement: bool,
@@ -228,7 +227,6 @@ def get_mapped_level(
 @overload
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     lineplacement: bool,
@@ -242,7 +240,6 @@ def get_mapped_level(
 
 def get_mapped_level(
     qc: QuantumCircuit,
-    gate_set: list[str],
     num_qubits: int | None,
     device: Device,
     lineplacement: bool,
@@ -255,7 +252,6 @@ def get_mapped_level(
 
     Keyword arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
-    gate_set -- basis gate set
     num_qubits -- number of qubits
     device -- target device
     lineplacement -- if true line placement is used, else graph placement
@@ -303,7 +299,7 @@ def get_mapped_level(
     diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
     qc_tket.add_blank_wires(diff)
 
-    native_gate_set_rebase = get_rebase(gate_set)
+    native_gate_set_rebase = get_rebase(device.basis_gates)
     native_gate_set_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
@@ -320,7 +316,7 @@ def get_mapped_level(
     return utils.save_as_qasm(
         circuit_to_qasm_str(qc_tket),
         filename_mapped,
-        gate_set,
+        device.basis_gates,
         True,
         cmap,
         target_directory,
