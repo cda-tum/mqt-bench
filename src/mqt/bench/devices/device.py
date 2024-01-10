@@ -163,7 +163,8 @@ class Device:
         This is accomplished by substituting the missing fidelity data with the average fidelity for the gate.
         """
         if self.calibration is None:
-            return
+            msg = f"Calibration data not available for device {self.name}."
+            raise ValueError(msg)
 
         # ensure that all single-qubit gates have fidelity data for all qubits in the coupling map
         for gate in self.get_single_qubit_gates():

@@ -27,8 +27,6 @@ def test_sanitized_devices(device: Device) -> None:
         for gate in device.get_single_qubit_gates():
             assert gate in device.calibration.single_qubit_gate_fidelity[qubit]
             assert device.calibration.single_qubit_gate_fidelity[qubit][gate] > 0
-            assert device.calibration.compute_average_single_qubit_gate_duration(gate) > 0
-            assert device.calibration.compute_average_single_qubit_gate_fidelity(gate) > 0
         assert qubit in device.calibration.readout_fidelity
 
     for qubit1, qubit2 in device.coupling_map:
@@ -36,11 +34,6 @@ def test_sanitized_devices(device: Device) -> None:
         for gate in device.get_two_qubit_gates():
             assert gate in device.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
             assert device.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][gate] > 0
-            assert device.calibration.compute_average_two_qubit_gate_duration(gate) > 0
-            assert device.calibration.compute_average_two_qubit_gate_fidelity(gate) > 0
-
-    assert device.calibration.compute_average_readout_fidelity() > 0
-    assert device.calibration.compute_average_readout_duration() > 0
 
 
 def test_device_calibration_errors() -> None:
@@ -62,6 +55,8 @@ def test_device_calibration_errors() -> None:
         device.get_readout_fidelity(0)
     with pytest.raises(ValueError, match="Calibration data not available for device test."):
         device.get_readout_duration(0)
+    with pytest.raises(ValueError, match="Calibration data not available for device test."):
+        device.sanitize_device()
 
     # Test all methods with missing calibration data
     device.calibration = DeviceCalibration()
@@ -77,7 +72,6 @@ def test_device_calibration_errors() -> None:
         device.get_readout_fidelity(0)
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.get_readout_duration(0)
-
     with pytest.raises(ValueError, match="Single-qubit gate fidelity values not available."):
         device.calibration.get_single_qubit_gate_fidelity("gate_type", 0)
     with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):

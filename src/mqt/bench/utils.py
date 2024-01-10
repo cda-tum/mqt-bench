@@ -17,6 +17,8 @@ from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit_optimization.applications import Maxcut
 
+from mqt.bench.devices import OQCProvider
+
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
@@ -205,7 +207,7 @@ def save_as_qasm(
         f.write(qc_str)
     f.close()
 
-    if gate_set == ["rz", "sx", "x", "ecr", "measure", "barrier"]:
+    if gate_set == OQCProvider.get_native_gates():
         postprocess_single_oqc_file(str(file))
     return True
 
