@@ -12,7 +12,12 @@ from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
 from mqt.bench import devices, qiskit_helper, tket_helper, utils
-from mqt.bench.devices import get_available_provider_names, get_available_providers, get_provider_by_name
+from mqt.bench.devices import (
+    get_available_provider_names,
+    get_available_providers,
+    get_device_by_name,
+    get_provider_by_name,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
@@ -321,8 +326,8 @@ def get_benchmark(
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
         CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
-        provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum"
-        device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2",
+        provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
+        device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
 
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
@@ -404,7 +409,6 @@ def get_benchmark(
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
-        assert provider_name is not None
         provider = get_provider_by_name(provider_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
@@ -419,10 +423,7 @@ def get_benchmark(
 
     mapped_level = 3
     if level in ("mapped", mapped_level):
-        assert provider_name is not None
-        provider = get_provider_by_name(provider_name)
-        assert device_name is not None
-        device = provider.get_device(device_name)
+        device = get_device_by_name(device_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
