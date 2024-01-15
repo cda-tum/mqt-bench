@@ -19,7 +19,7 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
-    "pytket-qiskit>=0.40.0,<0.47.0",  #  manages the dependencies for qiskit and tket in a combined fashion
+    "pytket-qiskit>=0.40.0,<0.48.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "qiskit_optimization",
     "qiskit_nature",
     "qiskit_finance",
