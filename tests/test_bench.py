@@ -54,6 +54,7 @@ from mqt.bench.benchmarks import (
     vqe,
     wstate,
 )
+from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
 
 
 @pytest.fixture()
@@ -197,13 +198,12 @@ def test_quantumcircuit_native_and_mapped_levels(
     if scalable:
         assert qc.num_qubits == input_value
 
-    compilation_paths = utils.get_compilation_paths()
-
-    for gate_set_name, devices in compilation_paths:
+    providers = get_available_providers()
+    for provider in providers:
         opt_level = 1
         res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             opt_level,
             file_precheck=False,
@@ -213,7 +213,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
         res = qiskit_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             opt_level,
             file_precheck=True,
@@ -222,14 +222,14 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
-        for device_name, max_qubits in devices:
+        provider.get_native_gates()
+        for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            if max_qubits >= qc.num_qubits:
+            if device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     opt_level,
                     file_precheck=False,
                     return_qc=False,
@@ -238,9 +238,8 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = qiskit_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     opt_level,
                     file_precheck=True,
                     return_qc=False,
@@ -248,10 +247,10 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
 
-    for gate_set_name, devices in compilation_paths:
+    for provider in providers:
         res = tket_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             file_precheck=False,
             return_qc=False,
@@ -260,21 +259,21 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
         res = tket_helper.get_native_gates_level(
             qc,
-            gate_set_name,
+            provider,
             qc.num_qubits,
             file_precheck=True,
             return_qc=False,
             target_directory=output_path,
         )
         assert res
-        for device_name, max_qubits in devices:
+
+        for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            if max_qubits >= qc.num_qubits:
+            if device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     True,
                     file_precheck=False,
                     return_qc=False,
@@ -283,9 +282,8 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
                 res = tket_helper.get_mapped_level(
                     qc,
-                    gate_set_name,
                     qc.num_qubits,
-                    device_name,
+                    device,
                     False,
                     file_precheck=True,
                     return_qc=False,
@@ -305,11 +303,6 @@ def test_openqasm_gates() -> None:
     assert len(openqasm_gates) == num_openqasm_gates
 
 
-def test_rigetti_cmap_generator() -> None:
-    num_edges = 212
-    assert len(utils.get_rigetti_aspen_m2_map()) == num_edges
-
-
 def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
@@ -325,6 +318,21 @@ def test_routing() -> None:
     assert qc.depth() > 0
 
 
+def test_get_benchmark_deprecation_warning() -> None:
+    with pytest.warns(
+        DeprecationWarning,
+        match="gate_set_name is deprecated and will be removed in a future release. Use provider_name instead.",
+    ):
+        get_benchmark(
+            benchmark_name="dj",
+            level="mapped",
+            circuit_size=3,
+            compiler="tket",
+            device_name="oqc_lucy",
+            gate_set_name="oqc",
+        )
+
+
 def test_unidirectional_coupling_map() -> None:
     from pytket.architecture import Architecture
 
@@ -334,12 +342,12 @@ def test_unidirectional_coupling_map() -> None:
         circuit_size=3,
         compiler="tket",
         compiler_settings=CompilerSettings(tket=TKETSettings(placement="graphplacement")),
-        gate_set_name="oqc",
+        provider_name="oqc",
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    cmap_converted = utils.convert_cmap_to_tuple_list(utils.get_cmap_oqc_lucy())
-    assert qc.valid_connectivity(arch=Architecture(cmap_converted), directed=True)
+    cmap = utils.convert_cmap_to_tuple_list(OQCProvider.get_device("oqc_lucy").coupling_map)
+    assert qc.valid_connectivity(arch=Architecture(cmap), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -350,7 +358,7 @@ def test_unidirectional_coupling_map() -> None:
         "benchmark_instance_name",
         "compiler",
         "compiler_settings",
-        "gate_set_name",
+        "provider_name",
         "device_name",
     ),
     [
@@ -705,7 +713,7 @@ def test_get_benchmark(
     benchmark_instance_name: str | None,
     compiler: str,
     compiler_settings: CompilerSettings | None,
-    gate_set_name: str,
+    provider_name: str,
     device_name: str,
 ) -> None:
     qc = get_benchmark(
@@ -715,17 +723,18 @@ def test_get_benchmark(
         benchmark_instance_name,
         compiler,
         compiler_settings,
-        gate_set_name,
+        provider_name,
         device_name,
     )
     assert qc.depth() > 0
-    if gate_set_name and "oqc" not in gate_set_name:
+    if provider_name and "oqc" not in provider_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
-            assert gate_type in qiskit_helper.get_native_gates(gate_set_name) or gate_type == "barrier"
+            provider = get_provider_by_name(provider_name)
+            assert gate_type in provider.get_native_gates() or gate_type == "barrier"
 
 
 def test_get_benchmark_faulty_parameters() -> None:
@@ -794,7 +803,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m2",
         )
-    match = "Selected gate_set_name must be in"
+    match = "Selected provider_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
@@ -901,7 +910,14 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
     res = qiskit_helper.get_mapped_level(
-        qc, "ibm", qc.num_qubits, "ibm_washington", 1, False, False, directory, filename
+        qc,
+        qc.num_qubits,
+        IBMProvider.get_device("ibm_washington"),
+        1,
+        False,
+        False,
+        directory,
+        filename,
     )
     assert res
     path = Path(directory) / Path(filename).with_suffix(".qasm")
@@ -913,9 +929,8 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     assert qc
     res = tket_helper.get_mapped_level(
         qc,
-        "ibm",
         qc.num_qubits,
-        "ibm_washington",
+        IBMProvider.get_device("ibm_washington"),
         False,
         False,
         False,
@@ -936,7 +951,7 @@ def test_oqc_postprocessing() -> None:
 
     tket_helper.get_native_gates_level(
         qc,
-        "oqc",
+        OQCProvider(),
         qc.num_qubits,
         file_precheck=False,
         return_qc=False,
@@ -952,9 +967,8 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     tket_helper.get_mapped_level(
         qc,
-        "oqc",
         qc.num_qubits,
-        "oqc_lucy",
+        OQCProvider().get_device("oqc_lucy"),
         lineplacement=False,
         file_precheck=False,
         return_qc=False,
@@ -968,7 +982,7 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_native_gates_level(
         qc,
-        "oqc",
+        OQCProvider(),
         qc.num_qubits,
         opt_level=1,
         file_precheck=False,
@@ -983,9 +997,8 @@ def test_oqc_postprocessing() -> None:
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_mapped_level(
         qc,
-        "oqc",
         qc.num_qubits,
-        "oqc_lucy",
+        OQCProvider().get_device("oqc_lucy"),
         opt_level=1,
         file_precheck=False,
         return_qc=False,
@@ -1092,18 +1105,12 @@ def test_benchmark_helper() -> None:
         assert res_groundstate
 
 
-def test_get_cmap_from_devicename() -> None:
-    with pytest.raises(ValueError, match="Device wrong_name is not supported"):
-        utils.get_cmap_from_devicename("wrong_name")
-
-
 def test_tket_mapped_circuit_qubit_number() -> None:
     qc = get_benchmark("ghz", 1, 5)
     res = tket_helper.get_mapped_level(
         qc,
-        "ibm",
         qc.num_qubits,
-        "ibm_washington",
+        IBMProvider().get_device("ibm_washington"),
         True,
         file_precheck=False,
         return_qc=True,
