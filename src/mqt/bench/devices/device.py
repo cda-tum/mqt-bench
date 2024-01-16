@@ -176,12 +176,16 @@ class Device:
                 ):
                     self.calibration.single_qubit_gate_fidelity[qubit][gate] = avg_fidelity
 
-        # remove any edge from the coupling map that has a fidelity of 0 for all gates.
+        # remove any edge from the coupling map that has a fidelity of 0 for all gates (see ibm_washington)
         self.coupling_map = [
             edge
             for edge in self.coupling_map
             if all(fidelity != 0 for fidelity in self.calibration.two_qubit_gate_fidelity[tuple(edge)].values())
         ]
+        # remove the according fidelity data for edges that are not in the edited coupling map any more
+        self.calibration.two_qubit_gate_fidelity = {
+            tuple(edge): self.calibration.two_qubit_gate_fidelity[tuple(edge)] for edge in self.coupling_map
+        }
 
         # ensure that all two-qubit gates have fidelity data for all edges in the coupling map
         for gate in self.get_two_qubit_gates():
