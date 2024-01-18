@@ -298,10 +298,12 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
 
     for provider in providers:
+        opt_level = 1
         res = bqskit_helper.get_native_gates_level(
             qc,
             provider,
             qc.num_qubits,
+            opt_level,
             file_precheck=False,
             return_qc=False,
             target_directory=output_path,
@@ -311,12 +313,14 @@ def test_quantumcircuit_native_and_mapped_levels(
             qc,
             provider,
             qc.num_qubits,
+            opt_level,
             file_precheck=True,
             return_qc=False,
             target_directory=output_path,
         )
         assert res
 
+        provider.get_native_gates()
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
@@ -324,7 +328,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                     qc,
                     qc.num_qubits,
                     device,
-                    True,
+                    opt_level,
                     file_precheck=False,
                     return_qc=False,
                     target_directory=output_path,
@@ -334,7 +338,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                     qc,
                     qc.num_qubits,
                     device,
-                    False,
+                    opt_level,
                     file_precheck=True,
                     return_qc=False,
                     target_directory=output_path,
