@@ -116,11 +116,11 @@ explicit_package_bases = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pytket.*", "qiskit_finance.*"]
+module = ["bqskit.*", "pytket.*", "qiskit_finance.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
+module = ["bqskit.*", "qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.ruff]
