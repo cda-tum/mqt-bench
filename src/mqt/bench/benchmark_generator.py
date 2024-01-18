@@ -11,7 +11,7 @@ from warnings import warn
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
-from mqt.bench import devices, qiskit_helper, tket_helper, utils
+from mqt.bench import bqskit_helper, devices, qiskit_helper, tket_helper, utils
 from mqt.bench.devices import (
     get_available_provider_names,
     get_available_providers,
@@ -22,6 +22,7 @@ from mqt.bench.devices import (
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
 
+    from bqskit.ir import Circuit as BQSKitCircuit
     from pytket.circuit import Circuit
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
@@ -50,6 +51,11 @@ class Benchmark(TypedDict, total=False):
 
 
 @dataclass
+class BQSKitSettings:
+    optimization_level: int = 1
+
+
+@dataclass
 class QiskitSettings:
     optimization_level: int = 1
 
@@ -61,6 +67,7 @@ class TKETSettings:
 
 @dataclass
 class CompilerSettings:
+    bqskit: BQSKitSettings | None = None
     qiskit: QiskitSettings | None = None
     tket: TKETSettings | None = None
 
@@ -141,6 +148,31 @@ class BenchmarkGenerator:
     ) -> None:
         for provider in get_available_providers():
             for device in provider.get_available_devices():
+                for opt_level in [1, 2, 3, 4]:
+                    for parameter_instance in parameter_space:
+                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                        if not qc:
+                            break
+                        assert isinstance(qc, QuantumCircuit)
+                        if qc.num_qubits <= device.num_qubits:
+                            res = timeout_watcher(
+                                bqskit_helper.get_mapped_level,
+                                self.timeout,
+                                [
+                                    qc,
+                                    qc.num_qubits,
+                                    device,
+                                    opt_level,
+                                    file_precheck,
+                                    False,
+                                    self.qasm_output_path,
+                                ],
+                            )
+                            if not res:
+                                break
+                        else:
+                            break
+
                 for opt_level in [0, 1, 2, 3]:
                     for parameter_instance in parameter_space:
                         qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
@@ -198,6 +230,28 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         for provider in get_available_providers():
+            for opt_level in [1, 2, 3, 4]:
+                for parameter_instance in parameter_space:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
+                        break
+                    assert isinstance(qc, QuantumCircuit)
+                    res = timeout_watcher(
+                        bqskit_helper.get_native_gates_level,
+                        self.timeout,
+                        [
+                            qc,
+                            provider,
+                            qc.num_qubits,
+                            opt_level,
+                            file_precheck,
+                            False,
+                            self.qasm_output_path,
+                        ],
+                    )
+                    if not res:
+                        break
+
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
@@ -267,6 +321,21 @@ def get_benchmark(
     level: str | int,
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
+    compiler: Literal["bqskit"] = "bqskit",
+    compiler_settings: CompilerSettings | None = None,
+    provider_name: str = "ibm",
+    device_name: str = "ibm_washington",
+    **kwargs: str,
+) -> BQSKitCircuit:
+    ...
+
+
+@overload
+def get_benchmark(
+    benchmark_name: str,
+    level: str | int,
+    circuit_size: int | None = None,
+    benchmark_instance_name: str | None = None,
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
@@ -302,7 +371,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit | Circuit:
+) -> BQSKitCircuit | QuantumCircuit | Circuit:
     ...
 
 
@@ -316,7 +385,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit | Circuit:
+) -> BQSKitCircuit | QuantumCircuit | Circuit:
     """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
 
     Args:
@@ -324,8 +393,8 @@ def get_benchmark(
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
-        compiler: "qiskit" or "tket"
-        CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
+        compiler: "bqskit", "qiskit" or "tket"
+        CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for BQSKit and Qiskit or placement for TKET)
         provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
 
@@ -389,7 +458,7 @@ def get_benchmark(
         raise ValueError(msg)
 
     if compiler_settings is None:
-        compiler_settings = CompilerSettings(QiskitSettings(), TKETSettings())
+        compiler_settings = CompilerSettings(BQSKitSettings(), QiskitSettings(), TKETSettings())
     elif not isinstance(compiler_settings, CompilerSettings):
         msg = "compiler_settings must be of type CompilerSettings or None."  # type: ignore[unreachable]
         raise ValueError(msg)
@@ -398,6 +467,8 @@ def get_benchmark(
 
     independent_level = 1
     if level in ("indep", independent_level):
+        if compiler == "bqskit":
+            return bqskit_helper.get_indep_level(qc, circuit_size, False, True)
         if compiler == "qiskit":
             return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
         if compiler == "tket":
@@ -410,6 +481,10 @@ def get_benchmark(
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
         provider = get_provider_by_name(provider_name)
+        if compiler == "bqskit":
+            assert compiler_settings.bqskit is not None
+            opt_level = compiler_settings.bqskit.optimization_level
+            return bqskit_helper.get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
@@ -424,6 +499,18 @@ def get_benchmark(
     mapped_level = 3
     if level in ("mapped", mapped_level):
         device = get_device_by_name(device_name)
+        if compiler == "bqskit":
+            assert compiler_settings.bqskit is not None
+            opt_level = compiler_settings.bqskit.optimization_level
+            assert isinstance(opt_level, int)
+            return bqskit_helper.get_mapped_level(
+                qc,
+                circuit_size,
+                device,
+                opt_level,
+                False,
+                True,
+            )
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
