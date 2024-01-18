@@ -1193,6 +1193,7 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
     [
         ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3, 23]),
         ("tket", [93, 2, 2]),
+        ("bqskit", [93, 2, 2]),
     ],
 )
 def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
