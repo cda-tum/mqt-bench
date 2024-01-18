@@ -19,6 +19,7 @@ from mqt.bench import (
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
+    bqskit_helper,
     evaluation,
     get_benchmark,
     qiskit_helper,
@@ -281,6 +282,50 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
                 res = tket_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    False,
+                    file_precheck=True,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+
+    for provider in providers:
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            file_precheck=False,
+            return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            file_precheck=True,
+            return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+
+        for device in provider.get_available_devices():
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if device.num_qubits >= qc.num_qubits:
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    True,
+                    file_precheck=False,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = bqskit_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
                     device,
