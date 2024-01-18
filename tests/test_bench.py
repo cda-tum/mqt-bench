@@ -11,6 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
+from bqskit.ext import bqskit_to_qiskit
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
@@ -428,6 +429,16 @@ def test_unidirectional_coupling_map() -> None:
             "",
         ),
         (
+            "wstate",
+            0,
+            6,
+            None,
+            "bqskit",
+            None,
+            "",
+            "",
+        ),
+        (
             "ghz",
             "indep",
             5,
@@ -529,6 +540,17 @@ def test_unidirectional_coupling_map() -> None:
             "oqc",
             "oqc_lucy",
         ),
+        ("qft", 2, 6, None, "bqskit", None, "rigetti", "rigetti_aspen_m2"),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "bqskit",
+            None,
+            "oqc",
+            "oqc_lucy",
+        ),
         (
             "qpeexact",
             "mapped",
@@ -624,6 +646,16 @@ def test_unidirectional_coupling_map() -> None:
             3,
             4,
             None,
+            "bqskit",
+            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            "ibm",
+            "ibm_washington",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
@@ -644,6 +676,16 @@ def test_unidirectional_coupling_map() -> None:
             3,
             4,
             None,
+            "bqskit",
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "ibm",
+            "ibm_montreal",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
@@ -655,6 +697,16 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
+            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            "rigetti",
+            "rigetti_aspen_m2",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
             CompilerSettings(tket=TKETSettings(placement="lineplacement")),
             "rigetti",
             "rigetti_aspen_m2",
@@ -685,6 +737,26 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "tket",
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "quantinuum",
+            "quantinuum_h2",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
+            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "oqc",
+            "oqc_lucy",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
             CompilerSettings(tket=TKETSettings(placement="graphplacement")),
             "quantinuum",
             "quantinuum_h2",
@@ -775,6 +847,8 @@ def test_get_benchmark(
     if provider_name and "oqc" not in provider_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
+        elif compiler == "bqskit":
+            qc = bqskit_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
