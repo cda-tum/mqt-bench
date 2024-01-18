@@ -207,6 +207,54 @@ def test_quantumcircuit_native_and_mapped_levels(
     providers = get_available_providers()
     for provider in providers:
         opt_level = 1
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=False,
+            return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=True,
+            return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+
+        provider.get_native_gates()
+        for device in provider.get_available_devices():
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if device.num_qubits >= qc.num_qubits:
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=False,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=True,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+
+    for provider in providers:
+        opt_level = 1
         res = qiskit_helper.get_native_gates_level(
             qc,
             provider,
@@ -291,54 +339,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                     qc.num_qubits,
                     device,
                     False,
-                    file_precheck=True,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-
-    for provider in providers:
-        opt_level = 1
-        res = bqskit_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            opt_level,
-            file_precheck=False,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-        res = bqskit_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            opt_level,
-            file_precheck=True,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-
-        provider.get_native_gates()
-        for device in provider.get_available_devices():
-            # Creating the circuit on target-dependent: mapped level qiskit
-            if device.num_qubits >= qc.num_qubits:
-                res = bqskit_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    opt_level,
-                    file_precheck=False,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-                res = bqskit_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    opt_level,
                     file_precheck=True,
                     return_qc=False,
                     target_directory=output_path,
@@ -853,10 +853,10 @@ def test_get_benchmark(
     )
     assert qc.depth() > 0
     if provider_name and "oqc" not in provider_name:
+        if compiler == "bqskit":
+            qc = bqskit_to_qiskit(qc)
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
-        elif compiler == "bqskit":
-            qc = bqskit_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
         for instruction, _qargs, _cargs in qc.data:
             gate_type = instruction.name
@@ -1033,6 +1033,25 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     abstraction_level: int,
 ) -> None:
     directory = "."
+
+    filename = "ae_test_bqskit"
+    qc = get_benchmark("ae", abstraction_level, 7)
+    assert qc
+    res = bqskit_helper.get_mapped_level(
+        qc,
+        qc.num_qubits,
+        IBMProvider.get_device("ibm_washington"),
+        False,
+        False,
+        False,
+        directory,
+        filename,
+    )
+    assert res
+    path = Path(directory) / Path(filename).with_suffix(".qasm")
+    assert path.is_file()
+    path.unlink()
+
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
@@ -1055,24 +1074,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     qc = get_benchmark("ae", abstraction_level, 7)
     assert qc
     res = tket_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        IBMProvider.get_device("ibm_washington"),
-        False,
-        False,
-        False,
-        directory,
-        filename,
-    )
-    assert res
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    assert path.is_file()
-    path.unlink()
-
-    filename = "ae_test_bqskit"
-    qc = get_benchmark("ae", abstraction_level, 7)
-    assert qc
-    res = bqskit_helper.get_mapped_level(
         qc,
         qc.num_qubits,
         IBMProvider.get_device("ibm_washington"),
@@ -1176,9 +1177,9 @@ def test_evaluate_qasm_file() -> None:
 @pytest.mark.parametrize(
     ("search_str", "expected_val"),
     [
+        ("bqskit", 3),
         ("qiskit", 10),
         ("tket", 3),
-        ("bqskit", 3),
         ("nativegates", 2),
         ("indep", 3),
         ("mapped", 11),
@@ -1196,9 +1197,9 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
 @pytest.mark.parametrize(
     ("compiler", "expected_val"),
     [
+        ("bqskit", [93, 2, 2]),
         ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3, 23]),
         ("tket", [93, 2, 2]),
-        ("bqskit", [93, 2, 2]),
     ],
 )
 def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
