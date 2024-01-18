@@ -5,6 +5,7 @@ import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import bqskit
 import pytket
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -1258,4 +1259,18 @@ def test_tket_mapped_circuit_qubit_number() -> None:
         return_qc=True,
     )
     assert isinstance(res, pytket.Circuit)
+    assert res.n_qubits == 127
+
+
+def test_bqskit_mapped_circuit_qubit_number() -> None:
+    qc = get_benchmark("ghz", 1, 5)
+    res = bqskit_helper.get_mapped_level(
+        qc,
+        qc.num_qubits,
+        IBMProvider().get_device("ibm_washington"),
+        True,
+        file_precheck=False,
+        return_qc=True,
+    )
+    assert isinstance(res, bqskit.Circuit)
     assert res.n_qubits == 127
