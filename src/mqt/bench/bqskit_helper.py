@@ -189,7 +189,7 @@ def get_native_gates_level(
     #     print("BQSKit Exception NativeGates: ", e)
     #     return False
 
-    qc_bqskit = qiskit_to_bqskit(qc)
+    qc_bqskit = qiskit_to_bqskit(qc.decompose())
     gate_set = provider.get_native_gates()
     native_gate_set_rebase = get_rebase(gate_set)
 
@@ -287,7 +287,7 @@ def get_mapped_level(
     #     print("TKET Exception Mapped: ", e)
     #     return False
 
-    qc_bqskit = qiskit_to_bqskit(qc)
+    qc_bqskit = qiskit_to_bqskit(qc.decompose())
     cmap = device.coupling_map
     cmap_converted = utils.convert_cmap_to_tuple_list(cmap)
     native_gate_set_rebase = get_rebase(device.basis_gates)
