@@ -399,7 +399,7 @@ def get_benchmark(
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
 
     Returns:
-        Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
+        Quantum Circuit Object representing the benchmark with the selected options, either as BQSKit::Cicuit, Qiskit::QuantumCircuit, or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
 
     if "gate_set_name" in kwargs:
