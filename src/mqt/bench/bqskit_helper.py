@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
@@ -7,6 +8,9 @@ from bqskit import compile
 from bqskit.compiler import MachineModel
 from bqskit.ext import qiskit_to_bqskit
 from bqskit.ir.gates import CNOTGate, CZGate, RXGate, RXXGate, RYGate, RZGate, RZZGate, SXGate, XGate
+from bqskit.ir.gates.constantgate import ConstantGate
+from bqskit.ir.gates.qubitgate import QubitGate
+from bqskit.qis.unitary.unitarymatrix import UnitaryMatrix
 from qiskit import transpile
 
 from mqt.bench import utils
@@ -17,6 +21,36 @@ if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
     from mqt.bench.devices import Device, Provider
+
+
+# mypy type checking is ignored for the ECRGate class because
+# ConstantGate and QubitGate has type Any
+class ECRGate(ConstantGate, QubitGate):  # type: ignore[misc]
+    """
+    The echoed cross-resonance gate.
+
+    The ECR gate is given by the following unitary:
+
+    .. math::
+
+        \\frac{1}{\sqrt{2}}\begin{pmatrix}
+        0 & 1 & 0 & i \\\\
+        1 & 0 & -i & 0 \\\\
+        0 & i & 0 & 1 \\\\
+        -i & 0 & 1 & 0
+        \\end{pmatrix}
+    """
+
+    _num_qudits = 2
+    _qasm_name = "opaque ecr"
+    _utry = UnitaryMatrix(
+        [
+            [0, 1 / math.sqrt(2), 0, 1j / math.sqrt(2)],
+            [1 / math.sqrt(2), 0, -1j / math.sqrt(2), 0],
+            [0, 1j / math.sqrt(2), 0, 1 / math.sqrt(2)],
+            [-1j / math.sqrt(2), 0, 1 / math.sqrt(2), 0],
+        ]
+    )
 
 
 def get_rebase(gate_set: list[str]) -> list[Gate]:
