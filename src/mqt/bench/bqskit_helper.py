@@ -301,22 +301,19 @@ def get_mapped_level(
     path = Path(target_directory, filename_mapped + ".qasm")
     if file_precheck and path.is_file():
         return True
+    try:
+        gates = utils.get_openqasm_gates()
+        qc = transpile(
+            qc,
+            basis_gates=gates,
+            seed_transpiler=10,
+            optimization_level=0,
+        )
+        qc_bqskit = qiskit_to_bqskit(qc)
+    except Exception as e:
+        print("BQSKit Exception Mapped: ", e)
+        return False
 
-    # try:
-    #     gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
-    #     qc = transpile(
-    #         qc,
-    #         basis_gates=gates,
-    #         seed_transpiler=10,
-    #         optimization_level=0,
-    #     )
-
-    #     qc_tket = qiskit_to_tk(qc)
-    # except Exception as e:
-    #     print("TKET Exception Mapped: ", e)
-    #     return False
-
-    qc_bqskit = qiskit_to_bqskit(qc.decompose())
     cmap = device.coupling_map
     cmap_converted = utils.convert_cmap_to_tuple_list(cmap)
     native_gate_set_rebase = get_rebase(device.basis_gates)
