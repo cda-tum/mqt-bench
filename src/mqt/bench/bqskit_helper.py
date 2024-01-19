@@ -84,18 +84,6 @@ def get_indep_level(
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
         return True
-    # try:
-    #     gates = list(set(utils.get_openqasm_gates()) - {"cu1"})
-    #     qc = transpile(
-    #         qc,
-    #         basis_gates=gates,
-    #         seed_transpiler=10,
-    #         optimization_level=0,
-    #     )
-    #     qc_bqskit = qiskit_to_bqskit(qc)
-    # except Exception as e:
-    #     print("BQSKit Exception Indep: ", e)
-    #     return False
 
     qc_bqskit = qiskit_to_bqskit(qc)
 
