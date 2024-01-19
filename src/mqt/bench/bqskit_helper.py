@@ -64,6 +64,7 @@ def get_rebase(gate_set: list[str]) -> list[Gate]:
         "x": XGate(),
         "cx": CNOTGate(),
         "cz": CZGate(),
+        "ecr": ECRGate(),
     }
     return [op_dict[key] for key in gate_set if key in op_dict]
 
