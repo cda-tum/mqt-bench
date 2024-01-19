@@ -393,13 +393,13 @@ def get_benchmark(
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
-        compiler: "bqskit", "qiskit" or "tket"
+        compiler: "qiskit", "bqskit" or "tket"
         CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for BQSKit and Qiskit or placement for TKET)
         provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m2", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
 
     Returns:
-        Quantum Circuit Object representing the benchmark with the selected options, either as BQSKit::Cicuit, Qiskit::QuantumCircuit, or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
+        Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit, BQSKit::Cicuit, or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
 
     if "gate_set_name" in kwargs:
