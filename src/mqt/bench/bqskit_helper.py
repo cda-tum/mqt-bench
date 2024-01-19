@@ -86,7 +86,7 @@ def get_indep_level(
     if file_precheck and path.is_file():
         return True
     try:
-        gates = list(set(utils.get_openqasm_gates()))
+        gates = utils.get_openqasm_gates()
         qc = transpile(
             qc,
             basis_gates=gates,
