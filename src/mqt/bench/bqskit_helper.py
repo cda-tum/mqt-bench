@@ -226,7 +226,7 @@ def get_native_gates_level(
         num_qudits=qc_bqskit.num_qudits,
         gate_set=native_gate_set_rebase,
     )
-    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, error_threshold=0, seed=10)
+    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, seed=10)
 
     if return_qc:
         return qc_bqskit
@@ -322,7 +322,7 @@ def get_mapped_level(
         coupling_graph=cmap_converted,
         gate_set=native_gate_set_rebase,
     )
-    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, error_threshold=0)
+    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level)
 
     if return_qc:
         return qc_bqskit
