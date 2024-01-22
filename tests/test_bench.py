@@ -226,54 +226,6 @@ def test_quantumcircuit_native_and_mapped_levels(
     providers = get_available_providers()
     for provider in providers:
         opt_level = 1
-        res = bqskit_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            opt_level,
-            file_precheck=False,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-        res = bqskit_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            opt_level,
-            file_precheck=True,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-
-        provider.get_native_gates()
-        for device in provider.get_available_devices():
-            # Creating the circuit on target-dependent: mapped level qiskit
-            if device.num_qubits >= qc.num_qubits:
-                res = bqskit_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    opt_level,
-                    file_precheck=False,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-                res = bqskit_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    opt_level,
-                    file_precheck=True,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-
-    for provider in providers:
-        opt_level = 1
         res = qiskit_helper.get_native_gates_level(
             qc,
             provider,
@@ -340,6 +292,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
+        provider.get_native_gates()
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
@@ -360,6 +313,66 @@ def test_quantumcircuit_native_and_mapped_levels(
                     False,
                     file_precheck=True,
                     return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+
+    if benchmark in (pricingcall, pricingput):
+        msg = f"{benchmark} has multiple cry gates which has a bug with bqskit"
+        raise AssertionError(msg)
+
+    if benchmark == random:
+        msg = f"{benchmark} could have multiple cry gates which has a bug with bqskit"
+        raise AssertionError(msg)
+
+    for provider in providers:
+        opt_level = 1
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=False,
+            return_qc=True,
+            # return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=True,
+            return_qc=True,
+            # return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+
+        provider.get_native_gates()
+        for device in provider.get_available_devices():
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if device.num_qubits >= qc.num_qubits:
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=False,
+                    return_qc=True,
+                    # return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=True,
+                    return_qc=True,
+                    # return_qc=False,
                     target_directory=output_path,
                 )
                 assert res
