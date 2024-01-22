@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import atexit
 import math
+from cmath import exp
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
+import numpy as np
+import numpy.typing as npt
 from bqskit import compile
 from bqskit.compiler import Compiler, MachineModel
 from bqskit.ext import qiskit_to_bqskit
 from bqskit.ir.gates import CNOTGate, CZGate, RXGate, RXXGate, RYGate, RZGate, RZZGate, SXGate, XGate
 from bqskit.ir.gates.constantgate import ConstantGate
 from bqskit.ir.gates.qubitgate import QubitGate
+from bqskit.qis.unitary.differentiable import DifferentiableUnitary
 from bqskit.qis.unitary.unitarymatrix import UnitaryMatrix
+from bqskit.utils.cachedclass import CachedClass
 from qiskit import transpile
 
 from mqt.bench import utils
@@ -19,6 +24,7 @@ from mqt.bench import utils
 if TYPE_CHECKING:  # pragma: no cover
     from bqskit.ir import Gate
     from bqskit.ir.circuit import Circuit
+    from bqskit.qis.unitary.unitary import RealVector
     from qiskit import QuantumCircuit
 
     from mqt.bench.devices import Device, Provider
@@ -44,6 +50,89 @@ class CachedCompiler:
     def close_compiler(cls) -> None:
         if cls._compiler is not None:
             cls._compiler.close()
+
+
+class XXPlusYYGate(QubitGate, DifferentiableUnitary, CachedClass):  # type: ignore[misc]
+    """XX+YY interaction gate.
+
+    A 2-qubit parameterized XX+YY interaction, also known as an XY gate. Its action is to induce
+    a coherent rotation by some angle between :math:`|01\\rangle` and :math:`|10\\rangle`.
+
+    .. math::
+            \\renewcommand{\\rotationangle}{\\frac{\\theta}{2}}
+            \\begin{pmatrix}
+                1 & 0 & 0 & 0  \\
+                0 & \cos\left(\\rotationangle\\right) & -i\sin\left(\\rotationangle\\right)e^{-i\\beta} & 0 \\\\
+                0 & -i\sin\left(\\rotationangle\\right)e^{i\\beta} & \cos\left(\\rotationangle\\right) & 0 \\\\
+                0 & 0 & 0 & 1
+            \\end{pmatrix}
+    """
+
+    _num_qudits = 2
+    _num_params = 2
+    _qasm_name = "opaque xx_plus_yy"
+
+    def get_unitary(self, params: RealVector = None) -> UnitaryMatrix:
+        """Return the unitary for this gate, see :class:`Unitary` for more."""
+        if params is None:
+            params = []
+        self.check_parameters(params)
+
+        half_theta = float(params[0]) / 2
+        beta = float(params[1])
+        cos = math.cos(half_theta)
+        sin = math.sin(half_theta)
+        return UnitaryMatrix(
+            [
+                [1, 0, 0, 0],
+                [0, cos, -1j * sin * exp(-1j * beta), 0],
+                [0, -1j * sin * exp(1j * beta), cos, 0],
+                [0, 0, 0, 1],
+            ],
+        )
+
+    def get_grad(self, params: RealVector = None) -> npt.NDArray[np.complex128]:
+        """
+        Return the gradient for this gate.
+
+        See :class:`DifferentiableUnitary` for more info.
+        """
+        if params is None:
+            params = []
+        self.check_parameters(params)
+
+        half_theta = params[0] / 2
+        d11 = d22 = -1 / 2 * np.sin(half_theta)
+        d21 = -1 / 2 * 1j * exp(1j * params[1]) * np.cos(half_theta)
+        d12 = -1 / 2 * 1j * exp(-1j * params[1]) * np.cos(half_theta)
+
+        d_wrt_theta = np.array(
+            [
+                [0, 0, 0, 0],
+                [0, d11, d12, 0],
+                [0, d21, d22, 0],
+                [0, 0, 0, 0],
+            ],
+            dtype=np.complex128,
+        )
+
+        d12 = -exp(-1j * params[1]) * np.sin(half_theta)
+        d21 = exp(1j * params[1]) * np.sin(half_theta)
+
+        d_wrt_beta = np.array(
+            [
+                [0, 0, 0, 0],
+                [0, 0, d12, 0],
+                [0, d21, 0, 0],
+                [0, 0, 0, 0],
+            ],
+            dtype=np.complex128,
+        )
+
+        return np.array(
+            [d_wrt_theta, d_wrt_beta],
+            dtype=np.complex128,
+        )
 
 
 # mypy type checking is ignored for the ECRGate class because
@@ -89,6 +178,7 @@ def get_rebase(gate_set: list[str]) -> list[Gate]:
         "cx": CNOTGate(),
         "cz": CZGate(),
         "ecr": ECRGate(),
+        "xx_plus_yy": XXPlusYYGate(),
     }
     return [op_dict[key] for key in gate_set if key in op_dict]
 
