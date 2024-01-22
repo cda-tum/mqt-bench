@@ -11,7 +11,7 @@ import numpy.typing as npt
 from bqskit import compile
 from bqskit.compiler import Compiler, MachineModel
 from bqskit.ext import qiskit_to_bqskit
-from bqskit.ir.gates import CNOTGate, CZGate, RXGate, RXXGate, RYGate, RZGate, RZZGate, SXGate, XGate
+from bqskit.ir.gates import CNOTGate, CPGate, CZGate, RXGate, RXXGate, RYGate, RZGate, RZZGate, SXGate, XGate
 from bqskit.ir.gates.constantgate import ConstantGate
 from bqskit.ir.gates.qubitgate import QubitGate
 from bqskit.qis.unitary.differentiable import DifferentiableUnitary
@@ -175,6 +175,7 @@ def get_rebase(gate_set: list[str]) -> list[Gate]:
         "rzz": RZZGate(),
         "sx": SXGate(),
         "x": XGate(),
+        "cp": CPGate(),
         "cx": CNOTGate(),
         "cz": CZGate(),
         "ecr": ECRGate(),
