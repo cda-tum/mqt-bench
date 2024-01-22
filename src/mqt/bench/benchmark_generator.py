@@ -300,7 +300,7 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
-        for function in [qiskit_helper.get_indep_level, tket_helper.get_indep_level]:
+        for function in [bqskit_helper.get_indep_level, qiskit_helper.get_indep_level, tket_helper.get_indep_level]:
             for parameter_instance in parameter_space:
                 qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                 if not qc:
