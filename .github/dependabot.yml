@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     groups:
-      github-actions:
+      python-dependencies:
         patterns:
           - "*"
     schedule:
