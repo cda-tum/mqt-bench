@@ -83,10 +83,6 @@ jobs:
           path: dist
           merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.pypi_password }}
-          skip-existing: true
-          verbose: true
 
   upload_webserver:
     needs: upload_pypi
