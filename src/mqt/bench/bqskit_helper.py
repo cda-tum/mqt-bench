@@ -66,12 +66,13 @@ class ECRGate(ConstantGate, QubitGate):  # type: ignore[misc]
 
     _num_qudits = 2
     _qasm_name = "opaque ecr"
+    _sqrt2 = math.sqrt(2)
     _utry = UnitaryMatrix(
         [
-            [0, 1 / math.sqrt(2), 0, 1j / math.sqrt(2)],
-            [1 / math.sqrt(2), 0, -1j / math.sqrt(2), 0],
-            [0, 1j / math.sqrt(2), 0, 1 / math.sqrt(2)],
-            [-1j / math.sqrt(2), 0, 1 / math.sqrt(2), 0],
+            [0, 1 / _sqrt2, 0, 1j / _sqrt2],
+            [1 / _sqrt2, 0, -1j / _sqrt2, 0],
+            [0, 1j / _sqrt2, 0, 1 / _sqrt2],
+            [-1j / _sqrt2, 0, 1 / _sqrt2, 0],
         ]
     )
 
