@@ -13,7 +13,7 @@ updates:
       timezone: "Europe/Berlin"
     assignees:
       - "nquetschlich"
-      
+
   - package-ecosystem: "github-actions"
     directory: "/"
     groups:
