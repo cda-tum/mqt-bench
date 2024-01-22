@@ -163,6 +163,25 @@ def test_quantumcircuit_indep_level(
     )
     assert res
 
+    res = bqskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        return_qc=True,
+        # return_qc=False,
+        target_directory=output_path,
+    )
+    assert res
+    res = bqskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=True,
+        # return_qc=False,
+        target_directory=output_path,
+    )
+    assert res
+
 
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
