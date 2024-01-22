@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import atexit
 import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, overload
 
 from bqskit import compile
-from bqskit.compiler import MachineModel
+from bqskit.compiler import Compiler, MachineModel
 from bqskit.ext import qiskit_to_bqskit
 from bqskit.ir.gates import CNOTGate, CZGate, RXGate, RXXGate, RYGate, RZGate, RZZGate, SXGate, XGate
 from bqskit.ir.gates.constantgate import ConstantGate
@@ -21,6 +22,28 @@ if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
     from mqt.bench.devices import Device, Provider
+
+
+class CachedCompiler:
+    _instance: CachedCompiler | None = None
+    _compiler: Compiler | None = None
+
+    # Ruff seems to give a false positive check for the return type of this function.
+    def __new__(cls) -> CachedCompiler:  # noqa: PYI034
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._compiler = Compiler()
+            atexit.register(cls.close_compiler)
+        return cls._instance
+
+    @property
+    def compiler(self) -> Compiler:
+        return self._compiler
+
+    @classmethod
+    def close_compiler(cls) -> None:
+        if cls._compiler is not None:
+            cls._compiler.close()
 
 
 # mypy type checking is ignored for the ECRGate class because
@@ -226,7 +249,8 @@ def get_native_gates_level(
         num_qudits=qc_bqskit.num_qudits,
         gate_set=native_gate_set_rebase,
     )
-    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, seed=10)
+    compiler = CachedCompiler().compiler
+    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, compiler=compiler, seed=10)
 
     if return_qc:
         return qc_bqskit
@@ -322,7 +346,8 @@ def get_mapped_level(
         coupling_graph=cmap_converted,
         gate_set=native_gate_set_rebase,
     )
-    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, seed=10)
+    compiler = CachedCompiler().compiler
+    qc_bqskit = compile(qc_bqskit, model=model, optimization_level=opt_level, compiler=compiler, seed=10)
 
     if return_qc:
         return qc_bqskit
