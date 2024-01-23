@@ -29,14 +29,19 @@ class BenchmarkConfiguration:
     min_qubits: int
     max_qubits: int
     indices_benchmarks: list[int]
+    indep_bqskit_compiler: bool
     indep_qiskit_compiler: bool
     indep_tket_compiler: bool
+    nativegates_bqskit_compiler: bool
     nativegates_qiskit_compiler: bool
     nativegates_tket_compiler: bool
+    mapped_bqskit_compiler: bool
     mapped_qiskit_compiler: bool
     mapped_tket_compiler: bool
+    native_bqskit_opt_lvls: list[int] | None = None
     native_qiskit_opt_lvls: list[int] | None = None
     native_gatesets: list[str] | None = None
+    mapped_bqskit_opt_lvls: list[int] | None = None
     mapped_qiskit_opt_lvls: list[int] | None = None
     mapped_tket_placements: list[str] | None = None
     mapped_devices: list[str] | None = None
@@ -308,14 +313,19 @@ class Backend:
         min_qubits = 2
         max_qubits = 130
         indices_benchmarks = []
+        indep_bqskit_compiler = False
         indep_qiskit_compiler = False
         indep_tket_compiler = False
+        nativegates_bqskit_compiler = False
         nativegates_qiskit_compiler = False
         nativegates_tket_compiler = False
+        native_bqskit_opt_lvls = []
         native_qiskit_opt_lvls = []
         native_gatesets = []
+        mapped_bqskit_compiler = False
         mapped_qiskit_compiler = False
         mapped_tket_compiler = False
+        mapped_bqskit_opt_lvls = []
         mapped_qiskit_opt_lvls = []
         mapped_tket_placements = []
         mapped_devices = []
@@ -328,11 +338,17 @@ class Backend:
             min_qubits = int(v) if "minQubits" in k and v else min_qubits
             max_qubits = int(v) if "maxQubits" in k and v else max_qubits
 
+            indep_bqskit_compiler = "indep_bqskit_compiler" in k or indep_bqskit_compiler
             indep_qiskit_compiler = "indep_qiskit_compiler" in k or indep_qiskit_compiler
             indep_tket_compiler = "indep_tket_compiler" in k or indep_tket_compiler
 
+            nativegates_bqskit_compiler = "nativegates_bqskit_compiler" in k or nativegates_bqskit_compiler
             nativegates_qiskit_compiler = "nativegates_qiskit_compiler" in k or nativegates_qiskit_compiler
             nativegates_tket_compiler = "nativegates_tket_compiler" in k or nativegates_tket_compiler
+            native_bqskit_opt_lvls.append(1) if "nativegates_bqskit_compiler_opt1" in k else None
+            native_bqskit_opt_lvls.append(2) if "nativegates_bqskit_compiler_opt2" in k else None
+            native_bqskit_opt_lvls.append(3) if "nativegates_bqskit_compiler_opt3" in k else None
+            native_bqskit_opt_lvls.append(4) if "nativegates_bqskit_compiler_opt4" in k else None
             native_qiskit_opt_lvls.append(0) if "nativegates_qiskit_compiler_opt0" in k else None
             native_qiskit_opt_lvls.append(1) if "nativegates_qiskit_compiler_opt1" in k else None
             native_qiskit_opt_lvls.append(2) if "nativegates_qiskit_compiler_opt2" in k else None
@@ -343,8 +359,13 @@ class Backend:
             native_gatesets.append("ionq") if "nativegates_ionq" in k else None
             native_gatesets.append("quantinuum") if "nativegates_quantinuum" in k else None
 
+            mapped_bqskit_compiler = "mapped_bqskit_compiler" in k or mapped_bqskit_compiler
             mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
             mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
+            mapped_bqskit_opt_lvls.append(1) if "mapped_bqskit_compiler_opt1" in k else None
+            mapped_bqskit_opt_lvls.append(2) if "mapped_bqskit_compiler_opt2" in k else None
+            mapped_bqskit_opt_lvls.append(3) if "mapped_bqskit_compiler_opt3" in k else None
+            mapped_bqskit_opt_lvls.append(4) if "mapped_bqskit_compiler_opt4" in k else None
             mapped_qiskit_opt_lvls.append(0) if "mapped_qiskit_compiler_opt0" in k else None
             mapped_qiskit_opt_lvls.append(1) if "mapped_qiskit_compiler_opt1" in k else None
             mapped_qiskit_opt_lvls.append(2) if "mapped_qiskit_compiler_opt2" in k else None
@@ -363,14 +384,19 @@ class Backend:
             min_qubits=min_qubits,
             max_qubits=max_qubits,
             indices_benchmarks=indices_benchmarks,
+            indep_bqskit_compiler=indep_bqskit_compiler,
             indep_qiskit_compiler=indep_qiskit_compiler,
             indep_tket_compiler=indep_tket_compiler,
+            nativegates_bqskit_compiler=nativegates_bqskit_compiler,
             nativegates_qiskit_compiler=nativegates_qiskit_compiler,
             nativegates_tket_compiler=nativegates_tket_compiler,
+            native_bqskit_opt_lvls=native_bqskit_opt_lvls,
             native_qiskit_opt_lvls=native_qiskit_opt_lvls,
             native_gatesets=native_gatesets,
+            mapped_bqskit_compiler=mapped_bqskit_compiler,
             mapped_qiskit_compiler=mapped_qiskit_compiler,
             mapped_tket_compiler=mapped_tket_compiler,
+            mapped_bqskit_opt_lvls=mapped_bqskit_opt_lvls,
             mapped_qiskit_opt_lvls=mapped_qiskit_opt_lvls,
             mapped_tket_placements=mapped_tket_placements,
             mapped_devices=mapped_devices,
