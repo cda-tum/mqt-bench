@@ -620,6 +620,8 @@ def get_target_device(filename: str) -> str:
 
 
 def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
+    if "bqskit" in filename:
+        return "bqskit", get_opt_level(filename)
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
     if "tket" in filename:

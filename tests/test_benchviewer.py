@@ -76,6 +76,21 @@ def test_get_num_qubits(filename: str, expected_res: int) -> None:
             ),
         ),
         (
+            "dj_mapped_ibm_washington_bqskit_opt3_103.qasm",
+            backend.ParsedBenchmarkName(
+                benchmark="dj",
+                num_qubits=103,
+                indep_flag=False,
+                nativegates_flag=False,
+                mapped_flag=True,
+                compiler="bqskit",
+                compiler_settings=3,
+                gate_set="ibm",
+                target_device="ibm_washington",
+                filename="dj_mapped_ibm_washington_bqskit_opt3_103.qasm",
+            ),
+        ),
+        (
             "pricingcall_mapped_oqc_lucy_tket_line_5.qasm",
             backend.ParsedBenchmarkName(
                 benchmark="pricingcall",
