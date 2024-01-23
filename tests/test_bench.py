@@ -167,6 +167,7 @@ def test_quantumcircuit_indep_level(
         qc,
         input_value,
         file_precheck=False,
+        # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
         return_qc=True,
         # return_qc=False,
         target_directory=output_path,
@@ -177,6 +178,7 @@ def test_quantumcircuit_indep_level(
         input_value,
         file_precheck=True,
         return_qc=True,
+        # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
         # return_qc=False,
         target_directory=output_path,
     )
@@ -317,10 +319,12 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
 
+    # TODO: To remove once the bug with `cry` gates is fixed in bqskit
     if benchmark in (pricingcall, pricingput):
         msg = f"{benchmark} has multiple cry gates which has a bug with bqskit"
         raise AssertionError(msg)
 
+    # TODO: To remove once the bug with `cry` gates is fixed in bqskit
     if benchmark == random:
         msg = f"{benchmark} could have multiple cry gates which has a bug with bqskit"
         raise AssertionError(msg)
@@ -334,6 +338,7 @@ def test_quantumcircuit_native_and_mapped_levels(
             opt_level,
             file_precheck=False,
             return_qc=True,
+            # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
             # return_qc=False,
             target_directory=output_path,
         )
@@ -345,6 +350,7 @@ def test_quantumcircuit_native_and_mapped_levels(
             opt_level,
             file_precheck=True,
             return_qc=True,
+            # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
             # return_qc=False,
             target_directory=output_path,
         )
@@ -361,6 +367,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                     opt_level,
                     file_precheck=False,
                     return_qc=True,
+                    # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
                     # return_qc=False,
                     target_directory=output_path,
                 )
@@ -372,6 +379,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                     opt_level,
                     file_precheck=True,
                     return_qc=True,
+                    # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
                     # return_qc=False,
                     target_directory=output_path,
                 )
@@ -890,8 +898,8 @@ def test_get_benchmark(
 
     if provider_name and "oqc" not in provider_name:
         if compiler == "bqskit":
+            # TODO: Uncomment and remove "return" when bqskit_to_qiskit is fixed in bqskit
             return
-        # TODO: Uncomment this when bqskit_to_qiskit is fixed in BQSKit library. Issue #214
         # qc = bqskit_to_qiskit(qc)
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
