@@ -463,7 +463,11 @@ def get_benchmark(
         msg = "compiler_settings must be of type CompilerSettings or None."  # type: ignore[unreachable]
         raise ValueError(msg)
 
-    assert (compiler_settings.tket is not None) or (compiler_settings.qiskit is not None)
+    assert (
+        (compiler_settings.bqskit is not None)
+        or (compiler_settings.tket is not None)
+        or (compiler_settings.qiskit is not None)
+    )
 
     independent_level = 1
     if level in ("indep", independent_level):

@@ -12,12 +12,12 @@ if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
-from bqskit.ext import bqskit_to_qiskit
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
 from mqt.bench import (
     BenchmarkGenerator,
+    BQSKitSettings,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
@@ -687,7 +687,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "bqskit",
-            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "ibm",
             "ibm_washington",
         ),
@@ -717,7 +717,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "bqskit",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
         ),
@@ -747,7 +747,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "bqskit",
-            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m2",
         ),
@@ -787,7 +787,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "bqskit",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "oqc",
             "oqc_lucy",
         ),
@@ -797,7 +797,7 @@ def test_unidirectional_coupling_map() -> None:
             4,
             None,
             "bqskit",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "quantinuum",
             "quantinuum_h2",
         ),
@@ -883,10 +883,16 @@ def test_get_benchmark(
         provider_name,
         device_name,
     )
-    assert qc.depth() > 0
+    if callable(qc.depth):
+        assert qc.depth() > 0
+    else:
+        assert qc.depth > 0
+
     if provider_name and "oqc" not in provider_name:
         if compiler == "bqskit":
-            qc = bqskit_to_qiskit(qc)
+            return
+        # TODO: Uncomment this when bqskit_to_qiskit is fixed in BQSKit library. Issue #214
+        # qc = bqskit_to_qiskit(qc)
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)

@@ -3,6 +3,7 @@ from __future__ import annotations
 from mqt.bench import qiskit_helper, tket_helper, utils
 from mqt.bench.benchmark_generator import (
     BenchmarkGenerator,
+    BQSKitSettings,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
@@ -20,6 +21,7 @@ __all__ = [
     "tket_helper",
     "utils",
     "CompilerSettings",
+    "BQSKitSettings",
     "QiskitSettings",
     "TKETSettings",
 ]
