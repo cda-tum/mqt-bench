@@ -188,13 +188,32 @@ class Backend:
             | (self.database["benchmark"].isin(selected_nonscalable_benchmarks))
         ]
 
-        if benchmark_config.indep_qiskit_compiler:
-            db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")]
+        if benchmark_config.indep_tket_compiler:
+            db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "bqskit")]
             db_filtered = pd.concat([db_filtered, db_tmp1])
 
-        if benchmark_config.indep_tket_compiler:
-            db_tmp2 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")]
+        if benchmark_config.indep_qiskit_compiler:
+            db_tmp2 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")]
             db_filtered = pd.concat([db_filtered, db_tmp2])
+
+        if benchmark_config.indep_tket_compiler:
+            db_tmp3 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")]
+            db_filtered = pd.concat([db_filtered, db_tmp3])
+
+        if (
+            benchmark_config.nativegates_bqskit_compiler
+            and benchmark_config.native_gatesets
+            and benchmark_config.native_bqskit_opt_lvls
+        ):
+            for gate_set in benchmark_config.native_gatesets:
+                for opt_lvl in benchmark_config.native_bqskit_opt_lvls:
+                    db_tmp4 = db_tmp.loc[
+                        (db_tmp["nativegates_flag"])
+                        & (db_tmp["gate_set"] == gate_set)
+                        & (db_tmp["compiler"] == "bqskit")
+                        & (db_tmp["compiler_settings"] == opt_lvl)
+                    ]
+                    db_filtered = pd.concat([db_filtered, db_tmp4])
 
         if (
             benchmark_config.nativegates_qiskit_compiler
@@ -203,20 +222,35 @@ class Backend:
         ):
             for gate_set in benchmark_config.native_gatesets:
                 for opt_lvl in benchmark_config.native_qiskit_opt_lvls:
-                    db_tmp3 = db_tmp.loc[
+                    db_tmp5 = db_tmp.loc[
                         (db_tmp["nativegates_flag"])
                         & (db_tmp["gate_set"] == gate_set)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp3])
+                    db_filtered = pd.concat([db_filtered, db_tmp5])
 
         if benchmark_config.nativegates_tket_compiler and benchmark_config.native_gatesets:
             for gate_set in benchmark_config.native_gatesets:
-                db_tmp4 = db_tmp.loc[
+                db_tmp6 = db_tmp.loc[
                     (db_tmp["nativegates_flag"]) & (db_tmp["gate_set"] == gate_set) & (db_tmp["compiler"] == "tket")
                 ]
-                db_filtered = pd.concat([db_filtered, db_tmp4])
+                db_filtered = pd.concat([db_filtered, db_tmp6])
+
+        if (
+            benchmark_config.mapped_bqskit_compiler
+            and benchmark_config.mapped_bqskit_opt_lvls
+            and benchmark_config.mapped_devices
+        ):
+            for opt_lvl in benchmark_config.mapped_bqskit_opt_lvls:
+                for device in benchmark_config.mapped_devices:
+                    db_tmp6 = db_tmp.loc[
+                        (db_tmp["mapped_flag"])
+                        & (db_tmp["target_device"] == device)
+                        & (db_tmp["compiler"] == "bqskit")
+                        & (db_tmp["compiler_settings"] == opt_lvl)
+                    ]
+                    db_filtered = pd.concat([db_filtered, db_tmp6])
 
         if (
             benchmark_config.mapped_qiskit_compiler
@@ -225,13 +259,13 @@ class Backend:
         ):
             for opt_lvl in benchmark_config.mapped_qiskit_opt_lvls:
                 for device in benchmark_config.mapped_devices:
-                    db_tmp5 = db_tmp.loc[
+                    db_tmp6 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp5])
+                    db_filtered = pd.concat([db_filtered, db_tmp6])
 
         if (
             benchmark_config.mapped_tket_compiler
@@ -240,13 +274,13 @@ class Backend:
         ):
             for placement in benchmark_config.mapped_tket_placements:
                 for device in benchmark_config.mapped_devices:
-                    db_tmp6 = db_tmp.loc[
+                    db_tmp7 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "tket")
                         & (db_tmp["compiler_settings"] == placement)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp6])
+                    db_filtered = pd.concat([db_filtered, db_tmp7])
 
         return cast(list[str], db_filtered["filename"].to_list())
 

@@ -394,6 +394,7 @@ def test_create_database() -> None:
         nativegates_bqskit_compiler=False,
         nativegates_qiskit_compiler=False,
         nativegates_tket_compiler=False,
+        # TODO: test bqskit once QASM files are generated
         mapped_bqskit_compiler=False,
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
@@ -412,9 +413,11 @@ def test_create_database() -> None:
         indep_bqskit_compiler=False,
         indep_qiskit_compiler=True,
         indep_tket_compiler=True,
+        # TODO: test bqskit once QASM files are generated
         nativegates_bqskit_compiler=False,
         nativegates_qiskit_compiler=True,
         nativegates_tket_compiler=False,
+        # TODO: test bqskit once QASM files are generated
         mapped_bqskit_compiler=False,
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
@@ -428,7 +431,9 @@ def test_create_database() -> None:
             "quantinuum_h2",
         ],
         mapped_tket_placements=["graph", "line"],
+        native_bqskit_opt_lvls=[1, 4],
         native_qiskit_opt_lvls=[0, 3],
+        mapped_bqskit_opt_lvls=[1, 4],
         mapped_qiskit_opt_lvls=[0, 3],
     )
     res = backend.get_selected_file_paths(input_data)
@@ -442,9 +447,11 @@ def test_create_database() -> None:
         indep_bqskit_compiler=False,
         indep_qiskit_compiler=False,
         indep_tket_compiler=False,
+        # TODO: test bqskit once QASM files are generated
         nativegates_bqskit_compiler=False,
         nativegates_qiskit_compiler=True,
         nativegates_tket_compiler=True,
+        # TODO: test bqskit once QASM files are generated
         mapped_bqskit_compiler=False,
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
