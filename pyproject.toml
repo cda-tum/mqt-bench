@@ -19,6 +19,7 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
+    "bqskit>=1.1.1",
     "pytket-qiskit>=0.40.0,<0.48.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "qiskit_optimization",
     "qiskit_nature",
@@ -115,11 +116,11 @@ explicit_package_bases = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pytket.*", "qiskit_finance.*"]
+module = ["bqskit.*", "pytket.*", "qiskit_finance.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
+module = ["bqskit.*", "qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

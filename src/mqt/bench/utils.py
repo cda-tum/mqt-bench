@@ -82,7 +82,7 @@ def get_supported_levels() -> list[str | int]:
 
 
 def get_supported_compilers() -> list[str]:
-    return ["qiskit", "tket"]
+    return ["bqskit", "qiskit", "tket"]
 
 
 def get_default_qasm_output_path() -> str:

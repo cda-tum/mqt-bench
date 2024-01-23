@@ -5,6 +5,7 @@ import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import bqskit
 import pytket
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -16,9 +17,11 @@ from qiskit import QuantumCircuit
 
 from mqt.bench import (
     BenchmarkGenerator,
+    BQSKitSettings,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
+    bqskit_helper,
     evaluation,
     get_benchmark,
     qiskit_helper,
@@ -70,6 +73,7 @@ def sample_filenames() -> list[str]:
         "ae_indep_qiskit_10.qasm",
         "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
         "ae_indep_tket_93.qasm",
+        "ae_indep_bqskit_93.qasm",
         "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
         "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
         "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
@@ -77,8 +81,10 @@ def sample_filenames() -> list[str]:
         "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
         "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
         "qnn_mapped_ionq_harmony_qiskit_opt3_3.qasm",
+        "qnn_mapped_oqc_lucy_bqskit_opt3_2.qasm",
         "qnn_mapped_oqc_lucy_tket_line_2.qasm",
         "qaoa_mapped_quantinuum_h2_tket_graph_2.qasm",
+        "qaoa_mapped_quantinuum_h2_bqskit_opt3_2.qasm",
         "dj_mapped_quantinuum_h2_qiskit_opt3_23.qasm",
     ]
 
@@ -153,6 +159,27 @@ def test_quantumcircuit_indep_level(
         input_value,
         file_precheck=True,
         return_qc=False,
+        target_directory=output_path,
+    )
+    assert res
+
+    res = bqskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=False,
+        # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+        return_qc=True,
+        # return_qc=False,
+        target_directory=output_path,
+    )
+    assert res
+    res = bqskit_helper.get_indep_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=True,
+        # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+        # return_qc=False,
         target_directory=output_path,
     )
     assert res
@@ -267,6 +294,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
+        provider.get_native_gates()
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
@@ -287,6 +315,72 @@ def test_quantumcircuit_native_and_mapped_levels(
                     False,
                     file_precheck=True,
                     return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+
+    # TODO: To remove once the bug with `cry` gates is fixed in bqskit
+    if benchmark in (pricingcall, pricingput):
+        msg = f"{benchmark} has multiple cry gates which has a bug with bqskit"
+        raise AssertionError(msg)
+
+    # TODO: To remove once the bug with `cry` gates is fixed in bqskit
+    if benchmark == random:
+        msg = f"{benchmark} could have multiple cry gates which has a bug with bqskit"
+        raise AssertionError(msg)
+
+    for provider in providers:
+        opt_level = 1
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=False,
+            return_qc=True,
+            # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+            # return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+        res = bqskit_helper.get_native_gates_level(
+            qc,
+            provider,
+            qc.num_qubits,
+            opt_level,
+            file_precheck=True,
+            return_qc=True,
+            # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+            # return_qc=False,
+            target_directory=output_path,
+        )
+        assert res
+
+        provider.get_native_gates()
+        for device in provider.get_available_devices():
+            # Creating the circuit on target-dependent: mapped level qiskit
+            if device.num_qubits >= qc.num_qubits:
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=False,
+                    return_qc=True,
+                    # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+                    # return_qc=False,
+                    target_directory=output_path,
+                )
+                assert res
+                res = bqskit_helper.get_mapped_level(
+                    qc,
+                    qc.num_qubits,
+                    device,
+                    opt_level,
+                    file_precheck=True,
+                    return_qc=True,
+                    # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+                    # return_qc=False,
                     target_directory=output_path,
                 )
                 assert res
@@ -378,6 +472,16 @@ def test_unidirectional_coupling_map() -> None:
             6,
             None,
             "tket",
+            None,
+            "",
+            "",
+        ),
+        (
+            "wstate",
+            0,
+            6,
+            None,
+            "bqskit",
             None,
             "",
             "",
@@ -484,6 +588,17 @@ def test_unidirectional_coupling_map() -> None:
             "oqc",
             "oqc_lucy",
         ),
+        ("qft", 2, 6, None, "bqskit", None, "rigetti", "rigetti_aspen_m2"),
+        (
+            "qft",
+            2,
+            6,
+            None,
+            "bqskit",
+            None,
+            "oqc",
+            "oqc_lucy",
+        ),
         (
             "qpeexact",
             "mapped",
@@ -579,6 +694,16 @@ def test_unidirectional_coupling_map() -> None:
             3,
             4,
             None,
+            "bqskit",
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
+            "ibm",
+            "ibm_washington",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
@@ -591,6 +716,16 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "ibm",
+            "ibm_montreal",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
         ),
@@ -619,6 +754,16 @@ def test_unidirectional_coupling_map() -> None:
             3,
             4,
             None,
+            "bqskit",
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
+            "rigetti",
+            "rigetti_aspen_m2",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "oqc",
@@ -641,6 +786,26 @@ def test_unidirectional_coupling_map() -> None:
             None,
             "tket",
             CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            "quantinuum",
+            "quantinuum_h2",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
+            "oqc",
+            "oqc_lucy",
+        ),
+        (
+            "qpeinexact",
+            3,
+            4,
+            None,
+            "bqskit",
+            CompilerSettings(bqskit=BQSKitSettings(optimization_level=1)),
             "quantinuum",
             "quantinuum_h2",
         ),
@@ -726,8 +891,16 @@ def test_get_benchmark(
         provider_name,
         device_name,
     )
-    assert qc.depth() > 0
+    if callable(qc.depth):
+        assert qc.depth() > 0
+    else:
+        assert qc.depth > 0
+
     if provider_name and "oqc" not in provider_name:
+        if compiler == "bqskit":
+            # TODO: Uncomment and remove "return" when bqskit_to_qiskit is fixed in bqskit
+            return
+        # qc = bqskit_to_qiskit(qc)
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
@@ -906,6 +1079,26 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     abstraction_level: int,
 ) -> None:
     directory = "."
+
+    filename = "ae_test_bqskit"
+    qc = get_benchmark("ae", abstraction_level, 5)
+    assert qc
+    res = bqskit_helper.get_mapped_level(
+        qc,
+        qc.num_qubits,
+        IBMProvider.get_device("ibm_washington"),
+        1,
+        False,
+        True,  # TODO: To change to False once the bug for bqskit_to_qiskit is fixed
+        directory,
+        filename,
+    )
+    assert res
+    # TODO: To uncomment once the bug for bqskit_to_qiskit is fixed
+    # path = Path(directory) / Path(filename).with_suffix(".qasm")
+    # assert path.is_file()
+    # path.unlink()
+
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
@@ -1031,14 +1224,15 @@ def test_evaluate_qasm_file() -> None:
 @pytest.mark.parametrize(
     ("search_str", "expected_val"),
     [
+        ("bqskit", 3),
         ("qiskit", 10),
         ("tket", 3),
         ("nativegates", 2),
-        ("indep", 2),
-        ("mapped", 9),
+        ("indep", 3),
+        ("mapped", 11),
         ("mapped_ibm_washington", 2),
         ("mapped_ibm_montreal", 1),
-        ("mapped_oqc_lucy", 2),
+        ("mapped_oqc_lucy", 3),
         ("mapped_rigetti_aspen_m2", 1),
         ("mapped_ionq_harmony", 1),
     ],
@@ -1050,6 +1244,7 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
 @pytest.mark.parametrize(
     ("compiler", "expected_val"),
     [
+        ("bqskit", [93, 2, 2]),
         ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3, 23]),
         ("tket", [93, 2, 2]),
     ],
@@ -1116,4 +1311,18 @@ def test_tket_mapped_circuit_qubit_number() -> None:
         return_qc=True,
     )
     assert isinstance(res, pytket.Circuit)
+    assert res.n_qubits == 127
+
+
+def test_bqskit_mapped_circuit_qubit_number() -> None:
+    qc = get_benchmark("ghz", 1, 5)
+    res = bqskit_helper.get_mapped_level(
+        qc,
+        qc.num_qubits,
+        IBMProvider().get_device("ibm_washington"),
+        True,
+        file_precheck=False,
+        return_qc=True,
+    )
+    assert isinstance(res, bqskit.Circuit)
     assert res.n_qubits == 127
