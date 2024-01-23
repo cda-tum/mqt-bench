@@ -562,7 +562,18 @@
               Select the used compiler:
             </p>
             <div class="d-flex">
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  onchange="toggleMappedBQSKit()"
+                  id="mapped_bqskit_compiler"
+                  name="mapped_bqskit_compiler"
+                />
+                <label for="mapped_bqskit_compiler">BQSKit</label>
+              </div>
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -573,7 +584,7 @@
                 />
                 <label for="mapped_qiskit_compiler">Qiskit</label>
               </div>
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -583,6 +594,49 @@
                   name="mapped_tket_compiler"
                 />
                 <label for="mapped_tket_compiler">TKET</label>
+              </div>
+            </div>
+            <div class="row">
+              <p class="text-justify" style="margin: 0px; margin-top: 15px">
+                If BQSKit is selected, select its optimization level:
+              </p>
+              <div class="col-md-12 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_bqskit_compiler_opt1"
+                  name="mapped_bqskit_compiler_opt1"
+                />
+                <label for="mapped_bqskit_compiler_opt1">Opt. 1</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_bqskit_compiler_opt2"
+                  name="mapped_bqskit_compiler_opt2"
+                />
+                <label for="mapped_bqskit_compiler_opt2">Opt. 2</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_bqskit_compiler_opt3"
+                  name="mapped_bqskit_compiler_opt3"
+                />
+                <label for="mapped_bqskit_compiler_opt3">Opt. 3</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  disabled
+                  id="mapped_bqskit_compiler_opt4"
+                  name="mapped_bqskit_compiler_opt4"
+                />
+                <label for="mapped_bqskit_compiler_opt4">Opt. 4</label>
               </div>
             </div>
             <div class="row">
@@ -755,6 +809,13 @@
           document.getElementById("nativegates_qiskit_compiler_opt1").disabled = !document.getElementById("nativegates_qiskit_compiler_opt1").disabled
           document.getElementById("nativegates_qiskit_compiler_opt2").disabled = !document.getElementById("nativegates_qiskit_compiler_opt2").disabled
           document.getElementById("nativegates_qiskit_compiler_opt3").disabled = !document.getElementById("nativegates_qiskit_compiler_opt3").disabled
+      }
+
+      function toggleMappedBQSKit() {
+          document.getElementById("mapped_bqskit_compiler_opt1").disabled = !document.getElementById("mapped_bqskit_compiler_opt1").disabled
+          document.getElementById("mapped_bqskit_compiler_opt2").disabled = !document.getElementById("mapped_bqskit_compiler_opt2").disabled
+          document.getElementById("mapped_bqskit_compiler_opt3").disabled = !document.getElementById("mapped_bqskit_compiler_opt3").disabled
+          document.getElementById("mapped_bqskit_compiler_opt4").disabled = !document.getElementById("mapped_bqskit_compiler_opt4").disabled
       }
 
       function toggleMappedQiskit() {
