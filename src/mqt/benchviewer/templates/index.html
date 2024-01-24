@@ -347,18 +347,6 @@
                 <input
                   class="form-check-input"
                   type="checkbox"
-                  onchange="toggleNativeBQSKit()"
-                  id="nativegates_bqskit_compiler"
-                  name="nativegates_bqskit_compiler"
-                  value="true"
-                />
-                <label for="nativegates_bqskit_compiler">BQSKit</label>
-              </div>
-
-              <div class="col-md-4 align-items-center">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
                   onchange="toggleNativeQiskit()"
                   id="nativegates_qiskit_compiler"
                   name="nativegates_qiskit_compiler"
@@ -377,47 +365,18 @@
                 />
                 <label for="nativegates_tket_compiler">TKET</label>
               </div>
-            </div>
-            <p class="text-justify" style="margin: 0px; margin-top: 15px">
-              If BQSKit is selected, select its optimization level:
-            </p>
-            <div class="col-md-12 align-items-center">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="nativegates_bqskit_compiler_opt1"
-                value="true"
-                id="nativegates_bqskit_compiler_opt1"
-                disabled
-              />
-              <label for="nativegates_bqskit_compiler_opt1">Opt. 1</label>
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="nativegates_bqskit_compiler_opt2"
-                value="true"
-                id="nativegates_bqskit_compiler_opt2"
-                disabled
-              />
-              <label for="nativegates_bqskit_compiler_opt2">Opt. 2</label>
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="nativegates_bqskit_compiler_opt3"
-                value="true"
-                id="nativegates_bqskit_compiler_opt3"
-                disabled
-              />
-              <label for="nativegates_bqskit_compiler_opt3">Opt. 3</label>
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="nativegates_bqskit_compiler_opt4"
-                value="true"
-                id="nativegates_bqskit_compiler_opt4"
-                disabled
-              />
-              <label for="nativegates_bqskit_compiler_opt4">Opt. 4</label>
+
+              <div class="col-md-4 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  onchange="toggleNativeBQSKit()"
+                  id="nativegates_bqskit_compiler"
+                  name="nativegates_bqskit_compiler"
+                  value="true"
+                />
+                <label for="nativegates_bqskit_compiler">BQSKit</label>
+              </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
               If Qiskit is selected, select its optimization level:
@@ -459,6 +418,47 @@
                 disabled
               />
               <label for="nativegates_qiskit_compiler_opt3">Opt. 3</label>
+            </div>
+            <p class="text-justify" style="margin: 0px; margin-top: 15px">
+              If BQSKit is selected, select its optimization level:
+            </p>
+            <div class="col-md-12 align-items-center">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt1"
+                value="true"
+                id="nativegates_bqskit_compiler_opt1"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt1">Opt. 1</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt2"
+                value="true"
+                id="nativegates_bqskit_compiler_opt2"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt2">Opt. 2</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt3"
+                value="true"
+                id="nativegates_bqskit_compiler_opt3"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt3">Opt. 3</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt4"
+                value="true"
+                id="nativegates_bqskit_compiler_opt4"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt4">Opt. 4</label>
             </div>
           </div>
 
