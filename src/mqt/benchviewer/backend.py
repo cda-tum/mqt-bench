@@ -188,7 +188,7 @@ class Backend:
             | (self.database["benchmark"].isin(selected_nonscalable_benchmarks))
         ]
 
-        if benchmark_config.indep_tket_compiler:
+        if benchmark_config.indep_bqskit_compiler:
             db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "bqskit")]
             db_filtered = pd.concat([db_filtered, db_tmp1])
 
