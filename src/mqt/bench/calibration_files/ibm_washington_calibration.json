@@ -1,7 +1,7 @@
 {
   "name": "ibm_washington",
   "num_qubits": 127,
-  "basis_gates": ["id", "rz", "sx", "x", "cx", "measure", "barrier"],
+  "basis_gates": ["rz", "sx", "x", "cx", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [0, 14],

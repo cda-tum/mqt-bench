@@ -1,7 +1,7 @@
 {
   "name": "ibm_montreal",
   "num_qubits": 27,
-  "basis_gates": ["id", "rz", "sx", "x", "cx", "measure", "barrier"],
+  "basis_gates": ["rz", "sx", "x", "cx", "measure", "barrier"],
   "connectivity": [
     [0, 1],
     [1, 0],
