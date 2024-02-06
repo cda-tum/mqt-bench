@@ -1059,9 +1059,13 @@ def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int]
 
 
 def test_calc_supermarq_features() -> None:
-    qc = get_benchmark("dj", 1, 5)
-    features = utils.calc_supermarq_features(qc)
-    assert type(features) == utils.SupermarqFeatures
+    qcs = [
+        get_benchmark(benchmark, 1, 5)
+        for benchmark in ["dj", "ghz", "random", "qaoa", "vqe", "qnn", "qpeexact", "qpeinexact", "wstate"]
+    ]
+    for qc in qcs:
+        features = utils.calc_supermarq_features(qc)
+        assert type(features) == utils.SupermarqFeatures
 
 
 def test_BenchmarkGenerator() -> None:

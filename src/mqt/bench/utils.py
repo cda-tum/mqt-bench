@@ -243,12 +243,12 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
-    """Calculates the Supermarq features for a given quantum circuit. Code partly taken from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py"""
+    """Calculates the Supermarq features for a given quantum circuit. Code adapted from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py"""
     num_qubits = qc.num_qubits
     dag = circuit_to_dag(qc)
     dag.remove_all_ops_named("barrier")
-    dag.remove_all_ops_named("measure")
 
+    # Program communication = circuit's average qubit degree / degree of a complete graph.
     graph = nx.Graph()
     for op in dag.two_qubit_ops():
         q1, q2 = op.qargs
@@ -256,6 +256,7 @@ def calc_supermarq_features(
     degree_sum = sum([graph.degree(n) for n in graph.nodes])
     program_communication = degree_sum / (num_qubits * (num_qubits - 1))
 
+    # Liveness feature = sum of all entries in the liveness matrix / (num_qubits * depth).
     activity_matrix = np.zeros((num_qubits, dag.depth()))
     for i, layer in enumerate(dag.layers()):
         for op in layer["partition"]:
@@ -263,27 +264,21 @@ def calc_supermarq_features(
                 activity_matrix[qc.find_bit(qubit).index, i] = 1
     liveness = np.sum(activity_matrix) / (num_qubits * dag.depth())
 
-    count_ops = qc.count_ops()
-    num_gates = sum(count_ops.values())
-    # before subtracting the measure and barrier gates, check whether it is in the dict
-    if "measure" in count_ops:
-        num_gates -= count_ops.get("measure")
-    if "barrier" in count_ops:
-        num_gates -= count_ops.get("barrier")
-    num_multiple_qubit_gates = qc.num_nonlocal_gates()
-    depth = qc.depth(lambda x: x[0].name not in ("barrier", "measure"))
+    #  Parallelism feature = max(1 - depth / # of gates, 0).
+    parallelism = max(1 - (dag.depth() / len(dag.gate_nodes())), 0)
 
-    if num_multiple_qubit_gates == 0:
-        critical_depth = 0.0
-    else:
-        critical_depth = (
-            qc.depth(filter_function=lambda x: len(x[1]) > 1 and x[0].name != "barrier") / num_multiple_qubit_gates
-        )
+    # Entanglement-ratio = ratio between # of 2-qubit gates and total number of gates in the circuit.
+    entanglement_ratio = len(dag.two_qubit_ops()) / len(dag.gate_nodes())
 
-    entanglement_ratio = num_multiple_qubit_gates / num_gates
-    assert num_multiple_qubit_gates <= num_gates
-
-    parallelism = (num_gates / depth - 1) / (qc.num_qubits - 1)
+    # Critical depth = # of 2-qubit gates along the critical path / total # of 2-qubit gates.
+    n_ed = 0
+    for name in {op.name for op in dag.two_qubit_ops()}:
+        try:
+            n_ed += dag.count_ops_longest_path()[name]
+        except KeyError:  # noqa: PERF203
+            continue
+    n_e = len(dag.two_qubit_ops())
+    critical_depth = n_ed / n_e if n_e != 0 else 0
 
     assert 0 <= program_communication <= 1
     assert 0 <= critical_depth <= 1
