@@ -243,7 +243,7 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
-    """Calculates the Supermarq features for a given quantum circuit. Code partly taken from https://github.com/Infleqtion/client-superstaq/blob/main/supermarq-benchmarks/supermarq/converters.py"""
+    """Calculates the Supermarq features for a given quantum circuit. Code partly taken from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py"""
     num_qubits = qc.num_qubits
     dag = circuit_to_dag(qc)
     dag.remove_all_ops_named("barrier")
