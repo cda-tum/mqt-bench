@@ -15,6 +15,7 @@ import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
 
 from mqt.bench.devices import OQCProvider
@@ -242,25 +243,25 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
-    connectivity_collection: list[list[int]] = []
-    liveness_A_matrix = 0
-    connectivity_collection = [[] for _ in range(qc.num_qubits)]
+    """Calculates the Supermarq features for a given quantum circuit. Code partly taken from https://github.com/Infleqtion/client-superstaq/blob/main/supermarq-benchmarks/supermarq/converters.py"""
+    num_qubits = qc.num_qubits
+    dag = circuit_to_dag(qc)
+    dag.remove_all_ops_named("barrier")
+    dag.remove_all_ops_named("measure")
 
-    for instruction, qargs, _ in qc.data:
-        if instruction.name in ("barrier", "measure"):
-            continue
-        liveness_A_matrix += len(qargs)
-        first_qubit = calc_qubit_index(qargs, qc.qregs, 0)
-        all_indices = [first_qubit]
-        if len(qargs) == 2:
-            second_qubit = calc_qubit_index(qargs, qc.qregs, 1)
-            all_indices.append(second_qubit)
-        for qubit_index in all_indices:
-            to_be_added_entries = all_indices.copy()
-            to_be_added_entries.remove(int(qubit_index))
-            connectivity_collection[int(qubit_index)].extend(to_be_added_entries)
+    graph = nx.Graph()
+    for op in dag.two_qubit_ops():
+        q1, q2 = op.qargs
+        graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
+    degree_sum = sum([graph.degree(n) for n in graph.nodes])
+    program_communication = degree_sum / (num_qubits * (num_qubits - 1))
 
-    connectivity: list[int] = [len(set(connectivity_collection[i])) for i in range(qc.num_qubits)]
+    activity_matrix = np.zeros((num_qubits, dag.depth()))
+    for i, layer in enumerate(dag.layers()):
+        for op in layer["partition"]:
+            for qubit in op:
+                activity_matrix[qc.find_bit(qubit).index, i] = 1
+    liveness = np.sum(activity_matrix) / (num_qubits * dag.depth())
 
     count_ops = qc.count_ops()
     num_gates = sum(count_ops.values())
@@ -271,7 +272,6 @@ def calc_supermarq_features(
         num_gates -= count_ops.get("barrier")
     num_multiple_qubit_gates = qc.num_nonlocal_gates()
     depth = qc.depth(lambda x: x[0].name not in ("barrier", "measure"))
-    program_communication = np.sum(connectivity) / (qc.num_qubits * (qc.num_qubits - 1))
 
     if num_multiple_qubit_gates == 0:
         critical_depth = 0.0
@@ -284,8 +284,6 @@ def calc_supermarq_features(
     assert num_multiple_qubit_gates <= num_gates
 
     parallelism = (num_gates / depth - 1) / (qc.num_qubits - 1)
-
-    liveness = liveness_A_matrix / (depth * qc.num_qubits)
 
     assert 0 <= program_communication <= 1
     assert 0 <= critical_depth <= 1
