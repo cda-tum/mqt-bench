@@ -1059,13 +1059,35 @@ def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int]
 
 
 def test_calc_supermarq_features() -> None:
-    qcs = [
-        get_benchmark(benchmark, 1, 5)
-        for benchmark in ["dj", "ghz", "random", "qaoa", "vqe", "qnn", "qpeexact", "qpeinexact", "wstate"]
-    ]
-    for qc in qcs:
-        features = utils.calc_supermarq_features(qc)
-        assert type(features) == utils.SupermarqFeatures
+    ghz_qc = get_benchmark("ghz", 1, 5)
+    ghz_features = utils.calc_supermarq_features(ghz_qc)
+    assert ghz_features.program_communication == 0.4
+    assert ghz_features.entanglement_ratio == 0.8
+    assert ghz_features.critical_depth == 1.0
+    assert ghz_features.parallelism == 0.0
+
+    empty_qc = QuantumCircuit(2)
+    empty_features = utils.calc_supermarq_features(empty_qc)
+    assert empty_features.parallelism == 0.0
+    assert empty_features.entanglement_ratio == 0.0
+    assert empty_features.critical_depth == 0.0
+    assert empty_features.program_communication == 0.0
+
+    dense_qc = QuantumCircuit(2)
+    dense_qc.h([0, 1])
+    dense_features = utils.calc_supermarq_features(dense_qc)
+    assert dense_features.parallelism == 1.0
+    assert dense_features.entanglement_ratio == 0.0
+    assert dense_features.critical_depth == 0.0
+    assert dense_features.program_communication == 0.0
+
+    regular_qc = get_benchmark("vqe", 1, 5)
+    regular_features = utils.calc_supermarq_features(regular_qc)
+    assert 0 < regular_features.parallelism < 1
+    assert 0 < regular_features.entanglement_ratio < 1
+    assert 0 < regular_features.critical_depth < 1
+    assert 0 < regular_features.program_communication < 1
+    assert 0 < regular_features.liveness < 1
 
 
 def test_BenchmarkGenerator() -> None:
