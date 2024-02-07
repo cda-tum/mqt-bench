@@ -272,12 +272,8 @@ def calc_supermarq_features(
     entanglement_ratio = len(dag.two_qubit_ops()) / len(dag.gate_nodes()) if len(dag.gate_nodes()) > 0 else 0
 
     # Critical depth = # of 2-qubit gates along the critical path / total # of 2-qubit gates.
-    n_ed = 0
-    for name in {op.name for op in dag.two_qubit_ops()}:
-        try:
-            n_ed += dag.count_ops_longest_path()[name]
-        except KeyError:  # noqa: PERF203
-            continue
+    longest_paths = dag.count_ops_longest_path()
+    n_ed = sum([longest_paths[name] for name in {op.name for op in dag.two_qubit_ops()} if name in longest_paths])
     n_e = len(dag.two_qubit_ops())
     critical_depth = n_ed / n_e if n_e != 0 else 0
 
