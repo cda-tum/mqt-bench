@@ -254,7 +254,7 @@ def calc_supermarq_features(
         q1, q2 = op.qargs
         graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
     degree_sum = sum([graph.degree(n) for n in graph.nodes])
-    program_communication = degree_sum / (num_qubits * (num_qubits - 1))
+    program_communication = degree_sum / (num_qubits * (num_qubits - 1)) if num_qubits > 1 else 0
 
     # Liveness feature = sum of all entries in the liveness matrix / (num_qubits * depth).
     activity_matrix = np.zeros((num_qubits, dag.depth()))
@@ -262,13 +262,14 @@ def calc_supermarq_features(
         for op in layer["partition"]:
             for qubit in op:
                 activity_matrix[qc.find_bit(qubit).index, i] = 1
-    liveness = np.sum(activity_matrix) / (num_qubits * dag.depth())
+    liveness = np.sum(activity_matrix) / (num_qubits * dag.depth()) if dag.depth() > 0 else 0
 
     #  Parallelism feature = max(1 - depth / # of gates, 0).
-    parallelism = max(1 - (dag.depth() / len(dag.gate_nodes())), 0)
+    #parallelism = max(1 - (dag.depth() / len(dag.gate_nodes())), 0) if len(dag.gate_nodes()) > 0 else 0
+    parallelism = ((len(dag.gate_nodes())/dag.depth())-1) / (num_qubits-1) if num_qubits > 1 else 0
 
     # Entanglement-ratio = ratio between # of 2-qubit gates and total number of gates in the circuit.
-    entanglement_ratio = len(dag.two_qubit_ops()) / len(dag.gate_nodes())
+    entanglement_ratio = len(dag.two_qubit_ops()) / len(dag.gate_nodes()) if len(dag.gate_nodes()) > 0 else 0
 
     # Critical depth = # of 2-qubit gates along the critical path / total # of 2-qubit gates.
     n_ed = 0
