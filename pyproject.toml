@@ -15,7 +15,7 @@ authors = [
 ]
 keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 dependencies = [
@@ -42,7 +42,6 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Intended Audience :: Science/Research",
@@ -106,7 +105,7 @@ precision = 1
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 files = ["src", "tests", "setup.py"]
-python_version = "3.9"
+python_version = "3.10"
 strict = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
