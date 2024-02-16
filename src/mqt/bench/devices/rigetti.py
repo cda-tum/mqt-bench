@@ -138,7 +138,8 @@ class RigettiProvider(Provider):
 
         is_M3 = "m3" in device.name
         device.coupling_map = [
-            [cls.__from_rigetti_index(a, is_M3), cls.__from_rigetti_index(b, is_M3)] for a, b in rigetti_calibration["connectivity"]
+            [cls.__from_rigetti_index(a, is_M3), cls.__from_rigetti_index(b, is_M3)]
+            for a, b in rigetti_calibration["connectivity"]
         ]
 
         calibration = DeviceCalibration()
@@ -185,16 +186,17 @@ class RigettiProvider(Provider):
 
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = fidelity
 
-
         for qubit1, qubit2 in device.coupling_map:
             if qubit1 > qubit2:
                 continue
-            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] < 0: # if missing -> average
+            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] < 0:  # if missing -> average
                 calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] = sum(cz_lst) / len(cz_lst)
             if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] < 0:
                 calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] = sum(cp_lst) / len(cp_lst)
             if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] = sum(xx_plus_yy_lst) / len(xx_plus_yy_lst)
+                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] = sum(xx_plus_yy_lst) / len(
+                    xx_plus_yy_lst
+                )
 
             # Rigetti calibration data is symmetric
             calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[
