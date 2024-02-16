@@ -354,6 +354,7 @@ class Backend:
             mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
             mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
             mapped_devices.append("rigetti_aspen_m2") if "device_rigetti_aspen_m2" in k else None
+            mapped_devices.append("rigetti_aspen_m3") if "device_rigetti_aspen_m3" in k else None
             mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
             mapped_devices.append("ionq_harmony") if "device_ionq_harmony" in k else None
             mapped_devices.append("ionq_aria1") if "device_ionq_aria1" in k else None
@@ -599,6 +600,7 @@ def get_target_device(filename: str) -> str:
         "ibm_washington",
         "ibm_montreal",
         "rigetti_aspen_m2",
+        "rigetti_aspen_m3",
         "ionq_harmony",
         "ionq_aria1",
         "oqc_lucy",

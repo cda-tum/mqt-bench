@@ -65,17 +65,17 @@ class RigettiProvider(Provider):
         """
         Get the names of all available Rigetti devices.
         """
-        return ["rigetti_aspen_m2"]  # NOTE: update when adding new devices
+        return ["rigetti_aspen_m2", "rigetti_aspen_m3"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
         """
         Get a list of provider specific native gates.
         """
-        return ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]  # aspen_m2
+        return ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]  # aspen_m2, aspen_m3
 
     @classmethod
-    def __from_rigetti_index(cls, rigetti_index: int) -> int:
+    def __from_rigetti_index(cls, rigetti_index: int, is_M3: bool) -> int:
         """
         Convert the Rigetti qubit index to a consecutive index.
         The Rigetti architectures consist of 8-qubit rings arranged in a two-dimensional grid.
@@ -86,6 +86,7 @@ class RigettiProvider(Provider):
 
         Args:
             rigetti_index: the Rigetti qubit index
+            is_M3: if device is Aspen-M3, account for missing qubit 136
 
         Returns: the consecutive index
         """
@@ -94,17 +95,23 @@ class RigettiProvider(Provider):
         row = rigetti_index // 100
         column = (rigetti_index % 100) // 10
         ring = rigetti_index % 10
-        return row * (ring_size * columns) + column * ring_size + ring
+        qubit_indx = row * (ring_size * columns) + column * ring_size + ring
+        if is_M3 and qubit_indx >= 70:
+            qubit_indx = qubit_indx - 1
+        return qubit_indx
 
     @classmethod
-    def __to_rigetti_index(cls, index: int) -> int:
+    def __to_rigetti_index(cls, index: int, is_M3: bool) -> int:
         """
         Convert the consecutive index to the Rigetti qubit index.
         Args:
             index: the consecutive index
+            is_M3: if device is Aspen-M3, account for missing qubit 136
 
         Returns: the Rigetti qubit index
         """
+        if is_M3 and index >= 70:
+            index = index + 1
         ring_size = 8
         columns = 5
         row = index // (ring_size * columns)
@@ -128,13 +135,15 @@ class RigettiProvider(Provider):
         device.name = rigetti_calibration["name"]
         device.num_qubits = rigetti_calibration["num_qubits"]
         device.basis_gates = rigetti_calibration["basis_gates"]
+
+        is_M3 = "m3" in device.name
         device.coupling_map = [
-            [cls.__from_rigetti_index(a), cls.__from_rigetti_index(b)] for a, b in rigetti_calibration["connectivity"]
+            [cls.__from_rigetti_index(a, is_M3), cls.__from_rigetti_index(b, is_M3)] for a, b in rigetti_calibration["connectivity"]
         ]
 
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
-            rigetti_index = cls.__to_rigetti_index(qubit)
+            rigetti_index = cls.__to_rigetti_index(qubit, is_M3)
             calibration.single_qubit_gate_fidelity[qubit] = {
                 gate: rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["f1QRB"] for gate in ["rx", "rz"]
             }
@@ -151,8 +160,8 @@ class RigettiProvider(Provider):
         warnings.warn(msg, stacklevel=1)
 
         for qubit1, qubit2 in device.coupling_map:
-            rigetti_index1 = cls.__to_rigetti_index(qubit1)
-            rigetti_index2 = cls.__to_rigetti_index(qubit2)
+            rigetti_index1 = cls.__to_rigetti_index(qubit1, is_M3)
+            rigetti_index2 = cls.__to_rigetti_index(qubit2, is_M3)
             if qubit1 > qubit2:
                 continue
 
@@ -176,20 +185,16 @@ class RigettiProvider(Provider):
 
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = fidelity
 
-        # Calculate the average value for missing two-qubit gate fidelities
-        cz_avg = sum(cz_lst) / len(cz_lst)
-        cp_avg = sum(cp_lst) / len(cp_lst)
-        xx_plus_yy_avg = sum(xx_plus_yy_lst) / len(xx_plus_yy_lst)
 
         for qubit1, qubit2 in device.coupling_map:
             if qubit1 > qubit2:
                 continue
-            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] = cz_avg
+            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] < 0: # if missing -> average
+                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] = sum(cz_lst) / len(cz_lst)
             if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] = cp_avg
+                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] = sum(cp_lst) / len(cp_lst)
             if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] = xx_plus_yy_avg
+                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] = sum(xx_plus_yy_lst) / len(xx_plus_yy_lst)
 
             # Rigetti calibration data is symmetric
             calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[

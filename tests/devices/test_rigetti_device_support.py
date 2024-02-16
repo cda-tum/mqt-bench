@@ -44,14 +44,36 @@ def test_rigetti_aspen_m2_device() -> None:
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            try:
-                assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
-            except Exception:
-                with pytest.raises(ValueError):  # noqa: PT011
-                    device.get_two_qubit_gate_fidelity(gate, q0, q1)
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            with pytest.raises(ValueError):  # noqa: PT011
+                device.get_two_qubit_gate_duration(gate, q0, q1)
 
-            try:  # not all gates are available for all qubit pairs
-                assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), (float, int))
-            except Exception:
-                with pytest.raises(ValueError):  # noqa: PT011
-                    device.get_two_qubit_gate_duration(gate, q0, q1)
+
+def test_rigetti_aspen_m3_device() -> None:
+    """
+    Test the import of the Rigetti Aspen-M2 quantum computer.
+    """
+    device = RigettiProvider.get_device("rigetti_aspen_m3")
+    single_qubit_gates = device.get_single_qubit_gates()
+    two_qubit_gates = device.get_two_qubit_gates()
+
+    assert device.name == "rigetti_aspen_m3"
+    assert device.num_qubits == 79
+
+    assert all(isinstance(gate, str) for gate in single_qubit_gates)
+    assert all(isinstance(gate, str) for gate in two_qubit_gates)
+
+    for q in range(device.num_qubits):
+        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        with pytest.raises(ValueError, match="Readout duration values not available."):
+            device.get_readout_duration(q)
+        for gate in single_qubit_gates:
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+                device.get_single_qubit_gate_duration(gate, q)
+
+    for q0, q1 in device.coupling_map:
+        for gate in two_qubit_gates:
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            with pytest.raises(ValueError):  # noqa: PT011
+                device.get_two_qubit_gate_duration(gate, q0, q1)
