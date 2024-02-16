@@ -34,16 +34,16 @@ def test_oqc_lucy_device() -> None:
     assert all(isinstance(gate, str) for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
-        assert isinstance(device.get_readout_fidelity(q), (float, int))
+        assert isinstance(device.get_readout_fidelity(q), float | int)
         with pytest.raises(ValueError, match="Readout duration values not available."):
             device.get_readout_duration(q)
         for gate in single_qubit_gates:
-            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), (float, int))
+            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), float | int)
             with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
                 device.get_single_qubit_gate_duration(gate, q)
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), (float, int))
+            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
             with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
                 device.get_two_qubit_gate_duration(gate, q0, q1)
