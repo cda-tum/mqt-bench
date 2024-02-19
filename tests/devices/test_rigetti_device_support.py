@@ -13,7 +13,7 @@ def test_rigetti_provider_methods() -> None:
     - get_native_gates
     - get_max_qubits
     """
-    assert RigettiProvider.get_available_device_names() == ["rigetti_aspen_m2"]
+    assert RigettiProvider.get_available_device_names() == ["rigetti_aspen_m2", "rigetti_aspen_m3"]
     assert RigettiProvider.get_available_basis_gates() == [["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]]
     assert RigettiProvider.get_native_gates() == ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]
     assert RigettiProvider.get_max_qubits() == 80
