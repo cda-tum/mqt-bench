@@ -5,7 +5,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal, TypedDict, overload
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
 from warnings import warn
 
 from joblib import Parallel, delayed
@@ -20,6 +20,7 @@ from mqt.bench.devices import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
     from types import ModuleType
 
     from pytket.circuit import Circuit
@@ -476,7 +477,7 @@ def timeout_watcher(
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(timeout)
     try:
-        res = func(*args) if isinstance(args, (tuple, list)) else func(args)
+        res = func(*args) if isinstance(args, tuple | list) else func(args)
     except TimeoutException:
         print(
             "Calculation/Generation exceeded timeout limit for ",
