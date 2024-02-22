@@ -74,7 +74,6 @@ def sample_filenames() -> list[str]:
         "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
         "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
         "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
-        "ae_mapped_rigetti_aspen_m2_qiskit_opt1_61.qasm",
         "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
         "qnn_mapped_ionq_harmony_qiskit_opt3_3.qasm",
         "qnn_mapped_oqc_lucy_tket_line_2.qasm",
@@ -441,7 +440,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         ),
         (
             "dj",
@@ -473,7 +472,7 @@ def test_unidirectional_coupling_map() -> None:
             "ibm",
             "ibm_montreal",
         ),
-        ("qft", 2, 6, None, "tket", None, "rigetti", "rigetti_aspen_m2"),
+        ("qft", 2, 6, None, "tket", None, "rigetti", "rigetti_aspen_m3"),
         (
             "qft",
             2,
@@ -512,7 +511,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         ),
         (
             "qpeexact",
@@ -602,7 +601,7 @@ def test_unidirectional_coupling_map() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         ),
         (
             "qpeinexact",
@@ -612,7 +611,7 @@ def test_unidirectional_coupling_map() -> None:
             "tket",
             CompilerSettings(tket=TKETSettings(placement="lineplacement")),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         ),
         (
             "qpeinexact",
@@ -751,7 +750,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
     match = "circuit_size must be None or int for this benchmark."
     with pytest.raises(ValueError, match=match):
@@ -763,7 +762,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
 
     match = "benchmark_instance_name must be defined for this benchmark."
@@ -776,7 +775,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
 
     match = "Selected compiler must be in"
@@ -789,7 +788,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_compiler",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
     match = "compiler_settings must be of type CompilerSettings or None"
     with pytest.raises(ValueError, match=match):
@@ -801,7 +800,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qiskit",
             "wrong_compiler_settings",
             "rigetti",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
     match = "Selected provider_name must be in"
     with pytest.raises(ValueError, match=match):
@@ -813,7 +812,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "wrong_gateset",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
         )
     match = "Selected device_name must be in"
     with pytest.raises(ValueError, match=match):
@@ -1039,7 +1038,7 @@ def test_evaluate_qasm_file() -> None:
         ("mapped_ibm_washington", 2),
         ("mapped_ibm_montreal", 1),
         ("mapped_oqc_lucy", 2),
-        ("mapped_rigetti_aspen_m2", 1),
+        ("mapped_rigetti_aspen_m3", 1),
         ("mapped_ionq_harmony", 1),
     ],
 )

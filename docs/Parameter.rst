@@ -32,7 +32,7 @@ with
         :members: CompilerSettings, QiskitSettings, TKETSettings
 
 * ``provider_name``\ : ``"ibm"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"oqc"``\ , or ``"quantinuum"`` (required for "nativegates" level)
-* ``device_name``\ : ``"ibm_washington"``\ , ``"ibm_montreal"``\ , ``"rigetti_aspen_m2"``, ``"rigetti_aspen_m3"``\ , ``"ionq_harmony"``\ , ``"ionq_aria1"``\ , ``"oqc_lucy"``\ , or ``"quantinuum_h2"`` (required for "mapped" level)
+* ``device_name``\ : ``"ibm_washington"``\ , ``"ibm_montreal"``\ , ``"rigetti_aspen_m3"``\ , ``"ionq_harmony"``\ , ``"ionq_aria1"``\ , ``"oqc_lucy"``\ , or ``"quantinuum_h2"`` (required for "mapped" level)
 
 Quantum Circuit Compiler Support
 --------------------------------
@@ -63,7 +63,7 @@ So far, MQT Bench supports the following devices:
 
 #. IBMQ Washington with 127 qubits
 #. IBMQ Montreal with 27 qubits
-#. Rigetti Aspen-M2 with 80 qubits
+#. Rigetti Aspen-M3 with 79 qubits
 #. IonQ Harmony with 11 qubits
 #. IonQ Aria 1 with 25 qubits
 #. OQC Lucy with 8 qubits

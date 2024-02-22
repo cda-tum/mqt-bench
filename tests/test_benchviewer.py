@@ -182,7 +182,7 @@ def test_prepare_form_input() -> None:
         "mapped_tket_compiler_line": "true",
         "device_ibm_washington": "true",
         "device_ibm_montreal": "true",
-        "device_rigetti_aspen_m2": "true",
+        "device_rigetti_aspen_m3": "true",
         "device_oqc_lucy": "true",
         "device_ionq_harmony": "true",
         "device_ionq_aria1": "true",
@@ -206,7 +206,7 @@ def test_prepare_form_input() -> None:
         mapped_devices=[
             "ibm_washington",
             "ibm_montreal",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
             "oqc_lucy",
             "ionq_harmony",
             "ionq_aria1",
@@ -243,7 +243,7 @@ def test_prepare_form_input() -> None:
         "mapped_tket_compiler_line": "true",
         "device_ibm_washington": "true",
         "device_ibm_montreal": "true",
-        "device_rigetti_aspen_m2": "true",
+        "device_rigetti_aspen_m3": "true",
         "device_oqc_lucy": "true",
         "device_ionq_harmony": "true",
         "device_ionq_aria1": "true",
@@ -266,7 +266,7 @@ def test_prepare_form_input() -> None:
         mapped_devices=[
             "ibm_washington",
             "ibm_montreal",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
             "oqc_lucy",
             "ionq_harmony",
             "ionq_aria1",
@@ -342,7 +342,7 @@ def test_create_database() -> None:
         mapped_qiskit_compiler=True,
         mapped_tket_compiler=True,
         native_gatesets=["rigetti", "ionq"],
-        mapped_devices=["ibm_washington", "rigetti_aspen_m2"],
+        mapped_devices=["ibm_washington", "rigetti_aspen_m3"],
         mapped_tket_placements=["graph"],
     )
     res = backend.get_selected_file_paths(input_data)
@@ -362,7 +362,7 @@ def test_create_database() -> None:
         native_gatesets=["rigetti", "ionq", "oqc", "ibm", "quantinuum"],
         mapped_devices=[
             "ibm_montreal",
-            "rigetti_aspen_m2",
+            "rigetti_aspen_m3",
             "ionq_harmony",
             "ionq_aria1",
             "ocq_lucy",
