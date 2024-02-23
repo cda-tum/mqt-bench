@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -283,7 +284,7 @@ benchviewer = resources.files("mqt.benchviewer")
 def test_read_mqtbench_all_zip() -> None:
     backend = Backend()
     with resources.as_file(benchviewer):
-        target_location = str(resources.files("tests") / "")
+        target_location = str(Path("./tests").resolve())
         # target_location = str(benchviewer_path / "static/files") TODO: uncomment after update
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
@@ -292,7 +293,7 @@ def test_create_database() -> None:
     backend = Backend()
     res_zip = backend.read_mqtbench_all_zip(
         skip_question=True,
-        target_location=str(resources.files("tests") / ""),
+        target_location=str(Path("./tests").resolve()),
         # target_location=str(resources.files("mqt.benchviewer") / "static" / "files"), TODO: uncomment after update
     )
     assert res_zip
@@ -397,7 +398,7 @@ def test_streaming_zip() -> None:
     backend = Backend()
     backend.read_mqtbench_all_zip(
         skip_question=True,
-        target_location=str(resources.files("tests") / ""),
+        target_location=str(Path("./tests").resolve()),
         # target_location=str(resources.files("mqt.benchviewer") / "static" / "files"), TODO: uncomment after update
     )
     res = backend.generate_zip_ephemeral_chunks(filenames=["ghz_indep_qiskit_2.qasm", "ghz_indep_tket_2.qasm"])
@@ -410,7 +411,7 @@ def test_streaming_zip() -> None:
 def test_flask_server() -> None:
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
-    target_location = str(resources.files("tests") / "")
+    target_location = str(Path("./tests").resolve())
     # target_location = str(benchviewer_path / "static/files") TODO: uncomment after update
 
     Server(
