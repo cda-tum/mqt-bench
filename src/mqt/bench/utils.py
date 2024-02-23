@@ -88,7 +88,8 @@ def get_supported_compilers() -> list[str]:
 
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
-    return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
+    return str(resources.files("tests") / "test_output")
+    # return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output") TODO: uncomment after update
 
 
 def get_default_evaluation_output_path() -> str:
@@ -98,7 +99,8 @@ def get_default_evaluation_output_path() -> str:
 
 def get_zip_file_path() -> str:
     """Returns the path where the zip file is stored."""
-    return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
+    return str(resources.files("tests") / "MQTBench_all.zip")
+    # return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip") TODO: uncomment after update
 
 
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:

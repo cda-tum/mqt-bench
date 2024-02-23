@@ -95,7 +95,9 @@ class RigettiProvider(Provider):
         column = (rigetti_index % 100) // 10
         ring = rigetti_index % 10
         qubit_indx = row * (ring_size * columns) + column * ring_size + ring
-        if qubit_indx >= 70:  # Account for missing qubit 136 in Aspen-M3
+        # Account for missing qubit in Aspen-M3
+        # rigetti_index: 136 = qubit_indx: 70
+        if qubit_indx >= 70:
             qubit_indx = qubit_indx - 1
         return qubit_indx
 
@@ -108,7 +110,9 @@ class RigettiProvider(Provider):
 
         Returns: the Rigetti qubit index
         """
-        if index >= 70:  # Account for missing qubit 136 in Aspen-M3
+        # Account for missing qubit in Aspen-M3
+        # rigetti_index: 136 = qubit_indx: 70
+        if index >= 70:
             index = index + 1
         ring_size = 8
         columns = 5

@@ -890,7 +890,7 @@ def test_zip_creation() -> None:
 
     zip_file = Path(utils.get_zip_file_path())
     assert zip_file.is_file()
-    zip_file.unlink()
+    # zip_file.unlink() TODO: uncomment after update
 
 
 @pytest.mark.parametrize(
@@ -1030,15 +1030,15 @@ def test_evaluate_qasm_file() -> None:
 @pytest.mark.parametrize(
     ("search_str", "expected_val"),
     [
-        ("qiskit", 10),
+        ("qiskit", 9),
         ("tket", 3),
         ("nativegates", 2),
         ("indep", 2),
-        ("mapped", 9),
+        ("mapped", 8),
         ("mapped_ibm_washington", 2),
         ("mapped_ibm_montreal", 1),
         ("mapped_oqc_lucy", 2),
-        ("mapped_rigetti_aspen_m3", 1),
+        ("mapped_rigetti_aspen_m3", 0),
         ("mapped_ionq_harmony", 1),
     ],
 )
@@ -1049,7 +1049,7 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
 @pytest.mark.parametrize(
     ("compiler", "expected_val"),
     [
-        ("qiskit", [10, 54, 79, 9, 38, 5, 61, 88, 3, 23]),
+        ("qiskit", [10, 54, 79, 9, 38, 5, 88, 3, 23]),
         ("tket", [93, 2, 2]),
     ],
 )

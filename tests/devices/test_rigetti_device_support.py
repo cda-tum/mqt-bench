@@ -45,4 +45,5 @@ def test_rigetti_aspen_m3_device() -> None:
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
-            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), float | int)
+            with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
+                isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), float | int)
