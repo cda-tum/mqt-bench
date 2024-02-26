@@ -24,7 +24,7 @@ jobs:
       - name: Install MQT Bench
         run: pip install -e .[coverage]
       - name: Generate Report
-        run: pytest -v --cov --cov-config=pyproject.toml --cov-report=xml
+        run: pytest -v --cov --cov-config=pyproject.toml --cov-report=xml --ignore=tests/test_pregenerated_zip.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage to Codecov

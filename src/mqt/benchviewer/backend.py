@@ -353,7 +353,7 @@ class Backend:
             mapped_tket_placements.append("line") if "mapped_tket_compiler_line" in k else None
             mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
             mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
-            mapped_devices.append("rigetti_aspen_m2") if "device_rigetti_aspen_m2" in k else None
+            mapped_devices.append("rigetti_aspen_m3") if "device_rigetti_aspen_m3" in k else None
             mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
             mapped_devices.append("ionq_harmony") if "device_ionq_harmony" in k else None
             mapped_devices.append("ionq_aria1") if "device_ionq_aria1" in k else None
@@ -598,21 +598,12 @@ def get_target_device(filename: str) -> str:
     devices = [
         "ibm_washington",
         "ibm_montreal",
-        "rigetti_aspen_m2",
+        "rigetti_aspen_m3",
         "ionq_harmony",
         "ionq_aria1",
         "oqc_lucy",
         "quantinuum_h2",
     ]
-    if "ionq11" in filename:
-        import warnings
-
-        warnings.warn(
-            "You are using a deprecated MQTBench version. Please re-install MQTBench or remove the MQTBench_all.zip file located at mqt/benchviewer/static/files/MQTBench_all.zip and re-start the server to download the latest benchmarks",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return "ionq_harmony"
     for device in devices:
         if device in filename:
             return device
