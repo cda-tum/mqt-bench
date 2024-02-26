@@ -866,7 +866,7 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
         json.dump(config, f)
 
     generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
-    generator.create_benchmarks_from_config(num_jobs=1)
+    generator.create_benchmarks_from_config(num_jobs=-1)
     file.unlink()
 
     evaluation.create_statistics(source_directory=Path(output_path), target_directory=Path(output_path))
