@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import os
 import sys
 from typing import TYPE_CHECKING
+
+import pytest
 
 from mqt.bench import utils
 from mqt.benchviewer import Server
@@ -12,7 +15,11 @@ if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
 else:
     import importlib_resources as resources
 
+# only run test when executed on GitHub runner
+IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
+
+@pytest.mark.skipif(not IN_GITHUB_ACTIONS, reason="Only run this test on GitHub runner")
 def test_flask_server_with_pregenerated_zip() -> None:
     benchviewer = resources.files("mqt.benchviewer")
     with resources.as_file(benchviewer) as benchviewer_path:
