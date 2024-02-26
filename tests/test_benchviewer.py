@@ -285,7 +285,6 @@ def test_read_mqtbench_all_zip() -> None:
     backend = Backend()
     with resources.as_file(benchviewer):
         target_location = str(Path("./tests").resolve())
-        # target_location = str(benchviewer_path / "static/files") TODO: uncomment after update
     assert backend.read_mqtbench_all_zip(skip_question=True, target_location=target_location)
 
 
@@ -294,7 +293,6 @@ def test_create_database() -> None:
     res_zip = backend.read_mqtbench_all_zip(
         skip_question=True,
         target_location=str(Path("./tests").resolve()),
-        # target_location=str(resources.files("mqt.benchviewer") / "static" / "files"), TODO: uncomment after update
     )
     assert res_zip
 
@@ -315,7 +313,7 @@ def test_create_database() -> None:
 
     res = backend.get_selected_file_paths(input_data)
     assert isinstance(res, list)
-    assert len(res) >= 1  # 3
+    assert len(res) >= 1
 
     input_data = BenchmarkConfiguration(
         min_qubits=110,
@@ -331,7 +329,7 @@ def test_create_database() -> None:
     )
     res = backend.get_selected_file_paths(input_data)
     assert isinstance(res, list)
-    assert len(res) >= 0  # 15
+    assert len(res) >= 0
 
     input_data = BenchmarkConfiguration(
         min_qubits=75,
@@ -349,7 +347,7 @@ def test_create_database() -> None:
     )
     res = backend.get_selected_file_paths(input_data)
     assert isinstance(res, list)
-    assert len(res) >= 0  # 20
+    assert len(res) >= 0
 
     input_data = BenchmarkConfiguration(
         min_qubits=2,
@@ -376,7 +374,7 @@ def test_create_database() -> None:
     )
     res = backend.get_selected_file_paths(input_data)
     assert isinstance(res, list)
-    assert len(res) >= 32  # 20
+    assert len(res) >= 32
 
     input_data = BenchmarkConfiguration(
         min_qubits=2,
@@ -399,7 +397,6 @@ def test_streaming_zip() -> None:
     backend.read_mqtbench_all_zip(
         skip_question=True,
         target_location=str(Path("./tests").resolve()),
-        # target_location=str(resources.files("mqt.benchviewer") / "static" / "files"), TODO: uncomment after update
     )
     res = backend.generate_zip_ephemeral_chunks(filenames=["ghz_indep_qiskit_2.qasm", "ghz_indep_tket_2.qasm"])
     assert list(res)
@@ -412,7 +409,6 @@ def test_flask_server() -> None:
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(Path("./tests").resolve())
-    # target_location = str(benchviewer_path / "static/files") TODO: uncomment after update
 
     Server(
         skip_question=True,

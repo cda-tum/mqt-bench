@@ -885,7 +885,6 @@ def test_zip_creation() -> None:
 
     zip_file = Path(utils.get_zip_file_path())
     assert zip_file.is_file()
-    # zip_file.unlink() TODO: uncomment after update
 
 
 def test_configure_end(output_path: str) -> None:
