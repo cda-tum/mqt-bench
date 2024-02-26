@@ -604,15 +604,6 @@ def get_target_device(filename: str) -> str:
         "oqc_lucy",
         "quantinuum_h2",
     ]
-    if "ionq11" in filename:
-        import warnings
-
-        warnings.warn(
-            "You are using a deprecated MQTBench version. Please re-install MQTBench or remove the MQTBench_all.zip file located at mqt/benchviewer/static/files/MQTBench_all.zip and re-start the server to download the latest benchmarks",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return "ionq_harmony"
     for device in devices:
         if device in filename:
             return device
