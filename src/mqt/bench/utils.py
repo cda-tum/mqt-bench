@@ -27,7 +27,6 @@ else:
     import importlib_resources as resources
 
 if TYPE_CHECKING:  # pragma: no cover
-    from qiskit.circuit import QuantumRegister, Qubit
     from qiskit_optimization import QuadraticProgram
 
 from dataclasses import dataclass
@@ -230,6 +229,7 @@ def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -
     if qasm_path is None:
         qasm_path = get_default_qasm_output_path()
     return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
+
 
 def calc_supermarq_features(
     qc: QuantumCircuit,
