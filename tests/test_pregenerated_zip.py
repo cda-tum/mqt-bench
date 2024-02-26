@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pytest
-
-from mqt.benchviewer import Backend, BenchmarkConfiguration, Server
-from mqt.benchviewer.main import app
 from mqt.bench import utils
+from mqt.benchviewer import Server
+from mqt.benchviewer.main import app
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
 else:
     import importlib_resources as resources
-
 
 
 def test_flask_server_with_pregenerated_zip() -> None:

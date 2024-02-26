@@ -3,7 +3,6 @@ name: Pre-Generated zip
 on:
   workflow_dispatch:
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
