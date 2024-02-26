@@ -231,19 +231,6 @@ def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -
         qasm_path = get_default_qasm_output_path()
     return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
 
-
-def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: int) -> int:
-    offset = 0
-    for reg in qregs:
-        if qargs[index] not in reg:
-            offset += reg.size
-        else:
-            qubit_index: int = offset + reg.index(qargs[index])
-            return qubit_index
-    error_msg = f"Global qubit index for local qubit {index} index not found."
-    raise ValueError(error_msg)
-
-
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
