@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
 
+if TYPE_CHECKING:  # pragma: no cover
+    from numpy.typing import NDArray
+
 from importlib import import_module
 
 import networkx as nx
@@ -18,6 +21,7 @@ from qiskit import QuantumCircuit, __qiskit_version__
 from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
 
+from mqt.bench import devices
 from mqt.bench.devices import OQCProvider
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
@@ -27,6 +31,7 @@ else:
     import importlib_resources as resources
 
 if TYPE_CHECKING:  # pragma: no cover
+    from qiskit.circuit import QuantumRegister, Qubit
     from qiskit_optimization import QuadraticProgram
 
 from dataclasses import dataclass
@@ -39,6 +44,11 @@ class SupermarqFeatures:
     entanglement_ratio: float
     parallelism: float
     liveness: float
+    directed_program_communication: float
+    gate_coverage: NDArray[np.float_]
+    singleQ_gates_per_layer: float
+    multiQ_gates_per_layer: float
+    my_critical_depth: float
 
 
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
@@ -231,6 +241,18 @@ def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -
     return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
 
 
+def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: int) -> int:
+    offset = 0
+    for reg in qregs:
+        if qargs[index] not in reg:
+            offset += reg.size
+        else:
+            qubit_index: int = offset + reg.index(qargs[index])
+            return qubit_index
+    error_msg = f"Global qubit index for local qubit {index} index not found."
+    raise ValueError(error_msg)
+
+
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
@@ -271,11 +293,45 @@ def calc_supermarq_features(
     n_e = len(dag.two_qubit_ops())
     critical_depth = n_ed / n_e if n_e != 0 else 0
 
+    # Directed program communication = circuit's average directed qubit degree / degree of a complete directed graph.
+    di_graph = nx.DiGraph()
+    for op in dag.two_qubit_ops():
+        q1, q2 = op.qargs
+        di_graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
+    degree_sum = sum([di_graph.degree(n) for n in di_graph.nodes])
+    directed_program_communication = degree_sum / (2 * num_qubits * (num_qubits - 1)) if num_qubits > 1 else 0
+
+    # Gate coverage = num of gates in circuit that are present in device basis gates  / num of gates in circuit.
+    coverage = []
+    all_ops = dag.count_ops()
+    for dev in devices.get_available_devices():
+        n_circ_gates = sum(list(all_ops.values()))
+        n_circ_gates_on_dev = sum([count for gate, count in all_ops.items() if gate in dev.basis_gates])
+        coverage.append(n_circ_gates_on_dev / n_circ_gates)
+    gate_coverage = np.array(coverage)
+
+    # average number of 1q gates per layer = num of 1-qubit gates in the circuit / depth
+    dag.remove_all_ops_named("measure")
+    singleQ_gates_per_layer = (len(dag.op_nodes()) - len(dag.two_qubit_ops())) / dag.depth()
+    singleQ_gates_per_layer /= num_qubits  # Normalize
+
+    # average number of 2q gates per layer = num of 2-qubit gates in the circuit / depth
+    multiQ_gates_per_layer = len(dag.two_qubit_ops()) / dag.depth()
+    multiQ_gates_per_layer /= num_qubits // 2  # Normalize
+
+    # actual critical depth
+    my_critical_depth = multiQ_gates_per_layer * dag.depth()
+
     assert 0 <= program_communication <= 1
     assert 0 <= critical_depth <= 1
     assert 0 <= entanglement_ratio <= 1
     assert 0 <= parallelism <= 1
     assert 0 <= liveness <= 1
+    assert 0 <= directed_program_communication <= 1
+    assert 0 <= gate_coverage.all() <= 1
+    assert 0 <= singleQ_gates_per_layer <= 1
+    assert 0 <= multiQ_gates_per_layer <= 1
+    assert 0 <= my_critical_depth <= 1
 
     return SupermarqFeatures(
         program_communication,
@@ -283,6 +339,11 @@ def calc_supermarq_features(
         entanglement_ratio,
         parallelism,
         liveness,
+        directed_program_communication,
+        gate_coverage,
+        singleQ_gates_per_layer,
+        multiQ_gates_per_layer,
+        my_critical_depth,
     )
 
 

@@ -5,6 +5,7 @@ import pickle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import numpy as np
 import pytket
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -1025,7 +1026,7 @@ def test_evaluate_qasm_file() -> None:
     assert res.depth == -1
     assert res.num_gates == -1
     assert res.num_multiple_qubit_gates == -1
-    assert res.supermarq_features == utils.SupermarqFeatures(-1.0, -1.0, -1.0, -1.0, -1.0)
+    assert res.supermarq_features == utils.SupermarqFeatures(-1, -1, -1, -1, -1, -1, np.array([-1]), -1, -1, -1)
 
 
 @pytest.mark.parametrize(
