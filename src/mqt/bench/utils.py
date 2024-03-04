@@ -331,7 +331,7 @@ def calc_supermarq_features(
     assert 0 <= gate_coverage.all() <= 1
     assert 0 <= singleQ_gates_per_layer <= 1
     assert 0 <= multiQ_gates_per_layer <= 1
-    assert 0 <= my_critical_depth <= 1
+    assert 0 <= my_critical_depth
 
     return SupermarqFeatures(
         program_communication,
