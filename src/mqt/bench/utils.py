@@ -48,7 +48,6 @@ class SupermarqFeatures:
     gate_coverage: NDArray[np.float_]
     singleQ_gates_per_layer: float
     multiQ_gates_per_layer: float
-    my_critical_depth: float
 
 
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
@@ -319,9 +318,6 @@ def calc_supermarq_features(
     multiQ_gates_per_layer = len(dag.two_qubit_ops()) / dag.depth()
     multiQ_gates_per_layer /= num_qubits // 2  # Normalize
 
-    # actual critical depth
-    my_critical_depth = multiQ_gates_per_layer * dag.depth()
-
     assert 0 <= program_communication <= 1
     assert 0 <= critical_depth <= 1
     assert 0 <= entanglement_ratio <= 1
@@ -331,7 +327,6 @@ def calc_supermarq_features(
     assert 0 <= gate_coverage.all() <= 1
     assert 0 <= singleQ_gates_per_layer <= 1
     assert 0 <= multiQ_gates_per_layer <= 1
-    assert 0 <= my_critical_depth
 
     return SupermarqFeatures(
         program_communication,
@@ -343,7 +338,6 @@ def calc_supermarq_features(
         gate_coverage,
         singleQ_gates_per_layer,
         multiQ_gates_per_layer,
-        my_critical_depth,
     )
 
 
