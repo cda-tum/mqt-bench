@@ -21,8 +21,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> QuantumCircuit:
-    ...
+) -> QuantumCircuit: ...
 
 
 @overload
@@ -33,8 +32,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_indep_level(
@@ -87,8 +85,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> QuantumCircuit:
-    ...
+) -> QuantumCircuit: ...
 
 
 @overload
@@ -101,8 +98,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_native_gates_level(
@@ -167,8 +163,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> QuantumCircuit:
-    ...
+) -> QuantumCircuit: ...
 
 
 @overload
@@ -181,8 +176,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_mapped_level(
