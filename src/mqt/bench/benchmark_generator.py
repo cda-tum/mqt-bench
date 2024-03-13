@@ -273,8 +273,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit:
-    ...
+) -> QuantumCircuit: ...
 
 
 @overload
@@ -288,8 +287,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> Circuit:
-    ...
+) -> Circuit: ...
 
 
 @overload
@@ -303,8 +301,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit | Circuit:
-    ...
+) -> QuantumCircuit | Circuit: ...
 
 
 def get_benchmark(

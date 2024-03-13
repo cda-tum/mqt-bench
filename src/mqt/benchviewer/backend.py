@@ -417,11 +417,7 @@ class Backend:
                             if not skip_question:
                                 file_size = round((asset["size"]) / 2**20, 2)
                                 print(
-                                    "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
-                                        possible_version,
-                                        file_size,
-                                        download_url,
-                                    )
+                                    f"Found 'MQTBench_all.zip' (Version {possible_version}, Size {file_size} MB, Link: {download_url})"
                                 )
                                 response = input("Would you like to downloaded the file? (Y/n)")
                             if skip_question or response.lower() == "y" or not response:
@@ -450,13 +446,16 @@ class Backend:
         fname = target_location + "/MQTBench_all.zip"
 
         Path(target_location).mkdir(parents=True, exist_ok=True)
-        with Path(fname).open("wb") as f, tqdm(
-            desc=fname,
-            total=total_length,
-            unit="iB",
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as bar:
+        with (
+            Path(fname).open("wb") as f,
+            tqdm(
+                desc=fname,
+                total=total_length,
+                unit="iB",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as bar,
+        ):
             for data in r.iter_content(chunk_size=1024):
                 size = f.write(data)
                 bar.update(size)
@@ -649,13 +648,16 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
     fname = target_location + "/MQTBench_all.zip"
 
     Path(target_location).mkdir(parents=True, exist_ok=True)
-    with Path(fname).open("wb") as f, tqdm(
-        desc=fname,
-        total=total_length,
-        unit="iB",
-        unit_scale=True,
-        unit_divisor=1024,
-    ) as bar:
+    with (
+        Path(fname).open("wb") as f,
+        tqdm(
+            desc=fname,
+            total=total_length,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as bar,
+    ):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
