@@ -121,6 +121,7 @@ class QuantumOptimizer:
     def solve_problem(self, qp: QuadraticProgram) -> QuantumCircuit:
         ansatz = RealAmplitudes(self.n)
         vqe = VQE(estimator=Estimator(), optimizer=SLSQP(maxiter=25), ansatz=ansatz)
+        vqe.random_seed = 10
         vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
         return vqe.ansatz.assign_parameters(vqe_result.optimal_point)
 

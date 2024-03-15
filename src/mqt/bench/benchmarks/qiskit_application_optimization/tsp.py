@@ -35,6 +35,7 @@ def create_circuit(num_nodes: int) -> QuantumCircuit:
     spsa = SPSA(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
     vqe = VQE(ansatz=ry, optimizer=spsa, estimator=Estimator())
+    vqe.random_seed = 10
 
     vqe_result = vqe.compute_minimum_eigenvalue(qubit_op)
     qc = vqe.ansatz.assign_parameters(vqe_result.optimal_point)
