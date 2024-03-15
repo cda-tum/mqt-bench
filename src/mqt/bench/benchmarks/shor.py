@@ -23,6 +23,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Gate, Instruction, ParameterVector
 from qiskit.circuit.library import QFT
+from qiskit_algorithms.utils.validation import validate_min
 
 
 def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
@@ -202,6 +203,9 @@ class Shor:
             ValueError: Invalid input
 
         """
+
+        validate_min("N", N, 3)
+        validate_min("a", a, 2)
 
         if N < 1 or N % 2 == 0:
             msg = "The input needs to be an odd integer greater than 1."
