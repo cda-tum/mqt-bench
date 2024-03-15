@@ -14,7 +14,8 @@ from importlib import import_module
 import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
-from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit import QuantumCircuit
+from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
 
@@ -198,7 +199,6 @@ def save_as_qasm(
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
             f.write("// TKET version: " + str(__tket_version__) + "\n")
-
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
         if mapped:

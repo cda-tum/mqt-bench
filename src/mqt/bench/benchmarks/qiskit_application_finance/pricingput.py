@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from qiskit.algorithms import EstimationProblem, IterativeAmplitudeEstimation
 from qiskit.circuit.library import LinearAmplitudeFunction
+from qiskit_algorithms import EstimationProblem, IterativeAmplitudeEstimation
 from qiskit_finance.circuit.library import LogNormalDistribution
 
 if TYPE_CHECKING:  # pragma: no cover

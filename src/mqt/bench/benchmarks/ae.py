@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit.algorithms import AmplitudeEstimation, EstimationProblem
+from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:

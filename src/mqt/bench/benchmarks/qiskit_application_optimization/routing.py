@@ -5,11 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 import numpy as np
-from qiskit.algorithms.minimum_eigensolvers import VQE
-from qiskit.algorithms.optimizers import SLSQP
 from qiskit.circuit.library import RealAmplitudes
 from qiskit.primitives import Estimator
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.minimum_eigensolvers import VQE
+from qiskit_algorithms.optimizers import SLSQP
 from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.problems import LinearExpression, QuadraticExpression
 
@@ -120,12 +119,11 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp: QuadraticProgram) -> QuantumCircuit:
-        algorithm_globals.random_seed = 10
-
         ansatz = RealAmplitudes(self.n)
         vqe = VQE(estimator=Estimator(), optimizer=SLSQP(maxiter=25), ansatz=ansatz)
+        vqe.random_seed = 10
         vqe_result = vqe.compute_minimum_eigenvalue(qp.to_ising()[0])
-        return vqe.ansatz.bind_parameters(vqe_result.optimal_point)
+        return vqe.ansatz.assign_parameters(vqe_result.optimal_point)
 
 
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:

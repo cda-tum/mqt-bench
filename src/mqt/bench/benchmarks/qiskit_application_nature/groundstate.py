@@ -5,10 +5,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from qiskit.algorithms.minimum_eigensolvers import VQE
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
 from qiskit.primitives import Estimator
+from qiskit_algorithms.minimum_eigensolvers import VQE
+from qiskit_algorithms.optimizers import COBYLA
 from qiskit_nature.second_q.drivers import PySCFDriver
 from qiskit_nature.second_q.mappers import JordanWignerMapper
 
@@ -41,7 +41,7 @@ def create_circuit(choice: str) -> QuantumCircuit:
     another_solver = VQE(ansatz=tl_circuit, estimator=Estimator(), optimizer=COBYLA(maxiter=25))
 
     result = another_solver.compute_minimum_eigenvalue(operator)
-    qc = another_solver.ansatz.bind_parameters(result.optimal_point)
+    qc = another_solver.ansatz.assign_parameters(result.optimal_point)
 
     qc.name = "groundstate"
     qc.name = qc.name + "_" + choice

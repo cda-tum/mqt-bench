@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from qiskit.algorithms import IterativeAmplitudeEstimation
+from qiskit_algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.applications.estimation import EuropeanCallPricing
 from qiskit_finance.circuit.library import LogNormalDistribution
 

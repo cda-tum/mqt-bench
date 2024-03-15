@@ -11,7 +11,7 @@ description = "MQT Bench - A MQT tool for Benchmarking Quantum Software Tools"
 readme = "README.md"
 authors = [
     { name = "Nils Quetschlich", email = "nils.quetschlich@tum.de" },
-    { name = "Lukas Burgholzer", email = "lukas.burgholzer@jku.at"},
+    { name = "Lukas Burgholzer", email = "lukas.burgholzer@tum.de"},
 ]
 keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
 license = { file = "LICENSE" }
@@ -19,7 +19,7 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 
 dependencies = [
-    "pytket-qiskit>=0.48.0,<0.49.0",  #  manages the dependencies for qiskit and tket in a combined fashion
+    "pytket-qiskit>=0.50.0,<0.51.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "qiskit_optimization",
     "qiskit_nature",
     "qiskit_finance",
@@ -119,7 +119,7 @@ module = ["pytket.*", "qiskit_finance.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*"]
+module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_algorithms.*", "qiskit_ibm_runtime.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

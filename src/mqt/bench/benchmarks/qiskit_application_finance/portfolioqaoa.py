@@ -5,9 +5,9 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from qiskit.algorithms.minimum_eigensolvers import QAOA
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.primitives import Sampler
+from qiskit_algorithms.minimum_eigensolvers import QAOA
+from qiskit_algorithms.optimizers import COBYLA
 from qiskit_finance.applications import PortfolioOptimization
 from qiskit_finance.data_providers import RandomDataProvider
 from qiskit_optimization.converters import QuadraticProgramToQubo
@@ -51,7 +51,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     qaoa = QAOA(sampler=Sampler(), optimizer=cobyla, reps=3)
     qaoa.random_seed = 10
     qaoa_result = qaoa.compute_minimum_eigenvalue(qp_qubo.to_ising()[0])
-    qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
+    qc = qaoa.ansatz.assign_parameters(qaoa_result.optimal_point)
 
     qc.name = "portfolioqaoa"
     qc.measure_all()
