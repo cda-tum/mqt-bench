@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytket
+from qiskit.qasm2 import dump
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
@@ -1013,7 +1014,8 @@ def test_oqc_postprocessing() -> None:
 def test_evaluate_qasm_file() -> None:
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
-    qc.qasm(filename=filename)
+    with Path(filename).open("w") as f:
+        dump(qc, f)
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
     assert type(res) == evaluation.EvaluationResult

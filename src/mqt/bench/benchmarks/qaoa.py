@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from qiskit.algorithms.minimum_eigensolvers import QAOA
-from qiskit.algorithms.optimizers import SLSQP
 from qiskit.primitives import Sampler
+from qiskit_algorithms.minimum_eigensolvers import QAOA
+from qiskit_algorithms.optimizers import SLSQP
 from qiskit_optimization import QuadraticProgram
 
 from mqt.bench.utils import get_examplary_max_cut_qp
@@ -28,7 +28,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qaoa = QAOA(sampler=Sampler(), reps=2, optimizer=SLSQP(maxiter=25))
     qaoa_result = qaoa.compute_minimum_eigenvalue(qp.to_ising()[0])
-    qc = qaoa.ansatz.bind_parameters(qaoa_result.optimal_point)
+    qc = qaoa.ansatz.assign_parameters(qaoa_result.optimal_point)
 
     qc.name = "qaoa"
 

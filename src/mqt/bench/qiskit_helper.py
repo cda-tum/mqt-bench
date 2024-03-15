@@ -8,7 +8,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from mqt.bench.devices import Device, Provider
 
-from qiskit.compiler import transpile
+from qiskit import transpile
+from qiskit.qasm2 import dumps
 
 from mqt.bench import utils
 
@@ -69,7 +70,7 @@ def get_indep_level(
     if return_qc:
         return target_independent
     return utils.save_as_qasm(
-        target_independent.qasm(),
+        dumps(target_independent),
         filename_indep,
         target_directory=target_directory,
     )
@@ -146,7 +147,7 @@ def get_native_gates_level(
     if return_qc:
         return compiled_without_architecture
     return utils.save_as_qasm(
-        compiled_without_architecture.qasm(),
+        dumps(compiled_without_architecture),
         filename_native,
         gate_set,
         target_directory=target_directory,
@@ -226,7 +227,7 @@ def get_mapped_level(
     if return_qc:
         return compiled_with_architecture
     return utils.save_as_qasm(
-        compiled_with_architecture.qasm(),
+        dumps(compiled_with_architecture),
         filename_mapped,
         device.basis_gates,
         True,

@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from qiskit.algorithms.minimum_eigensolvers import VQE
-from qiskit.algorithms.optimizers import SPSA
 from qiskit.circuit.library import TwoLocal
 from qiskit.primitives import Estimator
-from qiskit.utils import algorithm_globals
+from qiskit_algorithms.minimum_eigensolvers import VQE
+from qiskit_algorithms.optimizers import SPSA
 from qiskit_optimization.applications import Tsp
 from qiskit_optimization.converters import QuadraticProgramToQubo
 
@@ -33,14 +32,12 @@ def create_circuit(num_nodes: int) -> QuantumCircuit:
     qubo = qp2qubo.convert(qp)
     qubit_op, offset = qubo.to_ising()
 
-    algorithm_globals.random_seed = 10
-
     spsa = SPSA(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
     vqe = VQE(ansatz=ry, optimizer=spsa, estimator=Estimator())
 
     vqe_result = vqe.compute_minimum_eigenvalue(qubit_op)
-    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
+    qc = vqe.ansatz.assign_parameters(vqe_result.optimal_point)
     qc.measure_all()
     qc.name = "tsp"
 

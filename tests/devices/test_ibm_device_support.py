@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from qiskit.providers.fake_provider import FakeMontreal, FakeMontrealV2
+from qiskit_ibm_runtime.fake_provider import FakeMontreal, FakeMontrealV2
 
 from mqt.bench.devices import IBMProvider
 
