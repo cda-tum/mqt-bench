@@ -11,7 +11,7 @@ description = "MQT Bench - A MQT tool for Benchmarking Quantum Software Tools"
 readme = "README.md"
 authors = [
     { name = "Nils Quetschlich", email = "nils.quetschlich@tum.de" },
-    { name = "Lukas Burgholzer", email = "lukas.burgholzer@jku.at"},
+    { name = "Lukas Burgholzer", email = "lukas.burgholzer@tum.de"},
 ]
 keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
 license = { file = "LICENSE" }
