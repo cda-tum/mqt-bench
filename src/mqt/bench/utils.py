@@ -311,7 +311,7 @@ def calc_supermarq_features(
 
     # average number of 1q gates per layer = num of 1-qubit gates in the circuit / depth
     dag.remove_all_ops_named("measure")
-    singleQ_gates_per_layer = (len(dag.op_nodes()) - len(dag.two_qubit_ops())) / dag.depth()
+    singleQ_gates_per_layer = (len(dag.gate_nodes()) - len(dag.two_qubit_ops())) / dag.depth()
     singleQ_gates_per_layer /= num_qubits  # Normalize
 
     # average number of 2q gates per layer = num of 2-qubit gates in the circuit / depth
@@ -329,15 +329,15 @@ def calc_supermarq_features(
     assert 0 <= multiQ_gates_per_layer <= 1
 
     return SupermarqFeatures(
-        program_communication,
-        critical_depth,
-        entanglement_ratio,
-        parallelism,
+        program_communication, # O
+        critical_depth, # O
+        entanglement_ratio, # O
+        parallelism, # O
         liveness,
-        directed_program_communication,
+        directed_program_communication, # O
         gate_coverage,
-        singleQ_gates_per_layer,
-        multiQ_gates_per_layer,
+        singleQ_gates_per_layer, # O
+        multiQ_gates_per_layer, # O
     )
 
 
