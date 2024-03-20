@@ -90,9 +90,11 @@ class IBMProvider(Provider):
                 "x": 1 - ibm_calibration["properties"][str(qubit)]["eX"],
             }
             calibration.readout_fidelity[qubit] = 1 - ibm_calibration["properties"][str(qubit)]["eRO"]
-            calibration.readout_duration[qubit] = ibm_calibration["properties"][str(qubit)]["tRO"]
-            calibration.t1[qubit] = ibm_calibration["properties"][str(qubit)]["T1"]
-            calibration.t2[qubit] = ibm_calibration["properties"][str(qubit)]["T2"]
+            # data in nanoseconds, convert to SI unit (seconds)
+            calibration.readout_duration[qubit] = ibm_calibration["properties"][str(qubit)]["tRO"] * 1e-9
+            # data in microseconds, convert to SI unit (seconds)
+            calibration.t1[qubit] = ibm_calibration["properties"][str(qubit)]["T1"] * 1e-6
+            calibration.t2[qubit] = ibm_calibration["properties"][str(qubit)]["T2"] * 1e-6
 
         for qubit1, qubit2 in device.coupling_map:
             edge = f"{qubit1}_{qubit2}"
@@ -100,7 +102,8 @@ class IBMProvider(Provider):
             error = ibm_calibration["properties"][str(qubit1)]["eCX"][edge]
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"cx": 1 - error}
 
-            duration = ibm_calibration["properties"][str(qubit1)]["tCX"][edge]
+            # data in nanoseconds, convert to SI unit (seconds)
+            duration = ibm_calibration["properties"][str(qubit1)]["tCX"][edge] * 1e-9
             calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"cx": duration}
 
         device.calibration = calibration
