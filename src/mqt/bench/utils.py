@@ -329,15 +329,15 @@ def calc_supermarq_features(
     assert 0 <= multiQ_gates_per_layer <= 1
 
     return SupermarqFeatures(
-        program_communication, # O
-        critical_depth, # O
-        entanglement_ratio, # O
-        parallelism, # O
+        program_communication,  # O
+        critical_depth,  # O
+        entanglement_ratio,  # O
+        parallelism,  # O
         liveness,
-        directed_program_communication, # O
+        directed_program_communication,  # O
         gate_coverage,
-        singleQ_gates_per_layer, # O
-        multiQ_gates_per_layer, # O
+        singleQ_gates_per_layer,  # O
+        multiQ_gates_per_layer,  # O
     )
 
 
