@@ -86,6 +86,10 @@ def get_supported_compilers() -> list[str]:
     return ["qiskit", "tket"]
 
 
+def get_default_config_path() -> str:
+    return str(resources.files("mqt.bench") / "config.json")
+
+
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")

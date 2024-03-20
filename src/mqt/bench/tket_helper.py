@@ -110,7 +110,7 @@ def get_indep_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_indep,
         target_directory=target_directory,
     )
@@ -196,7 +196,7 @@ def get_native_gates_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_native,
         gate_set,
         target_directory=target_directory,
@@ -305,7 +305,7 @@ def get_mapped_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_mapped,
         device.basis_gates,
         True,

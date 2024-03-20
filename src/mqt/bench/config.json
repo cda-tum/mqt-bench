@@ -1,5 +1,5 @@
 {
-  "timeout": 65,
+  "timeout": 70,
   "benchmarks": [
     {
       "name": "ae",
@@ -52,7 +52,7 @@
       "name": "portfolioqaoa",
       "include": true,
       "min_qubits": 3,
-      "max_qubits": 131,
+      "max_qubits": 14,
       "stepsize": 1,
       "precheck_possible": true
     },
@@ -60,7 +60,7 @@
       "name": "portfoliovqe",
       "include": true,
       "min_qubits": 3,
-      "max_qubits": 131,
+      "max_qubits": 14,
       "stepsize": 1,
       "precheck_possible": true
     },
