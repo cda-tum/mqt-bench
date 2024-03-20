@@ -318,7 +318,6 @@ def calc_supermarq_features(
         coverage.append(n_circ_gates_on_dev / n_circ_gates)
     gate_coverage = np.array(coverage)
 
-
     assert 0 <= program_communication <= 1
     assert 0 <= critical_depth <= 1
     assert 0 <= entanglement_ratio <= 1
