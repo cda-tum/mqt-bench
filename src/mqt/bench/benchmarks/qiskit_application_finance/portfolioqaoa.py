@@ -47,7 +47,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     cobyla = COBYLA()
     cobyla.set_options(maxiter=25)
-
     qaoa = QAOA(sampler=Sampler(), optimizer=cobyla, reps=3)
     qaoa.random_seed = 10
     qaoa_result = qaoa.compute_minimum_eigenvalue(qp_qubo.to_ising()[0])
