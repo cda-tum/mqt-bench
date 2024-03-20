@@ -67,7 +67,9 @@ class CompilerSettings:
 
 
 class BenchmarkGenerator:
-    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None) -> None:
+    def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
+        if cfg_path is None:
+            cfg_path = utils.get_default_config_path()
         with Path(cfg_path).open() as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
@@ -453,7 +455,7 @@ def get_benchmark(
 
 def generate(num_jobs: int = -1) -> None:
     parser = argparse.ArgumentParser(description="Create Configuration")
-    parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
+    parser.add_argument("--file-name", type=str, help="optional filename", default=None)
     args = parser.parse_args()
     benchmark_generator = BenchmarkGenerator(args.file_name)
     benchmark_generator.create_benchmarks_from_config(num_jobs)
