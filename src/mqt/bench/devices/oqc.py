@@ -36,7 +36,7 @@ class TwoQubitProperties(TypedDict):
     """
 
     coupling: Coupling
-    ecr: float
+    fECR: float
 
 
 class Properties(TypedDict):
@@ -111,7 +111,7 @@ class OQCProvider(Provider):
 
         for qubit1, qubit2 in device.coupling_map:
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
-                gate: oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["ecr"] for gate in ["ecr"]
+                gate: oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["ecr"] for gate in ["fECR"]
             }
         device.calibration = calibration
         return device
