@@ -74,35 +74,35 @@
     "two_qubit": {
       "0-1": {
         "coupling": { "control_qubit": 0.0, "target_qubit": 1.0 },
-        "fCX": 0.9453766394259683
+        "ecr": 0.9453766394259683
       },
       "0-7": {
         "coupling": { "control_qubit": 0.0, "target_qubit": 7.0 },
-        "fCX": 0.9490327707249107
+        "ecr": 0.9490327707249107
       },
       "1-2": {
         "coupling": { "control_qubit": 1.0, "target_qubit": 2.0 },
-        "fCX": 0.937420422997459
+        "ecr": 0.937420422997459
       },
       "2-3": {
         "coupling": { "control_qubit": 2.0, "target_qubit": 3.0 },
-        "fCX": 0.9433658127189578
+        "ecr": 0.9433658127189578
       },
       "4-3": {
         "coupling": { "control_qubit": 4.0, "target_qubit": 3.0 },
-        "fCX": 0.9580658927174651
+        "ecr": 0.9580658927174651
       },
       "4-5": {
         "coupling": { "control_qubit": 4.0, "target_qubit": 5.0 },
-        "fCX": 0.9716473635543361
+        "ecr": 0.9716473635543361
       },
       "6-5": {
         "coupling": { "control_qubit": 6.0, "target_qubit": 5.0 },
-        "fCX": 0.9497968896117499
+        "ecr": 0.9497968896117499
       },
       "7-6": {
         "coupling": { "control_qubit": 7.0, "target_qubit": 6.0 },
-        "fCX": 0.9456903499165887
+        "ecr": 0.9456903499165887
       }
     }
   }
