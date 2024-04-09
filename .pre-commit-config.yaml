@@ -35,6 +35,14 @@ repos:
       - id: fix-ligatures
       - id: fix-smartquotes
 
+  # Check for common mistakes
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: rst-backticks
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+
   # Clean jupyter notebooks
   - repo: https://github.com/srstevenson/nb-clean
     rev: "3.2.0"
@@ -88,3 +96,19 @@ repos:
           - types-requests
           - types-tqdm
           - types-flask
+
+  # Catch common capitalization mistakes
+  - repo: local
+    hooks:
+      - id: disallow-caps
+        name: Disallow improper capitalization
+        language: pygrep
+        entry: PyBind|Numpy|Cmake|CCache|Github|PyTest|Mqt|Tum
+        exclude: .pre-commit-config.yaml
+
+  # Check best practices for scientific Python code
+  - repo: https://github.com/scientific-python/cookie
+    rev: 2024.03.10
+    hooks:
+      - id: sp-repo-review
+        additional_dependencies: ["repo-review[cli]"]
