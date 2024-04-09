@@ -52,7 +52,7 @@ shown above.
 
 Different quantum computer realizations support
 different native gate-sets. In our example, we consider the
-`ibmq_manila` device as the target device which natively supports I, X, √X, Rz and CX gates.
+``ibmq_manila`` device as the target device which natively supports I, X, √X, Rz and CX gates.
 Consequently, the Ry gates in the previous figure have to be converted using only these native gates. In this case,
 they are substituted by a sequence of X and Rz gates (denoted as • with a phase of −π).
 
@@ -63,10 +63,10 @@ they are substituted by a sequence of X and Rz gates (denoted as • with a phas
 
 .. image:: /_static/arch.png
    :width: 15%
-   :alt: Illustration of the `ibmq_manila` device
+   :alt: Illustration of the ``ibmq_manila`` device
    :align: center
 
-The architecture of the `ibmq_manila` device is shown above on the right and it defines between which qubits a two-qubit operation may be performed.
+The architecture of the ``ibmq_manila`` device is shown above on the right and it defines between which qubits a two-qubit operation may be performed.
 Since the circuit shown in the previous figure contains CX gates operating between all combination of qubits,
 there is no mapping directly matching the target architecture's layout. As a consequence,
 a non-trivial mapping followed by a round of optimization leads to the resulting circuit
@@ -80,4 +80,4 @@ shown below.
 This is also the reason for the different sequence of CX gates compared
 to the previous example.
 
-This circuit is now executable on the `ibmq_manila` device, since all hardware induced requirements are fulfilled.
+This circuit is now executable on the ``ibmq_manila`` device, since all hardware induced requirements are fulfilled.
