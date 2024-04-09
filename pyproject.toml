@@ -130,8 +130,7 @@ unsafe-fixes = true
 
 [tool.ruff.lint]
 extend-select = [
-    "E", "F", "W", # flake8
-    "A",           # flake8-builtins
+   "A",           # flake8-builtins
     "ANN",         # flake8-annotations
     "ARG",         # flake8-unused-arguments
     "ASYNC",       # flake8-async
@@ -141,10 +140,12 @@ extend-select = [
     "EM",          # flake8-errmsg
     "EXE",         # flake8-executable
     "FA",          # flake8-future-annotations
+    "FLY",         # flynt
     "I",           # isort
     "ICN",         # flake8-import-conventions
     "ISC",         # flake8-implicit-str-concat
-#    "N",           # flake8-naming
+    "LOG",         # flake8-logging-format
+    "N",           # flake8-naming
     "NPY",         # numpy
     "PERF",        # perflint
     "PGH",         # pygrep-hooks
@@ -157,9 +158,11 @@ extend-select = [
     "RET",         # flake8-return
     "RSE",         # flake8-raise
     "RUF",         # Ruff-specific
+#    "S",           # flake8-bandit
     "SLF",         # flake8-self
     "SLOT",        # flake8-slots
     "SIM",         # flake8-simplify
+#    "T20",         # flake8-print
     "TCH",         # flake8-type-checking
     "TID",         # flake8-tidy-imports
     "TRY",         # tryceratops
@@ -169,8 +172,10 @@ extend-select = [
 extend-ignore = [
     "ANN101",  # Missing type annotation for self in method
     "ANN102",  # Missing type annotation for cls in classmethod
+    "ISC001",  # Conflicts with formatter
     "E501",    # Line too long (Black is enough)
     "PLR",     # Design related pylint codes
+    "S101",    # Use of assert detected
 ]
 flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]

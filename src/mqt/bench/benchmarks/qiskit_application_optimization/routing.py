@@ -44,19 +44,19 @@ class Initializer:
 
 
 class QuantumOptimizer:
-    def __init__(self, instance: NDArray[np.float64], n: int, K: int) -> None:
+    def __init__(self, instance: NDArray[np.float64], n: int, k: int) -> None:
         self.instance = instance
         self.n = n
-        self.K = K
+        self.k = k
 
     def binary_representation(
         self, x_sol: NDArray[np.float64]
     ) -> tuple[NDArray[np.float64], NDArray[np.float64], float, float]:
         instance = self.instance
         n = self.n
-        K = self.K
+        k = self.k
 
-        A = np.max(instance) * 100  # A parameter of cost function
+        a = np.max(instance) * 100  # A parameter of cost function
 
         # Determine the weights w
         instance_vec = instance.reshape(n**2)
@@ -66,12 +66,12 @@ class QuantumOptimizer:
             w[ii] = w_list[ii]
 
         # Some variables I will use
-        Id_n = np.eye(n)
-        Im_n_1 = np.ones([n - 1, n - 1])
-        Iv_n_1 = np.ones(n)
-        Iv_n_1[0] = 0
-        Iv_n = np.ones(n - 1)
-        neg_Iv_n_1 = np.ones(n) - Iv_n_1
+        id_n = np.eye(n)
+        im_n_1 = np.ones([n - 1, n - 1])
+        iv_n_1 = np.ones(n)
+        iv_n_1[0] = 0
+        iv_n = np.ones(n - 1)
+        neg_iv_n_1 = np.ones(n) - iv_n_1
 
         v = np.zeros([n, n * (n - 1)])
         for ii in range(n):
@@ -86,34 +86,34 @@ class QuantumOptimizer:
         vn = np.sum(v[1:], axis=0)
 
         # Q defines the interactions between variables
-        Q = A * (np.kron(Id_n, Im_n_1) + np.dot(v.T, v))
+        q = a * (np.kron(id_n, im_n_1) + np.dot(v.T, v))
 
         # g defines the contribution from the individual variables
-        g = w - 2 * A * (np.kron(Iv_n_1, Iv_n) + vn.T) - 2 * A * K * (np.kron(neg_Iv_n_1, Iv_n) + v[0].T)
+        g = w - 2 * a * (np.kron(iv_n_1, iv_n) + vn.T) - 2 * a * k * (np.kron(neg_iv_n_1, iv_n) + v[0].T)
 
         # c is the constant offset
-        c = 2 * A * (n - 1) + 2 * A * (K**2)
+        c = 2 * a * (n - 1) + 2 * a * (k**2)
 
         try:
             # Evaluates the cost distance from a binary representation of a path
             def fun(x: NDArray[np.float64]) -> float:
                 return cast(
                     float,
-                    np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c,
+                    np.dot(np.around(x), np.dot(q, np.around(x))) + np.dot(g, np.around(x)) + c,
                 )
 
             cost = fun(x_sol)
         except Exception:
             cost = 0
 
-        return Q, g, cast(float, c), cost
+        return q, g, cast(float, c), cost
 
-    def construct_problem(self, Q: QuadraticExpression, g: LinearExpression, c: float) -> QuadraticProgram:
+    def construct_problem(self, q: QuadraticExpression, g: LinearExpression, c: float) -> QuadraticProgram:
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
 
-        qp.objective.quadratic = Q
+        qp.objective.quadratic = q
         qp.objective.linear = g
         qp.objective.constant = c
         return qp

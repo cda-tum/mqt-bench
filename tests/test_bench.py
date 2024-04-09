@@ -1092,7 +1092,7 @@ def test_calc_supermarq_features() -> None:
     assert 0 < regular_features.liveness < 1
 
 
-def test_BenchmarkGenerator() -> None:
+def test_benchmark_generator() -> None:
     generator = BenchmarkGenerator(qasm_output_path="test")
     assert generator.qasm_output_path == "test"
     assert generator.timeout > 0

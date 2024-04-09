@@ -465,18 +465,18 @@ def timeout_watcher(
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
-    class TimeoutException(Exception):  # Custom exception class
+    class TimeoutExceptionError(Exception):  # Custom exception class
         pass
 
     def timeout_handler(_signum: int, _frame: Any) -> None:  # noqa: ANN401
-        raise TimeoutException
+        raise TimeoutExceptionError
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(timeout)
     try:
         res = func(*args) if isinstance(args, tuple | list) else func(args)
-    except TimeoutException:
+    except TimeoutExceptionError:
         print(
             "Calculation/Generation exceeded timeout limit for ",
             func.__name__,
