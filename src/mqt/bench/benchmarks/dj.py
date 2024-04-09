@@ -9,9 +9,9 @@ from qiskit import QuantumCircuit
 def dj_oracle(case: str, n: int) -> QuantumCircuit:
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
+    rng = np.random.default_rng(10)
 
     if case == "balanced":
-        rng = np.random.default_rng(10)
         b_str = ""
         for _ in range(n):
             b = rng.integers(0, 2)
