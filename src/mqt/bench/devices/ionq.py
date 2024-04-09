@@ -18,9 +18,8 @@ Timing = TypedDict("Timing", {"t1": float, "t2": float, "1q": float, "2q": float
 
 
 class IonQCalibration(TypedDict):
-    """
-    Class to store the calibration data of an IonQ device.
-    Follows https://docs.ionq.com/#tag/characterizations
+    """Class to store the calibration data of an IonQ device.
+    Follows https://docs.ionq.com/#tag/characterizations.
     """
 
     name: str
@@ -32,32 +31,26 @@ class IonQCalibration(TypedDict):
 
 
 class IonQProvider(Provider):
-    """
-    Class to manage IonQ devices.
-    """
+    """Class to manage IonQ devices."""
 
     provider_name = "ionq"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """
-        Get the names of all available IonQ devices.
-        """
+        """Get the names of all available IonQ devices."""
         return ["ionq_harmony", "ionq_aria1"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
-        """
-        Get a list of provider specific native gates.
-        """
+        """Get a list of provider specific native gates."""
         return ["rxx", "rz", "ry", "rx", "measure", "barrier"]  # harmony, aria1
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """
-        Import an IonQ backend as a Device object.
+        """Import an IonQ backend as a Device object.
+
         Args:
-            path: the path to the JSON file containing the calibration data
+            path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """

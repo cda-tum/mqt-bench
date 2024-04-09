@@ -10,10 +10,9 @@ from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-
     ae = AmplitudeEstimation(
         num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
     )
@@ -47,7 +46,6 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
 
 def get_estimation_problem() -> EstimationProblem:
     """Returns a estimation problem instance for a fixed p value."""
-
     p = 0.2
 
     """A circuit representing the Bernoulli A operator."""

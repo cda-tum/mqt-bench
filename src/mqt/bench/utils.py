@@ -108,7 +108,7 @@ def get_zip_file_path() -> str:
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
-    Keyword arguments:
+    Keyword Arguments:
     n_nodes -- number of graph nodes (and also number of qubits)
     degree -- edges per node
     """
@@ -176,14 +176,13 @@ def save_as_qasm(
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc_str -- Quantum circuit to be stored as a string
     filename -- filename
     gate_set -- set of used gates
     mapped -- boolean indicating whether the quantum circuit is mapped to a specific hardware layout
     c_map -- coupling map of used hardware layout
     """
-
     if c_map is None:
         c_map = []
 
@@ -238,7 +237,7 @@ def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
-    """Calculates the Supermarq features for a given quantum circuit. Code adapted from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py"""
+    """Calculates the Supermarq features for a given quantum circuit. Code adapted from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py."""
     num_qubits = qc.num_qubits
     dag = circuit_to_dag(qc)
     dag.remove_all_ops_named("barrier")

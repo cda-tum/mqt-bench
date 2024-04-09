@@ -1107,7 +1107,7 @@ def endless_loop(arg1: SampleObject, run_forever: bool) -> bool:  # noqa: ARG001
 
 
 class SampleObject:
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
 
 

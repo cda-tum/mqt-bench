@@ -29,11 +29,10 @@ from qiskit_algorithms.utils.validation import validate_min
 def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Shor's algorithm.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_to_be_factorized -- number which shall be factorized
     a -- any integer that satisfies 1 < a < num_to_be_factorized and gcd(a, num_to_be_factorized) = 1
     """
-
     qc = Shor().construct_circuit(num_to_be_factorized, a)
     qc.measure_all()
     qc.name = "shor_" + str(num_to_be_factorized) + "_" + str(a)
@@ -54,7 +53,7 @@ def get_instance(choice: str) -> list[int]:
 
 class Shor:
     @staticmethod
-    def _get_angles(a: int, n: int) -> NDArray[np.float_]:
+    def _get_angles(a: int, n: int) -> NDArray[np.float64]:
         """Calculates the array of angles to be used in the addition in Fourier Space."""
         bits_little_endian = (bin(int(a))[2:].zfill(n))[::-1]
 
@@ -68,7 +67,7 @@ class Shor:
         return angles * np.pi
 
     @staticmethod
-    def _phi_add_gate(angles: NDArray[np.float_] | ParameterVector) -> Gate:
+    def _phi_add_gate(angles: NDArray[np.float64] | ParameterVector) -> Gate:
         """Gate that performs addition by a in Fourier Space."""
         circuit = QuantumCircuit(len(angles), name="phi_add_a")
         for i, angle in enumerate(angles):
@@ -77,7 +76,7 @@ class Shor:
 
     def _double_controlled_phi_add_mod_N(
         self,
-        angles: NDArray[np.float_] | ParameterVector,
+        angles: NDArray[np.float64] | ParameterVector,
         c_phi_add_N: Gate,
         iphi_add_N: Gate,
         qft: Gate,
@@ -203,7 +202,6 @@ class Shor:
             ValueError: Invalid input
 
         """
-
         validate_min("N", N, 3)
         validate_min("a", a, 2)
 

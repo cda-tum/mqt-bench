@@ -18,10 +18,9 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_nodes: int) -> QuantumCircuit:
     """Returns a quantum circuit solving the Travelling Salesman Problem (TSP).
 
-    Keyword arguments:
+    Keyword Arguments:
     num_nodes -- number of to be visited nodes
     """
-
     # Generating a graph of 3 nodes
     n = num_nodes
     tsp = Tsp.create_random_instance(n, seed=10)

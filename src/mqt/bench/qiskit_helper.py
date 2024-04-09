@@ -46,7 +46,7 @@ def get_indep_level(
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-independent level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
@@ -58,7 +58,6 @@ def get_indep_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-
     filename_indep = target_filename if target_filename else qc.name + "_indep_qiskit_" + str(num_qubits)
 
     path = Path(target_directory, filename_indep + ".qasm")
@@ -114,7 +113,7 @@ def get_native_gates_level(
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     provider -- determines the native gate set
     num_qubits -- number of qubits
@@ -128,7 +127,6 @@ def get_native_gates_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-
     if not target_filename:
         filename_native = (
             qc.name + "_nativegates_" + provider.provider_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
@@ -192,7 +190,7 @@ def get_mapped_level(
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
     device -- target device
@@ -206,7 +204,6 @@ def get_mapped_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-
     if not target_filename:
         filename_mapped = qc.name + "_mapped_" + device.name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
     else:

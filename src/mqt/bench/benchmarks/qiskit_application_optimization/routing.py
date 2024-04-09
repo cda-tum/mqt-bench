@@ -24,15 +24,15 @@ class Initializer:
     def generate_instance(
         self,
     ) -> tuple[
-        NDArray[np.float_],
-        NDArray[np.float_],
-        NDArray[np.float_],
+        NDArray[np.float64],
+        NDArray[np.float64],
+        NDArray[np.float64],
     ]:
         n = self.n
-        np.random.seed(10)
+        rng = np.random.default_rng(10)
 
-        xc = (np.random.rand(n) - 0.5) * 10
-        yc = (np.random.rand(n) - 0.5) * 10
+        xc = (rng.random(n) - 0.5) * 10
+        yc = (rng.random(n) - 0.5) * 10
 
         instance = np.zeros([n, n])
         for ii in range(n):
@@ -44,14 +44,14 @@ class Initializer:
 
 
 class QuantumOptimizer:
-    def __init__(self, instance: NDArray[np.float_], n: int, K: int) -> None:
+    def __init__(self, instance: NDArray[np.float64], n: int, K: int) -> None:
         self.instance = instance
         self.n = n
         self.K = K
 
     def binary_representation(
-        self, x_sol: NDArray[np.float_]
-    ) -> tuple[NDArray[np.float_], NDArray[np.float_], float, float]:
+        self, x_sol: NDArray[np.float64]
+    ) -> tuple[NDArray[np.float64], NDArray[np.float64], float, float]:
         instance = self.instance
         n = self.n
         K = self.K
@@ -96,7 +96,7 @@ class QuantumOptimizer:
 
         try:
             # Evaluates the cost distance from a binary representation of a path
-            def fun(x: NDArray[np.float_]) -> float:
+            def fun(x: NDArray[np.float64]) -> float:
                 return cast(
                     float,
                     np.dot(np.around(x), np.dot(Q, np.around(x))) + np.dot(g, np.around(x)) + c,
@@ -129,11 +129,10 @@ class QuantumOptimizer:
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit solving a routing problem.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_nodes -- number of to be visited nodes
     num_vehs -- number of used vehicles
     """
-
     # Initialize the problem by defining the parameters
     n = num_nodes  # number of nodes + depot (n+1)
     k = num_vehs  # number of vehicles

@@ -5,10 +5,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class DeviceCalibration:
-    """
-    Calibration data for a (generic) device.
+    """Calibration data for a (generic) device.
 
-    Attributes
+    Attributes:
     single_qubit_gate_fidelity: single-qubit fidelity for each qubit and gate
     single_qubit_gate_duration: single-qubit gate duration for each qubit and gate
     two_qubit_gate_fidelity: two-qubit fidelity for each qubit pair and gate
@@ -30,10 +29,9 @@ class DeviceCalibration:
     t2: dict[int, float] = field(default_factory=dict)
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
-        """
-        Get the single-qubit fidelity for a given gate type and qubit.
+        """Get the single-qubit fidelity for a given gate type and qubit.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -48,10 +46,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_single_qubit_gate_duration(self, gate_type: str, qubit: int) -> float:
-        """
-        Get the single-qubit duration for a given gate type and qubit.
+        """Get the single-qubit duration for a given gate type and qubit.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -66,10 +63,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_two_qubit_gate_fidelity(self, gate_type: str, qubit1: int, qubit2: int) -> float:
-        """
-        Get the two-qubit fidelity for a given gate type and qubit pair.
+        """Get the two-qubit fidelity for a given gate type and qubit pair.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -85,10 +81,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_two_qubit_gate_duration(self, gate_type: str, qubit1: int, qubit2: int) -> float:
-        """
-        Get the two-qubit duration for a given gate type and qubit pair.
+        """Get the two-qubit duration for a given gate type and qubit pair.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -104,10 +99,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_readout_fidelity(self, qubit: int) -> float:
-        """
-        Get the readout fidelity for a given qubit.
+        """Get the readout fidelity for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if not self.readout_fidelity:
@@ -121,10 +115,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_readout_duration(self, qubit: int) -> float:
-        """
-        Get the readout duration for a given qubit.
+        """Get the readout duration for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if not self.readout_duration:
@@ -138,10 +131,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_t1(self, qubit: int) -> float:
-        """
-        Get the T1 time for a given qubit.
+        """Get the T1 time for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if not self.t1:
@@ -155,10 +147,9 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def get_t2(self, qubit: int) -> float:
-        """
-        Get the T2 time for a given qubit.
+        """Get the T2 time for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if not self.t2:
@@ -172,9 +163,7 @@ class DeviceCalibration:
             raise ValueError(msg) from None
 
     def compute_average_single_qubit_gate_fidelity(self, gate: str) -> float:
-        """
-        Compute the average single-qubit fidelity.
-        """
+        """Compute the average single-qubit fidelity."""
         if not self.single_qubit_gate_fidelity:
             msg = "Single-qubit gate fidelity values not available."
             raise ValueError(msg)
@@ -188,9 +177,7 @@ class DeviceCalibration:
         return avg_single_qubit_gate_fidelity / entries
 
     def compute_average_single_qubit_gate_duration(self, gate: str) -> float:
-        """
-        Compute the average single-qubit duration.
-        """
+        """Compute the average single-qubit duration."""
         if not self.single_qubit_gate_duration:
             msg = "Single-qubit gate duration values not available."
             raise ValueError(msg)
@@ -204,9 +191,7 @@ class DeviceCalibration:
         return avg_single_qubit_gate_duration / entries
 
     def compute_average_two_qubit_gate_fidelity(self, gate: str) -> float:
-        """
-        Compute the average two-qubit gate fidelity.
-        """
+        """Compute the average two-qubit gate fidelity."""
         if not self.two_qubit_gate_fidelity:
             msg = "Two-qubit gate fidelity values not available."
             raise ValueError(msg)
@@ -220,9 +205,7 @@ class DeviceCalibration:
         return avg_two_qubit_gate_fidelity / entries
 
     def compute_average_two_qubit_gate_duration(self, gate: str) -> float:
-        """
-        Compute the average two-qubit duration.
-        """
+        """Compute the average two-qubit duration."""
         if not self.two_qubit_gate_duration:
             msg = "Two-qubit gate duration values not available."
             raise ValueError(msg)
@@ -236,9 +219,7 @@ class DeviceCalibration:
         return avg_two_qubit_gate_duration / entries
 
     def compute_average_readout_fidelity(self) -> float:
-        """
-        Compute the average readout fidelity.
-        """
+        """Compute the average readout fidelity."""
         if not self.readout_fidelity:
             msg = "Readout fidelity values not available."
             raise ValueError(msg)
@@ -246,9 +227,7 @@ class DeviceCalibration:
         return sum(self.readout_fidelity.values()) / len(self.readout_fidelity)
 
     def compute_average_readout_duration(self) -> float:
-        """
-        Compute the average readout duration.
-        """
+        """Compute the average readout duration."""
         if not self.readout_duration:
             msg = "Readout duration values not available."
             raise ValueError(msg)

@@ -6,12 +6,11 @@ from mqt.bench.devices import OQCProvider
 
 
 def test_oqc_provider_methods() -> None:
-    """
-    Test the methods of the OQCrovider class:
+    """Test the methods of the OQCrovider class:
     - get_available_device_names
     - get_available_basis_gates
     - get_native_gates
-    - get_max_qubits
+    - get_max_qubits.
     """
     assert OQCProvider.get_available_device_names() == ["oqc_lucy"]
     assert OQCProvider.get_available_basis_gates() == [["rz", "sx", "x", "ecr", "measure", "barrier"]]
@@ -20,9 +19,7 @@ def test_oqc_provider_methods() -> None:
 
 
 def test_oqc_lucy_device() -> None:
-    """
-    Test the import of the OQC Lucy quantum computer.
-    """
+    """Test the import of the OQC Lucy quantum computer."""
     device = OQCProvider.get_device("oqc_lucy")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
