@@ -138,10 +138,10 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
     k = num_vehs  # number of vehicles
     # Initialize the problem by randomly generating the instance
     initializer = Initializer(n)
-    xc, yc, instance = initializer.generate_instance()
+    _xc, _yc, instance = initializer.generate_instance()
 
     quantum_optimizer = QuantumOptimizer(instance, n, k)
-    q, g, c, binary_cost = quantum_optimizer.binary_representation(x_sol=np.array(0.0, dtype=float))
+    q, g, c, _binary_cost = quantum_optimizer.binary_representation(x_sol=np.array(0.0, dtype=float))
     q_casted = cast(QuadraticExpression, q)
     g_casted = cast(LinearExpression, g)
     qp = quantum_optimizer.construct_problem(q_casted, g_casted, c)

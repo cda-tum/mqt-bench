@@ -93,8 +93,8 @@ class OQCProvider(Provider):
             calibration.t2[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
-                gate: oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fCX"] for gate in ["ecr"]
-            }
+            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = dict.fromkeys(
+                ["ecr"], oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fCX"]
+            )
         device.calibration = calibration
         return device

@@ -62,9 +62,9 @@ class QuantinuumProvider(Provider):
         device.coupling_map = list(quantinuum_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
-            calibration.single_qubit_gate_fidelity[qubit] = {
-                gate: quantinuum_calibration["fidelity"]["1q"]["mean"] for gate in ["ry", "rx"]
-            }
+            calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
+                ["ry", "rx"], quantinuum_calibration["fidelity"]["1q"]["mean"]
+            )
             calibration.single_qubit_gate_fidelity[qubit]["rz"] = 1  # rz is always perfect
             calibration.readout_fidelity[qubit] = quantinuum_calibration["fidelity"]["spam"]["mean"]
 

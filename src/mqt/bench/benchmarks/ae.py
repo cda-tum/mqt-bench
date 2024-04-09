@@ -37,6 +37,9 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
     def __eq__(self, other: object) -> bool:
         return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
 
+    def __hash__(self) -> int:
+        return hash(self._theta_p)
+
     def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
         # implement the efficient power of Q
         q_k = QuantumCircuit(1)

@@ -64,13 +64,13 @@ class IonQProvider(Provider):
         device.coupling_map = list(ionq_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
-            calibration.single_qubit_gate_fidelity[qubit] = {
-                gate: ionq_calibration["fidelity"]["1q"]["mean"] for gate in ["ry", "rx"]
-            }
+            calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
+                ["ry", "rx"], ionq_calibration["fidelity"]["1q"]["mean"]
+            )
             calibration.single_qubit_gate_fidelity[qubit]["rz"] = 1  # rz is always perfect
-            calibration.single_qubit_gate_duration[qubit] = {
-                gate: ionq_calibration["timing"]["1q"] for gate in ["ry", "rx"]
-            }
+            calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
+                ["ry", "rx"], ionq_calibration["timing"]["1q"]
+            )
             calibration.single_qubit_gate_duration[qubit]["rz"] = 0  # rz is always instantaneous
             calibration.readout_fidelity[qubit] = ionq_calibration["fidelity"]["spam"]["mean"]
             calibration.readout_duration[qubit] = ionq_calibration["timing"]["readout"]

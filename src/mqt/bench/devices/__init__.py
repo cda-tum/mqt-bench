@@ -83,18 +83,18 @@ def get_device_by_name(device_name: str) -> Device:
 
 
 __all__ = [
-    "Provider",
     "Device",
     "DeviceCalibration",
     "IBMProvider",
     "IonQProvider",
     "OQCProvider",
-    "RigettiProvider",
+    "Provider",
     "QuantinuumProvider",
-    "get_available_providers",
-    "get_available_provider_names",
-    "get_provider_by_name",
-    "get_available_devices",
+    "RigettiProvider",
     "get_available_device_names",
+    "get_available_devices",
+    "get_available_provider_names",
+    "get_available_providers",
     "get_device_by_name",
+    "get_provider_by_name",
 ]

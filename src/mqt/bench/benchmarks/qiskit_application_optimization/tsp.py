@@ -29,7 +29,7 @@ def create_circuit(num_nodes: int) -> QuantumCircuit:
 
     qp2qubo = QuadraticProgramToQubo()
     qubo = qp2qubo.convert(qp)
-    qubit_op, offset = qubo.to_ising()
+    qubit_op, _offset = qubo.to_ising()
 
     spsa = SPSA(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")
