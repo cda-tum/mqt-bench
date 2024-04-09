@@ -75,7 +75,7 @@ repos:
     rev: v1.9.0
     hooks:
       - id: mypy
-        files: ^(src|tests|setup.py)
+        files: ^(src|tests)
         args: []
         additional_dependencies:
           - pytket_qiskit
