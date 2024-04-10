@@ -11,9 +11,7 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class QubitProperties(TypedDict):
-    """
-    Class to store the properties of a single qubit.
-    """
+    """Class to store the properties of a single qubit."""
 
     fActiveReset: float
     fRO: float
@@ -26,9 +24,7 @@ class QubitProperties(TypedDict):
 
 
 class TwoQubitProperties(TypedDict):
-    """
-    Class to store the properties of a two-qubit gate.
-    """
+    """Class to store the properties of a two-qubit gate."""
 
     fCZ: float
     fCZ_std_err: float
@@ -42,9 +38,7 @@ Properties = TypedDict("Properties", {"1Q": dict[str, QubitProperties], "2Q": di
 
 
 class RigettiCalibration(TypedDict):
-    """
-    Class to store the calibration data of a Rigetti device.
-    """
+    """Class to store the calibration data of a Rigetti device."""
 
     name: str
     num_qubits: int
@@ -54,30 +48,23 @@ class RigettiCalibration(TypedDict):
 
 
 class RigettiProvider(Provider):
-    """
-    Class to manage Rigetti devices.
-    """
+    """Class to manage Rigetti devices."""
 
     provider_name = "rigetti"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """
-        Get the names of all available Rigetti devices.
-        """
+        """Get the names of all available Rigetti devices."""
         return ["rigetti_aspen_m3"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
-        """
-        Get a list of provider specific native gates.
-        """
+        """Get a list of provider specific native gates."""
         return ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]  # aspen_m3
 
     @classmethod
     def __from_rigetti_index(cls, rigetti_index: int) -> int:
-        """
-        Convert the Rigetti qubit index to a consecutive index.
+        """Convert the Rigetti qubit index to a consecutive index.
         The Rigetti architectures consist of 8-qubit rings arranged in a two-dimensional grid.
         Each qubit is identified by a three digit number, where:
           * the first digit is the row index,
@@ -103,10 +90,10 @@ class RigettiProvider(Provider):
 
     @classmethod
     def __to_rigetti_index(cls, index: int) -> int:
-        """
-        Convert the consecutive index to the Rigetti qubit index.
+        """Convert the consecutive index to the Rigetti qubit index.
+
         Args:
-            index: the consecutive index
+            index: the consecutive index.
 
         Returns: the Rigetti qubit index
         """
@@ -123,10 +110,10 @@ class RigettiProvider(Provider):
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """
-        Import a Rigetti backend.
+        """Import a Rigetti backend.
+
         Args:
-            path: the path to the JSON file containing the calibration data
+            path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """

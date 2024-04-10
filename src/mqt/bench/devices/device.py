@@ -9,10 +9,9 @@ if TYPE_CHECKING:
 
 @dataclass
 class Device:
-    """
-    A class to represent a (generic) quantum device.
+    """A class to represent a (generic) quantum device.
 
-    Attributes
+    Attributes:
     name: name of the device
     num_qubits: number of qubits
     basis_gates: list of basis gates supported by the device
@@ -27,10 +26,9 @@ class Device:
     calibration: DeviceCalibration | None = None
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
-        """
-        Get the single-qubit fidelity for a given gate type and qubit.
+        """Get the single-qubit fidelity for a given gate type and qubit.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -45,10 +43,9 @@ class Device:
         return self.calibration.get_single_qubit_gate_fidelity(gate_type, qubit)
 
     def get_single_qubit_gate_duration(self, gate_type: str, qubit: int) -> float:
-        """
-        Get the single-qubit gate duration for a given gate type and qubit.
+        """Get the single-qubit gate duration for a given gate type and qubit.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -63,10 +60,9 @@ class Device:
         return self.calibration.get_single_qubit_gate_duration(gate_type, qubit)
 
     def get_two_qubit_gate_fidelity(self, gate_type: str, qubit1: int, qubit2: int) -> float:
-        """
-        Get the two-qubit fidelity for a given gate type and qubit pair.
+        """Get the two-qubit fidelity for a given gate type and qubit pair.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -82,10 +78,9 @@ class Device:
         return self.calibration.get_two_qubit_gate_fidelity(gate_type, qubit1, qubit2)
 
     def get_two_qubit_gate_duration(self, gate_type: str, qubit1: int, qubit2: int) -> float:
-        """
-        Get the two-qubit gate duration for a given gate type and qubit pair.
+        """Get the two-qubit gate duration for a given gate type and qubit pair.
 
-        Args
+        Args:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -101,10 +96,9 @@ class Device:
         return self.calibration.get_two_qubit_gate_duration(gate_type, qubit1, qubit2)
 
     def get_readout_fidelity(self, qubit: int) -> float:
-        """
-        Get the readout fidelity for a given qubit.
+        """Get the readout fidelity for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if self.calibration is None:
@@ -114,10 +108,9 @@ class Device:
         return self.calibration.get_readout_fidelity(qubit)
 
     def get_readout_duration(self, qubit: int) -> float:
-        """
-        Get the readout duration for a given qubit.
+        """Get the readout duration for a given qubit.
 
-        Args
+        Args:
         qubit: index of the qubit
         """
         if self.calibration is None:
@@ -127,20 +120,18 @@ class Device:
         return self.calibration.get_readout_duration(qubit)
 
     def get_single_qubit_gates(self) -> set[str]:
-        """
-        Get the set of single-qubit gates supported by the device.
+        """Get the set of single-qubit gates supported by the device.
 
-        Returns
+        Returns:
         list of single-qubit gates
         """
         assert self.calibration is not None
         return {gate for qubit in range(self.num_qubits) for gate in self.calibration.single_qubit_gate_fidelity[qubit]}
 
     def get_two_qubit_gates(self) -> set[str]:
-        """
-        Get the set of two-qubit gates supported by the device.
+        """Get the set of two-qubit gates supported by the device.
 
-        Returns
+        Returns:
         list of two-qubit gates
         """
         assert self.calibration is not None
@@ -151,8 +142,7 @@ class Device:
         }
 
     def sanitize_device(self) -> None:
-        """
-        Tries to sanitize the device information so that it produces the least amount of problems when used.
+        """Tries to sanitize the device information so that it produces the least amount of problems when used.
 
         It is assumed that any edge, where the average two-qubit gate fidelity is 0, is not a valid edge.
         Thus, such edges are removed from the coupling map.

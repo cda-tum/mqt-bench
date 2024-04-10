@@ -332,7 +332,6 @@ def get_benchmark(
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
-
     if "gate_set_name" in kwargs:
         msg = "gate_set_name is deprecated and will be removed in a future release. Use provider_name instead."
         warn(msg, DeprecationWarning, stacklevel=2)
@@ -466,18 +465,18 @@ def timeout_watcher(
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
-    class TimeoutException(Exception):  # Custom exception class
+    class TimeoutExceptionError(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
-        raise TimeoutException
+    def timeout_handler(_signum: int, _frame: Any) -> None:  # noqa: ANN401
+        raise TimeoutExceptionError
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(timeout)
     try:
         res = func(*args) if isinstance(args, tuple | list) else func(args)
-    except TimeoutException:
+    except TimeoutExceptionError:
         print(
             "Calculation/Generation exceeded timeout limit for ",
             func.__name__,

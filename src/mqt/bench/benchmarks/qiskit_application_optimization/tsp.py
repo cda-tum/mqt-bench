@@ -18,10 +18,9 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_nodes: int) -> QuantumCircuit:
     """Returns a quantum circuit solving the Travelling Salesman Problem (TSP).
 
-    Keyword arguments:
+    Keyword Arguments:
     num_nodes -- number of to be visited nodes
     """
-
     # Generating a graph of 3 nodes
     n = num_nodes
     tsp = Tsp.create_random_instance(n, seed=10)
@@ -30,7 +29,7 @@ def create_circuit(num_nodes: int) -> QuantumCircuit:
 
     qp2qubo = QuadraticProgramToQubo()
     qubo = qp2qubo.convert(qp)
-    qubit_op, offset = qubo.to_ising()
+    qubit_op, _offset = qubo.to_ising()
 
     spsa = SPSA(maxiter=25)
     ry = TwoLocal(qubit_op.num_qubits, "ry", "cz", reps=5, entanglement="linear")

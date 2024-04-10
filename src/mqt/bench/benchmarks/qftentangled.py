@@ -7,10 +7,9 @@ from qiskit.circuit.library import QFT
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Quantum Fourier Transform algorithm using entangled qubits.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q)
     qc.h(q[-1])

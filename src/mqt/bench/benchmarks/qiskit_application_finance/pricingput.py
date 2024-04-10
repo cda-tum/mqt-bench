@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_uncertainty_qubits: int = 5) -> QuantumCircuit:
     """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of pricing put options.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
     # parameters for considered random distribution

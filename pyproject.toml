@@ -89,6 +89,13 @@ testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
 log_cli_level = "INFO"
 xfail_strict = true
+filterwarnings = [
+    "error",
+    "ignore:.*pkg_resources.*:DeprecationWarning:",
+    "ignore:.*sre_.*:DeprecationWarning:",
+    "ignore:.*Rigetti.*:UserWarning:",
+    "ignore:.*Values in x.*:RuntimeWarning:",
+]
 
 [tool.coverage]
 run.source = ["mqt.bench", "mqt.benchviewer"]
@@ -108,7 +115,6 @@ mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 files = ["src", "tests", "setup.py"]
 python_version = "3.10"
 strict = true
-show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 warn_unreachable = true
 explicit_package_bases = true
@@ -126,12 +132,13 @@ ignore_missing_imports = true
 line-length = 120
 extend-include = ["*.ipynb"]
 src = ["src"]
+preview = true
 unsafe-fixes = true
 
 [tool.ruff.lint]
 extend-select = [
     "A",           # flake8-builtins
-#    "ANN",         # flake8-annotations
+    "ANN",         # flake8-annotations
     "ARG",         # flake8-unused-arguments
     "ASYNC",       # flake8-async
     "B",  "B904",  # flake8-bugbear
@@ -141,11 +148,13 @@ extend-select = [
     "EXE",         # flake8-executable
     "FA",          # flake8-future-annotations
     "FLY",         # flynt
+    "FURB",        # refurb
     "I",           # isort
     "ICN",         # flake8-import-conventions
     "ISC",         # flake8-implicit-str-concat
-  #  "N",           # flake8-naming
-  #  "NPY",         # numpy
+    "LOG",         # flake8-logging-format
+    "N",           # flake8-naming
+    "NPY",         # numpy
     "PERF",        # perflint
     "PGH",         # pygrep-hooks
     "PIE",         # flake8-pie
@@ -166,13 +175,18 @@ extend-select = [
     "UP",          # pyupgrade
     "YTT",         # flake8-2020
 ]
-extend-ignore = [
-    "PLR",  # Design related pylint codes
-    "ISC001", # Added because of ruff-format warning
+ignore = [
+    "ANN101",  # Missing type annotation for self in method
+    "ANN102",  # Missing type annotation for cls in classmethod
+    "ISC001",  # Conflicts with formatter
+    "E501",    # Line too long (Black is enough)
+    "PLR",     # Design related pylint codes
+    "S101",    # Use of assert detected
 ]
+flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "*.pyi" = ["D"]  # pydocstyle
 "*.ipynb" = [
     "D",    # pydocstyle
@@ -180,5 +194,5 @@ isort.required-imports = ["from __future__ import annotations"]
     "I002", # Allow missing `from __future__ import annotations` import
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"

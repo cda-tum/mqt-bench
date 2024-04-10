@@ -4,12 +4,11 @@ from mqt.bench.devices import IonQProvider
 
 
 def test_ionq_provider_methods() -> None:
-    """
-    Test the methods of the IonQProvider class:
+    """Test the methods of the IonQProvider class:
     - get_available_device_names
     - get_available_basis_gates
     - get_native_gates
-    - get_max_qubits
+    - get_max_qubits.
     """
     assert IonQProvider.get_available_device_names() == ["ionq_harmony", "ionq_aria1"]
     assert IonQProvider.get_available_basis_gates() == [["rxx", "rz", "ry", "rx", "measure", "barrier"]]
@@ -18,9 +17,7 @@ def test_ionq_provider_methods() -> None:
 
 
 def test_ionq_harmony_device() -> None:
-    """
-    Test the import of the IonQ Harmony quantum computer.
-    """
+    """Test the import of the IonQ Harmony quantum computer."""
     device = IonQProvider.get_device("ionq_harmony")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
@@ -45,9 +42,7 @@ def test_ionq_harmony_device() -> None:
 
 
 def test_ionq_aria1_device() -> None:
-    """
-    Test the import of the IonQ Aria quantum computer.
-    """
+    """Test the import of the IonQ Aria quantum computer."""
     device = IonQProvider.get_device("ionq_aria1")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()

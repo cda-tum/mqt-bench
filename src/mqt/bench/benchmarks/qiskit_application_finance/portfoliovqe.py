@@ -20,10 +20,9 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit of VQE applied to a specific portfolio optimization task.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-
     # set number of assets (= number of qubits)
     num_assets = num_qubits
 
