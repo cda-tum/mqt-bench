@@ -58,7 +58,7 @@ def get_indep_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename if target_filename else qc.name + "_indep_qiskit_" + str(num_qubits)
+    filename_indep = target_filename or qc.name + "_indep_qiskit_" + str(num_qubits)
 
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
