@@ -54,7 +54,7 @@ class Provider(ABC):
     @classmethod
     def get_max_qubits(cls) -> int:
         """Get the maximum number of qubits offered by a device from the provider."""
-        return max([device.num_qubits for device in cls.get_available_devices()])
+        return max(device.num_qubits for device in cls.get_available_devices())
 
     @classmethod
     @abstractmethod

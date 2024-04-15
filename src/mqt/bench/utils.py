@@ -247,7 +247,7 @@ def calc_supermarq_features(
     for op in dag.two_qubit_ops():
         q1, q2 = op.qargs
         graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
-    degree_sum = sum([graph.degree(n) for n in graph.nodes])
+    degree_sum = sum(graph.degree(n) for n in graph.nodes)
     program_communication = degree_sum / (num_qubits * (num_qubits - 1)) if num_qubits > 1 else 0
 
     # Liveness feature = sum of all entries in the liveness matrix / (num_qubits * depth).
@@ -270,7 +270,7 @@ def calc_supermarq_features(
 
     # Critical depth = # of 2-qubit gates along the critical path / total # of 2-qubit gates.
     longest_paths = dag.count_ops_longest_path()
-    n_ed = sum([longest_paths[name] for name in {op.name for op in dag.two_qubit_ops()} if name in longest_paths])
+    n_ed = sum(longest_paths[name] for name in {op.name for op in dag.two_qubit_ops()} if name in longest_paths)
     n_e = len(dag.two_qubit_ops())
     critical_depth = n_ed / n_e if n_e != 0 else 0
 
