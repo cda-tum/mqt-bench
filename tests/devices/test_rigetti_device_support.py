@@ -6,12 +6,11 @@ from mqt.bench.devices import RigettiProvider
 
 
 def test_rigetti_provider_methods() -> None:
-    """
-    Test the methods of the RigettiProvider class:
+    """Test the methods of the RigettiProvider class:
     - get_available_device_names
     - get_available_basis_gates
     - get_native_gates
-    - get_max_qubits
+    - get_max_qubits.
     """
     assert RigettiProvider.get_available_device_names() == ["rigetti_aspen_m3"]
     assert RigettiProvider.get_available_basis_gates() == [["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]]
@@ -20,9 +19,7 @@ def test_rigetti_provider_methods() -> None:
 
 
 def test_rigetti_aspen_m3_device() -> None:
-    """
-    Test the import of the Rigetti Aspen-M3 quantum computer.
-    """
+    """Test the import of the Rigetti Aspen-M3 quantum computer."""
     device = RigettiProvider.get_device("rigetti_aspen_m3")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()

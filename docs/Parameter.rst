@@ -16,7 +16,7 @@ The ``mqt.bench.get_benchmark`` method has the following signature:
 * ``circuit_size``\ : for most of the cases this is equal to number of qubits
   (all scalable benchmarks except ``"qwalk-v-chain"`` and ``"grover-v-chain"``\ ) while for all other the qubit number is higher
 * ``compiler``\ : ``"qiskit"`` or ``"tket"``
-* `compiler_settings`: Optimization level for `"qiskit"` (`0`-`3`), placement for `"tket"` (`lineplacement` or `graphplacement`), exemplary shown:
+* ``compiler_settings``: Optimization level for ``"qiskit"`` (``0``-``3``), placement for ``"tket"`` (``lineplacement`` or ``graphplacement``), exemplary shown:
 
 .. code-block:: python
 

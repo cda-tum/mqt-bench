@@ -9,7 +9,7 @@ from mqt.bench import utils
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a random quantum circuit twice as deep as wide. The random gate span over four qubits maximum.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
     qc = random_circuit(num_qubits, num_qubits * 2, measure=False, seed=10)

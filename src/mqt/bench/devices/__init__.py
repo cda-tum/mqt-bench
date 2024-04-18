@@ -17,22 +17,17 @@ class NotFoundError(Exception):
 
 
 def get_available_providers() -> list[Provider]:
-    """
-    Get a list of all available providers
-    """
+    """Get a list of all available providers."""
     return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider()]
 
 
 def get_available_provider_names() -> list[str]:
-    """
-    Get a list of all available provider names
-    """
+    """Get a list of all available provider names."""
     return [prov.provider_name for prov in get_available_providers()]
 
 
 def get_provider_by_name(provider_name: str) -> Provider:
-    """
-    Get a provider by its name
+    """Get a provider by its name.
 
     Args:
         provider_name: the name of the provider
@@ -51,8 +46,7 @@ def get_provider_by_name(provider_name: str) -> Provider:
 
 
 def get_available_devices(sanitize_device: bool = False) -> list[Device]:
-    """
-    Get a list of all available devices
+    """Get a list of all available devices.
 
     Args:
         sanitize_device: whether to sanitize the device calibration data
@@ -63,15 +57,12 @@ def get_available_devices(sanitize_device: bool = False) -> list[Device]:
 
 
 def get_available_device_names() -> list[str]:
-    """
-    Get a list of all available device names
-    """
+    """Get a list of all available device names."""
     return [name for prov in get_available_providers() for name in prov.get_available_device_names()]
 
 
 def get_device_by_name(device_name: str) -> Device:
-    """
-    Get a device by its name
+    """Get a device by its name.
 
     Args:
         device_name: the name of the device
@@ -92,18 +83,18 @@ def get_device_by_name(device_name: str) -> Device:
 
 
 __all__ = [
-    "Provider",
     "Device",
     "DeviceCalibration",
     "IBMProvider",
     "IonQProvider",
     "OQCProvider",
-    "RigettiProvider",
+    "Provider",
     "QuantinuumProvider",
-    "get_available_providers",
-    "get_available_provider_names",
-    "get_provider_by_name",
-    "get_available_devices",
+    "RigettiProvider",
     "get_available_device_names",
+    "get_available_devices",
+    "get_available_provider_names",
+    "get_available_providers",
     "get_device_by_name",
+    "get_provider_by_name",
 ]

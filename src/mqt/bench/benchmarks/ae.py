@@ -10,10 +10,9 @@ from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-
     ae = AmplitudeEstimation(
         num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
     )
@@ -38,6 +37,9 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
     def __eq__(self, other: object) -> bool:
         return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
 
+    def __hash__(self) -> int:
+        return hash(self._theta_p)
+
     def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
         # implement the efficient power of Q
         q_k = QuantumCircuit(1)
@@ -47,7 +49,6 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
 
 def get_estimation_problem() -> EstimationProblem:
     """Returns a estimation problem instance for a fixed p value."""
-
     p = 0.2
 
     """A circuit representing the Bernoulli A operator."""

@@ -12,14 +12,14 @@ from mqt.bench.benchmark_generator import (
 )
 
 __all__ = [
-    "generate",
-    "get_benchmark",
     "BenchmarkGenerator",
-    "timeout_watcher",
-    "qiskit_helper",
-    "tket_helper",
-    "utils",
     "CompilerSettings",
     "QiskitSettings",
     "TKETSettings",
+    "generate",
+    "get_benchmark",
+    "qiskit_helper",
+    "timeout_watcher",
+    "tket_helper",
+    "utils",
 ]

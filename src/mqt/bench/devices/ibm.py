@@ -15,9 +15,7 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class QubitProperties(TypedDict):
-    """
-    Class to store the properties of a single qubit.
-    """
+    """Class to store the properties of a single qubit."""
 
     T1: float  # us
     T2: float  # us
@@ -31,9 +29,7 @@ class QubitProperties(TypedDict):
 
 
 class IBMCalibration(TypedDict):
-    """
-    Class to store the calibration data of an IBM device.
-    """
+    """Class to store the calibration data of an IBM device."""
 
     name: str
     basis_gates: list[str]
@@ -43,32 +39,26 @@ class IBMCalibration(TypedDict):
 
 
 class IBMProvider(Provider):
-    """
-    Class to manage IBM devices.
-    """
+    """Class to manage IBM devices."""
 
     provider_name = "ibm"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """
-        Get the names of all available IBM devices.
-        """
+        """Get the names of all available IBM devices."""
         return ["ibm_washington", "ibm_montreal"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
-        """
-        Get a list of provider specific native gates.
-        """
+        """Get a list of provider specific native gates."""
         return ["id", "rz", "sx", "x", "cx", "measure", "barrier"]  # washington, montreal
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """
-        Import an IBM backend.
+        """Import an IBM backend.
+
         Args:
-            path: the path to the JSON file containing the calibration data
+            path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """
@@ -111,10 +101,10 @@ class IBMProvider(Provider):
 
     @classmethod
     def __import_backend_properties(cls, backend_properties: BackendProperties) -> DeviceCalibration:
-        """
-        Import calibration data from a Qiskit `BackendProperties` object.
+        """Import calibration data from a Qiskit `BackendProperties` object.
+
         Args:
-            backend_properties: the Qiskit `BackendProperties` object
+            backend_properties: the Qiskit `BackendProperties` object.
 
         Returns: Collection of calibration data
         """
@@ -154,10 +144,10 @@ class IBMProvider(Provider):
 
     @classmethod
     def __import_backend_v1(cls, backend: BackendV1) -> Device:
-        """
-        Import device data from a Qiskit `BackendV1` object.
+        """Import device data from a Qiskit `BackendV1` object.
+
         Args:
-            backend: the Qiskit `BackendV1` object
+            backend: the Qiskit `BackendV1` object.
 
         Returns: Collection of device data
         """
@@ -171,10 +161,10 @@ class IBMProvider(Provider):
 
     @classmethod
     def __import_target(cls, target: Target) -> DeviceCalibration:
-        """
-        Import calibration data from a Qiskit `Target` object.
+        """Import calibration data from a Qiskit `Target` object.
+
         Args:
-            target: the Qiskit `Target` object
+            target: the Qiskit `Target` object.
 
         Returns: Collection of calibration data
         """
@@ -215,10 +205,10 @@ class IBMProvider(Provider):
 
     @classmethod
     def __import_backend_v2(cls, backend: BackendV2) -> Device:
-        """
-        Import device data from a Qiskit `BackendV2` object.
+        """Import device data from a Qiskit `BackendV2` object.
+
         Args:
-            backend: the Qiskit `BackendV2` object
+            backend: the Qiskit `BackendV2` object.
 
         Returns: Collection of device data
         """
@@ -232,10 +222,10 @@ class IBMProvider(Provider):
 
     @classmethod
     def import_qiskit_backend(cls, backend: BackendV1 | BackendV2) -> Device:
-        """
-        Import device data from a Qiskit `Backend` object.
+        """Import device data from a Qiskit `Backend` object.
+
         Args:
-            backend: the Qiskit `Backend` object
+            backend: the Qiskit `Backend` object.
 
         Returns: Collection of device data
         """

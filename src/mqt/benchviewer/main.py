@@ -25,7 +25,7 @@ class Server:
         target_location: str,
         skip_question: bool = False,
         activate_logging: bool = False,
-    ):
+    ) -> None:
         self.backend = Backend()
 
         self.target_location = target_location
@@ -126,14 +126,12 @@ def download_data() -> str | Response:
 @app.route(f"{PREFIX}/legal")
 def legal() -> str:
     """Return the legal.html file."""
-
     return render_template("legal.html")
 
 
 @app.route(f"{PREFIX}/description")
 def description() -> str:
     """Return the description.html file in which the file formats are described."""
-
     return render_template("description.html")
 
 
@@ -142,7 +140,6 @@ def benchmark_description() -> str:
     """Return the benchmark_description.html file together in which all benchmark algorithms
     are described in detail.
     """
-
     return render_template("benchmark_description.html")
 
 
