@@ -47,7 +47,8 @@ class SupermarqFeatures:
     directed_program_communication: float
     single_qubit_gates_per_layer: float
     multi_qubit_gates_per_layer: float
-    gate_coverage: NDArray[np.float_]
+    gate_coverage: NDArray[np.float64]
+
 
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
@@ -296,7 +297,7 @@ def calc_supermarq_features(
     for op in dag.two_qubit_ops():
         q1, q2 = op.qargs
         di_graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
-    degree_sum = sum([di_graph.degree(n) for n in di_graph.nodes])
+    degree_sum = sum(di_graph.degree(n) for n in di_graph.nodes)
     directed_program_communication = degree_sum / (2 * num_qubits * (num_qubits - 1)) if num_qubits > 1 else 0
 
     # average number of 1q gates per layer = num of 1-qubit gates in the circuit / depth
@@ -313,7 +314,7 @@ def calc_supermarq_features(
     all_ops = dag.count_ops()
     for dev in devices.get_available_devices():
         n_circ_gates = sum(list(all_ops.values()))
-        n_circ_gates_on_dev = sum([count for gate, count in all_ops.items() if gate in dev.basis_gates])
+        n_circ_gates_on_dev = sum(count for gate, count in all_ops.items() if gate in dev.basis_gates)
         coverage.append(n_circ_gates_on_dev / n_circ_gates)
     gate_coverage = np.array(coverage)
 
