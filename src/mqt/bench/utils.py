@@ -45,10 +45,9 @@ class SupermarqFeatures:
     parallelism: float
     liveness: float
     directed_program_communication: float
-    gate_coverage: NDArray[np.float_]
     single_qubit_gates_per_layer: float
-    multi_qubit_gates_per_payer: float
-
+    multi_qubit_gates_per_layer: float
+    gate_coverage: NDArray[np.float_]
 
 qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
@@ -306,8 +305,8 @@ def calc_supermarq_features(
     single_qubit_gates_per_layer /= num_qubits  # Normalize
 
     # average number of 2q gates per layer = num of 2-qubit gates in the circuit / depth
-    multi_qubit_gates_per_payer = len(dag.two_qubit_ops()) / dag.depth()
-    multi_qubit_gates_per_payer /= num_qubits // 2  # Normalize
+    multi_qubit_gates_per_layer = len(dag.two_qubit_ops()) / dag.depth()
+    multi_qubit_gates_per_layer /= num_qubits // 2  # Normalize
 
     # Gate coverage = num of gates in circuit that are present in device basis gates  / num of gates in circuit.
     coverage = []
@@ -325,7 +324,7 @@ def calc_supermarq_features(
     assert 0 <= liveness <= 1
     assert 0 <= directed_program_communication <= 1
     assert 0 <= single_qubit_gates_per_layer <= 1
-    assert 0 <= multi_qubit_gates_per_payer <= 1
+    assert 0 <= multi_qubit_gates_per_layer <= 1
     assert 0 <= gate_coverage.all() <= 1
 
     return SupermarqFeatures(
@@ -336,7 +335,7 @@ def calc_supermarq_features(
         liveness,
         directed_program_communication,
         single_qubit_gates_per_layer,
-        multi_qubit_gates_per_payer,
+        multi_qubit_gates_per_layer,
         gate_coverage,
     )
 
