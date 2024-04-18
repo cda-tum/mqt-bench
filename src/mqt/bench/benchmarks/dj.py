@@ -9,12 +9,12 @@ from qiskit import QuantumCircuit
 def dj_oracle(case: str, n: int) -> QuantumCircuit:
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
+    rng = np.random.default_rng(10)
 
     if case == "balanced":
-        np.random.seed(10)
         b_str = ""
         for _ in range(n):
-            b = np.random.randint(0, 2)
+            b = rng.integers(0, 2)
             b_str = b_str + str(b)
 
         for qubit in range(len(b_str)):
@@ -29,7 +29,7 @@ def dj_oracle(case: str, n: int) -> QuantumCircuit:
                 oracle_qc.x(qubit)
 
     if case == "constant":
-        output = np.random.randint(2)
+        output = rng.integers(2)
         if output == 1:
             oracle_qc.x(n)
 
@@ -62,11 +62,10 @@ def dj_algorithm(oracle: QuantumCircuit, n: int) -> QuantumCircuit:
 def create_circuit(n: int, balanced: bool = True) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Deutsch-Josza algorithm.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     balanced -- True for a balanced and False for a constant oracle
     """
-
     oracle_mode = "balanced" if balanced else "constant"
     n = n - 1  # because of ancilla qubit
     oracle_gate = dj_oracle(oracle_mode, n)

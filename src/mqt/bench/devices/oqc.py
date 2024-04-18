@@ -10,9 +10,7 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class QubitProperties(TypedDict):
-    """
-    Class to store the properties of a single qubit.
-    """
+    """Class to store the properties of a single qubit."""
 
     T1: float
     T2: float
@@ -22,36 +20,28 @@ class QubitProperties(TypedDict):
 
 
 class Coupling(TypedDict):
-    """
-    Class to store the connectivity of a two-qubit gate.
-    """
+    """Class to store the connectivity of a two-qubit gate."""
 
     control_qubit: float
     target_qubit: float
 
 
 class TwoQubitProperties(TypedDict):
-    """
-    Class to store the properties of a two-qubit gate.
-    """
+    """Class to store the properties of a two-qubit gate."""
 
     coupling: Coupling
     fCX: float
 
 
 class Properties(TypedDict):
-    """
-    Class to store the properties of a device.
-    """
+    """Class to store the properties of a device."""
 
     one_qubit: dict[str, QubitProperties]
     two_qubit: dict[str, TwoQubitProperties]
 
 
 class OQCCalibration(TypedDict):
-    """
-    Class to store the calibration data of an OQC device.
-    """
+    """Class to store the calibration data of an OQC device."""
 
     name: str
     basis_gates: list[str]
@@ -61,32 +51,26 @@ class OQCCalibration(TypedDict):
 
 
 class OQCProvider(Provider):
-    """
-    Class to manage OQC devices
-    """
+    """Class to manage OQC devices."""
 
     provider_name = "oqc"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """
-        Get the names of all available OQC devices.
-        """
+        """Get the names of all available OQC devices."""
         return ["oqc_lucy"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
-        """
-        Get a list of provider specific native gates.
-        """
+        """Get a list of provider specific native gates."""
         return ["rz", "sx", "x", "ecr", "measure", "barrier"]  # lucy
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """
-        Import an OQC backend.
+        """Import an OQC backend.
+
         Args:
-            path: the path to the JSON file containing the calibration data
+            path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """
@@ -109,8 +93,8 @@ class OQCProvider(Provider):
             calibration.t2[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
-                gate: oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fCX"] for gate in ["ecr"]
-            }
+            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = dict.fromkeys(
+                ["ecr"], oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fCX"]
+            )
         device.calibration = calibration
         return device

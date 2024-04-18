@@ -67,7 +67,9 @@ class CompilerSettings:
 
 
 class BenchmarkGenerator:
-    def __init__(self, cfg_path: str = "./config.json", qasm_output_path: str | None = None) -> None:
+    def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
+        if cfg_path is None:
+            cfg_path = utils.get_default_config_path()
         with Path(cfg_path).open() as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
@@ -273,8 +275,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit:
-    ...
+) -> QuantumCircuit: ...
 
 
 @overload
@@ -288,8 +289,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> Circuit:
-    ...
+) -> Circuit: ...
 
 
 @overload
@@ -303,8 +303,7 @@ def get_benchmark(
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit | Circuit:
-    ...
+) -> QuantumCircuit | Circuit: ...
 
 
 def get_benchmark(
@@ -333,7 +332,6 @@ def get_benchmark(
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
-
     if "gate_set_name" in kwargs:
         msg = "gate_set_name is deprecated and will be removed in a future release. Use provider_name instead."
         warn(msg, DeprecationWarning, stacklevel=2)
@@ -456,7 +454,7 @@ def get_benchmark(
 
 def generate(num_jobs: int = -1) -> None:
     parser = argparse.ArgumentParser(description="Create Configuration")
-    parser.add_argument("--file-name", type=str, help="optional filename", default="./config.json")
+    parser.add_argument("--file-name", type=str, help="optional filename", default=None)
     args = parser.parse_args()
     benchmark_generator = BenchmarkGenerator(args.file_name)
     benchmark_generator.create_benchmarks_from_config(num_jobs)
@@ -467,18 +465,18 @@ def timeout_watcher(
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
-    class TimeoutException(Exception):  # Custom exception class
+    class TimeoutExceptionError(Exception):  # Custom exception class
         pass
 
-    def timeout_handler(_signum: Any, _frame: Any) -> None:  # Custom signal handler
-        raise TimeoutException
+    def timeout_handler(_signum: int, _frame: Any) -> None:  # noqa: ANN401
+        raise TimeoutExceptionError
 
     # Change the behavior of SIGALRM
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(timeout)
     try:
         res = func(*args) if isinstance(args, tuple | list) else func(args)
-    except TimeoutException:
+    except TimeoutExceptionError:
         print(
             "Calculation/Generation exceeded timeout limit for ",
             func.__name__,

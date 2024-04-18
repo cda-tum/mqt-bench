@@ -17,9 +17,8 @@ Fidelity = TypedDict("Fidelity", {"1q": Statistics, "2q": Statistics, "spam": St
 
 
 class QuantinuumCalibration(TypedDict):
-    """
-    Class to store the calibration data of an Quantinuum device.
-    Follows https://docs.quantinuum.com/#tag/characterizations
+    """Class to store the calibration data of an Quantinuum device.
+    Follows https://docs.quantinuum.com/#tag/characterizations.
     """
 
     name: str
@@ -30,32 +29,26 @@ class QuantinuumCalibration(TypedDict):
 
 
 class QuantinuumProvider(Provider):
-    """
-    Class to manage Quantinuum devices.
-    """
+    """Class to manage Quantinuum devices."""
 
     provider_name = "quantinuum"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """
-        Get the names of all available Quantinuum devices.
-        """
+        """Get the names of all available Quantinuum devices."""
         return ["quantinuum_h2"]  # NOTE: update when adding new devices
 
     @classmethod
     def get_native_gates(cls) -> list[str]:
-        """
-        Get a list of provider specific native gates.
-        """
+        """Get a list of provider specific native gates."""
         return ["rzz", "rz", "ry", "rx", "measure", "barrier"]  # h2
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """
-        Import an Quantinuum backend as a Device object.
+        """Import an Quantinuum backend as a Device object.
+
         Args:
-            path: the path to the JSON file containing the calibration data
+            path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """
@@ -69,9 +62,9 @@ class QuantinuumProvider(Provider):
         device.coupling_map = list(quantinuum_calibration["connectivity"])
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
-            calibration.single_qubit_gate_fidelity[qubit] = {
-                gate: quantinuum_calibration["fidelity"]["1q"]["mean"] for gate in ["ry", "rx"]
-            }
+            calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
+                ["ry", "rx"], quantinuum_calibration["fidelity"]["1q"]["mean"]
+            )
             calibration.single_qubit_gate_fidelity[qubit]["rz"] = 1  # rz is always perfect
             calibration.readout_fidelity[qubit] = quantinuum_calibration["fidelity"]["spam"]["mean"]
 

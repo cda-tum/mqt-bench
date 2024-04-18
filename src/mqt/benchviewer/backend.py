@@ -146,7 +146,7 @@ class Backend:
     def filter_database(self, benchmark_config: BenchmarkConfiguration) -> list[str]:
         """Filters the database according to the filter criteria.
 
-        Keyword arguments:
+        Keyword Arguments:
         filterCriteria -- list of all filter criteria
         database -- database containing all available benchmarks
 
@@ -251,7 +251,7 @@ class Backend:
     ) -> Iterable[bytes]:
         """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
-        Keyword arguments:
+        Keyword Arguments:
         paths -- list of file paths for all selected benchmarks
 
         Return values:
@@ -280,7 +280,7 @@ class Backend:
     def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
         """Extracts all file paths according to the prepared user's filter criteria.
 
-        Keyword arguments:
+        Keyword Arguments:
         prepared_data -- user's filter criteria after preparation step
 
         Return values:
@@ -290,7 +290,6 @@ class Backend:
 
     def init_database(self) -> bool:
         """Generates the database and saves it into a global variable."""
-
         assert self.mqtbench_all_zip is not None
 
         print("Initiating database...")
@@ -417,11 +416,7 @@ class Backend:
                             if not skip_question:
                                 file_size = round((asset["size"]) / 2**20, 2)
                                 print(
-                                    "Found 'MQTBench_all.zip' (Version {}, Size {} MB, Link: {})".format(
-                                        possible_version,
-                                        file_size,
-                                        download_url,
-                                    )
+                                    f"Found 'MQTBench_all.zip' (Version {possible_version}, Size {file_size} MB, Link: {download_url})"
                                 )
                                 response = input("Would you like to downloaded the file? (Y/n)")
                             if skip_question or response.lower() == "y" or not response:
@@ -450,13 +445,16 @@ class Backend:
         fname = target_location + "/MQTBench_all.zip"
 
         Path(target_location).mkdir(parents=True, exist_ok=True)
-        with Path(fname).open("wb") as f, tqdm(
-            desc=fname,
-            total=total_length,
-            unit="iB",
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as bar:
+        with (
+            Path(fname).open("wb") as f,
+            tqdm(
+                desc=fname,
+                total=total_length,
+                unit="iB",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as bar,
+        ):
             for data in r.iter_content(chunk_size=1024):
                 size = f.write(data)
                 bar.update(size)
@@ -466,7 +464,7 @@ class Backend:
 def parse_data(filename: str) -> ParsedBenchmarkName:
     """Extracts the necessary information from a given filename.
 
-    Keyword arguments:
+    Keyword Arguments:
     filename -- name of file
 
     Return values:
@@ -543,12 +541,12 @@ def parse_benchmark_id_from_form_key(k: str) -> int | bool:
 
 def get_opt_level(filename: str) -> int:
     """Extracts the optimization level based on a filename.
-    Keyword arguments:
+
+    Keyword Arguments:
     filename -- filename of a benchmark
     Return values:
-    num -- optimization level
+    num -- optimization level.
     """
-
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
     num = m.group()[-1:] if m else -1
@@ -557,12 +555,12 @@ def get_opt_level(filename: str) -> int:
 
 def get_num_qubits(filename: str) -> int:
     """Extracts the number of qubits based on a filename.
-    Keyword arguments:
+
+    Keyword Arguments:
     filename -- filename of a benchmark
     Return values:
-    num -- number of qubits
+    num -- number of qubits.
     """
-
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
     num = m.group()[0:-1] if m else -1
@@ -620,10 +618,11 @@ def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
 
 def create_database(zip_file: ZipFile) -> pd.DataFrame:
     """Creates the database based on the provided directories.
-    Keyword arguments:
+
+    Keyword Arguments:
     qasm_path -- zip containing all .qasm files
     Return values:
-    database -- database containing all available benchmarks
+    database -- database containing all available benchmarks.
     """
     rows_list = []
 
@@ -649,13 +648,16 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
     fname = target_location + "/MQTBench_all.zip"
 
     Path(target_location).mkdir(parents=True, exist_ok=True)
-    with Path(fname).open("wb") as f, tqdm(
-        desc=fname,
-        total=total_length,
-        unit="iB",
-        unit_scale=True,
-        unit_divisor=1024,
-    ) as bar:
+    with (
+        Path(fname).open("wb") as f,
+        tqdm(
+            desc=fname,
+            total=total_length,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as bar,
+    ):
         for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)

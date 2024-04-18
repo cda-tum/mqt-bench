@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import pytest
-from qiskit.providers.fake_provider import FakeMontreal, FakeMontrealV2
+from qiskit_ibm_runtime.fake_provider import FakeMontreal, FakeMontrealV2
 
 from mqt.bench.devices import IBMProvider
 
 
 def test_ibm_provider_methods() -> None:
-    """
-    Test the methods of the IBMProvider class:
+    """Test the methods of the IBMProvider class:
     - get_available_device_names
     - get_available_basis_gates
     - get_native_gates
-    - get_max_qubits
+    - get_max_qubits.
     """
     assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]
     assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
@@ -23,9 +22,7 @@ def test_ibm_provider_methods() -> None:
 
 
 def test_import_v1_backend() -> None:
-    """
-    Test importing a Qiskit `BackendV1` object.
-    """
+    """Test importing a Qiskit `BackendV1` object."""
     backend = FakeMontreal()
     device = IBMProvider.import_qiskit_backend(backend)
     single_qubit_gates = device.get_single_qubit_gates()
@@ -66,9 +63,7 @@ def test_import_v1_backend() -> None:
 
 
 def test_import_v2_backend() -> None:
-    """
-    Test importing a Qiskit `BackendV2` object.
-    """
+    """Test importing a Qiskit `BackendV2` object."""
     backend = FakeMontrealV2()
     device = IBMProvider.import_qiskit_backend(backend)
     single_qubit_gates = device.get_single_qubit_gates()
@@ -109,9 +104,7 @@ def test_import_v2_backend() -> None:
 
 
 def test_get_ibm_washington_device() -> None:
-    """
-    Test getting the IBM Washington device.
-    """
+    """Test getting the IBM Washington device."""
     device = IBMProvider.get_device("ibm_washington")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
@@ -137,9 +130,7 @@ def test_get_ibm_washington_device() -> None:
 
 
 def test_get_ibmq_montreal_device() -> None:
-    """
-    Test getting the IBM Montreal device.
-    """
+    """Test getting the IBM Montreal device."""
     device = IBMProvider.get_device("ibm_montreal")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()

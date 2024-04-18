@@ -2,18 +2,17 @@ from __future__ import annotations
 
 import numpy as np
 from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
-from qiskit.algorithms import Grover
 from qiskit.circuit.library import GroverOperator
+from qiskit_algorithms import Grover
 
 
 def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> QuantumCircuit:
     """Returns a quantum circuit implementing Grover's algorithm.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     ancillary_mode -- defining the decomposition scheme
     """
-
     num_qubits = num_qubits - 1  # -1 because of the flag qubit
     q = QuantumRegister(num_qubits, "q")
     flag = AncillaRegister(1, "flag")

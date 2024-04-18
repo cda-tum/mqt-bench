@@ -11,7 +11,7 @@ def create_circuit(
 ) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Quantum Walk algorithm.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     depth -- number of quantum steps
     coin_state_preparation -- optional quantum circuit for state preparation

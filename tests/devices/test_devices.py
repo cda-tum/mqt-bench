@@ -18,9 +18,7 @@ from mqt.bench.devices import (
     "device", get_available_devices(sanitize_device=True), ids=lambda device: cast(str, device.name)
 )
 def test_sanitized_devices(device: Device) -> None:
-    """
-    Test that all devices can be sanitized and provide complete fidelity data.
-    """
+    """Test that all devices can be sanitized and provide complete fidelity data."""
     assert device.calibration is not None
     for qubit in range(device.num_qubits):
         assert qubit in device.calibration.single_qubit_gate_fidelity
@@ -37,9 +35,7 @@ def test_sanitized_devices(device: Device) -> None:
 
 
 def test_device_calibration_errors() -> None:
-    """
-    Test that all device calibration methods raise errors when no calibration data is available.
-    """
+    """Test that all device calibration methods raise errors when no calibration data is available."""
     device = Device(name="test", num_qubits=1, basis_gates=[], coupling_map=[], calibration=None)
 
     # Test all methods with no calibration
@@ -103,9 +99,7 @@ def test_device_calibration_errors() -> None:
 
 
 def test_provider() -> None:
-    """
-    Test that all providers can be imported.
-    """
+    """Test that all providers can be imported."""
     for provider in get_available_providers():
         assert provider.provider_name in ["ibm", "rigetti", "oqc", "ionq", "quantinuum"]
 

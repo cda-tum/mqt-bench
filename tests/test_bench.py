@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pytket
+from qiskit.qasm2 import dump
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
@@ -334,8 +335,6 @@ def test_get_benchmark_deprecation_warning() -> None:
 
 
 def test_unidirectional_coupling_map() -> None:
-    from pytket.architecture import Architecture
-
     qc = get_benchmark(
         benchmark_name="dj",
         level="mapped",
@@ -347,7 +346,7 @@ def test_unidirectional_coupling_map() -> None:
     )
     # check that all gates in the circuit are in the coupling map
     cmap = utils.convert_cmap_to_tuple_list(OQCProvider.get_device("oqc_lucy").coupling_map)
-    assert qc.valid_connectivity(arch=Architecture(cmap), directed=True)
+    assert qc.valid_connectivity(arch=pytket.architecture.Architecture(cmap), directed=True)
 
 
 @pytest.mark.parametrize(
@@ -1014,7 +1013,8 @@ def test_oqc_postprocessing() -> None:
 def test_evaluate_qasm_file() -> None:
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
-    qc.qasm(filename=filename)
+    with Path(filename).open("w") as f:
+        dump(qc, f)
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
     assert type(res) == evaluation.EvaluationResult
@@ -1091,7 +1091,7 @@ def test_calc_supermarq_features() -> None:
     assert 0 < regular_features.liveness < 1
 
 
-def test_BenchmarkGenerator() -> None:
+def test_benchmark_generator() -> None:
     generator = BenchmarkGenerator(qasm_output_path="test")
     assert generator.qasm_output_path == "test"
     assert generator.timeout > 0
@@ -1106,7 +1106,7 @@ def endless_loop(arg1: SampleObject, run_forever: bool) -> bool:  # noqa: ARG001
 
 
 class SampleObject:
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
 
 

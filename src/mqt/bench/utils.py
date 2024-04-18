@@ -17,7 +17,8 @@ from importlib import import_module
 import networkx as nx
 import numpy as np
 from pytket import __version__ as __tket_version__
-from qiskit import QuantumCircuit, __qiskit_version__
+from qiskit import QuantumCircuit
+from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
 
@@ -94,6 +95,10 @@ def get_supported_compilers() -> list[str]:
     return ["qiskit", "tket"]
 
 
+def get_default_config_path() -> str:
+    return str(resources.files("mqt.bench") / "config.json")
+
+
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
@@ -112,7 +117,7 @@ def get_zip_file_path() -> str:
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
-    Keyword arguments:
+    Keyword Arguments:
     n_nodes -- number of graph nodes (and also number of qubits)
     degree -- edges per node
     """
@@ -180,14 +185,13 @@ def save_as_qasm(
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc_str -- Quantum circuit to be stored as a string
     filename -- filename
     gate_set -- set of used gates
     mapped -- boolean indicating whether the quantum circuit is mapped to a specific hardware layout
     c_map -- coupling map of used hardware layout
     """
-
     if c_map is None:
         c_map = []
 
@@ -207,7 +211,6 @@ def save_as_qasm(
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
             f.write("// TKET version: " + str(__tket_version__) + "\n")
-
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
         if mapped:
@@ -255,7 +258,7 @@ def calc_qubit_index(qargs: list[Qubit], qregs: list[QuantumRegister], index: in
 def calc_supermarq_features(
     qc: QuantumCircuit,
 ) -> SupermarqFeatures:
-    """Calculates the Supermarq features for a given quantum circuit. Code adapted from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py"""
+    """Calculates the Supermarq features for a given quantum circuit. Code adapted from https://github.com/Infleqtion/client-superstaq/blob/91d947f8cc1d99f90dca58df5248d9016e4a5345/supermarq-benchmarks/supermarq/converters.py."""
     num_qubits = qc.num_qubits
     dag = circuit_to_dag(qc)
     dag.remove_all_ops_named("barrier")
@@ -265,7 +268,7 @@ def calc_supermarq_features(
     for op in dag.two_qubit_ops():
         q1, q2 = op.qargs
         graph.add_edge(qc.find_bit(q1).index, qc.find_bit(q2).index)
-    degree_sum = sum([graph.degree(n) for n in graph.nodes])
+    degree_sum = sum(graph.degree(n) for n in graph.nodes)
     program_communication = degree_sum / (num_qubits * (num_qubits - 1)) if num_qubits > 1 else 0
 
     # Liveness feature = sum of all entries in the liveness matrix / (num_qubits * depth).
@@ -288,7 +291,7 @@ def calc_supermarq_features(
 
     # Critical depth = # of 2-qubit gates along the critical path / total # of 2-qubit gates.
     longest_paths = dag.count_ops_longest_path()
-    n_ed = sum([longest_paths[name] for name in {op.name for op in dag.two_qubit_ops()} if name in longest_paths])
+    n_ed = sum(longest_paths[name] for name in {op.name for op in dag.two_qubit_ops()} if name in longest_paths)
     n_e = len(dag.two_qubit_ops())
     critical_depth = n_ed / n_e if n_e != 0 else 0
 

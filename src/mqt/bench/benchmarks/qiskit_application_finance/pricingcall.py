@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from qiskit.algorithms import IterativeAmplitudeEstimation
+from qiskit_algorithms import IterativeAmplitudeEstimation
 from qiskit_finance.applications.estimation import EuropeanCallPricing
 from qiskit_finance.circuit.library import LogNormalDistribution
 
@@ -17,7 +17,7 @@ def create_circuit(num_uncertainty_qubits: int = 5) -> QuantumCircuit:
     """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of
     pricing call options.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_uncertainty_qubits -- number of qubits to measure uncertainty
     """
     # parameters for considered random distribution

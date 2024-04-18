@@ -5,10 +5,10 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from qiskit.algorithms.minimum_eigensolvers import VQE
-from qiskit.algorithms.optimizers import COBYLA
 from qiskit.circuit.library import TwoLocal
 from qiskit.primitives import Estimator
+from qiskit_algorithms.minimum_eigensolvers import VQE
+from qiskit_algorithms.optimizers import COBYLA
 from qiskit_finance.applications import PortfolioOptimization
 from qiskit_finance.data_providers import RandomDataProvider
 from qiskit_optimization.converters import QuadraticProgramToQubo
@@ -20,10 +20,9 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit of VQE applied to a specific portfolio optimization task.
 
-    Keyword arguments:
+    Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
     """
-
     # set number of assets (= number of qubits)
     num_assets = num_qubits
 
@@ -52,7 +51,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     vqe = VQE(ansatz=ry, optimizer=cobyla, estimator=Estimator())
     vqe.random_seed = 10
     vqe_result = vqe.compute_minimum_eigenvalue(qp_qubo.to_ising()[0])
-    qc = vqe.ansatz.bind_parameters(vqe_result.optimal_point)
+    qc = vqe.ansatz.assign_parameters(vqe_result.optimal_point)
 
     qc.name = "portfoliovqe"
     qc.measure_all()

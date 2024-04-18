@@ -53,8 +53,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> Circuit:
-    ...
+) -> Circuit: ...
 
 
 @overload
@@ -65,8 +64,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_indep_level(
@@ -79,7 +77,7 @@ def get_indep_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-independent level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
     file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
@@ -91,7 +89,7 @@ def get_indep_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename if target_filename else qc.name + "_indep_tket_" + str(num_qubits)
+    filename_indep = target_filename or qc.name + "_indep_tket_" + str(num_qubits)
 
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
@@ -112,7 +110,7 @@ def get_indep_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_indep,
         target_directory=target_directory,
     )
@@ -127,8 +125,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> Circuit:
-    ...
+) -> Circuit: ...
 
 
 @overload
@@ -140,8 +137,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_native_gates_level(
@@ -155,7 +151,7 @@ def get_native_gates_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     provider -- determines the native gate set
     num_qubits -- number of qubits
@@ -168,7 +164,6 @@ def get_native_gates_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-
     if not target_filename:
         filename_native = qc.name + "_nativegates_" + provider.provider_name + "_tket_" + str(num_qubits)
     else:
@@ -200,7 +195,7 @@ def get_native_gates_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_native,
         gate_set,
         target_directory=target_directory,
@@ -217,8 +212,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-) -> Circuit:
-    ...
+) -> Circuit: ...
 
 
 @overload
@@ -231,8 +225,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-) -> bool:
-    ...
+) -> bool: ...
 
 
 def get_mapped_level(
@@ -247,7 +240,7 @@ def get_mapped_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
-    Keyword arguments:
+    Keyword Arguments:
     qc -- quantum circuit which the to be created benchmark circuit is based on
     num_qubits -- number of qubits
     device -- target device
@@ -261,7 +254,6 @@ def get_mapped_level(
     if return_qc == True -- quantum circuit object
     else -- True/False indicating whether the function call was successful or not
     """
-
     placement = "line" if lineplacement else "graph"
 
     if not target_filename:
@@ -311,7 +303,7 @@ def get_mapped_level(
     if return_qc:
         return qc_tket
     return utils.save_as_qasm(
-        circuit_to_qasm_str(qc_tket),
+        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_mapped,
         device.basis_gates,
         True,
