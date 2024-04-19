@@ -19,8 +19,6 @@ from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
 
-from mqt.bench.devices import OQCProvider
-
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
 else:
@@ -210,20 +208,7 @@ def save_as_qasm(
         f.write(qc_str)
     f.close()
 
-    if gate_set == OQCProvider.get_native_gates():
-        postprocess_single_oqc_file(str(file))
     return True
-
-
-def postprocess_single_oqc_file(filename: str) -> None:
-    with Path(filename).open() as f:
-        lines = f.readlines()
-    with Path(filename).open("w") as f:
-        for line in lines:
-            if not ("gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")):
-                f.write(line)
-            if 'include "qelib1.inc"' in line.strip("\n"):
-                f.write("opaque ecr q0,q1;\n")
 
 
 def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -> int:
