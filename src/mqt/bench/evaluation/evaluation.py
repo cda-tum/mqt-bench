@@ -45,7 +45,7 @@ def evaluate_qasm_file(filename: str) -> EvaluationResult | None:
             depth=-1,
             num_gates=-1,
             num_multiple_qubit_gates=-1,
-            supermarq_features=utils.SupermarqFeatures(-1, -1, -1, -1, -1, -1, np.array([-1]), -1, -1, -1),
+            supermarq_features=utils.SupermarqFeatures(-1, -1, -1, -1, -1, -1, -1, -1, np.array([-1])),
         )
 
     return EvaluationResult(
