@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import argparse
 
-from mqt.bench import QiskitSettings, TKETSettings, get_benchmark, CompilerSettings
 from pytket import Circuit
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
+
+from mqt.bench import CompilerSettings, QiskitSettings, TKETSettings, get_benchmark
 
 
 def main() -> None:
@@ -16,9 +19,12 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(description="Generate a single benchmark")
-    parser.add_argument("--level", type=str,
-                        help='Level to generate benchmarks for ("alg", "indep", "nativegates" or "mapped")',
-                        required=True)
+    parser.add_argument(
+        "--level",
+        type=str,
+        help='Level to generate benchmarks for ("alg", "indep", "nativegates" or "mapped")',
+        required=True,
+    )
     parser.add_argument("--algorithm", type=str, help="Name of the benchmark", required=True)
     parser.add_argument("--num-qubits", type=int, help="Number of Qubits")
     parser.add_argument("--compiler", type=str, help="Name of the compiler")
@@ -56,6 +62,7 @@ def main() -> None:
     elif isinstance(result, Circuit):
         qasm_str = circuit_to_qasm_str(result)
     else:
-        raise TypeError(f"Got unknown circuit type from get_benchmark: {type(result)}")
+        msg = f"Got unknown circuit type from get_benchmark: {type(result)}"
+        raise TypeError(msg)
 
     print(qasm_str)
