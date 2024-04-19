@@ -942,7 +942,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     path.unlink()
 
 
-def test_oqc_postprocessing() -> None:
+def test_oqc_benchmarks() -> None:
     qc = get_benchmark("ghz", 1, 5)
     directory = "."
     filename = "ghz_oqc"
