@@ -25,7 +25,7 @@ def main() -> None:
         required=True,
     )
     parser.add_argument("--algorithm", type=str, help="Name of the benchmark", required=True)
-    parser.add_argument("--num-qubits", type=int, help="Number of Qubits")
+    parser.add_argument("--num-qubits", type=int, help="Number of Qubits", required=True)
     parser.add_argument("--compiler", type=str, help="Name of the compiler")
     parser.add_argument("--qiskit-optimization-level", type=int, help="Qiskit compiler optimization level")
     parser.add_argument("--tket-placement", type=str, help="TKET placement")
