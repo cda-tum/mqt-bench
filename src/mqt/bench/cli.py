@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 
-from pytket import Circuit
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
@@ -60,5 +59,5 @@ def main() -> None:
     if isinstance(result, QuantumCircuit):
         print(qiskit_circuit_to_str(result))
         return
-    
+
     print(circuit_to_qasm_str(result))
