@@ -1,7 +1,14 @@
-from mqt.bench import get_benchmark, CompilerSettings, QiskitSettings
-from pytest_console_scripts import ScriptRunner
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 from qiskit.qasm2 import dumps
+
+from mqt.bench import CompilerSettings, QiskitSettings, get_benchmark
+
+if TYPE_CHECKING:
+    from pytest_console_scripts import ScriptRunner
 
 
 # fmt: off
@@ -48,7 +55,6 @@ from qiskit.qasm2 import dumps
         ))),
     ],
 )
-# fmt: on
 def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
     ret = script_runner.run(["mqt.bench.cli", *args])
     assert ret.success
@@ -76,7 +82,6 @@ def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner)
          ], ""),
     ],
 )
-# fmt: on
 def test_cli_errors(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
     ret = script_runner.run(["mqt.bench.cli", *args])
     assert not ret.success
