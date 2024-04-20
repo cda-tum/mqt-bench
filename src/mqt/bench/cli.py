@@ -34,11 +34,11 @@ def main() -> None:
     parser.add_argument("--device", type=str, help="Name of the device")
     args = parser.parse_args()
 
-    qiskit_settings: QiskitSettings | None = None
+    qiskit_settings = QiskitSettings()
     if args.qiskit_optimization_level is not None:
         qiskit_settings = QiskitSettings(args.qiskit_optimization_level)
 
-    tket_settings: TKETSettings | None = None
+    tket_settings = TKETSettings()
     if args.tket_placement is not None:
         tket_settings = TKETSettings(args.tket_placement)
 
@@ -58,11 +58,7 @@ def main() -> None:
     )
 
     if isinstance(result, QuantumCircuit):
-        qasm_str = qiskit_circuit_to_str(result)
-    elif isinstance(result, Circuit):
-        qasm_str = circuit_to_qasm_str(result)
-    else:
-        msg = f"Got unknown circuit type from get_benchmark: {type(result)}"
-        raise TypeError(msg)
-
-    print(qasm_str)
+        print(qiskit_circuit_to_str(result))
+        return
+    
+    print(circuit_to_qasm_str(result))
