@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from typing import cast
 
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
@@ -43,8 +44,13 @@ def main() -> None:
 
     # Note: Assertions about argument validity are in get_benchmark()
 
+    # Temporary workaround to "get things working" with benchmark instances.
+    # This special treatment should be removed as soon as instance handling has been refactored in get_benchmark().
+    benchmark_name, benchmark_instance = parse_benchmark_name_and_instance(args.algorithm)
+
     result = get_benchmark(
-        benchmark_name=args.algorithm,
+        benchmark_name=benchmark_name,
+        benchmark_instance_name=benchmark_instance,
         level=args.level,
         circuit_size=args.num_qubits,
         compiler=args.compiler,
@@ -61,3 +67,17 @@ def main() -> None:
         return
 
     print(circuit_to_qasm_str(result))
+
+
+def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
+    """
+    Parse an algorithm name like "shor_xlarge" into a benchmark and instance name
+    as expected by :func:`get_benchmark`.
+    """
+
+    if algorithm.startswith("shor_") or algorithm.startswith("groundstate_"):
+        as_list = algorithm.split("_", 2)
+        assert len(as_list) == 2
+        return cast(tuple[str, str], tuple(as_list))
+
+    return algorithm, None
