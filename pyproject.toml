@@ -51,7 +51,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7.2"]
+test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
 coverage = ["mqt.bench[test]", "pytest-cov[toml]"]
 docs = [
     "furo>=2023.08.17",
@@ -74,6 +74,7 @@ dev = ["mqt.bench[coverage, docs]"]
 "mqt.bench" = "mqt.benchviewer.main:start_server"
 "create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
 "generate_mqt_bench" = "mqt.bench.benchmark_generator:generate"
+"mqt.bench.cli" = "mqt.bench.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/cda-tum/mqtbench"
@@ -125,7 +126,7 @@ module = ["pytket.*", "qiskit_finance.*"]
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_algorithms.*", "qiskit_ibm_runtime.*"]
+module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_algorithms.*", "qiskit_ibm_runtime.*", "pytest_console_scripts.*"]
 ignore_missing_imports = true
 
 [tool.ruff]
