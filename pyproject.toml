@@ -51,7 +51,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7.2"]
+test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
 coverage = ["mqt.bench[test]", "pytest-cov>=4"]
 docs = [
     "furo>=2023.08.17",
