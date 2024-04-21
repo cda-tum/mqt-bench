@@ -71,7 +71,7 @@ docs = [
 dev = ["mqt.bench[coverage, docs]"]
 
 [project.scripts]
-"mqt.bench" = "mqt.benchviewer.main:start_server"
+"mqt.bench" = "mqt.bench.viewer.main:start_server"
 "create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
 "generate_mqt_bench" = "mqt.bench.benchmark_generator:generate"
 
@@ -95,10 +95,12 @@ filterwarnings = [
     "ignore:.*sre_.*:DeprecationWarning:",
     "ignore:.*Rigetti.*:UserWarning:",
     "ignore:.*Values in x.*:RuntimeWarning:",
+    "ignore:.*divide by zero encountered in det.*:RuntimeWarning:",
+    "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
 ]
 
 [tool.coverage]
-run.source = ["mqt.bench", "mqt.benchviewer"]
+run.source = ["mqt.bench"]
 report.exclude_also = [
     '\.\.\.',
     'if TYPE_CHECKING:',
