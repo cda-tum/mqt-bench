@@ -29,7 +29,8 @@ jobs:
     needs: change-detection
     if: fromJSON(needs.change-detection.outputs.run-code-ql)
     uses: cda-tum/mqt-core/.github/workflows/reusable-code-ql.yml@main
-    enable-cpp: false
+    with:
+      enable-cpp: false
 
   required-checks-pass: # This job does nothing and is only used for branch protection
     name: 🚦 Check
