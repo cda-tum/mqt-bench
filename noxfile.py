@@ -19,7 +19,7 @@ nox.options.default_venv_backend = "uv|virtualenv"
 PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12"]
 
 BUILD_REQUIREMENTS = [
-    "setuptools>=61",
+    "setuptools>=64",
     "setuptools_scm>=7",
     "wheel>=0.40",
 ]
@@ -72,7 +72,6 @@ def minimums(session: nox.Session) -> None:
         session,
         install_args=["--resolution=lowest-direct"],
         run_args=["-Wdefault"],
-        extras=["qiskit", "evaluation"],
     )
     session.run("uv", "pip", "list")
 
