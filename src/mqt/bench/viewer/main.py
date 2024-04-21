@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 
-from .backend import Backend
+from mqt.bench.viewer.backend import Backend
 
 if TYPE_CHECKING or sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources

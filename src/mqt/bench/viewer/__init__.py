@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .backend import Backend, BenchmarkConfiguration
-from .main import Server, start_server
+from mqt.bench.viewer.backend import Backend, BenchmarkConfiguration
+from mqt.bench.viewer.main import Server, start_server
 
 __all__ = ["Backend", "BenchmarkConfiguration", "Server", "start_server"]
