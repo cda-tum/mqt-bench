@@ -21,6 +21,7 @@ PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12"]
 BUILD_REQUIREMENTS = [
     "setuptools>=61",
     "setuptools_scm>=7",
+    "wheel>=0.40",
 ]
 
 if os.environ.get("CI", None):
