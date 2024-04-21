@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pickle
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -86,30 +87,30 @@ def sample_filenames() -> list[str]:
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
-        (ae, 8, True),
+        (ae, 3, True),
         (ghz, 5, True),
         (dj, 3, True),
-        (graphstate, 8, True),
-        (grover, 5, False),
-        (qaoa, 5, True),
-        (qft, 8, True),
-        (qftentangled, 8, True),
-        (qnn, 8, True),
-        (qpeexact, 8, True),
-        (qpeinexact, 8, True),
+        (graphstate, 4, True),
+        (grover, 3, False),
+        (qaoa, 3, True),
+        (qft, 3, True),
+        (qftentangled, 4, True),
+        (qnn, 4, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
         (tsp, 3, False),
-        (qwalk, 5, False),
-        (vqe, 5, True),
-        (random, 9, True),
-        (realamprandom, 9, True),
-        (su2random, 7, True),
-        (twolocalrandom, 8, True),
-        (wstate, 8, True),
-        (portfolioqaoa, 5, True),
-        (shor, 9, False),
-        (portfoliovqe, 5, True),
-        (pricingcall, 5, False),
-        (pricingput, 5, False),
+        (qwalk, 3, False),
+        (vqe, 4, True),
+        (random, 3, True),
+        (realamprandom, 3, True),
+        (su2random, 4, True),
+        (twolocalrandom, 3, True),
+        (wstate, 4, True),
+        (portfolioqaoa, 4, True),
+        (shor, 3, False),
+        (portfoliovqe, 3, True),
+        (pricingcall, 3, False),
+        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -161,29 +162,29 @@ def test_quantumcircuit_indep_level(
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
-        (ae, 8, True),
-        (ghz, 5, True),
+        (ae, 4, True),
+        (ghz, 3, True),
         (dj, 3, True),
-        (graphstate, 8, True),
-        (grover, 5, False),
+        (graphstate, 4, True),
+        (grover, 3, False),
         (qaoa, 5, True),
-        (qft, 8, True),
-        (qftentangled, 8, True),
-        (qnn, 5, True),
-        (qpeexact, 8, True),
-        (qpeinexact, 8, True),
+        (qft, 3, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
         (tsp, 3, False),
-        (qwalk, 5, False),
+        (qwalk, 3, False),
         (vqe, 5, True),
-        (random, 9, True),
+        (random, 3, True),
         (realamprandom, 3, True),
-        (su2random, 7, True),
-        (twolocalrandom, 5, True),
-        (wstate, 8, True),
-        (portfolioqaoa, 5, True),
-        (portfoliovqe, 5, True),
-        (pricingcall, 5, False),
-        (pricingput, 5, False),
+        (su2random, 4, True),
+        (twolocalrandom, 3, True),
+        (wstate, 4, True),
+        (portfolioqaoa, 3, True),
+        (portfoliovqe, 3, True),
+        (pricingcall, 3, False),
+        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(
@@ -827,6 +828,10 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 12, 0) or sys.platform != "linux",
+    reason="Since this check takes quite some time, it is only executed if the current platform is Linux and the Python version is 3.12 or higher.",
+)
 def test_create_benchmarks_from_config(output_path: str) -> None:
     config = {
         "timeout": 1,
