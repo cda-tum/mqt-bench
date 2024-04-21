@@ -20,11 +20,11 @@ dynamic = ["version"]
 
 dependencies = [
     "pytket-qiskit>=0.53.0,<0.54.0",  #  manages the dependencies for qiskit and tket in a combined fashion
-    "qiskit_optimization",
-    "qiskit_nature",
-    "qiskit_finance",
-    "pandas>=1.0.0",
-    "flask>=2.0.0",
+    "qiskit_optimization>=0.6",
+    "qiskit_nature>=0.7",
+    "qiskit_finance>=0.4.1",
+    "pandas>=2.0.0",
+    "flask>=2.3.0",
     "networkx>=2.0.0",
     "pyscf>=2.3.0",
     "packaging>=21.0",
@@ -52,7 +52,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = ["pytest>=7.2"]
-coverage = ["mqt.bench[test]", "pytest-cov[toml]"]
+coverage = ["mqt.bench[test]", "pytest-cov>=4"]
 docs = [
     "furo>=2023.08.17",
     "sphinx~=7.0",
