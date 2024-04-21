@@ -40,9 +40,6 @@ class SupermarqFeatures:
     liveness: float
 
 
-qasm_path = str(resources.files("mqt.bench") / "viewer/static/files/qasm_output/")
-
-
 def get_supported_benchmarks() -> list[str]:
     return [
         "ae",
