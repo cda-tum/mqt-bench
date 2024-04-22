@@ -21,8 +21,6 @@ jobs:
       - name: Install MQT Predictor
         run: pip install .[test]
       - name: Run tests
-        run: |
-          pip install pytest
-          pytest -v tests/compilation/test_pregenerated_zip.py
+        run: pytest -v tests/compilation/test_pregenerated_zip.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
