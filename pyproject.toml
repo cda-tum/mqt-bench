@@ -97,6 +97,7 @@ filterwarnings = [
     "ignore:.*divide by zero encountered in det.*:RuntimeWarning:",
     "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
     "ignore::DeprecationWarning:.*(docplex).*",
+    "ignore::RuntimeWarning:.*(docplex).*",
 ]
 
 [tool.coverage]
