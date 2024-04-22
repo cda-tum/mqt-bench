@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 
 from mqt.bench.viewer.backend import Backend
+from mqt.bench import utils
 
 if TYPE_CHECKING or sys.version_info < (3, 10, 0):  # pragma: no cover
     import importlib_resources as resources
@@ -160,7 +161,7 @@ def start_server(
     debug_flag: bool = False,
 ) -> None:
     if not target_location:
-        target_location = str(resources.files("mqt.bench") / "viewer" / "static" / "files")
+        target_location = utils.get_zip_file_path(including_file=False)
 
     Server(
         target_location=target_location,

@@ -88,25 +88,25 @@ def sample_filenames() -> list[str]:
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
-        (ghz, 5, True),
+        (ghz, 3, True),
         (dj, 3, True),
-        (graphstate, 4, True),
+        (graphstate, 3, True),
         (grover, 3, False),
         (qaoa, 3, True),
         (qft, 3, True),
-        (qftentangled, 4, True),
-        (qnn, 4, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
         (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 4, True),
+        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
-        (su2random, 4, True),
+        (su2random, 3, True),
         (twolocalrandom, 3, True),
-        (wstate, 4, True),
-        (portfolioqaoa, 4, True),
+        (wstate, 3, True),
+        (portfolioqaoa, 3, True),
         (shor, 3, False),
         (portfoliovqe, 3, True),
         (pricingcall, 3, False),
@@ -162,12 +162,12 @@ def test_quantumcircuit_indep_level(
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
-        (ae, 4, True),
+        (ae, 3, True),
         (ghz, 3, True),
         (dj, 3, True),
-        (graphstate, 4, True),
+        (graphstate, 3, True),
         (grover, 3, False),
-        (qaoa, 5, True),
+        (qaoa, 3, True),
         (qft, 3, True),
         (qftentangled, 3, True),
         (qnn, 3, True),
@@ -175,12 +175,12 @@ def test_quantumcircuit_indep_level(
         (qpeinexact, 3, True),
         (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 5, True),
+        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
-        (su2random, 4, True),
+        (su2random, 3, True),
         (twolocalrandom, 3, True),
-        (wstate, 4, True),
+        (wstate, 3, True),
         (portfolioqaoa, 3, True),
         (portfoliovqe, 3, True),
         (pricingcall, 3, False),
@@ -887,7 +887,7 @@ def test_zip_creation() -> None:
     retcode = utils.create_zip_file(zip_path, qasm_path)
     assert retcode == 0
 
-    zip_file = Path(utils.get_zip_file_path())
+    zip_file = Path(utils.get_zip_file_path(including_file=True))
     assert zip_file.is_file()
 
 

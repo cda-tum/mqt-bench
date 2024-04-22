@@ -212,7 +212,7 @@ def save_as_qasm(
 
 def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -> int:
     if zip_path is None:
-        zip_path = get_zip_file_path()
+        zip_path = get_zip_file_path(including_file=True)
     if qasm_path is None:
         qasm_path = get_default_qasm_output_path()
     return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
