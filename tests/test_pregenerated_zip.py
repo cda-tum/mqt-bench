@@ -28,7 +28,7 @@ def test_flask_server_with_pregenerated_zip() -> None:
     Server(
         skip_question=True,
         activate_logging=False,
-        target_location=str(utils.get_zip_file_path(including_file=False)),
+        target_location=str(utils.get_zip_folder_path()),
     )
 
     paths_to_check = [

@@ -94,10 +94,8 @@ def get_default_evaluation_output_path() -> str:
     return str(resources.files("mqt.bench") / "evaluation")
 
 
-def get_zip_file_path(including_file: bool = True) -> str:
+def get_zip_folder_path() -> str:
     """Returns the path where the zip file is stored."""
-    if including_file:
-        return str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "MQTBench_all.zip")
     return str(resources.files("mqt.bench") / "viewer" / "static" / "files")
 
 

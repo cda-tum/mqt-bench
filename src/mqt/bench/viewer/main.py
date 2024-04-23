@@ -161,7 +161,7 @@ def start_server(
     debug_flag: bool = False,
 ) -> None:
     if not target_location:
-        target_location = utils.get_zip_file_path(including_file=False)
+        target_location = utils.get_zip_folder_path()
 
     Server(
         target_location=target_location,
