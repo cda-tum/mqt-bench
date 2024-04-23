@@ -15,7 +15,6 @@ if TYPE_CHECKING:  # pragma: no cover
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
-from qiskit.exceptions import MissingOptionalLibraryError
 
 from mqt.bench import (
     BenchmarkGenerator,
@@ -1138,10 +1137,7 @@ def test_benchmark_groundstate_non_windows() -> None:
     reason="Windows-specific test.",
 )
 def test_benchmark_groundstate_windows() -> None:
-    with pytest.raises(
-        MissingOptionalLibraryError,
-        match="PySCF is not installed (most likely because Windows is used). Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead.",
-    ):
+    with pytest.raises(ImportError, match=r"PySCF is not installed"):
         groundstate.create_circuit("small")
 
 
