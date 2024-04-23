@@ -9,8 +9,6 @@ from qiskit.circuit.library import TwoLocal
 from qiskit.primitives import Estimator
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import COBYLA
-from qiskit_nature.second_q.drivers import PySCFDriver
-from qiskit_nature.second_q.mappers import JordanWignerMapper
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
@@ -22,6 +20,14 @@ def create_circuit(choice: str) -> QuantumCircuit:
     Keyword Arguments:
     molecule -- Molecule for which the ground state shall be estimated.
     """
+
+    try:
+        from qiskit_nature.second_q.drivers import PySCFDriver  # noqa:PLC0415
+        from qiskit_nature.second_q.mappers import JordanWignerMapper  # noqa:PLC0415
+    except ImportError:
+        msg = "Please install the pyscf package to run this example. If using via Windows, please install via pip install --prefer-binary pyscf or download benchmark from https://www.cda.cit.tum.de/mqtbench/."
+        raise ImportError(msg) from None
+
     molecule = get_molecule(choice)
     driver = PySCFDriver(atom=molecule)
     es_problem = driver.run()

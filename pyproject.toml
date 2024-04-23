@@ -32,6 +32,12 @@ dependencies = [
     "joblib>=1.3.0",
 ]
 
+
+[compat]
+if = "Sys.iswindows()"
+ignore = ["qiskit_nature"]
+
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

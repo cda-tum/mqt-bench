@@ -309,6 +309,10 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
+@pytest.mark.skipif(
+    sys.platform == "windows",
+    reason="PySCF is not available on Windows.",
+)
 def test_groundstate() -> None:
     qc = groundstate.create_circuit("small")
     assert qc.depth() > 0
@@ -411,7 +415,6 @@ def test_unidirectional_coupling_map() -> None:
             "",
             "",
         ),
-        ("groundstate", 1, 4, "small", "qiskit", None, "", ""),
         (
             "dj",
             "nativegates",
@@ -855,7 +858,6 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
             },
             {"name": "shor", "include": True, "instances": ["small"], "precheck_possible": False},
             {"name": "routing", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
-            {"name": "groundstate", "include": True, "instances": ["small"], "precheck_possible": False},
             {
                 "name": "pricingput",
                 "include": True,
@@ -1125,11 +1127,18 @@ def test_get_module_for_benchmark() -> None:
         assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
-def test_benchmark_helper() -> None:
+def test_benchmark_helper_shor() -> None:
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
+
+
+@pytest.mark.skipif(
+    sys.platform == "windows",
+    reason="PySCF is not available on Windows.",
+)
+def test_benchmark_helper_groundstate_molescule() -> None:
     groundstate_instances = ["small", "medium", "large"]
     for elem in groundstate_instances:
         res_groundstate = groundstate.get_molecule(elem)
