@@ -882,17 +882,6 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
     assert len(res_dicts) > 0
 
 
-def test_zip_creation() -> None:
-    """Test the creation of the overall zip file."""
-    zip_path = str(Path("./tests/MQTBench_all.zip").resolve())
-    qasm_path = str(Path("./tests/test_output/").resolve())
-    retcode = utils.create_zip_file(zip_path, qasm_path)
-    assert retcode == 0
-
-    zip_file = Path(utils.get_zip_file_path(including_file=True))
-    assert zip_file.is_file()
-
-
 def test_configure_end(output_path: str) -> None:
     # delete all files in the test directory and the directory itself
     for f in Path(output_path).iterdir():

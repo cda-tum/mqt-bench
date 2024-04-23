@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -208,14 +207,6 @@ def save_as_qasm(
     f.close()
 
     return True
-
-
-def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -> int:
-    if zip_path is None:
-        zip_path = get_zip_file_path(including_file=True)
-    if qasm_path is None:
-        qasm_path = get_default_qasm_output_path()
-    return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
 
 
 def calc_supermarq_features(
