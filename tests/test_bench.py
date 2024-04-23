@@ -310,7 +310,7 @@ def test_dj_constant_oracle() -> None:
 
 
 @pytest.mark.skipif(
-    sys.platform == "windows",
+    sys.platform == "win32",
     reason="PySCF is not available on Windows.",
 )
 def test_groundstate() -> None:
@@ -1135,7 +1135,7 @@ def test_benchmark_helper_shor() -> None:
 
 
 @pytest.mark.skipif(
-    sys.platform == "windows",
+    sys.platform == "win32",
     reason="PySCF is not available on Windows.",
 )
 def test_benchmark_helper_groundstate_molescule() -> None:
