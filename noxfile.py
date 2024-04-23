@@ -22,6 +22,7 @@ BUILD_REQUIREMENTS = [
     "setuptools>=69",
     "setuptools_scm>=7",
     "wheel>=0.40",
+    "numpy>=1.26.0",
 ]
 
 if os.environ.get("CI", None):
