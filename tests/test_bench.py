@@ -1099,7 +1099,7 @@ class SampleObject:
 def test_timeout_watchers() -> None:
     timeout = 1
     if sys.platform == "win32":
-        with pytest.raises(RuntimeWarning, match="Timeout is not supported on Windows."):
+        with pytest.warns(RuntimeWarning):
             timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
     else:
         assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
