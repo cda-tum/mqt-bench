@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from qiskit.circuit.library import TwoLocal
+from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.primitives import Estimator
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import COBYLA
@@ -24,8 +25,11 @@ def create_circuit(choice: str) -> QuantumCircuit:
     try:
         from qiskit_nature.second_q.drivers import PySCFDriver  # noqa:PLC0415
         from qiskit_nature.second_q.mappers import JordanWignerMapper  # noqa:PLC0415
-    except ImportError:
-        msg = "PySCF is not installed (most likely because Windows is used). Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead."
+    except MissingOptionalLibraryError:
+        msg = (
+            "PySCF is not installed (most likely because Windows is used). "
+            "Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead."
+        )
         raise ImportError(msg) from None
 
     molecule = get_molecule(choice)

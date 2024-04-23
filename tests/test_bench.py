@@ -15,6 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
+from qiskit.exceptions import MissingOptionalLibraryError
 
 from mqt.bench import (
     BenchmarkGenerator,
@@ -306,15 +307,6 @@ def test_openqasm_gates() -> None:
 
 def test_dj_constant_oracle() -> None:
     qc = dj.create_circuit(5, False)
-    assert qc.depth() > 0
-
-
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_groundstate() -> None:
-    qc = groundstate.create_circuit("small")
     assert qc.depth() > 0
 
 
@@ -1144,7 +1136,7 @@ def test_benchmark_groundstate_non_windows() -> None:
 def test_benchmark_groundstate_windows() -> None:
     # Catch ImportError
     with pytest.raises(
-        ImportError,
+        MissingOptionalLibraryError,
         match="PySCF is not installed (most likely because Windows is used). Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead.",
     ):
         groundstate.create_circuit("small")
