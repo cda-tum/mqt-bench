@@ -88,7 +88,7 @@ def sample_filenames() -> list[str]:
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
-        (ghz, 3, True),
+        (ghz, 2, True),  # the generated GHZ benchmarks are later used in test_benchviewer.py::test_streaming_zip
         (dj, 3, True),
         (graphstate, 3, True),
         (grover, 3, False),
