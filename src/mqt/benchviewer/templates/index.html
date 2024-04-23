@@ -246,7 +246,7 @@
               Select the used compiler:
             </p>
             <div class="d-flex">
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -257,7 +257,7 @@
                 <label for="indep_qiskit_compiler">Qiskit</label>
               </div>
 
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -266,6 +266,16 @@
                   value="true"
                 />
                 <label for="indep_tket_compiler">TKET</label>
+              </div>
+              <div class="col-md-4 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="indep_bqskit_compiler"
+                  name="indep_bqskit_compiler"
+                  value="true"
+                />
+                <label for="indep_bqskit_compiler">BQSKit</label>
               </div>
             </div>
           </div>
@@ -348,7 +358,7 @@
             </p>
 
             <div class="d-flex">
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -360,7 +370,7 @@
                 <label for="nativegates_qiskit_compiler">Qiskit</label>
               </div>
 
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -369,6 +379,18 @@
                   value="true"
                 />
                 <label for="nativegates_tket_compiler">TKET</label>
+              </div>
+
+              <div class="col-md-4 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  onchange="toggleNativeBQSKit()"
+                  id="nativegates_bqskit_compiler"
+                  name="nativegates_bqskit_compiler"
+                  value="true"
+                />
+                <label for="nativegates_bqskit_compiler">BQSKit</label>
               </div>
             </div>
             <p class="text-justify" style="margin: 0px; margin-top: 15px">
@@ -411,6 +433,47 @@
                 disabled
               />
               <label for="nativegates_qiskit_compiler_opt3">Opt. 3</label>
+            </div>
+            <p class="text-justify" style="margin: 0px; margin-top: 15px">
+              If BQSKit is selected, select its optimization level:
+            </p>
+            <div class="col-md-12 align-items-center">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt1"
+                value="true"
+                id="nativegates_bqskit_compiler_opt1"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt1">Opt. 1</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt2"
+                value="true"
+                id="nativegates_bqskit_compiler_opt2"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt2">Opt. 2</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt3"
+                value="true"
+                id="nativegates_bqskit_compiler_opt3"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt3">Opt. 3</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="nativegates_bqskit_compiler_opt4"
+                value="true"
+                id="nativegates_bqskit_compiler_opt4"
+                disabled
+              />
+              <label for="nativegates_bqskit_compiler_opt4">Opt. 4</label>
             </div>
           </div>
 
@@ -513,7 +576,7 @@
               Select the used compiler:
             </p>
             <div class="d-flex">
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -524,7 +587,7 @@
                 />
                 <label for="mapped_qiskit_compiler">Qiskit</label>
               </div>
-              <div class="col-md-6 align-items-center">
+              <div class="col-md-4 align-items-center">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -534,6 +597,17 @@
                   name="mapped_tket_compiler"
                 />
                 <label for="mapped_tket_compiler">TKET</label>
+              </div>
+              <div class="col-md-4 align-items-center">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="true"
+                  onchange="toggleMappedBQSKit()"
+                  id="mapped_bqskit_compiler"
+                  name="mapped_bqskit_compiler"
+                />
+                <label for="mapped_bqskit_compiler">BQSKit</label>
               </div>
             </div>
             <div class="row">
@@ -600,6 +674,49 @@
                   name="mapped_tket_compiler_line"
                 />
                 <label for="mapped_tket_compiler_line">Line Placement </label>
+              </div>
+              <div class="row">
+                <p class="text-justify" style="margin: 0px; margin-top: 15px">
+                  If BQSKit is selected, select its optimization level:
+                </p>
+                <div class="col-md-12 align-items-center">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    disabled
+                    id="mapped_bqskit_compiler_opt1"
+                    name="mapped_bqskit_compiler_opt1"
+                  />
+                  <label for="mapped_bqskit_compiler_opt1">Opt. 1</label>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    disabled
+                    id="mapped_bqskit_compiler_opt2"
+                    name="mapped_bqskit_compiler_opt2"
+                  />
+                  <label for="mapped_bqskit_compiler_opt2">Opt. 2</label>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    disabled
+                    id="mapped_bqskit_compiler_opt3"
+                    name="mapped_bqskit_compiler_opt3"
+                  />
+                  <label for="mapped_bqskit_compiler_opt3">Opt. 3</label>
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    disabled
+                    id="mapped_bqskit_compiler_opt4"
+                    name="mapped_bqskit_compiler_opt4"
+                  />
+                  <label for="mapped_bqskit_compiler_opt4">Opt. 4</label>
+                </div>
               </div>
             </div>
           </div>
@@ -694,11 +811,25 @@
     ></script>
 
     <script>
+      function toggleNativeBQSKit() {
+          document.getElementById("nativegates_bqskit_compiler_opt1").disabled = !document.getElementById("nativegates_bqskit_compiler_opt1").disabled
+          document.getElementById("nativegates_bqskit_compiler_opt2").disabled = !document.getElementById("nativegates_bqskit_compiler_opt2").disabled
+          document.getElementById("nativegates_bqskit_compiler_opt3").disabled = !document.getElementById("nativegates_bqskit_compiler_opt3").disabled
+          document.getElementById("nativegates_bqskit_compiler_opt4").disabled = !document.getElementById("nativegates_bqskit_compiler_opt4").disabled
+      }
+
       function toggleNativeQiskit() {
           document.getElementById("nativegates_qiskit_compiler_opt0").disabled = !document.getElementById("nativegates_qiskit_compiler_opt0").disabled
           document.getElementById("nativegates_qiskit_compiler_opt1").disabled = !document.getElementById("nativegates_qiskit_compiler_opt1").disabled
           document.getElementById("nativegates_qiskit_compiler_opt2").disabled = !document.getElementById("nativegates_qiskit_compiler_opt2").disabled
           document.getElementById("nativegates_qiskit_compiler_opt3").disabled = !document.getElementById("nativegates_qiskit_compiler_opt3").disabled
+      }
+
+      function toggleMappedBQSKit() {
+          document.getElementById("mapped_bqskit_compiler_opt1").disabled = !document.getElementById("mapped_bqskit_compiler_opt1").disabled
+          document.getElementById("mapped_bqskit_compiler_opt2").disabled = !document.getElementById("mapped_bqskit_compiler_opt2").disabled
+          document.getElementById("mapped_bqskit_compiler_opt3").disabled = !document.getElementById("mapped_bqskit_compiler_opt3").disabled
+          document.getElementById("mapped_bqskit_compiler_opt4").disabled = !document.getElementById("mapped_bqskit_compiler_opt4").disabled
       }
 
       function toggleMappedQiskit() {

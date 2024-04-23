@@ -29,14 +29,19 @@ class BenchmarkConfiguration:
     min_qubits: int
     max_qubits: int
     indices_benchmarks: list[int]
+    indep_bqskit_compiler: bool
     indep_qiskit_compiler: bool
     indep_tket_compiler: bool
+    nativegates_bqskit_compiler: bool
     nativegates_qiskit_compiler: bool
     nativegates_tket_compiler: bool
+    mapped_bqskit_compiler: bool
     mapped_qiskit_compiler: bool
     mapped_tket_compiler: bool
+    native_bqskit_opt_lvls: list[int] | None = None
     native_qiskit_opt_lvls: list[int] | None = None
     native_gatesets: list[str] | None = None
+    mapped_bqskit_opt_lvls: list[int] | None = None
     mapped_qiskit_opt_lvls: list[int] | None = None
     mapped_tket_placements: list[str] | None = None
     mapped_devices: list[str] | None = None
@@ -183,13 +188,32 @@ class Backend:
             | (self.database["benchmark"].isin(selected_nonscalable_benchmarks))
         ]
 
-        if benchmark_config.indep_qiskit_compiler:
-            db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")]
+        if benchmark_config.indep_bqskit_compiler:
+            db_tmp1 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "bqskit")]
             db_filtered = pd.concat([db_filtered, db_tmp1])
 
-        if benchmark_config.indep_tket_compiler:
-            db_tmp2 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")]
+        if benchmark_config.indep_qiskit_compiler:
+            db_tmp2 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "qiskit")]
             db_filtered = pd.concat([db_filtered, db_tmp2])
+
+        if benchmark_config.indep_tket_compiler:
+            db_tmp3 = db_tmp.loc[(db_tmp["indep_flag"]) & (db_tmp["compiler"] == "tket")]
+            db_filtered = pd.concat([db_filtered, db_tmp3])
+
+        if (
+            benchmark_config.nativegates_bqskit_compiler
+            and benchmark_config.native_gatesets
+            and benchmark_config.native_bqskit_opt_lvls
+        ):
+            for gate_set in benchmark_config.native_gatesets:
+                for opt_lvl in benchmark_config.native_bqskit_opt_lvls:
+                    db_tmp4 = db_tmp.loc[
+                        (db_tmp["nativegates_flag"])
+                        & (db_tmp["gate_set"] == gate_set)
+                        & (db_tmp["compiler"] == "bqskit")
+                        & (db_tmp["compiler_settings"] == opt_lvl)
+                    ]
+                    db_filtered = pd.concat([db_filtered, db_tmp4])
 
         if (
             benchmark_config.nativegates_qiskit_compiler
@@ -198,20 +222,35 @@ class Backend:
         ):
             for gate_set in benchmark_config.native_gatesets:
                 for opt_lvl in benchmark_config.native_qiskit_opt_lvls:
-                    db_tmp3 = db_tmp.loc[
+                    db_tmp5 = db_tmp.loc[
                         (db_tmp["nativegates_flag"])
                         & (db_tmp["gate_set"] == gate_set)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp3])
+                    db_filtered = pd.concat([db_filtered, db_tmp5])
 
         if benchmark_config.nativegates_tket_compiler and benchmark_config.native_gatesets:
             for gate_set in benchmark_config.native_gatesets:
-                db_tmp4 = db_tmp.loc[
+                db_tmp6 = db_tmp.loc[
                     (db_tmp["nativegates_flag"]) & (db_tmp["gate_set"] == gate_set) & (db_tmp["compiler"] == "tket")
                 ]
-                db_filtered = pd.concat([db_filtered, db_tmp4])
+                db_filtered = pd.concat([db_filtered, db_tmp6])
+
+        if (
+            benchmark_config.mapped_bqskit_compiler
+            and benchmark_config.mapped_bqskit_opt_lvls
+            and benchmark_config.mapped_devices
+        ):
+            for opt_lvl in benchmark_config.mapped_bqskit_opt_lvls:
+                for device in benchmark_config.mapped_devices:
+                    db_tmp6 = db_tmp.loc[
+                        (db_tmp["mapped_flag"])
+                        & (db_tmp["target_device"] == device)
+                        & (db_tmp["compiler"] == "bqskit")
+                        & (db_tmp["compiler_settings"] == opt_lvl)
+                    ]
+                    db_filtered = pd.concat([db_filtered, db_tmp6])
 
         if (
             benchmark_config.mapped_qiskit_compiler
@@ -220,13 +259,13 @@ class Backend:
         ):
             for opt_lvl in benchmark_config.mapped_qiskit_opt_lvls:
                 for device in benchmark_config.mapped_devices:
-                    db_tmp5 = db_tmp.loc[
+                    db_tmp6 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "qiskit")
                         & (db_tmp["compiler_settings"] == opt_lvl)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp5])
+                    db_filtered = pd.concat([db_filtered, db_tmp6])
 
         if (
             benchmark_config.mapped_tket_compiler
@@ -235,13 +274,13 @@ class Backend:
         ):
             for placement in benchmark_config.mapped_tket_placements:
                 for device in benchmark_config.mapped_devices:
-                    db_tmp6 = db_tmp.loc[
+                    db_tmp7 = db_tmp.loc[
                         (db_tmp["mapped_flag"])
                         & (db_tmp["target_device"] == device)
                         & (db_tmp["compiler"] == "tket")
                         & (db_tmp["compiler_settings"] == placement)
                     ]
-                    db_filtered = pd.concat([db_filtered, db_tmp6])
+                    db_filtered = pd.concat([db_filtered, db_tmp7])
 
         return cast(list[str], db_filtered["filename"].to_list())
 
@@ -307,14 +346,19 @@ class Backend:
         min_qubits = 2
         max_qubits = 130
         indices_benchmarks = []
+        indep_bqskit_compiler = False
         indep_qiskit_compiler = False
         indep_tket_compiler = False
+        nativegates_bqskit_compiler = False
         nativegates_qiskit_compiler = False
         nativegates_tket_compiler = False
+        native_bqskit_opt_lvls = []
         native_qiskit_opt_lvls = []
         native_gatesets = []
+        mapped_bqskit_compiler = False
         mapped_qiskit_compiler = False
         mapped_tket_compiler = False
+        mapped_bqskit_opt_lvls = []
         mapped_qiskit_opt_lvls = []
         mapped_tket_placements = []
         mapped_devices = []
@@ -327,11 +371,17 @@ class Backend:
             min_qubits = int(v) if "minQubits" in k and v else min_qubits
             max_qubits = int(v) if "maxQubits" in k and v else max_qubits
 
+            indep_bqskit_compiler = "indep_bqskit_compiler" in k or indep_bqskit_compiler
             indep_qiskit_compiler = "indep_qiskit_compiler" in k or indep_qiskit_compiler
             indep_tket_compiler = "indep_tket_compiler" in k or indep_tket_compiler
 
+            nativegates_bqskit_compiler = "nativegates_bqskit_compiler" in k or nativegates_bqskit_compiler
             nativegates_qiskit_compiler = "nativegates_qiskit_compiler" in k or nativegates_qiskit_compiler
             nativegates_tket_compiler = "nativegates_tket_compiler" in k or nativegates_tket_compiler
+            native_bqskit_opt_lvls.append(1) if "nativegates_bqskit_compiler_opt1" in k else None
+            native_bqskit_opt_lvls.append(2) if "nativegates_bqskit_compiler_opt2" in k else None
+            native_bqskit_opt_lvls.append(3) if "nativegates_bqskit_compiler_opt3" in k else None
+            native_bqskit_opt_lvls.append(4) if "nativegates_bqskit_compiler_opt4" in k else None
             native_qiskit_opt_lvls.append(0) if "nativegates_qiskit_compiler_opt0" in k else None
             native_qiskit_opt_lvls.append(1) if "nativegates_qiskit_compiler_opt1" in k else None
             native_qiskit_opt_lvls.append(2) if "nativegates_qiskit_compiler_opt2" in k else None
@@ -342,8 +392,13 @@ class Backend:
             native_gatesets.append("ionq") if "nativegates_ionq" in k else None
             native_gatesets.append("quantinuum") if "nativegates_quantinuum" in k else None
 
+            mapped_bqskit_compiler = "mapped_bqskit_compiler" in k or mapped_bqskit_compiler
             mapped_qiskit_compiler = "mapped_qiskit_compiler" in k or mapped_qiskit_compiler
             mapped_tket_compiler = "mapped_tket_compiler" in k or mapped_tket_compiler
+            mapped_bqskit_opt_lvls.append(1) if "mapped_bqskit_compiler_opt1" in k else None
+            mapped_bqskit_opt_lvls.append(2) if "mapped_bqskit_compiler_opt2" in k else None
+            mapped_bqskit_opt_lvls.append(3) if "mapped_bqskit_compiler_opt3" in k else None
+            mapped_bqskit_opt_lvls.append(4) if "mapped_bqskit_compiler_opt4" in k else None
             mapped_qiskit_opt_lvls.append(0) if "mapped_qiskit_compiler_opt0" in k else None
             mapped_qiskit_opt_lvls.append(1) if "mapped_qiskit_compiler_opt1" in k else None
             mapped_qiskit_opt_lvls.append(2) if "mapped_qiskit_compiler_opt2" in k else None
@@ -362,14 +417,19 @@ class Backend:
             min_qubits=min_qubits,
             max_qubits=max_qubits,
             indices_benchmarks=indices_benchmarks,
+            indep_bqskit_compiler=indep_bqskit_compiler,
             indep_qiskit_compiler=indep_qiskit_compiler,
             indep_tket_compiler=indep_tket_compiler,
+            nativegates_bqskit_compiler=nativegates_bqskit_compiler,
             nativegates_qiskit_compiler=nativegates_qiskit_compiler,
             nativegates_tket_compiler=nativegates_tket_compiler,
+            native_bqskit_opt_lvls=native_bqskit_opt_lvls,
             native_qiskit_opt_lvls=native_qiskit_opt_lvls,
             native_gatesets=native_gatesets,
+            mapped_bqskit_compiler=mapped_bqskit_compiler,
             mapped_qiskit_compiler=mapped_qiskit_compiler,
             mapped_tket_compiler=mapped_tket_compiler,
+            mapped_bqskit_opt_lvls=mapped_bqskit_opt_lvls,
             mapped_qiskit_opt_lvls=mapped_qiskit_opt_lvls,
             mapped_tket_placements=mapped_tket_placements,
             mapped_devices=mapped_devices,
@@ -609,6 +669,8 @@ def get_target_device(filename: str) -> str:
 
 
 def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
+    if "bqskit" in filename:
+        return "bqskit", get_opt_level(filename)
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
     if "tket" in filename:
