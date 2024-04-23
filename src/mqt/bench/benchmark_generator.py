@@ -464,7 +464,7 @@ def timeout_watcher(
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
     if sys.platform == "win32":
-        warn("Timeout is not supported on Windows", category=RuntimeWarning, stacklevel=2)
+        warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
         return func(*args) if isinstance(args, tuple | list) else func(args)
 
     class TimeoutExceptionError(Exception):  # Custom exception class
