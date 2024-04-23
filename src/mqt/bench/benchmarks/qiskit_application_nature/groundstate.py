@@ -25,7 +25,7 @@ def create_circuit(choice: str) -> QuantumCircuit:
         from qiskit_nature.second_q.drivers import PySCFDriver  # noqa:PLC0415
         from qiskit_nature.second_q.mappers import JordanWignerMapper  # noqa:PLC0415
     except ImportError:
-        msg = "qiskit_nature is not installed because most probably Windows is used and here, its PySCF dependency cannot be installed. If using via Windows, please install via pip install --prefer-binary pyscf or download benchmark from https://www.cda.cit.tum.de/mqtbench/."
+        msg = "PySCF is not installed (most likely because Windows is used). Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead."
         raise ImportError(msg) from None
 
     molecule = get_molecule(choice)
