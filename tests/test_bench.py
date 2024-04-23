@@ -1101,7 +1101,7 @@ def test_timeout_watchers() -> None:
     timeout = 1
     if sys.platform == "win32":
         with pytest.raises(RuntimeWarning, match="Timeout is not supported on Windows."):
-            timeout_watcher()
+            timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
     else:
         assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
         assert timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
@@ -1138,7 +1138,6 @@ def test_benchmark_groundstate_non_windows() -> None:
     reason="Windows-specific test.",
 )
 def test_benchmark_groundstate_windows() -> None:
-    # Catch ImportError
     with pytest.raises(
         MissingOptionalLibraryError,
         match="PySCF is not installed (most likely because Windows is used). Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead.",
