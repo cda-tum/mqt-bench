@@ -26,7 +26,6 @@ dependencies = [
     "pandas>=2.1.2",
     "flask>=2.3.0",
     "networkx>=2.8.8",
-    "pyscf>=2.3.0; platform_system!='Windows'",
     "packaging>=21.0",
     "tqdm>=4.29.0",
     "joblib>=1.3.0",
