@@ -12,3 +12,6 @@ coverage:
     patch:
       default:
         threshold: 1%
+codecov:
+  notify:
+    after_n_builds: 8

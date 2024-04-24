@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from qiskit.circuit.library import TwoLocal
+from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.primitives import Estimator
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import COBYLA
@@ -22,10 +23,19 @@ def create_circuit(choice: str) -> QuantumCircuit:
     Keyword Arguments:
     molecule -- Molecule for which the ground state shall be estimated.
     """
-    molecule = get_molecule(choice)
-    driver = PySCFDriver(atom=molecule)
-    es_problem = driver.run()
 
+    molecule = get_molecule(choice)
+
+    try:
+        driver = PySCFDriver(atom=molecule)
+    except MissingOptionalLibraryError:
+        msg = (
+            "PySCF is not installed (most likely because you are on a Windows system)."
+            "Please either download benchmark from https://www.cda.cit.tum.de/mqtbench/ or try to manually install PySCF."
+        )
+        raise ImportError(msg) from None
+
+    es_problem = driver.run()
     mapper = JordanWignerMapper()
     second_q_op = es_problem.second_q_ops()
     operator = mapper.map(second_q_op[0])
