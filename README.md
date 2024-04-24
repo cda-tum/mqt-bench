@@ -55,15 +55,6 @@ print(qc_algorithmic_level.draw())
 
 MQT Bench is also available as a [Pennylane dataset](https://pennylane.ai/datasets/other/mqt-bench).
 
-# Repository Structure
-
-- src/mqt/: main source directory
-  - bench: Directory for the MQT Bench package
-  - bench/benchmarks: Directory for the benchmarks
-  - benchviewer: Directory for the webpage (which can be started locally and is also hosted at
-    [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/))
-- tests: Directory for the tests for MQT Bench
-
 ## Acknowledgements
 
 The Munich Quantum Toolkit has been supported by the European
