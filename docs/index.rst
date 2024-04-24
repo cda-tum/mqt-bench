@@ -5,6 +5,7 @@ MQT Bench is a tool for benchmarking quantum software tools developed as part of
 
 We recommend you to start with the :doc:`quickstart guide <Quickstart>`.
 If you are interested in the theory behind MQT Bench, have a look at the publication :cite:labelpar:`quetschlich2023mqtbench`.
+Furthermore, MQT Bench is also available as a `PennyLane data set <https://pennylane.ai/datasets/other/mqtbench>`_.
 
 We appreciate any feedback and contributions to the project. If you want to contribute, you can find more information in the :doc:`Contribution <Contributing>` guide. If you are having trouble with the installation or the usage of MQT Bench, please let us know at our :doc:`Support <Support>` page.
 
