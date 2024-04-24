@@ -30,8 +30,8 @@ def create_circuit(choice: str) -> QuantumCircuit:
         driver = PySCFDriver(atom=molecule)
     except MissingOptionalLibraryError:
         msg = (
-            "PySCF is not installed (most likely because Windows is used)."
-            "Please download benchmark from https://www.cda.cit.tum.de/mqtbench/ instead."
+            "PySCF is not installed (most likely because you are on a Windows system)."
+            "Please either download benchmark from https://www.cda.cit.tum.de/mqtbench/ or try to manually install PySCF."
         )
         raise ImportError(msg) from None
 
