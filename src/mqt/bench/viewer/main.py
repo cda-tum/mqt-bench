@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -10,11 +9,6 @@ from flask import Flask, cli, jsonify, render_template, request, send_from_direc
 
 from mqt.bench import utils
 from mqt.bench.viewer.backend import Backend
-
-if TYPE_CHECKING or sys.version_info < (3, 10, 0):  # pragma: no cover
-    pass
-else:
-    pass
 
 if TYPE_CHECKING:  # pragma: no cover
     from flask import Response
