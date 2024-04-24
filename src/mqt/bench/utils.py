@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -38,9 +37,6 @@ class SupermarqFeatures:
     entanglement_ratio: float
     parallelism: float
     liveness: float
-
-
-qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
 def get_supported_benchmarks() -> list[str]:
@@ -90,7 +86,7 @@ def get_default_config_path() -> str:
 
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
-    return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
+    return str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
 
 
 def get_default_evaluation_output_path() -> str:
@@ -98,9 +94,9 @@ def get_default_evaluation_output_path() -> str:
     return str(resources.files("mqt.bench") / "evaluation")
 
 
-def get_zip_file_path() -> str:
+def get_zip_folder_path() -> str:
     """Returns the path where the zip file is stored."""
-    return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
+    return str(resources.files("mqt.bench") / "viewer" / "static" / "files")
 
 
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
@@ -209,14 +205,6 @@ def save_as_qasm(
     f.close()
 
     return True
-
-
-def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -> int:
-    if zip_path is None:
-        zip_path = get_zip_file_path()
-    if qasm_path is None:
-        qasm_path = get_default_qasm_output_path()
-    return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
 
 
 def calc_supermarq_features(

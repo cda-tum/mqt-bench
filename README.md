@@ -16,6 +16,7 @@
 
 MQT Bench is a quantum circuit benchmark suite with cross-level support, i.e., providing the same benchmark algorithms for different abstraction levels throughout the quantum computing
 software stack.
+MQT Bench is part of the [_Munich Quantum Toolkit_ (_MQT_)](https://mqt.readthedocs.io) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/).
 
 <p align="center">
   <a href="https://mqt.readthedocs.io/projects/bench">
@@ -50,15 +51,6 @@ print(qc_algorithmic_level.draw())
 ```
 
 **Detailed documentation and examples are available at [ReadTheDocs](https://mqt.readthedocs.io/projects/bench).**
-
-# Repository Structure
-
-- src/mqt/: main source directory
-  - bench: Directory for the MQT Bench package
-  - bench/benchmarks: Directory for the benchmarks
-  - benchviewer: Directory for the webpage (which can be started locally and is also hosted at
-    [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/))
-- tests: Directory for the tests for MQT Bench
 
 ## Acknowledgements
 

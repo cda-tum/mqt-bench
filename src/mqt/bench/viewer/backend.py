@@ -452,7 +452,6 @@ class Backend:
                 total=total_length,
                 unit="iB",
                 unit_scale=True,
-                unit_divisor=1024,
             ) as bar,
         ):
             for data in r.iter_content(chunk_size=1024):
@@ -655,7 +654,6 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
             total=total_length,
             unit="iB",
             unit_scale=True,
-            unit_divisor=1024,
         ) as bar,
     ):
         for data in r.iter_content(chunk_size=1024):

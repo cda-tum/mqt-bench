@@ -75,7 +75,7 @@ class BenchmarkGenerator:
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
         if qasm_output_path is None:
-            self.qasm_output_path = str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
+            self.qasm_output_path = str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
         else:
             self.qasm_output_path = qasm_output_path
 
@@ -463,6 +463,10 @@ def timeout_watcher(
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
+    if sys.platform == "win32":
+        warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
+        return func(*args) if isinstance(args, tuple | list) else func(args)
+
     class TimeoutExceptionError(Exception):  # Custom exception class
         pass
 

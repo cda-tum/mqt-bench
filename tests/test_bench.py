@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import pickle
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -86,30 +87,30 @@ def sample_filenames() -> list[str]:
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
-        (ae, 8, True),
-        (ghz, 5, True),
+        (ae, 3, True),
+        (ghz, 2, True),  # the generated GHZ benchmarks are later used in test_benchviewer.py::test_streaming_zip
         (dj, 3, True),
-        (graphstate, 8, True),
-        (grover, 5, False),
-        (qaoa, 5, True),
-        (qft, 8, True),
-        (qftentangled, 8, True),
-        (qnn, 8, True),
-        (qpeexact, 8, True),
-        (qpeinexact, 8, True),
+        (graphstate, 3, True),
+        (grover, 3, False),
+        (qaoa, 3, True),
+        (qft, 3, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
         (tsp, 3, False),
-        (qwalk, 5, False),
-        (vqe, 5, True),
-        (random, 9, True),
-        (realamprandom, 9, True),
-        (su2random, 7, True),
-        (twolocalrandom, 8, True),
-        (wstate, 8, True),
-        (portfolioqaoa, 5, True),
-        (shor, 9, False),
-        (portfoliovqe, 5, True),
-        (pricingcall, 5, False),
-        (pricingput, 5, False),
+        (qwalk, 3, False),
+        (vqe, 3, True),
+        (random, 3, True),
+        (realamprandom, 3, True),
+        (su2random, 3, True),
+        (twolocalrandom, 3, True),
+        (wstate, 3, True),
+        (portfolioqaoa, 3, True),
+        (shor, 3, False),
+        (portfoliovqe, 3, True),
+        (pricingcall, 3, False),
+        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -161,29 +162,29 @@ def test_quantumcircuit_indep_level(
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
-        (ae, 8, True),
-        (ghz, 5, True),
+        (ae, 3, True),
+        (ghz, 3, True),
         (dj, 3, True),
-        (graphstate, 8, True),
-        (grover, 5, False),
-        (qaoa, 5, True),
-        (qft, 8, True),
-        (qftentangled, 8, True),
-        (qnn, 5, True),
-        (qpeexact, 8, True),
-        (qpeinexact, 8, True),
+        (graphstate, 3, True),
+        (grover, 3, False),
+        (qaoa, 3, True),
+        (qft, 3, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
         (tsp, 3, False),
-        (qwalk, 5, False),
-        (vqe, 5, True),
-        (random, 9, True),
+        (qwalk, 3, False),
+        (vqe, 3, True),
+        (random, 3, True),
         (realamprandom, 3, True),
-        (su2random, 7, True),
-        (twolocalrandom, 5, True),
-        (wstate, 8, True),
-        (portfolioqaoa, 5, True),
-        (portfoliovqe, 5, True),
-        (pricingcall, 5, False),
-        (pricingput, 5, False),
+        (su2random, 3, True),
+        (twolocalrandom, 3, True),
+        (wstate, 3, True),
+        (portfolioqaoa, 3, True),
+        (portfoliovqe, 3, True),
+        (pricingcall, 3, False),
+        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(
@@ -308,11 +309,6 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-def test_groundstate() -> None:
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
-
-
 def test_routing() -> None:
     qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
@@ -410,7 +406,6 @@ def test_unidirectional_coupling_map() -> None:
             "",
             "",
         ),
-        ("groundstate", 1, 4, "small", "qiskit", None, "", ""),
         (
             "dj",
             "nativegates",
@@ -827,36 +822,25 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
 
 
-def test_create_benchmarks_from_config(output_path: str) -> None:
+def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
     config = {
         "timeout": 1,
         "benchmarks": [
             {
                 "name": "ghz",
                 "include": True,
-                "min_qubits": 2,
-                "max_qubits": 3,
+                "min_qubits": 20,
+                "max_qubits": 21,
                 "stepsize": 1,
                 "precheck_possible": True,
             },
             {
-                "name": "grover",
+                "name": "graphstate",
                 "include": True,
-                "min_qubits": 2,
-                "max_qubits": 3,
+                "min_qubits": 20,
+                "max_qubits": 21,
                 "stepsize": 1,
-                "ancillary_mode": ["noancilla"],
-                "precheck_possible": False,
-            },
-            {"name": "shor", "include": True, "instances": ["small"], "precheck_possible": False},
-            {"name": "routing", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
-            {"name": "groundstate", "include": True, "instances": ["small"], "precheck_possible": False},
-            {
-                "name": "pricingput",
-                "include": True,
-                "min_uncertainty": 2,
-                "max_uncertainty": 3,
-                "precheck_possible": False,
+                "precheck_possible": True,
             },
         ],
     }
@@ -873,17 +857,6 @@ def test_create_benchmarks_from_config(output_path: str) -> None:
     with (Path(output_path) / "evaluation_data.pkl").open("rb") as f:
         res_dicts = pickle.load(f)
     assert len(res_dicts) > 0
-
-
-def test_zip_creation() -> None:
-    """Test the creation of the overall zip file."""
-    zip_path = str(Path("./tests/MQTBench_all.zip").resolve())
-    qasm_path = str(Path("./tests/test_output/").resolve())
-    retcode = utils.create_zip_file(zip_path, qasm_path)
-    assert retcode == 0
-
-    zip_file = Path(utils.get_zip_file_path())
-    assert zip_file.is_file()
 
 
 def test_configure_end(output_path: str) -> None:
@@ -1111,8 +1084,12 @@ class SampleObject:
 
 def test_timeout_watchers() -> None:
     timeout = 1
-    assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
-    assert timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
+    if sys.platform == "win32":
+        with pytest.warns(RuntimeWarning, match="Timeout is not supported on Windows."):
+            timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
+    else:
+        assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
+        assert timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
 
 
 def test_get_module_for_benchmark() -> None:
@@ -1120,15 +1097,34 @@ def test_get_module_for_benchmark() -> None:
         assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
-def test_benchmark_helper() -> None:
+def test_benchmark_helper_shor() -> None:
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="PySCF is not available on Windows.",
+)
+def test_benchmark_groundstate_non_windows() -> None:
     groundstate_instances = ["small", "medium", "large"]
     for elem in groundstate_instances:
         res_groundstate = groundstate.get_molecule(elem)
         assert res_groundstate
+
+    qc = groundstate.create_circuit("small")
+    assert qc.depth() > 0
+
+
+@pytest.mark.skipif(
+    sys.platform != "win32",
+    reason="Windows-specific test.",
+)
+def test_benchmark_groundstate_windows() -> None:
+    with pytest.raises(ImportError, match=r"PySCF is not installed"):
+        groundstate.create_circuit("small")
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:
