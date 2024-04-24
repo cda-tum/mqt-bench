@@ -305,12 +305,14 @@ def calc_supermarq_features(
 
     # average number of 1q gates per layer = num of 1-qubit gates in the circuit / depth
     dag.remove_all_ops_named("measure")
-    single_qubit_gates_per_layer = (len(dag.gate_nodes()) - len(dag.two_qubit_ops())) / dag.depth()
-    single_qubit_gates_per_layer /= num_qubits  # Normalize
+    single_qubit_gates_per_layer = (
+        (len(dag.gate_nodes()) - len(dag.two_qubit_ops())) / dag.depth() if dag.depth() > 0 else 0
+    )
+    single_qubit_gates_per_layer /= num_qubits if num_qubits > 1 else 0  # normalize
 
     # average number of 2q gates per layer = num of 2-qubit gates in the circuit / depth
-    multi_qubit_gates_per_layer = len(dag.two_qubit_ops()) / dag.depth()
-    multi_qubit_gates_per_layer /= num_qubits // 2  # Normalize
+    multi_qubit_gates_per_layer = len(dag.two_qubit_ops()) / dag.depth() if dag.depth() > 0 else 0
+    multi_qubit_gates_per_layer /= num_qubits // 2 if num_qubits > 1 else 0  # normalize
 
     # Gate coverage = num of gates in circuit that are present in device basis gates  / num of gates in circuit.
     coverage = []
@@ -318,7 +320,7 @@ def calc_supermarq_features(
     for dev in devices.get_available_devices():
         n_circ_gates = sum(list(all_ops.values()))
         n_circ_gates_on_dev = sum(count for gate, count in all_ops.items() if gate in dev.basis_gates)
-        coverage.append(n_circ_gates_on_dev / n_circ_gates)
+        coverage.append(n_circ_gates_on_dev / n_circ_gates) if n_circ_gates > 0 else coverage.append(0)
     gate_coverage = np.array(coverage)
 
     assert 0 <= program_communication <= 1
