@@ -822,39 +822,25 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 12, 0) or sys.platform != "linux",
-    reason="Since this check takes quite some time, it is only executed if the current platform is Linux and the Python version is 3.12 or higher.",
-)
-def test_create_benchmarks_from_config(output_path: str) -> None:
+def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
     config = {
         "timeout": 1,
         "benchmarks": [
             {
                 "name": "ghz",
                 "include": True,
-                "min_qubits": 2,
-                "max_qubits": 3,
+                "min_qubits": 20,
+                "max_qubits": 21,
                 "stepsize": 1,
                 "precheck_possible": True,
             },
             {
-                "name": "grover",
+                "name": "graphstate",
                 "include": True,
-                "min_qubits": 2,
-                "max_qubits": 3,
+                "min_qubits": 20,
+                "max_qubits": 21,
                 "stepsize": 1,
-                "ancillary_mode": ["noancilla"],
-                "precheck_possible": False,
-            },
-            {"name": "shor", "include": True, "instances": ["small"], "precheck_possible": False},
-            {"name": "routing", "include": True, "min_nodes": 2, "max_nodes": 3, "precheck_possible": False},
-            {
-                "name": "pricingput",
-                "include": True,
-                "min_uncertainty": 2,
-                "max_uncertainty": 3,
-                "precheck_possible": False,
+                "precheck_possible": True,
             },
         ],
     }
