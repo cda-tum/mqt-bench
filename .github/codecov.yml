@@ -12,3 +12,5 @@ coverage:
     patch:
       default:
         threshold: 1%
+  notify:
+    after_n_builds: 8
