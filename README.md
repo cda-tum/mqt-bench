@@ -51,9 +51,9 @@ print(qc_algorithmic_level.draw())
 
 **Detailed documentation and examples are available at [ReadTheDocs](https://mqt.readthedocs.io/projects/bench).**
 
-## Available as a PennyLane Data Set
+## Availability as a PennyLane Dataset
 
-MQT Bench is also available as a [Pennylane data set](https://pennylane.ai/datasets/other/mqtbench).
+MQT Bench is also available as a [Pennylane dataset](https://pennylane.ai/datasets/other/mqtbench).
 
 # Repository Structure
 
