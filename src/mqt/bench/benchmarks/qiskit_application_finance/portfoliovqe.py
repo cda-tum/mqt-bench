@@ -27,7 +27,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     num_assets = num_qubits
 
     # Generate expected return and covariance matrix from (random) time-series
-    stocks = [("TICKER%s" % i) for i in range(num_assets)]
+    stocks = [(f"TICKER{i}") for i in range(num_assets)]
     data = RandomDataProvider(
         tickers=stocks,
         start=datetime.datetime(2016, 1, 1),
