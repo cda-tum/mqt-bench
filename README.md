@@ -55,6 +55,10 @@ print(qc_algorithmic_level.draw())
 
 **Detailed documentation and examples are available at [ReadTheDocs](https://mqt.readthedocs.io/projects/bench).**
 
+## Availability as a PennyLane Dataset
+
+MQT Bench is also available as a [Pennylane dataset](https://pennylane.ai/datasets/other/mqt-bench).
+
 ## Acknowledgements
 
 The Munich Quantum Toolkit has been supported by the European
