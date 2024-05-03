@@ -60,15 +60,15 @@ class IQMProvider(Provider):
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
-                ["r"], 1. - iqm_calibration["error"]["1q"][qubit]
+                ["r"], 1. - iqm_calibration["error"]["1q"][str(qubit)]
             )
             calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
                 ["r"], iqm_calibration["timing"]["1q"]
             )
-            calibration.readout_fidelity[qubit] = iqm_calibration["error"]["readout"][qubit]
+            calibration.readout_fidelity[qubit] = iqm_calibration["error"]["readout"][str(qubit)]
             calibration.readout_duration[qubit] = iqm_calibration["timing"]["readout"]
-            calibration.t1[qubit] = iqm_calibration["timing"]["t1"][qubit]
-            calibration.t2[qubit] = iqm_calibration["timing"]["t2"][qubit]
+            calibration.t1[qubit] = iqm_calibration["timing"]["t1"][str(qubit)]
+            calibration.t2[qubit] = iqm_calibration["timing"]["t2"][str(qubit)]
 
         for qubit1, qubit2 in device.coupling_map:
             if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity.keys():
