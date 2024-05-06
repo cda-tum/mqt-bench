@@ -12,6 +12,7 @@ from mqt.bench.devices.quantinuum import QuantinuumProvider
 from mqt.bench.devices.rigetti import RigettiProvider
 from mqt.bench.devices.iqm import IQMProvider
 
+
 class NotFoundError(Exception):
     """Raised when a device or provider is not found within the available ones."""
 
