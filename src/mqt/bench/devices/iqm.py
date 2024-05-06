@@ -8,8 +8,19 @@ if TYPE_CHECKING:
 
 from mqt.bench.devices import Device, DeviceCalibration, Provider
 
-Fidelity = TypedDict("Fidelity", {"1q": float, "2q": float, "readout": float})
-Timing = TypedDict("Timing", {"t1": float, "t2": float, "1q": float, "2q": float, "readout": float})
+
+class Infidelity(TypedDict):
+    one_q: dict[str, float]
+    two_q: dict[str, float]
+    readout: dict[str, float]
+
+
+class Timing(TypedDict):
+    t1: dict[str, float]
+    t2: dict[str, float]
+    one_q: float
+    two_q: float
+    readout: float
 
 
 class IQMCalibration(TypedDict):
@@ -20,7 +31,7 @@ class IQMCalibration(TypedDict):
     name: str
     basis_gates: list[str]
     connectivity: list[list[int]]
-    fidelity: Fidelity
+    error: Infidelity
     num_qubits: int
     timing: Timing
 
@@ -60,24 +71,34 @@ class IQMProvider(Provider):
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
-                ["r"], 1. - iqm_calibration["error"]["1q"][str(qubit)]
+                ["r"], 1.0 - iqm_calibration["error"]["one_q"][str(qubit)]
             )
             calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
-                ["r"], iqm_calibration["timing"]["1q"]
+                ["r"],
+                iqm_calibration["timing"]["one_q"] * 1e-9,  # ns to s
             )
-            calibration.readout_fidelity[qubit] = iqm_calibration["error"]["readout"][str(qubit)]
-            calibration.readout_duration[qubit] = iqm_calibration["timing"]["readout"]
-            calibration.t1[qubit] = iqm_calibration["timing"]["t1"][str(qubit)]
-            calibration.t2[qubit] = iqm_calibration["timing"]["t2"][str(qubit)]
+            calibration.readout_fidelity[qubit] = 1.0 - iqm_calibration["error"]["readout"][str(qubit)]
+            calibration.readout_duration[qubit] = iqm_calibration["timing"]["readout"] * 1e-9  # ns to s
+            calibration.t1[qubit] = iqm_calibration["timing"]["t1"][str(qubit)] * 1e-9  # ns to s
+            calibration.t2[qubit] = iqm_calibration["timing"]["t2"][str(qubit)] * 1e-9  # ns to s
 
         for qubit1, qubit2 in device.coupling_map:
-            if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity.keys():
-                continue # Skip reverse direction
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"cz": 1. - iqm_calibration["error"]["2q"][str(qubit1) + '-' + str(qubit2)]}
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"cz": iqm_calibration["timing"]["2q"]}
+            if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity:
+                continue  # Skip reverse direction
+            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
+                "cz": 1.0 - iqm_calibration["error"]["two_q"][str(qubit1) + "-" + str(qubit2)]
+            }
+            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {
+                "cz": iqm_calibration["timing"]["two_q"] * 1e-9  # ns to s
+            }
+
             # Same values for the reverse direction
-            calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
-            calibration.two_qubit_gate_duration[(qubit2, qubit1)] = calibration.two_qubit_gate_duration[(qubit1, qubit2)]
-        
+            calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[
+                (qubit1, qubit2)
+            ]
+            calibration.two_qubit_gate_duration[(qubit2, qubit1)] = calibration.two_qubit_gate_duration[
+                (qubit1, qubit2)
+            ]
+
         device.calibration = calibration
         return device
