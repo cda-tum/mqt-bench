@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -18,8 +17,6 @@ from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
 from qiskit_optimization.applications import Maxcut
-
-from mqt.bench.devices import OQCProvider
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
@@ -40,9 +37,6 @@ class SupermarqFeatures:
     entanglement_ratio: float
     parallelism: float
     liveness: float
-
-
-qasm_path = str(resources.files("mqt.benchviewer") / "static/files/qasm_output/")
 
 
 def get_supported_benchmarks() -> list[str]:
@@ -92,7 +86,7 @@ def get_default_config_path() -> str:
 
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
-    return str(resources.files("mqt.benchviewer") / "static" / "files" / "qasm_output")
+    return str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
 
 
 def get_default_evaluation_output_path() -> str:
@@ -100,9 +94,9 @@ def get_default_evaluation_output_path() -> str:
     return str(resources.files("mqt.bench") / "evaluation")
 
 
-def get_zip_file_path() -> str:
+def get_zip_folder_path() -> str:
     """Returns the path where the zip file is stored."""
-    return str(resources.files("mqt.benchviewer") / "static/files/MQTBench_all.zip")
+    return str(resources.files("mqt.bench") / "viewer" / "static" / "files")
 
 
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
@@ -210,28 +204,7 @@ def save_as_qasm(
         f.write(qc_str)
     f.close()
 
-    if gate_set == OQCProvider.get_native_gates():
-        postprocess_single_oqc_file(str(file))
     return True
-
-
-def postprocess_single_oqc_file(filename: str) -> None:
-    with Path(filename).open() as f:
-        lines = f.readlines()
-    with Path(filename).open("w") as f:
-        for line in lines:
-            if not ("gate rzx" in line.strip("\n") or "gate ecr" in line.strip("\n")):
-                f.write(line)
-            if 'include "qelib1.inc"' in line.strip("\n"):
-                f.write("opaque ecr q0,q1;\n")
-
-
-def create_zip_file(zip_path: str | None = None, qasm_path: str | None = None) -> int:
-    if zip_path is None:
-        zip_path = get_zip_file_path()
-    if qasm_path is None:
-        qasm_path = get_default_qasm_output_path()
-    return subprocess.call(f"zip -rj {zip_path} {qasm_path}", shell=True)
 
 
 def calc_supermarq_features(

@@ -1,0 +1,60 @@
+name: CD
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  python-packaging:
+    name: 🐍 Packaging
+    uses: cda-tum/mqt-core/.github/workflows/reusable-python-packaging.yml@v2.4.1
+    with:
+      pure-python: true
+
+  deploy:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    name: 🚀 Deploy to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/mqt.bench
+    permissions:
+      id-token: write
+    needs: [python-packaging]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  upload_webserver:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    name: 🚀 Deploy to Webserver
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+      CDA_HOST_NAME: tueicda-cda.srv.mwn.de
+      CDA_USER_NAME: web-user
+      CDA_TARGET_DIR: /var/www/cda/app/mqtbench/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create version file
+        run: |
+          echo "version = \"$(git describe --tags --always)\"" > mqtbench_version.txt
+      - name: Setup SSH via the stored Action Secrets
+        run: |
+          mkdir -p ~/.ssh
+          echo "${KNOWN_HOSTS}" >> ~/.ssh/known_hosts
+          echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
+          echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
+          chmod -R 700 ~/.ssh
+      - name: Copy version file to the webserver
+        working-directory: ${{ github.workspace }}
+        run: |
+          rsync -avz -e ssh mqtbench_version.txt ${CDA_USER_NAME}@${CDA_HOST_NAME}:${CDA_TARGET_DIR}/mqtbench_version.txt

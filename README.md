@@ -1,21 +1,25 @@
 [![PyPI](https://img.shields.io/pypi/v/mqt.bench?logo=pypi&style=flat-square)](https://pypi.org/project/mqt.bench/)
+![OS](https://img.shields.io/badge/os-linux%20%7C%20macos%20%7C%20windows-blue?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![CI](https://img.shields.io/github/actions/workflow/status/cda-tum/MQTBench/coverage.yml?branch=main&style=flat-square&logo=github&label=coverage)](https://github.com/cda-tum/MQTBench/actions/workflows/coverage.yml)
-[![Bindings](https://img.shields.io/github/actions/workflow/status/cda-tum/MQTBench/deploy.yml?branch=main&style=flat-square&logo=github&label=python)](https://github.com/cda-tum/MQTBench/actions/workflows/deploy.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/cda-tum/mqt-bench/ci.yml?branch=main&style=flat-square&logo=github&label=ci)](https://github.com/cda-tum/mqt-bench/actions/workflows/ci.yml)
+[![CD](https://img.shields.io/github/actions/workflow/status/cda-tum/mqt-bench/cd.yml?style=flat-square&logo=github&label=cd)](https://github.com/cda-tum/mqt-bench/actions/workflows/cd.yml)
+[![Documentation](https://img.shields.io/readthedocs/bench?logo=readthedocs&style=flat-square)](https://mqt.readthedocs.io/projects/bench)
 [![codecov](https://img.shields.io/codecov/c/github/cda-tum/mqt-bench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/mqt-bench)
-[![Documentation](https://img.shields.io/readthedocs/mqt-bench?logo=readthedocs&style=flat-square)](https://mqt.readthedocs.io/projects/bench)
 
 <p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/_static/mqt_light.png" width="60%">
-  <img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/_static/mqt_dark.png" width="60%">
-</picture>
+  <a href="https://mqt.readthedocs.io">
+   <picture>
+     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/mqt_light.png" width="60%">
+     <img src="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/mqt_dark.png" width="60%">
+   </picture>
+  </a>
 </p>
 
 # MQT Bench: Benchmarking Software and Design Automation Tools for Quantum Computing
 
 MQT Bench is a quantum circuit benchmark suite with cross-level support, i.e., providing the same benchmark algorithms for different abstraction levels throughout the quantum computing
 software stack.
+MQT Bench is part of the [_Munich Quantum Toolkit_ (_MQT_)](https://mqt.readthedocs.io) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/).
 
 <p align="center">
   <a href="https://mqt.readthedocs.io/projects/bench">
@@ -51,14 +55,9 @@ print(qc_algorithmic_level.draw())
 
 **Detailed documentation and examples are available at [ReadTheDocs](https://mqt.readthedocs.io/projects/bench).**
 
-# Repository Structure
+## Availability as a PennyLane Dataset
 
-- src/mqt/: main source directory
-  - bench: Directory for the MQT Bench package
-  - bench/benchmarks: Directory for the benchmarks
-  - benchviewer: Directory for the webpage (which can be started locally and is also hosted at
-    [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/))
-- tests: Directory for the tests for MQT Bench
+MQT Bench is also available as a [Pennylane dataset](https://pennylane.ai/datasets/other/mqt-bench).
 
 ## Acknowledgements
 
@@ -69,17 +68,17 @@ Munich Quantum Valley, which is supported by the Bavarian state government with 
 
 <p align="center">
 <picture>
-<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/tum_dark.svg" width="28%">
-<img src="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/tum_light.svg" width="28%">
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/tum_dark.svg" width="28%">
+<img src="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/tum_light.svg" width="28%" alt="TUM Logo">
 </picture>
 <picture>
-<img src="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/logo-bavaria.svg" width="16%">
+<img src="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/logo-bavaria.svg" width="16%" alt="Coat of Arms of Bavaria">
 </picture>
 <picture>
-<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/erc_dark.svg" width="24%">
-<img src="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/erc_light.svg" width="24%">
+<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/erc_dark.svg" width="24%">
+<img src="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/erc_light.svg" width="24%" alt="ERC Logo">
 </picture>
 <picture>
-<img src="https://raw.githubusercontent.com/cda-tum/mqt-bench/main/docs/_static/logo-mqv.svg" width="28%">
+<img src="https://raw.githubusercontent.com/cda-tum/mqt/main/docs/_static/logo-mqv.svg" width="28%" alt="MQV Logo">
 </picture>
 </p>

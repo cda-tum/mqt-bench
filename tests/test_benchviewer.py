@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from mqt.benchviewer import Backend, BenchmarkConfiguration, Server, backend
-from mqt.benchviewer.main import app
+from mqt.bench.viewer import Backend, BenchmarkConfiguration, Server, backend
+from mqt.bench.viewer.main import app
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import resources
@@ -278,7 +278,7 @@ def test_prepare_form_input() -> None:
     assert backend.prepare_form_input(form_data) == expected_res
 
 
-benchviewer = resources.files("mqt.benchviewer")
+benchviewer = resources.files("mqt.bench.viewer")
 
 
 def test_read_mqtbench_all_zip() -> None:
