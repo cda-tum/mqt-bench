@@ -55,7 +55,7 @@ class Shor:
     @staticmethod
     def _get_angles(a: int, n: int) -> NDArray[np.float64]:
         """Calculates the array of angles to be used in the addition in Fourier Space."""
-        bits_little_endian = (bin(int(a))[2:].zfill(n))[::-1]
+        bits_little_endian = (f"{a:b}".zfill(n))[::-1]
 
         angles = np.zeros(n)
         for i in range(n):
