@@ -1,3 +1,4 @@
+"""Routing benchmark definition."""
 # Code based on https://qiskit.org/documentation/tutorials/optimization/7_examples_vehicle_routing.html
 
 from __future__ import annotations

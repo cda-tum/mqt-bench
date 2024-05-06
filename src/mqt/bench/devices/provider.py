@@ -1,3 +1,5 @@
+"""Abstract class for a quantum device provider."""
+
 from __future__ import annotations
 
 import sys

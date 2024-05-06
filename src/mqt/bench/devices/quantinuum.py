@@ -1,3 +1,5 @@
+"""Module to manage Quantinuum devices."""
+
 from __future__ import annotations
 
 import json

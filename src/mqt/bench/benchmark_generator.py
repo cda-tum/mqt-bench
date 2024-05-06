@@ -1,3 +1,5 @@
+"""Module for the benchmark generation and benchmark retrieval."""
+
 from __future__ import annotations
 
 import argparse
@@ -78,6 +80,7 @@ class BenchmarkGenerator:
     """Class to generate benchmarks based on a configuration file."""
 
     def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
+        """Initialize the BenchmarkGenerator."""
         if cfg_path is None:
             cfg_path = utils.get_default_config_path()
         with Path(cfg_path).open() as jsonfile:

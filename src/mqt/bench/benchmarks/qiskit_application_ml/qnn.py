@@ -1,3 +1,5 @@
+"""Quantum Neural Network benchmark definition."""
+
 # inspired from https://qiskit.org/ecosystem/machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html
 from __future__ import annotations
 

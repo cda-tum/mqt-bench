@@ -1,3 +1,5 @@
+"""Compilation functions to create benchmarks on different levels of abstraction using TKET."""
+
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,3 +1,5 @@
+"""Utility functions for the MQT Bench module."""
+
 from __future__ import annotations
 
 import sys

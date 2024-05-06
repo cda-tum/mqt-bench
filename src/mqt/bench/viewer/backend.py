@@ -1,3 +1,5 @@
+"""This module contains the backend of the mqt.bench.viewer application."""
+
 from __future__ import annotations
 
 import io

@@ -1,3 +1,4 @@
+"""TSP benchmark definition."""
 # Code based on https://qiskit.org/documentation/optimization/tutorials/06_examples_max_cut_and_tsp.html
 
 from __future__ import annotations

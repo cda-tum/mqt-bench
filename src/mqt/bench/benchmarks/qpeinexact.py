@@ -1,3 +1,5 @@
+"""QOE inexact benchmark definition."""
+
 from __future__ import annotations
 
 import random

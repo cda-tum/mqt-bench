@@ -1,3 +1,5 @@
+"""Test the Flask server with the pregenerated zip file."""
+
 from __future__ import annotations
 
 import os

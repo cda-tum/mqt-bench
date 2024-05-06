@@ -1,3 +1,5 @@
+"""Tests for the device module."""
+
 from __future__ import annotations
 
 from typing import cast

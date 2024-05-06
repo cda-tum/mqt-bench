@@ -1,3 +1,5 @@
+"""Module to manage IBM devices."""
+
 from __future__ import annotations
 
 import json

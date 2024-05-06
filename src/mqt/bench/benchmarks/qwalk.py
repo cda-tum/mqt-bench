@@ -1,3 +1,5 @@
+"""Qwalk benchmark definition."""
+
 from __future__ import annotations
 
 from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister

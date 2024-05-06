@@ -1,3 +1,5 @@
+"""Command-line interface for generating benchmarks."""
+
 from __future__ import annotations
 
 import argparse

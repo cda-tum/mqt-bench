@@ -1,3 +1,4 @@
+"""Pricing call benchmark definition."""
 # Code based on https://qiskit.org/documentation/tutorials/finance/03_european_call_option_pricing.html
 
 from __future__ import annotations

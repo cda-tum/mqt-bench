@@ -1,3 +1,5 @@
+"""Module to manage IonQ devices."""
+
 from __future__ import annotations
 
 import json

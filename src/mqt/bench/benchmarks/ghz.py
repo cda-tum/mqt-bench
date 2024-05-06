@@ -1,3 +1,5 @@
+"""GHZ benchmark definition."""
+
 from __future__ import annotations
 
 from qiskit import QuantumCircuit, QuantumRegister

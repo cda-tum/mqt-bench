@@ -1,3 +1,4 @@
+"""Shor benchmark definition."""
 # Code is based on Qiskit, therefore we have to add the following information:
 # This code is part of Qiskit.
 #

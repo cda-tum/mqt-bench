@@ -1,15 +1,12 @@
+"""Test the IonQProvider class and the IonQ devices."""
+
 from __future__ import annotations
 
 from mqt.bench.devices import IonQProvider
 
 
 def test_ionq_provider_methods() -> None:
-    """Test the methods of the IonQProvider class:
-    - get_available_device_names
-    - get_available_basis_gates
-    - get_native_gates
-    - get_max_qubits.
-    """
+    """Test the methods of the IonQProvider class."""
     assert IonQProvider.get_available_device_names() == ["ionq_harmony", "ionq_aria1"]
     assert IonQProvider.get_available_basis_gates() == [["rxx", "rz", "ry", "rx", "measure", "barrier"]]
     assert IonQProvider.get_native_gates() == ["rxx", "rz", "ry", "rx", "measure", "barrier"]
