@@ -16,6 +16,9 @@ def create_circuit(
     depth -- number of quantum steps
     coin_state_preparation -- optional quantum circuit for state preparation
     ancillary_mode -- defining the decomposition scheme
+
+    Returns:
+    qc -- a quantum circuit implementing the Quantum Walk algorithm
     """
     n = n - 1  # because one qubit is needed for the coin
     coin = QuantumRegister(1, "coin")

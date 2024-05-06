@@ -11,13 +11,11 @@ from mqt.bench import CompilerSettings, QiskitSettings, TKETSettings, get_benchm
 
 
 def main() -> None:
-    """
-    Invoke :func:`get_benchmark` exactly once with the specified arguments.
+    """Invoke :func:`get_benchmark` exactly once with the specified arguments.
 
     The resulting QASM string is printed to the standard output stream;
     no other output is generated.
     """
-
     parser = argparse.ArgumentParser(description="Generate a single benchmark")
     parser.add_argument(
         "--level",
@@ -70,11 +68,9 @@ def main() -> None:
 
 
 def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
-    """
-    Parse an algorithm name like "shor_xlarge" into a benchmark and instance name
+    """Parse an algorithm name like "shor_xlarge" into a benchmark and instance name
     as expected by :func:`get_benchmark`.
     """
-
     if algorithm.startswith(("shor_", "groundstate_")):
         as_list = algorithm.split("_", 2)
         assert len(as_list) == 2

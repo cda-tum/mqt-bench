@@ -7,6 +7,7 @@ from qiskit import QuantumCircuit
 
 
 def dj_oracle(case: str, n: int) -> QuantumCircuit:
+    """Returns a quantum circuit implementing the Deutsch-Josza oracle."""
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
     rng = np.random.default_rng(10)
@@ -39,6 +40,7 @@ def dj_oracle(case: str, n: int) -> QuantumCircuit:
 
 
 def dj_algorithm(oracle: QuantumCircuit, n: int) -> QuantumCircuit:
+    """Returns a quantum circuit implementing the Deutsch-Josza algorithm."""
     dj_circuit = QuantumCircuit(n + 1, n)
 
     dj_circuit.x(n)

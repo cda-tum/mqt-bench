@@ -32,6 +32,8 @@ from dataclasses import dataclass
 
 @dataclass
 class SupermarqFeatures:
+    """Data class for the Supermarq features of a quantum circuit."""
+
     program_communication: float
     critical_depth: float
     entanglement_ratio: float
@@ -40,6 +42,7 @@ class SupermarqFeatures:
 
 
 def get_supported_benchmarks() -> list[str]:
+    """Returns a list of all supported benchmarks."""
     return [
         "ae",
         "dj",
@@ -73,14 +76,17 @@ def get_supported_benchmarks() -> list[str]:
 
 
 def get_supported_levels() -> list[str | int]:
+    """Returns a list of all supported benchmark levels."""
     return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
 
 
 def get_supported_compilers() -> list[str]:
+    """Returns a list of all supported compilers."""
     return ["qiskit", "tket"]
 
 
 def get_default_config_path() -> str:
+    """Returns the path to the default configuration file."""
     return str(resources.files("mqt.bench") / "config.json")
 
 
@@ -263,6 +269,7 @@ def calc_supermarq_features(
 
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
+    """Returns the module for a specific benchmark."""
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
         return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qnn":
@@ -277,4 +284,5 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
 
 
 def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
+    """Converts a coupling map to a list of tuples."""
     return [(c[0], c[1]) for c in c_map]

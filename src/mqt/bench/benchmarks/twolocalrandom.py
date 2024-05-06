@@ -15,6 +15,9 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
+
+    Returns:
+    QuantumCircuit -- a quantum circuit implementing the TwoLocal ansatz with random parameter values
     """
     rng = np.random.default_rng(10)
     qc = TwoLocal(num_qubits, "ry", "cx", entanglement="full", reps=3)

@@ -23,7 +23,6 @@ def create_circuit(choice: str) -> QuantumCircuit:
     Keyword Arguments:
     molecule -- Molecule for which the ground state shall be estimated.
     """
-
     molecule = get_molecule(choice)
 
     try:

@@ -15,6 +15,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Server:
+    """Class to manage the server."""
+
     def __init__(
         self,
         target_location: str,
@@ -63,6 +65,7 @@ def index() -> str:
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip() -> Response:
+    """Return the pre-generated zip file."""
     filename = "MQTBench_all.zip"
 
     if SERVER.activate_logging:
@@ -140,6 +143,7 @@ def benchmark_description() -> str:
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
 def get_num_benchmarks() -> Response:
+    """Return the number of selected benchmarks."""
     if request.method == "POST":
         data = request.form
         prepared_data = SERVER.backend.prepare_form_input(data)
@@ -154,6 +158,7 @@ def start_server(
     target_location: str | None = None,
     debug_flag: bool = False,
 ) -> None:
+    """Start the server."""
     if not target_location:
         target_location = utils.get_zip_folder_path()
 

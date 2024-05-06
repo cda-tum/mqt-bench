@@ -41,6 +41,7 @@ def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
 
 
 def get_instance(choice: str) -> list[int]:
+    """Returns the number to be factorized and the integer a for the Shor's algorithm."""
     instances = {
         "xsmall": [9, 4],  # 18 qubits
         "small": [15, 4],  # 18 qubits

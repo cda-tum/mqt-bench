@@ -14,6 +14,9 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
+
+    Returns:
+    QuantumCircuit -- a quantum circuit implementing the Quantum Phase Estimation algorithm for a phase which can be
     """
     num_qubits = num_qubits - 1  # because of ancilla qubit
     q = QuantumRegister(num_qubits, "q")

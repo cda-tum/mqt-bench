@@ -26,6 +26,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 @dataclass
 class BenchmarkConfiguration:
+    """Class to store the user's filter criteria."""
+
     min_qubits: int
     max_qubits: int
     indices_benchmarks: list[int]
@@ -44,6 +46,8 @@ class BenchmarkConfiguration:
 
 @dataclass
 class ParsedBenchmarkName:
+    """Class to store the parsed data from a benchmark filename."""
+
     benchmark: str
     num_qubits: int
     indep_flag: bool
@@ -57,6 +61,8 @@ class ParsedBenchmarkName:
 
 
 class Backend:
+    """Class to manage the backend of the viewer."""
+
     def __init__(self) -> None:
         self.benchmarks = [
             {"name": "Amplitude Estimation (AE)", "id": "1", "filename": "ae"},
@@ -380,6 +386,7 @@ class Backend:
         target_location: str,
         skip_question: bool = False,
     ) -> bool:
+        """Reads the 'MQTBench_all.zip' file from the target location."""
         huge_zip_path = Path(target_location) / "MQTBench_all.zip"
 
         try:
@@ -435,6 +442,7 @@ class Backend:
         return True
 
     def handle_downloading_benchmarks(self, target_location: str, download_url: str) -> None:
+        """Downloads the benchmarks from the given URL and saves them to the target location."""
         print("Start downloading benchmarks...")
 
         r = requests.get(download_url, stream=True)
@@ -493,44 +501,57 @@ def parse_data(filename: str) -> ParsedBenchmarkName:
 
 
 class NoSeekBytesIO:
+    """Class to handle the BytesIO object without seekable functionality."""
+
     def __init__(self, fp: io.BytesIO) -> None:
         self.fp = fp
         self.deleted_offset = 0
 
     def write(self, b: bytes) -> int:
+        """Writes the given bytes to the BytesIO object."""
         return self.fp.write(b)
 
     def tell(self) -> int:
+        """Returns the current position in the BytesIO object considering the deleted offset."""
         return self.deleted_offset + self.fp.tell()
 
     def hidden_tell(self) -> int:
+        """Returns the current position in the BytesIO object."""
         return self.fp.tell()
 
     def seekable(self) -> bool:
+        """Returns False because the BytesIO object is not seekable."""
         return False
 
     def hidden_seek(self, offset: int, start_point: int = io.SEEK_SET) -> int:
+        """Seeks the BytesIO object."""
         return self.fp.seek(offset, start_point)
 
     def truncate_and_remember_offset(self, size: int | None) -> int:
+        """Truncates the BytesIO object and remembers the deleted offset."""
         self.deleted_offset += self.fp.tell()
         self.fp.seek(0)
         return self.fp.truncate(size)
 
     def get_value(self) -> bytes:
+        """Returns the value of the BytesIO object."""
         return self.fp.getvalue()
 
     def close(self) -> None:
+        """Closes the BytesIO object."""
         return self.fp.close()
 
     def read(self) -> bytes:
+        """Reads the BytesIO object."""
         return self.fp.read()
 
     def flush(self) -> None:
+        """Flushes the BytesIO object."""
         return self.fp.flush()
 
 
 def parse_benchmark_id_from_form_key(k: str) -> int | bool:
+    """Extracts the benchmark id from the form key."""
     pat = re.compile(r"_\d+")
     m = pat.search(k)
     if m:
@@ -567,6 +588,7 @@ def get_num_qubits(filename: str) -> int:
 
 
 def get_tket_settings(filename: str) -> str | None:
+    """Extracts the tket settings based on a filename."""
     if "mapped" not in filename:
         return None
     if "line" in filename:
@@ -578,6 +600,7 @@ def get_tket_settings(filename: str) -> str | None:
 
 
 def get_gate_set(filename: str) -> str:
+    """Extracts the gate set based on a filename."""
     if "oqc" in filename:
         return "oqc"
     if "ionq" in filename:
@@ -592,6 +615,7 @@ def get_gate_set(filename: str) -> str:
 
 
 def get_target_device(filename: str) -> str:
+    """Extracts the target device based on a filename."""
     devices = [
         "ibm_washington",
         "ibm_montreal",
@@ -608,6 +632,7 @@ def get_target_device(filename: str) -> str:
 
 
 def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
+    """Extracts the compiler and its settings based on a filename."""
     if "qiskit" in filename:
         return "qiskit", get_opt_level(filename)
     if "tket" in filename:
@@ -639,6 +664,7 @@ def create_database(zip_file: ZipFile) -> pd.DataFrame:
 
 
 def handle_downloading_benchmarks(target_location: str, download_url: str) -> None:
+    """Downloads the benchmarks from the given URL and saves them to the target location."""
     print("Start downloading benchmarks...")
 
     r = requests.get(download_url)
@@ -663,6 +689,7 @@ def handle_downloading_benchmarks(target_location: str, download_url: str) -> No
 
 
 def handle_github_api_request(repo_url: str) -> requests.Response:
+    """Handles the GitHub API request and returns the response."""
     # If the environment variable GITHUB_TOKEN is set, use it to authenticate to the GitHub API
     # to increase the rate limit from 60 to 5000 requests per hour per IP address.
     headers = None

@@ -56,6 +56,7 @@ if TYPE_CHECKING:
     ],
 )
 def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
+    """Test the CLI with different arguments."""
     ret = script_runner.run(["mqt.bench.cli", *args])
     assert ret.success
     assert expected_output in ret.stdout
@@ -83,6 +84,7 @@ def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner)
     ],
 )
 def test_cli_errors(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
+    """Test the CLI with different error cases."""
     ret = script_runner.run(["mqt.bench.cli", *args])
     assert not ret.success
     assert expected_output in ret.stderr

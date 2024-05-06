@@ -41,7 +41,7 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
         return hash(self._theta_p)
 
     def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
-        # implement the efficient power of Q
+        """Return a circuit implementing the power of the operator."""
         q_k = QuantumCircuit(1)
         q_k.ry(2 * power * self._theta_p, 0)
         return q_k

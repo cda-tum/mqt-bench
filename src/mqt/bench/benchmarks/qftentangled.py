@@ -9,6 +9,9 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
+
+    Returns:
+    QuantumCircuit -- a quantum circuit implementing the Quantum Fourier Transform algorithm using entangled qubits
     """
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q)

@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def get_rebase(gate_set: list[str]) -> BasePass:
+    """Get the rebase pass for the given gate set."""
     op_dict = {
         "rx": OpType.Rx,
         "ry": OpType.Ry,

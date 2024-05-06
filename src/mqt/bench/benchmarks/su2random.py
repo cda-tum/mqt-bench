@@ -15,6 +15,9 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
+
+    Returns:
+    QuantumCircuit -- a quantum circuit implementing the EfficientSU2 ansatz with random parameter values
     """
     rng = np.random.default_rng(10)
     qc = EfficientSU2(num_qubits, entanglement="full", reps=3)

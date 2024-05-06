@@ -18,6 +18,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Initializer:
+    """Initializes the problem by randomly generating the instance."""
+
     def __init__(self, n: int) -> None:
         self.n = n
 
@@ -28,6 +30,7 @@ class Initializer:
         NDArray[np.float64],
         NDArray[np.float64],
     ]:
+        """Generates a random instance of the problem."""
         n = self.n
         rng = np.random.default_rng(10)
 
@@ -44,6 +47,8 @@ class Initializer:
 
 
 class QuantumOptimizer:
+    """Class to solve the problem using a quantum optimizer."""
+
     def __init__(self, instance: NDArray[np.float64], n: int, k: int) -> None:
         self.instance = instance
         self.n = n
@@ -52,6 +57,7 @@ class QuantumOptimizer:
     def binary_representation(
         self, x_sol: NDArray[np.float64]
     ) -> tuple[NDArray[np.float64], NDArray[np.float64], float, float]:
+        """Returns the binary representation of the problem."""
         instance = self.instance
         n = self.n
         k = self.k
@@ -109,6 +115,7 @@ class QuantumOptimizer:
         return q, g, cast(float, c), cost
 
     def construct_problem(self, q: QuadraticExpression, g: LinearExpression, c: float) -> QuadraticProgram:
+        """Constructs the problem."""
         qp = QuadraticProgram()
         for i in range(self.n * (self.n - 1)):
             qp.binary_var(str(i))
@@ -119,6 +126,7 @@ class QuantumOptimizer:
         return qp
 
     def solve_problem(self, qp: QuadraticProgram) -> QuantumCircuit:
+        """Solves the problem."""
         ansatz = RealAmplitudes(self.n)
         vqe = VQE(estimator=Estimator(), optimizer=SLSQP(maxiter=25), ansatz=ansatz)
         vqe.random_seed = 10
@@ -132,6 +140,9 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
     Keyword Arguments:
     num_nodes -- number of to be visited nodes
     num_vehs -- number of used vehicles
+
+    Returns:
+    QuantumCircuit -- quantum circuit solving the routing problem
     """
     # Initialize the problem by defining the parameters
     n = num_nodes  # number of nodes + depot (n+1)

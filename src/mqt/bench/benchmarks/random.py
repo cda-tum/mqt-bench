@@ -11,6 +11,9 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Keyword Arguments:
     num_qubits -- number of qubits of the returned quantum circuit
+
+    Returns:
+    QuantumCircuit -- a random quantum circuit twice as deep as wide
     """
     qc = random_circuit(num_qubits, num_qubits * 2, measure=False, seed=10)
     gates = list(set(utils.get_openqasm_gates()) - {"rccx", "csx", "cu"})
