@@ -1,3 +1,5 @@
+"""Module for the benchmark generation and benchmark retrieval."""
+
 from __future__ import annotations
 
 import argparse
@@ -34,6 +36,8 @@ from dataclasses import dataclass
 
 
 class Benchmark(TypedDict, total=False):
+    """Data class for the benchmark generation configuration."""
+
     name: str
     include: bool
     min_qubits: int
@@ -52,22 +56,31 @@ class Benchmark(TypedDict, total=False):
 
 @dataclass
 class QiskitSettings:
+    """Data class for the Qiskit compiler settings."""
+
     optimization_level: int = 1
 
 
 @dataclass
 class TKETSettings:
+    """Data class for the TKET compiler settings."""
+
     placement: str = "lineplacement"
 
 
 @dataclass
 class CompilerSettings:
+    """Data class for the compiler settings."""
+
     qiskit: QiskitSettings | None = None
     tket: TKETSettings | None = None
 
 
 class BenchmarkGenerator:
+    """Class to generate benchmarks based on a configuration file."""
+
     def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
+        """Initialize the BenchmarkGenerator."""
         if cfg_path is None:
             cfg_path = utils.get_default_config_path()
         with Path(cfg_path).open() as jsonfile:
@@ -82,6 +95,14 @@ class BenchmarkGenerator:
         Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
 
     def create_benchmarks_from_config(self, num_jobs: int) -> bool:
+        """Create benchmarks based on the configuration file.
+
+        Arguments:
+            num_jobs: number of parallel jobs to run
+
+        Returns:
+            True if successful
+        """
         benchmarks = [Benchmark(benchmark) for benchmark in self.cfg["benchmarks"]]  # type: ignore[misc]
         Parallel(n_jobs=num_jobs, verbose=100)(
             delayed(self.define_benchmark_instances)(benchmark) for benchmark in benchmarks
@@ -89,6 +110,7 @@ class BenchmarkGenerator:
         return True
 
     def define_benchmark_instances(self, benchmark: Benchmark) -> None:
+        """Define the instances for a benchmark."""
         lib = utils.get_module_for_benchmark(benchmark["name"])
         file_precheck = benchmark["precheck_possible"]
         instances: list[tuple[int, str]] | list[int] | list[str] | range
@@ -132,6 +154,7 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
         file_precheck: bool,
     ) -> None:
+        """Generate all benchmarks for a given benchmark."""
         self.generate_indep_levels(file_precheck, lib, parameter_space)
         self.generate_native_gates_levels(file_precheck, lib, parameter_space)
         self.generate_mapped_levels(file_precheck, lib, parameter_space)
@@ -142,6 +165,7 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
+        """Generate mapped level benchmarks for a given benchmark."""
         for provider in get_available_providers():
             for device in provider.get_available_devices():
                 for opt_level in [0, 1, 2, 3]:
@@ -200,6 +224,7 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
+        """Generate native gates level benchmarks for a given benchmark."""
         for provider in get_available_providers():
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
@@ -249,6 +274,7 @@ class BenchmarkGenerator:
         lib: ModuleType,
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
+        """Generate independent level benchmarks for a given benchmark."""
         for function in [qiskit_helper.get_indep_level, tket_helper.get_indep_level]:
             for parameter_instance in parameter_space:
                 qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
@@ -319,15 +345,16 @@ def get_benchmark(
 ) -> QuantumCircuit | Circuit:
     """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
 
-    Args:
+    Arguments:
         benchmark_name: name of the to be generated benchmark
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
-        CompilerSettings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
+        compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
         provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
+        kwargs: Additional arguments for the benchmark generation
 
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
@@ -451,6 +478,7 @@ def get_benchmark(
 
 
 def generate(num_jobs: int = -1) -> None:
+    """Generate benchmarks based on the configuration file."""
     parser = argparse.ArgumentParser(description="Create Configuration")
     parser.add_argument("--file-name", type=str, help="optional filename", default=None)
     args = parser.parse_args()
@@ -463,14 +491,16 @@ def timeout_watcher(
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
 ) -> bool | QuantumCircuit | Circuit:
+    """Function to handle timeouts for the benchmark generation."""
     if sys.platform == "win32":
         warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
         return func(*args) if isinstance(args, tuple | list) else func(args)
 
     class TimeoutExceptionError(Exception):  # Custom exception class
-        pass
+        """Custom exception class for timeout."""
 
     def timeout_handler(_signum: int, _frame: Any) -> None:  # noqa: ANN401
+        """Function to handle the timeout."""
         raise TimeoutExceptionError
 
     # Change the behavior of SIGALRM

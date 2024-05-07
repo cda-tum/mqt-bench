@@ -1,4 +1,4 @@
-# Code based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
+"""Portfolio QAOA benchmark definition. Code is based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html."""
 
 from __future__ import annotations
 
@@ -19,8 +19,8 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit of QAOA applied to a specific portfolio optimization task.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
     """
     # set number of assets (= number of qubits)
     num_assets = num_qubits

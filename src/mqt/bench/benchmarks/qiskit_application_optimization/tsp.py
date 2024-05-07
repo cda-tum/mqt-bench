@@ -1,4 +1,4 @@
-# Code based on https://qiskit.org/documentation/optimization/tutorials/06_examples_max_cut_and_tsp.html
+"""TSP benchmark definition. Code is based on https://qiskit.org/documentation/optimization/tutorials/06_examples_max_cut_and_tsp.html."""
 
 from __future__ import annotations
 
@@ -18,8 +18,8 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_nodes: int) -> QuantumCircuit:
     """Returns a quantum circuit solving the Travelling Salesman Problem (TSP).
 
-    Keyword Arguments:
-    num_nodes -- number of to be visited nodes
+    Arguments:
+        num_nodes: number of to be visited nodes
     """
     # Generating a graph of 3 nodes
     n = num_nodes

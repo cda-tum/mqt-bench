@@ -1,4 +1,4 @@
-# Code based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
+"""Pricing put benchmark definition. Code is based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(num_uncertainty_qubits: int = 5) -> QuantumCircuit:
     """Returns a quantum circuit of Iterative Amplitude Estimation applied to a problem instance of pricing put options.
 
-    Keyword Arguments:
-    num_uncertainty_qubits -- number of qubits to measure uncertainty
+    Arguments:
+        num_uncertainty_qubits: number of qubits to measure uncertainty
     """
     # parameters for considered random distribution
     s = 2.0  # initial spot price

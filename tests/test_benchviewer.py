@@ -1,3 +1,5 @@
+"""Test the mqt.bench.viewer module."""
+
 from __future__ import annotations
 
 import sys
@@ -26,6 +28,7 @@ else:
     ],
 )
 def test_get_opt_level(filename: str, expected_res: int) -> None:
+    """Test the get_opt_level parsing function."""
     assert int(backend.get_opt_level(filename)) == expected_res
 
 
@@ -40,6 +43,7 @@ def test_get_opt_level(filename: str, expected_res: int) -> None:
     ],
 )
 def test_get_num_qubits(filename: str, expected_res: int) -> None:
+    """Test the get_num_qubits parsing function."""
     assert int(backend.get_num_qubits(filename)) == expected_res
 
 
@@ -124,10 +128,12 @@ def test_get_num_qubits(filename: str, expected_res: int) -> None:
     ],
 )
 def test_parse_data(filename: str, expected_res: backend.ParsedBenchmarkName) -> None:
+    """Test the parse_data parsing function."""
     assert backend.parse_data(filename) == expected_res
 
 
 def test_prepare_form_input() -> None:
+    """Test the prepare_form_input function."""
     form_data = {
         "all_benchmarks": "true",
         "minQubits": "75",
@@ -282,6 +288,7 @@ benchviewer = resources.files("mqt.bench.viewer")
 
 
 def test_read_mqtbench_all_zip() -> None:
+    """Test the read_mqtbench_all_zip function."""
     backend = Backend()
     with resources.as_file(benchviewer):
         target_location = str(Path("./tests").resolve())
@@ -289,6 +296,7 @@ def test_read_mqtbench_all_zip() -> None:
 
 
 def test_create_database() -> None:
+    """Test the create_database function."""
     backend = Backend()
     res_zip = backend.read_mqtbench_all_zip(
         skip_question=True,
@@ -393,6 +401,7 @@ def test_create_database() -> None:
 
 
 def test_streaming_zip() -> None:
+    """Test the streaming_zip function."""
     backend = Backend()
     backend.read_mqtbench_all_zip(
         skip_question=True,
@@ -406,6 +415,7 @@ def test_streaming_zip() -> None:
 
 
 def test_flask_server() -> None:
+    """Test the flask server."""
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path
     target_location = str(Path("./tests").resolve())

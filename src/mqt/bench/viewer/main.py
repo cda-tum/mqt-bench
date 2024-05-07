@@ -1,3 +1,5 @@
+"""Main module to start the server."""
+
 from __future__ import annotations
 
 import logging
@@ -15,12 +17,15 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Server:
+    """Class to manage the server."""
+
     def __init__(
         self,
         target_location: str,
         skip_question: bool = False,
         activate_logging: bool = False,
     ) -> None:
+        """Initialize the server."""
         self.backend = Backend()
 
         self.target_location = target_location
@@ -63,6 +68,7 @@ def index() -> str:
 
 @app.route(f"{PREFIX}/get_pre_gen", methods=["POST", "GET"])
 def download_pre_gen_zip() -> Response:
+    """Return the pre-generated zip file."""
     filename = "MQTBench_all.zip"
 
     if SERVER.activate_logging:
@@ -132,14 +138,13 @@ def description() -> str:
 
 @app.route(f"{PREFIX}/benchmark_description")
 def benchmark_description() -> str:
-    """Return the benchmark_description.html file together in which all benchmark algorithms
-    are described in detail.
-    """
+    """Return the benchmark_description.html file together in which all benchmark algorithms are described in detail."""
     return render_template("benchmark_description.html")
 
 
 @app.route(f"{PREFIX}/get_num_benchmarks", methods=["POST"])
 def get_num_benchmarks() -> Response:
+    """Return the number of selected benchmarks."""
     if request.method == "POST":
         data = request.form
         prepared_data = SERVER.backend.prepare_form_input(data)
@@ -154,6 +159,7 @@ def start_server(
     target_location: str | None = None,
     debug_flag: bool = False,
 ) -> None:
+    """Start the server."""
     if not target_location:
         target_location = utils.get_zip_folder_path()
 

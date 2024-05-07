@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+"""Deutsch Josza benchmark definition. Code is based on https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from qiskit import QuantumCircuit
 
 
 def dj_oracle(case: str, n: int) -> QuantumCircuit:
+    """Returns a quantum circuit implementing the Deutsch-Josza oracle."""
     # plus one output qubit
     oracle_qc = QuantumCircuit(n + 1)
     rng = np.random.default_rng(10)
@@ -39,6 +40,7 @@ def dj_oracle(case: str, n: int) -> QuantumCircuit:
 
 
 def dj_algorithm(oracle: QuantumCircuit, n: int) -> QuantumCircuit:
+    """Returns a quantum circuit implementing the Deutsch-Josza algorithm."""
     dj_circuit = QuantumCircuit(n + 1, n)
 
     dj_circuit.x(n)
@@ -59,17 +61,17 @@ def dj_algorithm(oracle: QuantumCircuit, n: int) -> QuantumCircuit:
     return dj_circuit
 
 
-def create_circuit(n: int, balanced: bool = True) -> QuantumCircuit:
+def create_circuit(num_qubits: int, balanced: bool = True) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Deutsch-Josza algorithm.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
-    balanced -- True for a balanced and False for a constant oracle
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+        balanced: True for a balanced and False for a constant oracle
     """
     oracle_mode = "balanced" if balanced else "constant"
-    n = n - 1  # because of ancilla qubit
-    oracle_gate = dj_oracle(oracle_mode, n)
-    qc = dj_algorithm(oracle_gate, n)
+    num_qubits = num_qubits - 1  # because of ancilla qubit
+    oracle_gate = dj_oracle(oracle_mode, num_qubits)
+    qc = dj_algorithm(oracle_gate, num_qubits)
     qc.name = "dj"
 
     return qc

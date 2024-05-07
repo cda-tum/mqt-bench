@@ -1,3 +1,5 @@
+"""Test the IBMProvider class and the IBM Washington and IBM Montreal devices."""
+
 from __future__ import annotations
 
 import pytest
@@ -7,12 +9,7 @@ from mqt.bench.devices import IBMProvider
 
 
 def test_ibm_provider_methods() -> None:
-    """Test the methods of the IBMProvider class:
-    - get_available_device_names
-    - get_available_basis_gates
-    - get_native_gates
-    - get_max_qubits.
-    """
+    """Test the methods of the IBMProvider class."""
     assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]
     assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
     assert IBMProvider.get_native_gates() == ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
@@ -156,5 +153,6 @@ def test_get_ibmq_montreal_device() -> None:
 
 
 def test_import_unsupported_backend() -> None:
+    """Test importing an unsupported backend type."""
     with pytest.raises(TypeError, match="Unsupported backend type <class 'str'>"):
         IBMProvider.import_qiskit_backend("V3")

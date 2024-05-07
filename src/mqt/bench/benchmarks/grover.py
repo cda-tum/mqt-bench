@@ -1,3 +1,5 @@
+"""Grover benchmark definition."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -9,9 +11,9 @@ from qiskit_algorithms import Grover
 def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> QuantumCircuit:
     """Returns a quantum circuit implementing Grover's algorithm.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
-    ancillary_mode -- defining the decomposition scheme
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+        ancillary_mode: defining the decomposition scheme
     """
     num_qubits = num_qubits - 1  # -1 because of the flag qubit
     q = QuantumRegister(num_qubits, "q")

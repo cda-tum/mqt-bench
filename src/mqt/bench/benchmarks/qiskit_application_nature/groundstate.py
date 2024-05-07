@@ -1,5 +1,4 @@
-# Code based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
-
+"""Groundstate benchmark definition. Code is based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html."""
 
 from __future__ import annotations
 
@@ -20,10 +19,9 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(choice: str) -> QuantumCircuit:
     """Returns a quantum circuit implementing Ground State Estimation.
 
-    Keyword Arguments:
-    molecule -- Molecule for which the ground state shall be estimated.
+    Arguments:
+        choice: problem instance for which the ground state shall be estimated
     """
-
     molecule = get_molecule(choice)
 
     try:
