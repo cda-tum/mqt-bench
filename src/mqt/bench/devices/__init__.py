@@ -7,10 +7,10 @@ from mqt.bench.devices.provider import Provider
 
 from mqt.bench.devices.ibm import IBMProvider
 from mqt.bench.devices.ionq import IonQProvider
+from mqt.bench.devices.iqm import IQMProvider
 from mqt.bench.devices.oqc import OQCProvider
 from mqt.bench.devices.quantinuum import QuantinuumProvider
 from mqt.bench.devices.rigetti import RigettiProvider
-from mqt.bench.devices.iqm import IQMProvider
 
 
 class NotFoundError(Exception):
@@ -87,6 +87,7 @@ __all__ = [
     "Device",
     "DeviceCalibration",
     "IBMProvider",
+    "IQMProvider",
     "IonQProvider",
     "OQCProvider",
     "Provider",
