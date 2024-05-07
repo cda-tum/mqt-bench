@@ -153,5 +153,6 @@ def test_get_ibmq_montreal_device() -> None:
 
 
 def test_import_unsupported_backend() -> None:
+    """Test importing an unsupported backend type."""
     with pytest.raises(TypeError, match="Unsupported backend type <class 'str'>"):
         IBMProvider.import_qiskit_backend("V3")

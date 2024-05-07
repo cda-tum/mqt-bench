@@ -25,6 +25,7 @@ class Server:
         skip_question: bool = False,
         activate_logging: bool = False,
     ) -> None:
+        """Initialize the server."""
         self.backend = Backend()
 
         self.target_location = target_location
@@ -137,9 +138,7 @@ def description() -> str:
 
 @app.route(f"{PREFIX}/benchmark_description")
 def benchmark_description() -> str:
-    """Return the benchmark_description.html file together in which all benchmark algorithms
-    are described in detail.
-    """
+    """Return the benchmark_description.html file together in which all benchmark algorithms are described in detail."""
     return render_template("benchmark_description.html")
 
 

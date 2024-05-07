@@ -110,9 +110,9 @@ def get_zip_folder_path() -> str:
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
-    Keyword Arguments:
-    n_nodes -- number of graph nodes (and also number of qubits)
-    degree -- edges per node
+    Arguments:
+        n_nodes: number of graph nodes (and also number of qubits)
+        degree: edges per node
     """
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
@@ -178,12 +178,13 @@ def save_as_qasm(
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
-    Keyword Arguments:
-    qc_str -- Quantum circuit to be stored as a string
-    filename -- filename
-    gate_set -- set of used gates
-    mapped -- boolean indicating whether the quantum circuit is mapped to a specific hardware layout
-    c_map -- coupling map of used hardware layout
+    Arguments:
+        qc_str: Quantum circuit to be stored as a string
+        filename: filename
+        gate_set: set of used gates
+        mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
+        c_map: coupling map of used hardware layout
+        target_directory: directory where the qasm file is stored
     """
     if c_map is None:
         c_map = []

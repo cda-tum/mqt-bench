@@ -35,7 +35,7 @@ def get_available_provider_names() -> list[str]:
 def get_provider_by_name(provider_name: str) -> Provider:
     """Get a provider by its name.
 
-    Args:
+    Arguments:
         provider_name: the name of the provider
     """
     provider = None
@@ -54,7 +54,7 @@ def get_provider_by_name(provider_name: str) -> Provider:
 def get_available_devices(sanitize_device: bool = False) -> list[Device]:
     """Get a list of all available devices.
 
-    Args:
+    Arguments:
         sanitize_device: whether to sanitize the device calibration data
     """
     return [
@@ -70,7 +70,7 @@ def get_available_device_names() -> list[str]:
 def get_device_by_name(device_name: str) -> Device:
     """Get a device by its name.
 
-    Args:
+    Arguments:
         device_name: the name of the device
     """
     device = None

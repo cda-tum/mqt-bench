@@ -17,11 +17,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the Quantum Approximation Optimization Algorithm for a specific max-cut
-     example.
+    """Returns a quantum circuit implementing the Quantum Approximation Optimization Algorithm for a specific max-cut example.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+
+    Returns:
+        QuantumCircuit: quantum circuit implementing the Quantum Approximation Optimization Algorithm
     """
     qp = get_examplary_max_cut_qp(num_qubits)
     assert isinstance(qp, QuadraticProgram)

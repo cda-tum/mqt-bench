@@ -12,6 +12,8 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class Statistics(TypedDict):
+    """Class to store the statistics of a gate or measurement."""
+
     mean: float
 
 
@@ -19,9 +21,7 @@ Fidelity = TypedDict("Fidelity", {"1q": Statistics, "2q": Statistics, "spam": St
 
 
 class QuantinuumCalibration(TypedDict):
-    """Class to store the calibration data of an Quantinuum device.
-    Follows https://docs.quantinuum.com/#tag/characterizations.
-    """
+    """Class to store the calibration data of a Quantinuum device. Follows https://docs.quantinuum.com/#tag/characterizations."""
 
     name: str
     basis_gates: list[str]
@@ -49,10 +49,11 @@ class QuantinuumProvider(Provider):
     def import_backend(cls, path: Path) -> Device:
         """Import an Quantinuum backend as a Device object.
 
-        Args:
+        Arguments:
             path: the path to the JSON file containing the calibration data.
 
-        Returns: the Device object
+        Returns:
+            the Device object
         """
         with path.open() as json_file:
             quantinuum_calibration = cast(QuantinuumCalibration, json.load(json_file))

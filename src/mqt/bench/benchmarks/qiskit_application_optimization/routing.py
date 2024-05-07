@@ -22,6 +22,7 @@ class Initializer:
     """Initializes the problem by randomly generating the instance."""
 
     def __init__(self, n: int) -> None:
+        """Initializes the problem by randomly generating the instance."""
         self.n = n
 
     def generate_instance(
@@ -51,6 +52,7 @@ class QuantumOptimizer:
     """Class to solve the problem using a quantum optimizer."""
 
     def __init__(self, instance: NDArray[np.float64], n: int, k: int) -> None:
+        """Initializes the class to solve the problem using a quantum optimizer."""
         self.instance = instance
         self.n = n
         self.k = k
@@ -138,12 +140,12 @@ class QuantumOptimizer:
 def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit solving a routing problem.
 
-    Keyword Arguments:
-    num_nodes -- number of to be visited nodes
-    num_vehs -- number of used vehicles
+    Arguments:
+        num_nodes: number of to be visited nodes
+        num_vehs: number of used vehicles
 
     Returns:
-    QuantumCircuit -- quantum circuit solving the routing problem
+        QuantumCircuit: quantum circuit solving the routing problem
     """
     # Initialize the problem by defining the parameters
     n = num_nodes  # number of nodes + depot (n+1)

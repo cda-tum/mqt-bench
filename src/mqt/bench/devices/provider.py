@@ -32,7 +32,7 @@ class Provider(ABC):
     def get_available_devices(cls, sanitize_device: bool = False) -> list[Device]:
         """Get a list of all available devices.
 
-        Args:
+        Arguments:
             sanitize_device: whether to sanitize the device calibration data
         """
         return [cls.get_device(name, sanitize_device=sanitize_device) for name in cls.get_available_device_names()]
@@ -67,7 +67,7 @@ class Provider(ABC):
     def get_device(cls, name: str, sanitize_device: bool = False) -> Device:
         """Get a device by name.
 
-        Args:
+        Arguments:
             name: the name of the device
             sanitize_device: whether to sanitize the device calibration data
         """

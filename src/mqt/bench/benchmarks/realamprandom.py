@@ -12,14 +12,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the RealAmplitudes ansatz with random parameter
-    values.
+    """Returns a quantum circuit implementing the RealAmplitudes ansatz with random parameter values.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
 
     Returns:
-    QuantumCircuit -- a quantum circuit implementing the RealAmplitudes ansatz with random parameter values
+        QuantumCircuit: a quantum circuit implementing the RealAmplitudes ansatz with random parameter values
     """
     rng = np.random.default_rng(10)
     qc = RealAmplitudes(num_qubits, entanglement="full", reps=3)

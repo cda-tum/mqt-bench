@@ -66,6 +66,7 @@ class Backend:
     """Class to manage the backend of the viewer."""
 
     def __init__(self) -> None:
+        """Initializes the backend."""
         self.benchmarks = [
             {"name": "Amplitude Estimation (AE)", "id": "1", "filename": "ae"},
             {"name": "Deutsch-Jozsa", "id": "2", "filename": "dj"},
@@ -154,13 +155,11 @@ class Backend:
     def filter_database(self, benchmark_config: BenchmarkConfiguration) -> list[str]:
         """Filters the database according to the filter criteria.
 
-        Keyword Arguments:
-        filterCriteria -- list of all filter criteria
-        database -- database containing all available benchmarks
+        Arguments:
+            benchmark_config: user's filter criteria
 
-
-        Return values:
-        db_filtered["path"].to_list() -- list of all file paths of the selected benchmark files
+        Returns:
+            list of all file paths of the selected benchmark files
         """
         colnames = list(ParsedBenchmarkName.__annotations__.keys())
         db_filtered = pd.DataFrame(columns=colnames)
@@ -259,10 +258,10 @@ class Backend:
     ) -> Iterable[bytes]:
         """Generates the zip file for the selected benchmarks and returns a generator of the chunks.
 
-        Keyword Arguments:
-        paths -- list of file paths for all selected benchmarks
+        Arguments:
+            filenames: list of file paths for all selected benchmarks
 
-        Return values:
+        Returns:
             Generator of bytes to send to the browser
         """
         fileobj = NoSeekBytesIO(io.BytesIO())
@@ -288,11 +287,11 @@ class Backend:
     def get_selected_file_paths(self, prepared_data: BenchmarkConfiguration) -> list[str]:
         """Extracts all file paths according to the prepared user's filter criteria.
 
-        Keyword Arguments:
-        prepared_data -- user's filter criteria after preparation step
+        Arguments:
+            prepared_data: user's filter criteria after preparation step
 
-        Return values:
-        file_paths -- list of filter criteria for each selected benchmark
+        Returns:
+            file_paths: list of filter criteria for each selected benchmark
         """
         return self.filter_database(prepared_data)
 
@@ -473,11 +472,11 @@ class Backend:
 def parse_data(filename: str) -> ParsedBenchmarkName:
     """Extracts the necessary information from a given filename.
 
-    Keyword Arguments:
-    filename -- name of file
+    Arguments:
+        filename: name of file
 
-    Return values:
-    parsed_data -- parsed data extracted from filename
+    Returns:
+        parsed_data: parsed data extracted from filename
     """
     benchmark = filename.split("_")[0].lower()
     num_qubits = get_num_qubits(filename)
@@ -506,6 +505,7 @@ class NoSeekBytesIO:
     """Class to handle the BytesIO object without seekable functionality."""
 
     def __init__(self, fp: io.BytesIO) -> None:
+        """Initializes the BytesIO object."""
         self.fp = fp
         self.deleted_offset = 0
 
@@ -564,10 +564,11 @@ def parse_benchmark_id_from_form_key(k: str) -> int | bool:
 def get_opt_level(filename: str) -> int:
     """Extracts the optimization level based on a filename.
 
-    Keyword Arguments:
-    filename -- filename of a benchmark
-    Return values:
-    num -- optimization level.
+    Arguments:
+        filename: filename of a benchmark
+
+    Returns:
+        num: optimization level.
     """
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
@@ -578,10 +579,11 @@ def get_opt_level(filename: str) -> int:
 def get_num_qubits(filename: str) -> int:
     """Extracts the number of qubits based on a filename.
 
-    Keyword Arguments:
-    filename -- filename of a benchmark
-    Return values:
-    num -- number of qubits.
+    Arguments:
+        filename: filename of a benchmark
+
+    Returns:
+        num: number of qubits.
     """
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
@@ -645,10 +647,11 @@ def get_compiler_and_settings(filename: str) -> tuple[str, str | int | None]:
 def create_database(zip_file: ZipFile) -> pd.DataFrame:
     """Creates the database based on the provided directories.
 
-    Keyword Arguments:
-    qasm_path -- zip containing all .qasm files
-    Return values:
-    database -- database containing all available benchmarks.
+    Arguments:
+        zip_file: zip containing all .qasm files
+
+    Returns:
+        database containing all available benchmarks
     """
     rows_list = []
 

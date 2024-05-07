@@ -14,11 +14,11 @@ class Device:
     """A class to represent a (generic) quantum device.
 
     Attributes:
-    name: name of the device
-    num_qubits: number of qubits
-    basis_gates: list of basis gates supported by the device
-    coupling_map: coupling map of the device's qubits
-    calibration: calibration information for the device
+        name: name of the device
+        num_qubits: number of qubits
+        basis_gates: list of basis gates supported by the device
+        coupling_map: coupling map of the device's qubits
+        calibration: calibration information for the device
     """
 
     name: str = ""
@@ -30,7 +30,7 @@ class Device:
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit fidelity for a given gate type and qubit.
 
-        Args:
+        Arguments:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -47,7 +47,7 @@ class Device:
     def get_single_qubit_gate_duration(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit gate duration for a given gate type and qubit.
 
-        Args:
+        Arguments:
         gate_type: name of the gate
         qubit: index of the qubit
         """
@@ -64,7 +64,7 @@ class Device:
     def get_two_qubit_gate_fidelity(self, gate_type: str, qubit1: int, qubit2: int) -> float:
         """Get the two-qubit fidelity for a given gate type and qubit pair.
 
-        Args:
+        Arguments:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -82,7 +82,7 @@ class Device:
     def get_two_qubit_gate_duration(self, gate_type: str, qubit1: int, qubit2: int) -> float:
         """Get the two-qubit gate duration for a given gate type and qubit pair.
 
-        Args:
+        Arguments:
         gate_type: name of the gate
         qubit1: index of the first qubit
         qubit2: index of the second qubit
@@ -100,7 +100,7 @@ class Device:
     def get_readout_fidelity(self, qubit: int) -> float:
         """Get the readout fidelity for a given qubit.
 
-        Args:
+        Arguments:
         qubit: index of the qubit
         """
         if self.calibration is None:
@@ -112,7 +112,7 @@ class Device:
     def get_readout_duration(self, qubit: int) -> float:
         """Get the readout duration for a given qubit.
 
-        Args:
+        Arguments:
         qubit: index of the qubit
         """
         if self.calibration is None:

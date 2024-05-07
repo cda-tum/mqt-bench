@@ -8,8 +8,8 @@ from qiskit import QuantumCircuit, QuantumRegister
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the GHZ state.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
     """
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q, name="ghz")

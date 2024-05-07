@@ -18,14 +18,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the Variational Quantum Eigensolver Algorithm for a specific max-cut
-     example.
+    """Returns a quantum circuit implementing the Variational Quantum Eigensolver Algorithm for a specific max-cut example.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
 
     Returns:
-    QuantumCircuit -- a quantum circuit implementing the Variational Quantum Eigensolver Algorithm for a specific
+        QuantumCircuit: a quantum circuit implementing the Variational Quantum Eigensolver Algorithm for a specific
     """
     qp = get_examplary_max_cut_qp(num_qubits)
     assert isinstance(qp, QuadraticProgram)

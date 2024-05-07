@@ -71,10 +71,11 @@ class OQCProvider(Provider):
     def import_backend(cls, path: Path) -> Device:
         """Import an OQC backend.
 
-        Args:
+        Arguments:
             path: the path to the JSON file containing the calibration data.
 
-        Returns: the Device object
+        Returns:
+            the Device object
         """
         with path.open() as json_file:
             oqc_calibration = cast(OQCCalibration, json.load(json_file))

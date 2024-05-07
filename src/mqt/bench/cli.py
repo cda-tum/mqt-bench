@@ -70,9 +70,7 @@ def main() -> None:
 
 
 def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
-    """Parse an algorithm name like "shor_xlarge" into a benchmark and instance name
-    as expected by :func:`get_benchmark`.
-    """
+    """Parse an algorithm name like "shor_xlarge" into a benchmark and instance name as expected by :func:`get_benchmark`."""
     if algorithm.startswith(("shor_", "groundstate_")):
         as_list = algorithm.split("_", 2)
         assert len(as_list) == 2

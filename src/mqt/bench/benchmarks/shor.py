@@ -30,9 +30,9 @@ from qiskit_algorithms.utils.validation import validate_min
 def create_circuit(num_to_be_factorized: int, a: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Shor's algorithm.
 
-    Keyword Arguments:
-    num_to_be_factorized -- number which shall be factorized
-    a -- any integer that satisfies 1 < a < num_to_be_factorized and gcd(a, num_to_be_factorized) = 1
+    Arguments:
+        num_to_be_factorized: number which shall be factorized
+        a: any integer that satisfies 1 < a < num_to_be_factorized and gcd(a, num_to_be_factorized) = 1
     """
     qc = Shor().construct_circuit(num_to_be_factorized, a)
     qc.measure_all()
@@ -54,6 +54,8 @@ def get_instance(choice: str) -> list[int]:
 
 
 class Shor:
+    """Shor's algorithm implementation."""
+
     @staticmethod
     def _get_angles(a: int, n: int) -> NDArray[np.float64]:
         """Calculates the array of angles to be used in the addition in Fourier Space."""
@@ -198,7 +200,7 @@ class Shor:
     def _validate_input(to_be_factored_number: int, a: int) -> None:
         """Check parameters of the algorithm.
 
-        Args:
+        Arguments:
             to_be_factored_number: The odd integer to be factored, has a min. value of 3.
             a: Any integer that satisfies 1 < a < N and gcd(a, N) = 1.
 
@@ -220,7 +222,7 @@ class Shor:
     def construct_circuit(self, to_be_factored_number: int, a: int = 2) -> QuantumCircuit:
         """Construct quantum part of the algorithm.
 
-        Args:
+        Arguments:
             to_be_factored_number: The odd integer to be factored, has a min. value of 3.
             a: Any integer that satisfies 1 < a < N and gcd(a, N) = 1.
 

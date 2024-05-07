@@ -9,11 +9,11 @@ from qiskit import QuantumCircuit, QuantumRegister
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the W state.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
 
     Returns:
-    QuantumCircuit -- a quantum circuit implementing the W state
+        QuantumCircuit: a quantum circuit implementing the W state
     """
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q, name="wstate")

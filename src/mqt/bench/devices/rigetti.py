@@ -67,13 +67,14 @@ class RigettiProvider(Provider):
     @classmethod
     def __from_rigetti_index(cls, rigetti_index: int) -> int:
         """Convert the Rigetti qubit index to a consecutive index.
+
         The Rigetti architectures consist of 8-qubit rings arranged in a two-dimensional grid.
         Each qubit is identified by a three digit number, where:
           * the first digit is the row index,
           * the second digit is the column index, and
           * the third digit is the ring index.
 
-        Args:
+        Arguments:
             rigetti_index: the Rigetti qubit index
 
         Returns: the consecutive index
@@ -94,7 +95,7 @@ class RigettiProvider(Provider):
     def __to_rigetti_index(cls, index: int) -> int:
         """Convert the consecutive index to the Rigetti qubit index.
 
-        Args:
+        Arguments:
             index: the consecutive index.
 
         Returns: the Rigetti qubit index
@@ -114,10 +115,11 @@ class RigettiProvider(Provider):
     def import_backend(cls, path: Path) -> Device:
         """Import a Rigetti backend.
 
-        Args:
+        Arguments:
             path: the path to the JSON file containing the calibration data.
 
-        Returns: the Device object
+        Returns:
+            the Device object
         """
         with path.open() as json_file:
             rigetti_calibration = cast(RigettiCalibration, json.load(json_file))

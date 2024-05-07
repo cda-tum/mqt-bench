@@ -20,8 +20,8 @@ if TYPE_CHECKING:  # pragma: no cover
 def create_circuit(choice: str) -> QuantumCircuit:
     """Returns a quantum circuit implementing Ground State Estimation.
 
-    Keyword Arguments:
-    molecule -- Molecule for which the ground state shall be estimated.
+    Arguments:
+        choice: problem instance for which the ground state shall be estimated
     """
     molecule = get_molecule(choice)
 
