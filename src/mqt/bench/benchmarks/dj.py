@@ -1,5 +1,4 @@
-"""Deutsch Josza benchmark definition."""
-# Code from https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+"""Deutsch Josza benchmark definition. Code is based on https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html."""
 
 from __future__ import annotations
 

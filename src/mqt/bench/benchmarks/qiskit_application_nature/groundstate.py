@@ -1,5 +1,4 @@
-"""Groundstate benchmark definition."""
-# Code based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html
+"""Groundstate benchmark definition. Code is based on https://qiskit.org/documentation/nature/tutorials/03_ground_state_solvers.html."""
 
 from __future__ import annotations
 

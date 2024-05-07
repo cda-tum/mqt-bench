@@ -1,5 +1,4 @@
-"""Portfolio VQE benchmark definition."""
-# Code based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html
+"""Portfolio VQE benchmark definition. Code is based on https://qiskit.org/documentation/tutorials/finance/01_portfolio_optimization.html."""
 
 from __future__ import annotations
 

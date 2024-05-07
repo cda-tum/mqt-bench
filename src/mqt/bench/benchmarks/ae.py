@@ -1,5 +1,4 @@
-"""Amplitude estimation benchmark definition."""
-# Code from https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
+"""Amplitude estimation benchmark definition. Code is based on https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html."""
 
 from __future__ import annotations
 

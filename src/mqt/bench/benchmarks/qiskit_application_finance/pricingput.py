@@ -1,5 +1,4 @@
-"""Pricing put benchmark definition."""
-# Code based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html
+"""Pricing put benchmark definition. Code is based on https://qiskit.org/documentation/tutorials/finance/04_european_put_option_pricing.html."""
 
 from __future__ import annotations
 
