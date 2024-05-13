@@ -1,3 +1,5 @@
+"""Module to manage IQM devices."""
+
 from __future__ import annotations
 
 import json
@@ -10,12 +12,16 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class Infidelity(TypedDict):
+    """Class to store the infidelity properties of a IQM device."""
+
     one_q: dict[str, float]
     two_q: dict[str, float]
     readout: dict[str, float]
 
 
 class Timing(TypedDict):
+    """Class to store the time properties of a IQM device."""
+
     t1: dict[str, float]
     t2: dict[str, float]
     one_q: float
@@ -25,6 +31,7 @@ class Timing(TypedDict):
 
 class IQMCalibration(TypedDict):
     """Class to store the calibration data of an IQM device.
+
     Follows https://docs.iqm.com/#tag/characterizations.
     """
 
