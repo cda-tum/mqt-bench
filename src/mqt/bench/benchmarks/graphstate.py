@@ -1,3 +1,5 @@
+"""Graophstate benchmark definition."""
+
 from __future__ import annotations
 
 import networkx as nx
@@ -8,9 +10,9 @@ from qiskit.circuit.library import GraphState
 def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
     """Returns a quantum circuit implementing a graph state.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
-    degree -- number of edges per node
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+        degree: number of edges per node
     """
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q, name="graphstate")

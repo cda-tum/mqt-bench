@@ -1,3 +1,5 @@
+"""Tests for the benchmark generation and evaluation."""
+
 from __future__ import annotations
 
 import json
@@ -61,6 +63,7 @@ from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers,
 
 @pytest.fixture()
 def output_path() -> str:
+    """Fixture to create the output path for the tests."""
     output_path = Path("./tests/test_output/")
     output_path.mkdir(parents=True, exist_ok=True)
     return str(output_path)
@@ -68,6 +71,7 @@ def output_path() -> str:
 
 @pytest.fixture()
 def sample_filenames() -> list[str]:
+    """Fixture to return a list of sample filenames."""
     return [
         "ae_indep_qiskit_10.qasm",
         "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
@@ -116,6 +120,7 @@ def sample_filenames() -> list[str]:
 def test_quantumcircuit_indep_level(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
+    """Test the creation of the independent level benchmarks for the benchmarks."""
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -190,6 +195,7 @@ def test_quantumcircuit_indep_level(
 def test_quantumcircuit_native_and_mapped_levels(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
+    """Test the creation of the native and mapped level benchmarks for the benchmarks."""
     if benchmark in (grover, qwalk):
         qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
     else:
@@ -294,27 +300,32 @@ def test_quantumcircuit_native_and_mapped_levels(
 
 
 def test_get_default_evaluation_output_path() -> None:
+    """Test the default evaluation output path."""
     path = utils.get_default_evaluation_output_path()
     assert Path(path).exists()
 
 
 def test_openqasm_gates() -> None:
+    """Test the openqasm gates."""
     openqasm_gates = utils.get_openqasm_gates()
     num_openqasm_gates = 42
     assert len(openqasm_gates) == num_openqasm_gates
 
 
 def test_dj_constant_oracle() -> None:
+    """Test the creation of the DJ benchmark constant oracle."""
     qc = dj.create_circuit(5, False)
     assert qc.depth() > 0
 
 
 def test_routing() -> None:
+    """Test the creation of the routing benchmark."""
     qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
 
 
 def test_get_benchmark_deprecation_warning() -> None:
+    """Test the deprecation warning for gate_set_name in get_benchmark."""
     with pytest.warns(
         DeprecationWarning,
         match="gate_set_name is deprecated and will be removed in a future release. Use provider_name instead.",
@@ -330,6 +341,7 @@ def test_get_benchmark_deprecation_warning() -> None:
 
 
 def test_unidirectional_coupling_map() -> None:
+    """Test the unidirectional coupling map for the OQC Lucy device."""
     qc = get_benchmark(
         benchmark_name="dj",
         level="mapped",
@@ -709,6 +721,7 @@ def test_get_benchmark(
     provider_name: str,
     device_name: str,
 ) -> None:
+    """Test the creation of the benchmarks using the get_benchmark method."""
     qc = get_benchmark(
         benchmark_name,
         level,
@@ -731,6 +744,7 @@ def test_get_benchmark(
 
 
 def test_get_benchmark_faulty_parameters() -> None:
+    """Test the get_benchmark method with faulty parameters."""
     match = "Selected benchmark is not supported. Valid benchmarks are"
     with pytest.raises(ValueError, match=match):
         get_benchmark("wrong_name", 2, 6)
@@ -823,6 +837,7 @@ def test_get_benchmark_faulty_parameters() -> None:
 
 
 def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
+    """Test the creation of benchmarks from a configuration file and the evaluation of the created benchmarks."""
     config = {
         "timeout": 1,
         "benchmarks": [
@@ -860,6 +875,7 @@ def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
 
 
 def test_configure_end(output_path: str) -> None:
+    """Removes all temporarily created files while testing."""
     # delete all files in the test directory and the directory itself
     for f in Path(output_path).iterdir():
         f.unlink()
@@ -877,6 +893,7 @@ def test_configure_end(output_path: str) -> None:
 def test_saving_qasm_to_alternative_location_with_alternative_filename(
     abstraction_level: int,
 ) -> None:
+    """Test saving the qasm file to an alternative location with an alternative filename."""
     directory = "."
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
@@ -916,6 +933,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
 
 
 def test_oqc_benchmarks() -> None:
+    """Test the creation of benchmarks for the OQC devices."""
     qc = get_benchmark("ghz", 1, 5)
     directory = "."
     filename = "ghz_oqc"
@@ -983,6 +1001,7 @@ def test_oqc_benchmarks() -> None:
 
 
 def test_evaluate_qasm_file() -> None:
+    """Test the evaluation of a qasm file."""
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
     with Path(filename).open("w") as f:
@@ -1017,6 +1036,7 @@ def test_evaluate_qasm_file() -> None:
     ],
 )
 def test_count_occurrences(search_str: str, expected_val: int, sample_filenames: list[str]) -> None:
+    """Test the count_occurrences function."""
     assert evaluation.count_occurrences(sample_filenames, search_str) == expected_val
 
 
@@ -1028,10 +1048,12 @@ def test_count_occurrences(search_str: str, expected_val: int, sample_filenames:
     ],
 )
 def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
+    """Test the count_qubit_numbers_per_compiler function."""
     assert evaluation.count_qubit_numbers_per_compiler(sample_filenames, compiler) == expected_val
 
 
 def test_calc_supermarq_features() -> None:
+    """Test the calculation of the supermarq features."""
     ghz_qc = get_benchmark("ghz", 1, 5)
     ghz_features = utils.calc_supermarq_features(ghz_qc)
     assert ghz_features.program_communication == 0.4
@@ -1064,6 +1086,7 @@ def test_calc_supermarq_features() -> None:
 
 
 def test_benchmark_generator() -> None:
+    """Test the BenchmarkGenerator class."""
     generator = BenchmarkGenerator(qasm_output_path="test")
     assert generator.qasm_output_path == "test"
     assert generator.timeout > 0
@@ -1072,17 +1095,22 @@ def test_benchmark_generator() -> None:
 
 # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
 def endless_loop(arg1: SampleObject, run_forever: bool) -> bool:  # noqa: ARG001
+    """Endless loop necessary for testing the timeout watcher."""
     while run_forever:
         pass
     return True
 
 
 class SampleObject:
+    """Sample object for testing the timeout watcher."""
+
     def __init__(self, name: str) -> None:
+        """Initialize the sample object."""
         self.name = name
 
 
 def test_timeout_watchers() -> None:
+    """Test the timeout watcher."""
     timeout = 1
     if sys.platform == "win32":
         with pytest.warns(RuntimeWarning, match="Timeout is not supported on Windows."):
@@ -1093,11 +1121,13 @@ def test_timeout_watchers() -> None:
 
 
 def test_get_module_for_benchmark() -> None:
+    """Test the get_module_for_benchmark function."""
     for benchmark in utils.get_supported_benchmarks():
         assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
 def test_benchmark_helper_shor() -> None:
+    """Testing the Shor benchmarks."""
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
@@ -1109,6 +1139,7 @@ def test_benchmark_helper_shor() -> None:
     reason="PySCF is not available on Windows.",
 )
 def test_benchmark_groundstate_non_windows() -> None:
+    """Testing the Groundstate benchmarks."""
     groundstate_instances = ["small", "medium", "large"]
     for elem in groundstate_instances:
         res_groundstate = groundstate.get_molecule(elem)
@@ -1123,11 +1154,13 @@ def test_benchmark_groundstate_non_windows() -> None:
     reason="Windows-specific test.",
 )
 def test_benchmark_groundstate_windows() -> None:
+    """Testing the Groundstate benchmarks on Windows."""
     with pytest.raises(ImportError, match=r"PySCF is not installed"):
         groundstate.create_circuit("small")
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:
+    """Test the number of qubits in the tket-mapped circuit."""
     qc = get_benchmark("ghz", 1, 5)
     res = tket_helper.get_mapped_level(
         qc,

@@ -1,3 +1,5 @@
+"""QOE inexact benchmark definition."""
+
 from __future__ import annotations
 
 import random
@@ -9,11 +11,13 @@ from qiskit.circuit.library import QFT
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the Quantum Phase Estimation algorithm for a phase which cannot be
-    exactly estimated.
+    """Returns a quantum circuit implementing the Quantum Phase Estimation algorithm for a phase which cannot be exactly estimated.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+
+    Returns:
+        QuantumCircuit: a quantum circuit implementing the Quantum Phase Estimation algorithm for a phase which cannot be exactly estimated
     """
     num_qubits = num_qubits - 1  # because of ancilla qubit
     q = QuantumRegister(num_qubits, "q")

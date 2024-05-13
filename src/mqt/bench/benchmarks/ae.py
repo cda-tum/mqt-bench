@@ -1,4 +1,4 @@
-# Code from https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
+"""Amplitude estimation benchmark definition. Code is based on https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
     """
     ae = AmplitudeEstimation(
         num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
@@ -29,19 +29,22 @@ class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
     """A circuit representing the Bernoulli Q operator."""
 
     def __init__(self, probability: float) -> None:
+        """Initialize the Bernoulli Q operator."""
         super().__init__(1)  # circuit on 1 qubit
 
         self._theta_p = 2 * np.arcsin(np.sqrt(probability))
         self.ry(2 * self._theta_p, 0)
 
     def __eq__(self, other: object) -> bool:
+        """Return if the operators are equal."""
         return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
 
     def __hash__(self) -> int:
+        """Return a hash of the operator."""
         return hash(self._theta_p)
 
     def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
-        # implement the efficient power of Q
+        """Return a circuit implementing the power of the operator."""
         q_k = QuantumCircuit(1)
         q_k.ry(2 * power * self._theta_p, 0)
         return q_k

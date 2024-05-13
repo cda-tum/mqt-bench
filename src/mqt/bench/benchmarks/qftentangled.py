@@ -1,3 +1,5 @@
+"""QFT entangled benchmark definition."""
+
 from __future__ import annotations
 
 from qiskit import QuantumCircuit, QuantumRegister
@@ -7,8 +9,11 @@ from qiskit.circuit.library import QFT
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Returns a quantum circuit implementing the Quantum Fourier Transform algorithm using entangled qubits.
 
-    Keyword Arguments:
-    num_qubits -- number of qubits of the returned quantum circuit
+    Arguments:
+        num_qubits: number of qubits of the returned quantum circuit
+
+    Returns:
+        QuantumCircuit: a quantum circuit implementing the Quantum Fourier Transform algorithm using entangled qubits
     """
     q = QuantumRegister(num_qubits, "q")
     qc = QuantumCircuit(q)

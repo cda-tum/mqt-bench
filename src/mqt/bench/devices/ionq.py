@@ -1,3 +1,5 @@
+"""Module to manage IonQ devices."""
+
 from __future__ import annotations
 
 import json
@@ -10,6 +12,8 @@ from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
 class Statistics(TypedDict):
+    """Class to store the statistics of a gate or measurement."""
+
     mean: float
 
 
@@ -18,9 +22,7 @@ Timing = TypedDict("Timing", {"t1": float, "t2": float, "1q": float, "2q": float
 
 
 class IonQCalibration(TypedDict):
-    """Class to store the calibration data of an IonQ device.
-    Follows https://docs.ionq.com/#tag/characterizations.
-    """
+    """Class to store the calibration data of an IonQ device. Follows https://docs.ionq.com/#tag/characterizations."""
 
     name: str
     basis_gates: list[str]
@@ -49,10 +51,11 @@ class IonQProvider(Provider):
     def import_backend(cls, path: Path) -> Device:
         """Import an IonQ backend as a Device object.
 
-        Args:
+        Arguments:
             path: the path to the JSON file containing the calibration data.
 
-        Returns: the Device object
+        Returns:
+            the Device object
         """
         with path.open() as json_file:
             ionq_calibration = cast(IonQCalibration, json.load(json_file))

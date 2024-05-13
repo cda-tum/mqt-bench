@@ -1,3 +1,5 @@
+"""Compilation functions to create benchmarks on different levels of abstraction using TKET."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -29,6 +31,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def get_rebase(gate_set: list[str]) -> BasePass:
+    """Get the rebase pass for the given gate set."""
     op_dict = {
         "rx": OpType.Rx,
         "ry": OpType.Ry,
@@ -77,17 +80,17 @@ def get_indep_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-independent level.
 
-    Keyword Arguments:
-    qc -- quantum circuit which the to be created benchmark circuit is based on
-    num_qubits -- number of qubits
-    file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
-    return_qc -- flag if the actual circuit shall be returned
-    target_directory -- alternative directory to the default one to store the created circuit
-    target_filename -- alternative filename to the default one
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
 
-    Return values:
-    if return_qc == True -- quantum circuit object
-    else -- True/False indicating whether the function call was successful or not
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
     """
     filename_indep = target_filename or qc.name + "_indep_tket_" + str(num_qubits)
 
@@ -151,18 +154,18 @@ def get_native_gates_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
-    Keyword Arguments:
-    qc -- quantum circuit which the to be created benchmark circuit is based on
-    provider -- determines the native gate set
-    num_qubits -- number of qubits
-    file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
-    return_qc -- flag if the actual circuit shall be returned
-    target_directory -- alternative directory to the default one to store the created circuit
-    target_filename -- alternative filename to the default one
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        provider: determines the native gate set
+        num_qubits: number of qubits
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
 
-    Return values:
-    if return_qc == True -- quantum circuit object
-    else -- True/False indicating whether the function call was successful or not
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
     """
     if not target_filename:
         filename_native = qc.name + "_nativegates_" + provider.provider_name + "_tket_" + str(num_qubits)
@@ -240,19 +243,19 @@ def get_mapped_level(
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
-    Keyword Arguments:
-    qc -- quantum circuit which the to be created benchmark circuit is based on
-    num_qubits -- number of qubits
-    device -- target device
-    lineplacement -- if true line placement is used, else graph placement
-    file_precheck -- flag indicating whether to check whether the file already exists before creating it (again)
-    return_qc -- flag if the actual circuit shall be returned
-    target_directory -- alternative directory to the default one to store the created circuit
-    target_filename -- alternative filename to the default one
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        device: target device
+        lineplacement: if true line placement is used, else graph placement
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
 
-    Return values:
-    if return_qc == True -- quantum circuit object
-    else -- True/False indicating whether the function call was successful or not
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
     """
     placement = "line" if lineplacement else "graph"
 
