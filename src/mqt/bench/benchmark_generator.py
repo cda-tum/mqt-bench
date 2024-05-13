@@ -83,7 +83,7 @@ class BenchmarkGenerator:
         """Initialize the BenchmarkGenerator."""
         if cfg_path is None:
             cfg_path = utils.get_default_config_path()
-        with Path(cfg_path).open() as jsonfile:
+        with Path(cfg_path).open(encoding="locale") as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
