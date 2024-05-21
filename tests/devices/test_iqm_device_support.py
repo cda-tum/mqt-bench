@@ -33,33 +33,33 @@ def test_get_iqm_apollo_device() -> None:
     assert device.num_qubits == 20
 
     assert all(gate in ["r", "measure", "barrier"] for gate in single_qubit_gates)
-    assert all(gate in ["cz"] for gate in two_qubit_gates)
+    assert all(gate == "cz" for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
         assert 0 <= device.get_readout_fidelity(q) <= 1
-        assert 0 < device.get_readout_duration(q)
+        assert device.get_readout_duration(q) > 0
         if device.calibration is not None:
-            assert 0 < device.calibration.get_t1(q)
-            assert 0 < device.calibration.get_t2(q)
+            assert device.calibration.get_t1(q) > 0
+            assert device.calibration.get_t2(q) > 0
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            assert 0 < device.get_single_qubit_gate_duration(gate, q)
+            assert device.get_single_qubit_gate_duration(gate, q) > 0
             if device.calibration is not None:
                 assert 0 <= device.calibration.compute_average_single_qubit_gate_fidelity(gate) <= 1
-                assert 0 < device.calibration.compute_average_single_qubit_gate_duration(gate)
+                assert device.calibration.compute_average_single_qubit_gate_duration(gate) > 0
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
-            assert 0 < device.get_two_qubit_gate_duration(gate, q0, q1)
+            assert device.get_two_qubit_gate_duration(gate, q0, q1) > 0
             if device.calibration is not None:
                 assert 0 <= device.calibration.compute_average_two_qubit_gate_fidelity(gate) <= 1
-                assert 0 < device.calibration.compute_average_two_qubit_gate_duration(gate)
+                assert device.calibration.compute_average_two_qubit_gate_duration(gate) > 0
 
     if device.calibration is not None:
         assert 0 <= device.calibration.compute_average_readout_fidelity() <= 1
-        assert 0 < device.calibration.compute_average_readout_duration()
+        assert device.calibration.compute_average_readout_duration() > 0
 
 
 def test_get_iqm_adonis_device() -> None:
@@ -72,30 +72,30 @@ def test_get_iqm_adonis_device() -> None:
     assert device.num_qubits == 5
 
     assert all(gate in ["r", "measure", "barrier"] for gate in single_qubit_gates)
-    assert all(gate in ["cz"] for gate in two_qubit_gates)
+    assert all(gate == "cz" for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
         assert 0 <= device.get_readout_fidelity(q) <= 1
-        assert 0 < device.get_readout_duration(q)
+        assert device.get_readout_duration(q) > 0
         if device.calibration is not None:
-            assert 0 < device.calibration.get_t1(q)
-            assert 0 < device.calibration.get_t2(q)
+            assert device.calibration.get_t1(q) > 0
+            assert device.calibration.get_t2(q) > 0
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            assert 0 < device.get_single_qubit_gate_duration(gate, q)
+            assert device.get_single_qubit_gate_duration(gate, q) > 0
             if device.calibration is not None:
                 assert 0 <= device.calibration.compute_average_single_qubit_gate_fidelity(gate) <= 1
-                assert 0 < device.calibration.compute_average_single_qubit_gate_duration(gate)
+                assert device.calibration.compute_average_single_qubit_gate_duration(gate) > 0
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
-            assert 0 < device.get_two_qubit_gate_duration(gate, q0, q1)
+            assert device.get_two_qubit_gate_duration(gate, q0, q1) > 0
             if device.calibration is not None:
                 assert 0 <= device.calibration.compute_average_two_qubit_gate_fidelity(gate) <= 1
-                assert 0 < device.calibration.compute_average_two_qubit_gate_duration(gate)
+                assert device.calibration.compute_average_two_qubit_gate_duration(gate) > 0
 
     if device.calibration is not None:
         assert 0 <= device.calibration.compute_average_readout_fidelity() <= 1
-        assert 0 < device.calibration.compute_average_readout_duration()
+        assert device.calibration.compute_average_readout_duration() > 0
