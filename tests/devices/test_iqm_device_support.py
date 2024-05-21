@@ -32,33 +32,34 @@ def test_get_iqm_apollo_device() -> None:
     assert device.name == "iqm_apollo"
     assert device.num_qubits == 20
 
-    assert all(isinstance(gate, str) for gate in single_qubit_gates)
-    assert all(isinstance(gate, str) for gate in two_qubit_gates)
+    assert all(gate in ["r", "measure", "barrier"] for gate in single_qubit_gates)
+    assert all(gate in ["cz"] for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
-        assert isinstance(device.get_readout_fidelity(q), float | int)
-        assert isinstance(device.get_readout_duration(q), float | int)
+        assert 0 <= device.get_readout_fidelity(q) <= 1
+        assert 0 < device.get_readout_duration(q)
         if device.calibration is not None:
-            assert isinstance(device.calibration.get_t1(q), float | int)
-            assert isinstance(device.calibration.get_t2(q), float | int)
+            assert 0 < device.calibration.get_t1(q)
+            assert 0 < device.calibration.get_t2(q)
 
         for gate in single_qubit_gates:
-            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), float | int)
-            assert isinstance(device.get_single_qubit_gate_duration(gate, q), float | int)
+            assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
+            assert 0 < device.get_single_qubit_gate_duration(gate, q)
             if device.calibration is not None:
-                assert isinstance(device.calibration.compute_average_single_qubit_gate_duration(gate), float | int)
-                assert isinstance(device.calibration.compute_average_single_qubit_gate_fidelity(gate), float | int)
+                assert 0 <= device.calibration.compute_average_single_qubit_gate_fidelity(gate) <= 1
+                assert 0 < device.calibration.compute_average_single_qubit_gate_duration(gate)
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
-            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), float | int)
+            assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
+            assert 0 < device.get_two_qubit_gate_duration(gate, q0, q1)
             if device.calibration is not None:
-                assert isinstance(device.calibration.compute_average_two_qubit_gate_duration(gate), float | int)
-                assert isinstance(device.calibration.compute_average_two_qubit_gate_fidelity(gate), float | int)
+                assert 0 <= device.calibration.compute_average_two_qubit_gate_fidelity(gate) <= 1
+                assert 0 < device.calibration.compute_average_two_qubit_gate_duration(gate)
+
     if device.calibration is not None:
-        assert isinstance(device.calibration.compute_average_readout_fidelity(), float | int)
-        assert isinstance(device.calibration.compute_average_readout_duration(), float | int)
+        assert 0 <= device.calibration.compute_average_readout_fidelity() <= 1
+        assert 0 < device.calibration.compute_average_readout_duration()
 
 
 def test_get_iqm_adonis_device() -> None:
@@ -70,30 +71,31 @@ def test_get_iqm_adonis_device() -> None:
     assert device.name == "iqm_adonis"
     assert device.num_qubits == 5
 
-    assert all(isinstance(gate, str) for gate in single_qubit_gates)
-    assert all(isinstance(gate, str) for gate in two_qubit_gates)
+    assert all(gate in ["r", "measure", "barrier"] for gate in single_qubit_gates)
+    assert all(gate in ["cz"] for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
-        assert isinstance(device.get_readout_fidelity(q), float | int)
-        assert isinstance(device.get_readout_duration(q), float | int)
+        assert 0 <= device.get_readout_fidelity(q) <= 1
+        assert 0 < device.get_readout_duration(q)
         if device.calibration is not None:
-            assert isinstance(device.calibration.get_t1(q), float | int)
-            assert isinstance(device.calibration.get_t2(q), float | int)
+            assert 0 < device.calibration.get_t1(q)
+            assert 0 < device.calibration.get_t2(q)
 
         for gate in single_qubit_gates:
-            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), float | int)
-            assert isinstance(device.get_single_qubit_gate_duration(gate, q), float | int)
+            assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
+            assert 0 < device.get_single_qubit_gate_duration(gate, q)
             if device.calibration is not None:
-                assert isinstance(device.calibration.compute_average_single_qubit_gate_duration(gate), float | int)
-                assert isinstance(device.calibration.compute_average_single_qubit_gate_fidelity(gate), float | int)
+                assert 0 <= device.calibration.compute_average_single_qubit_gate_fidelity(gate) <= 1
+                assert 0 < device.calibration.compute_average_single_qubit_gate_duration(gate)
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
-            assert isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), float | int)
+            assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
+            assert 0 < device.get_two_qubit_gate_duration(gate, q0, q1)
             if device.calibration is not None:
-                assert isinstance(device.calibration.compute_average_two_qubit_gate_duration(gate), float | int)
-                assert isinstance(device.calibration.compute_average_two_qubit_gate_fidelity(gate), float | int)
+                assert 0 <= device.calibration.compute_average_two_qubit_gate_fidelity(gate) <= 1
+                assert 0 < device.calibration.compute_average_two_qubit_gate_duration(gate)
+
     if device.calibration is not None:
-        assert isinstance(device.calibration.compute_average_readout_fidelity(), float | int)
-        assert isinstance(device.calibration.compute_average_readout_duration(), float | int)
+        assert 0 <= device.calibration.compute_average_readout_fidelity() <= 1
+        assert 0 < device.calibration.compute_average_readout_duration()
