@@ -24,20 +24,21 @@ def test_quantinuum_h2_device() -> None:
     assert device.name == "quantinuum_h2"
     assert device.num_qubits == 32
 
-    assert all(isinstance(gate, str) for gate in single_qubit_gates)
-    assert all(isinstance(gate, str) for gate in two_qubit_gates)
+    assert all(gate in ["rz", "ry", "rx", "measure", "barrier"] for gate in single_qubit_gates)
+    assert all(gate == "rzz" for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
-        assert isinstance(device.get_readout_fidelity(q), float | int)
+        assert 0 <= device.get_readout_fidelity(q) <= 1
         with pytest.raises(ValueError, match="Readout duration values not available."):
             device.get_readout_duration(q)
+
         for gate in single_qubit_gates:
-            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), float | int)
+            assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
             with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
                 device.get_single_qubit_gate_duration(gate, q)
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
+            assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
             with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
                 device.get_two_qubit_gate_duration(gate, q0, q1)
