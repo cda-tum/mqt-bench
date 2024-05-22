@@ -24,20 +24,21 @@ def test_rigetti_aspen_m3_device() -> None:
     assert device.name == "rigetti_aspen_m3"
     assert device.num_qubits == 79
 
-    assert all(isinstance(gate, str) for gate in single_qubit_gates)
-    assert all(isinstance(gate, str) for gate in two_qubit_gates)
+    assert all(gate in ["rx", "rz", "measure", "barrier"] for gate in single_qubit_gates)
+    assert all(gate in ["cz", "cp", "xx_plus_yy"] for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
-        assert isinstance(device.get_readout_fidelity(q), float | int)
+        assert 0 <= device.get_readout_fidelity(q) <= 1
         with pytest.raises(ValueError, match="Readout duration values not available."):
             device.get_readout_duration(q)
+
         for gate in single_qubit_gates:
-            assert isinstance(device.get_single_qubit_gate_fidelity(gate, q), float | int)
+            assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
             with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
                 device.get_single_qubit_gate_duration(gate, q)
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
-            assert isinstance(device.get_two_qubit_gate_fidelity(gate, q0, q1), float | int)
+            assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
             with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
-                isinstance(device.get_two_qubit_gate_duration(gate, q0, q1), float | int)
+                device.get_two_qubit_gate_duration(gate, q0, q1)
