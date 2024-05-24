@@ -98,7 +98,7 @@ filterwarnings = [
     "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
     "ignore::DeprecationWarning:.*(docplex).*",
     "ignore::SyntaxWarning:.*(docplex).*",
-    "ignore::DeprecationWarning:.*(qiskit_aer).*",
+    "ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*",
 ]
 
 [tool.coverage]
