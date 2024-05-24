@@ -98,6 +98,7 @@ filterwarnings = [
     "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
     "ignore::DeprecationWarning:.*(docplex).*",
     "ignore::SyntaxWarning:.*(docplex).*",
+    "ignore::DeprecationWarning:.*(qiskit_aer).*",
 ]
 
 [tool.coverage]
