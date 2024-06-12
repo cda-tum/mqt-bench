@@ -1004,7 +1004,7 @@ def test_evaluate_qasm_file() -> None:
     """Test the evaluation of a qasm file."""
     qc = get_benchmark("dj", 1, 5)
     filename = "test_5.qasm"
-    with Path(filename).open("w") as f:
+    with Path(filename).open("w", encoding="locale") as f:
         dump(qc, f)
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
