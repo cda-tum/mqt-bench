@@ -1,3 +1,5 @@
+"""Test the Flask server with the pregenerated zip file."""
+
 from __future__ import annotations
 
 import os
@@ -21,6 +23,7 @@ IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 @pytest.mark.skipif(not IN_GITHUB_ACTIONS, reason="Only run this test on GitHub runner")
 def test_flask_server_with_pregenerated_zip() -> None:
+    """Test the Flask server with the pregenerated zip file."""
     benchviewer = resources.files("mqt.bench.viewer")
     with resources.as_file(benchviewer) as benchviewer_path:
         benchviewer_location = benchviewer_path

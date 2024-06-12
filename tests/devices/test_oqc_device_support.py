@@ -1,3 +1,5 @@
+"""Test the OQCProvider class and the OQC Lucy device."""
+
 from __future__ import annotations
 
 import pytest
@@ -6,12 +8,7 @@ from mqt.bench.devices import OQCProvider
 
 
 def test_oqc_provider_methods() -> None:
-    """Test the methods of the OQCrovider class:
-    - get_available_device_names
-    - get_available_basis_gates
-    - get_native_gates
-    - get_max_qubits.
-    """
+    """Test the methods of the OQCrovider class."""
     assert OQCProvider.get_available_device_names() == ["oqc_lucy"]
     assert OQCProvider.get_available_basis_gates() == [["rz", "sx", "x", "ecr", "measure", "barrier"]]
     assert OQCProvider.get_native_gates() == ["rz", "sx", "x", "ecr", "measure", "barrier"]

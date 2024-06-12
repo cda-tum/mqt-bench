@@ -1,3 +1,5 @@
+"""Utility functions for the MQT Bench module."""
+
 from __future__ import annotations
 
 import sys
@@ -32,6 +34,8 @@ from dataclasses import dataclass
 
 @dataclass
 class SupermarqFeatures:
+    """Data class for the Supermarq features of a quantum circuit."""
+
     program_communication: float
     critical_depth: float
     entanglement_ratio: float
@@ -40,6 +44,7 @@ class SupermarqFeatures:
 
 
 def get_supported_benchmarks() -> list[str]:
+    """Returns a list of all supported benchmarks."""
     return [
         "ae",
         "dj",
@@ -73,14 +78,17 @@ def get_supported_benchmarks() -> list[str]:
 
 
 def get_supported_levels() -> list[str | int]:
+    """Returns a list of all supported benchmark levels."""
     return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
 
 
 def get_supported_compilers() -> list[str]:
+    """Returns a list of all supported compilers."""
     return ["qiskit", "tket"]
 
 
 def get_default_config_path() -> str:
+    """Returns the path to the default configuration file."""
     return str(resources.files("mqt.bench") / "config.json")
 
 
@@ -102,9 +110,9 @@ def get_zip_folder_path() -> str:
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 
-    Keyword Arguments:
-    n_nodes -- number of graph nodes (and also number of qubits)
-    degree -- edges per node
+    Arguments:
+        n_nodes: number of graph nodes (and also number of qubits)
+        degree: edges per node
     """
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
@@ -170,12 +178,13 @@ def save_as_qasm(
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
-    Keyword Arguments:
-    qc_str -- Quantum circuit to be stored as a string
-    filename -- filename
-    gate_set -- set of used gates
-    mapped -- boolean indicating whether the quantum circuit is mapped to a specific hardware layout
-    c_map -- coupling map of used hardware layout
+    Arguments:
+        qc_str: Quantum circuit to be stored as a string
+        filename: filename
+        gate_set: set of used gates
+        mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
+        c_map: coupling map of used hardware layout
+        target_directory: directory where the qasm file is stored
     """
     if c_map is None:
         c_map = []
@@ -263,6 +272,7 @@ def calc_supermarq_features(
 
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
+    """Returns the module for a specific benchmark."""
     if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
         return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qnn":
@@ -277,4 +287,5 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
 
 
 def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
+    """Converts a coupling map to a list of tuples."""
     return [(c[0], c[1]) for c in c_map]

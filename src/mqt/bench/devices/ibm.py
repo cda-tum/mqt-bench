@@ -1,3 +1,5 @@
+"""Module to manage IBM devices."""
+
 from __future__ import annotations
 
 import json
@@ -57,7 +59,7 @@ class IBMProvider(Provider):
     def import_backend(cls, path: Path) -> Device:
         """Import an IBM backend.
 
-        Args:
+        Arguments:
             path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
@@ -103,7 +105,7 @@ class IBMProvider(Provider):
     def __import_backend_properties(cls, backend_properties: BackendProperties) -> DeviceCalibration:
         """Import calibration data from a Qiskit `BackendProperties` object.
 
-        Args:
+        Arguments:
             backend_properties: the Qiskit `BackendProperties` object.
 
         Returns: Collection of calibration data
@@ -146,7 +148,7 @@ class IBMProvider(Provider):
     def __import_backend_v1(cls, backend: BackendV1) -> Device:
         """Import device data from a Qiskit `BackendV1` object.
 
-        Args:
+        Arguments:
             backend: the Qiskit `BackendV1` object.
 
         Returns: Collection of device data
@@ -163,7 +165,7 @@ class IBMProvider(Provider):
     def __import_target(cls, target: Target) -> DeviceCalibration:
         """Import calibration data from a Qiskit `Target` object.
 
-        Args:
+        Arguments:
             target: the Qiskit `Target` object.
 
         Returns: Collection of calibration data
@@ -207,7 +209,7 @@ class IBMProvider(Provider):
     def __import_backend_v2(cls, backend: BackendV2) -> Device:
         """Import device data from a Qiskit `BackendV2` object.
 
-        Args:
+        Arguments:
             backend: the Qiskit `BackendV2` object.
 
         Returns: Collection of device data
@@ -224,10 +226,11 @@ class IBMProvider(Provider):
     def import_qiskit_backend(cls, backend: BackendV1 | BackendV2) -> Device:
         """Import device data from a Qiskit `Backend` object.
 
-        Args:
+        Arguments:
             backend: the Qiskit `Backend` object.
 
-        Returns: Collection of device data
+        Returns:
+            Collection of device data
         """
         if isinstance(backend, BackendV1):
             return cls.__import_backend_v1(backend)

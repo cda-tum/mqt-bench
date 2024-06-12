@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![CI](https://img.shields.io/github/actions/workflow/status/cda-tum/mqt-bench/ci.yml?branch=main&style=flat-square&logo=github&label=ci)](https://github.com/cda-tum/mqt-bench/actions/workflows/ci.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/cda-tum/mqt-bench/cd.yml?style=flat-square&logo=github&label=cd)](https://github.com/cda-tum/mqt-bench/actions/workflows/cd.yml)
-[![Documentation](https://img.shields.io/readthedocs/bench?logo=readthedocs&style=flat-square)](https://mqt.readthedocs.io/projects/bench)
+[![Documentation](https://img.shields.io/readthedocs/mqt-bench?logo=readthedocs&style=flat-square)](https://mqt.readthedocs.io/projects/bench)
 [![codecov](https://img.shields.io/codecov/c/github/cda-tum/mqt-bench?style=flat-square&logo=codecov)](https://codecov.io/gh/cda-tum/mqt-bench)
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 MQT Bench is a quantum circuit benchmark suite with cross-level support, i.e., providing the same benchmark algorithms for different abstraction levels throughout the quantum computing
 software stack.
-MQT Bench is part of the [_Munich Quantum Toolkit_ (_MQT_)](https://mqt.readthedocs.io) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/).
+MQT Bench is part of the [_Munich Quantum Toolkit_ (_MQT_)](https://mqt.readthedocs.io) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/) and is hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
 <p align="center">
   <a href="https://mqt.readthedocs.io/projects/bench">
@@ -28,8 +28,6 @@ MQT Bench is part of the [_Munich Quantum Toolkit_ (_MQT_)](https://mqt.readthed
 </p>
 
 If you have any questions, feel free to create a [discussion](https://github.com/cda-tum/mqt-bench/discussions) or an [issue](https://github.com/cda-tum/mqt-bench/issues) on [GitHub](https://github.com/cda-tum/mqt-bench).
-
-MQT Bench is part of the Munich Quantum Toolkit (MQT) developed by the [Chair for Design Automation](https://www.cda.cit.tum.de/) at the [Technical University of Munich](https://www.tum.de/) and is hosted at [https://www.cda.cit.tum.de/mqtbench/](https://www.cda.cit.tum.de/mqtbench/).
 
 [<img src="https://raw.githubusercontent.com/cda-tum/mqtbench/main/docs/_static/mqtbench.png" align="center" width="500" >](https://www.cda.cit.tum.de/mqtbench)
 
@@ -57,7 +55,7 @@ print(qc_algorithmic_level.draw())
 
 ## Availability as a PennyLane Dataset
 
-MQT Bench is also available as a [Pennylane dataset](https://pennylane.ai/datasets/other/mqt-bench).
+MQT Bench is also available as a [PennyLane dataset](https://pennylane.ai/datasets/other/mqt-bench).
 
 ## Acknowledgements
 
