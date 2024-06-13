@@ -32,7 +32,7 @@ class TwoQubitProperties(TypedDict):
     """Class to store the properties of a two-qubit gate."""
 
     coupling: Coupling
-    fCX: float
+    fECR: float
 
 
 class Properties(TypedDict):
@@ -92,12 +92,13 @@ class OQCProvider(Provider):
                 gate: oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRB"] for gate in ["rz", "sx", "x"]
             }
             calibration.readout_fidelity[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRO"]
-            calibration.t1[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T1"]
-            calibration.t2[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"]
+            # data in microseconds, convert to SI unit (seconds)
+            calibration.t1[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T1"] * 1e-6
+            calibration.t2[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"] * 1e-6
 
         for qubit1, qubit2 in device.coupling_map:
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = dict.fromkeys(
-                ["ecr"], oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fCX"]
+                ["ecr"], oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fECR"]
             )
         device.calibration = calibration
         return device
