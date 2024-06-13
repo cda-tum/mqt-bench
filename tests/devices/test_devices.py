@@ -103,7 +103,7 @@ def test_device_calibration_errors() -> None:
 def test_provider() -> None:
     """Test that all providers can be imported."""
     for provider in get_available_providers():
-        assert provider.provider_name in ["ibm", "rigetti", "oqc", "ionq", "quantinuum"]
+        assert provider.provider_name in ["ibm", "rigetti", "oqc", "ionq", "quantinuum", "iqm"]
 
     with pytest.raises(NotFoundError, match="Provider 'test' not found among available providers."):
         get_provider_by_name("test")

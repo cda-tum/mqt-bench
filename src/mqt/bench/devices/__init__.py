@@ -13,6 +13,7 @@ from mqt.bench.devices.provider import Provider
 
 from mqt.bench.devices.ibm import IBMProvider
 from mqt.bench.devices.ionq import IonQProvider
+from mqt.bench.devices.iqm import IQMProvider
 from mqt.bench.devices.oqc import OQCProvider
 from mqt.bench.devices.quantinuum import QuantinuumProvider
 from mqt.bench.devices.rigetti import RigettiProvider
@@ -24,7 +25,7 @@ class NotFoundError(Exception):
 
 def get_available_providers() -> list[Provider]:
     """Get a list of all available providers."""
-    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider()]
+    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
 
 
 def get_available_provider_names() -> list[str]:
@@ -92,6 +93,7 @@ __all__ = [
     "Device",
     "DeviceCalibration",
     "IBMProvider",
+    "IQMProvider",
     "IonQProvider",
     "OQCProvider",
     "Provider",
