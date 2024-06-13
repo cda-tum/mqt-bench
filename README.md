@@ -59,10 +59,12 @@ MQT Bench is also available as a [PennyLane dataset](https://pennylane.ai/datase
 
 ## Acknowledgements
 
-The Munich Quantum Toolkit has been supported by the European
-Research Council (ERC) under the European Union's Horizon 2020 research and innovation program (grant agreement
-No. 101001318), the Bavarian State Ministry for Science and Arts through the Distinguished Professorship Program, as well as the
-Munich Quantum Valley, which is supported by the Bavarian state government with funds from the Hightech Agenda Bayern Plus.
+This project received funding from the European Research Council (ERC) under the European
+Union's Horizon 2020 research and innovation program (grant agreement No. 101001318), was
+part of the Munich Quantum Valley, which is supported by the Bavarian state government with
+funds from the Hightech Agenda Bayern Plus, and has been supported by the BMWK on the basis
+of a decision by the German Bundestag through project QuaST, as well as by the BMK, BMDW,
+and the State of Upper Austria in the frame of the COMET program (managed by the FFG).
 
 <p align="center">
 <picture>
