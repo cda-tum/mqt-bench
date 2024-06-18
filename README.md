@@ -57,6 +57,25 @@ print(qc_algorithmic_level.draw())
 
 MQT Bench is also available as a [PennyLane dataset](https://pennylane.ai/datasets/other/mqt-bench).
 
+## References
+
+In case you are using MQT Bench in your work, we would be thankful if you referred to it by citing the following publication:
+
+```bibtex
+@article{quetschlich2023mqtbench,
+  title         = {{{MQT Bench}}: {Benchmarking Software and Design Automation Tools for Quantum Computing}},
+  shorttitle    = {{MQT Bench}},
+  journal       = {{Quantum}},
+  author        = {Quetschlich, Nils and Burgholzer, Lukas and Wille, Robert},
+  year          = {2023},
+  doi           = {10.22331/q-2023-07-20-1062},
+  eprint        = {2204.13719},
+  primaryclass  = {quant-ph},
+  archiveprefix = {arxiv},
+  note          = {{{MQT Bench}} is available at \url{https://www.cda.cit.tum.de/mqtbench/}},
+}
+```
+
 ## Acknowledgements
 
 This project received funding from the European Research Council (ERC) under the European
