@@ -9,13 +9,13 @@ from pytket import OpType
 from pytket.architecture import Architecture
 from pytket.extensions.qiskit import qiskit_to_tk
 from pytket.passes import (
+    AutoRebase,
     CXMappingPass,
     FullPeepholeOptimise,
     PeepholeOptimise2Q,
     PlacementPass,
     RoutingPass,
     SynthesiseTket,
-    auto_rebase_pass,
 )
 from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
@@ -46,7 +46,7 @@ def get_rebase(gate_set: list[str]) -> BasePass:
         "ecr": OpType.ECR,
         "measure": OpType.Measure,
     }
-    return auto_rebase_pass({op_dict[key] for key in gate_set if key in op_dict})
+    return AutoRebase({op_dict[key] for key in gate_set if key in op_dict})
 
 
 @overload
