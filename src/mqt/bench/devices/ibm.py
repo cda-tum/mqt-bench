@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
-from qiskit.providers import BackendV1, BackendV2
+from qiskit.providers import BackendV2
 
 from mqt.bench.devices import Device, DeviceCalibration, Provider
 
@@ -145,23 +145,6 @@ class IBMProvider(Provider):
         return calibration
 
     @classmethod
-    def __import_backend_v1(cls, backend: BackendV1) -> Device:
-        """Import device data from a Qiskit `BackendV1` object.
-
-        Arguments:
-            backend: the Qiskit `BackendV1` object.
-
-        Returns: Collection of device data
-        """
-        device = Device()
-        device.name = backend.name()
-        device.num_qubits = backend.configuration().n_qubits
-        device.basis_gates = backend.configuration().basis_gates
-        device.coupling_map = list(backend.configuration().coupling_map)
-        device.calibration = cls.__import_backend_properties(backend.properties())
-        return device
-
-    @classmethod
     def __import_target(cls, target: Target) -> DeviceCalibration:
         """Import calibration data from a Qiskit `Target` object.
 
@@ -223,7 +206,7 @@ class IBMProvider(Provider):
         return device
 
     @classmethod
-    def import_qiskit_backend(cls, backend: BackendV1 | BackendV2) -> Device:
+    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
         """Import device data from a Qiskit `Backend` object.
 
         Arguments:
@@ -232,8 +215,6 @@ class IBMProvider(Provider):
         Returns:
             Collection of device data
         """
-        if isinstance(backend, BackendV1):
-            return cls.__import_backend_v1(backend)
         if isinstance(backend, BackendV2):
             return cls.__import_backend_v2(backend)
         msg = f"Unsupported backend type {type(backend)}"
