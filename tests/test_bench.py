@@ -61,7 +61,7 @@ from mqt.bench.benchmarks import (
 from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
 
 
-@pytest.fixture()
+@pytest.fixture
 def output_path() -> str:
     """Fixture to create the output path for the tests."""
     output_path = Path("./tests/test_output/")
@@ -69,7 +69,7 @@ def output_path() -> str:
     return str(output_path)
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_filenames() -> list[str]:
     """Fixture to return a list of sample filenames."""
     return [
