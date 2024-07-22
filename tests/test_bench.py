@@ -1008,11 +1008,11 @@ def test_evaluate_qasm_file() -> None:
         dump(qc, f)
     path = Path(filename)
     res = evaluation.evaluate_qasm_file(filename)
-    assert type(res) == evaluation.EvaluationResult
+    assert type(res) is evaluation.EvaluationResult
     path.unlink()
 
     res = evaluation.evaluate_qasm_file("invalid_path.qasm")
-    assert type(res) == evaluation.EvaluationResult
+    assert type(res) is evaluation.EvaluationResult
     assert res.num_qubits == -1
     assert res.depth == -1
     assert res.num_gates == -1
