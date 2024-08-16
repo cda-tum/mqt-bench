@@ -114,7 +114,11 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
         n_nodes: number of graph nodes (and also number of qubits)
         degree: edges per node
     """
-    graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
+    #graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
+    a = np.diag([1] * n_nodes, k=1) + np.diag([1] * n_nodes, k=-1)
+    a[0, -1] = 1 # always use a simple cycle graph
+    a[-1, 0] = 1
+    graph = nx.from_numpy_array(a)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
 

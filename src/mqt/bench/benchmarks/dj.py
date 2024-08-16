@@ -30,7 +30,8 @@ def dj_oracle(case: str, n: int) -> QuantumCircuit:
                 oracle_qc.x(qubit)
 
     if case == "constant":
-        output = rng.integers(2)
+        #output = rng.integers(2)
+        output = 1 # always use 1
         if output == 1:
             oracle_qc.x(n)
 
@@ -68,7 +69,8 @@ def create_circuit(num_qubits: int, balanced: bool = True) -> QuantumCircuit:
         num_qubits: number of qubits of the returned quantum circuit
         balanced: True for a balanced and False for a constant oracle
     """
-    oracle_mode = "balanced" if balanced else "constant"
+    #oracle_mode = "balanced" if balanced else "constant"
+    oracle_mode = "constant" # always use "constant" oracle
     num_qubits = num_qubits - 1  # because of ancilla qubit
     oracle_gate = dj_oracle(oracle_mode, num_qubits)
     qc = dj_algorithm(oracle_gate, num_qubits)
