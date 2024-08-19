@@ -140,7 +140,7 @@ class Device:
         return {
             gate
             for qubit1, qubit2 in self.coupling_map
-            for gate in self.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
+            for gate in self.calibration.two_qubit_gate_fidelity[qubit1, qubit2]
         }
 
     def sanitize_device(self) -> None:

@@ -92,11 +92,11 @@ class IBMProvider(Provider):
             edge = f"{qubit1}_{qubit2}"
 
             error = ibm_calibration["properties"][str(qubit1)]["eCX"][edge]
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"cx": 1 - error}
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"cx": 1 - error}
 
             # data in nanoseconds, convert to SI unit (seconds)
             duration = ibm_calibration["properties"][str(qubit1)]["tCX"][edge] * 1e-9
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"cx": duration}
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"cx": duration}
 
         device.calibration = calibration
         return device
@@ -135,12 +135,12 @@ class IBMProvider(Provider):
             elif len(gate.qubits) == 2:
                 qubit1, qubit2 = gate.qubits
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
-                    calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][gate.gate] = 1 - error
+                    calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {}
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate.gate] = 1 - error
 
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
-                    calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][gate.gate] = duration
+                    calibration.two_qubit_gate_duration[qubit1, qubit2] = {}
+                calibration.two_qubit_gate_duration[qubit1, qubit2][gate.gate] = duration
 
         return calibration
 
@@ -183,8 +183,8 @@ class IBMProvider(Provider):
                 calibration.single_qubit_gate_duration[qubit][instruction.name] = duration
             elif len(qargs) == 2:
                 qubit1, qubit2 = qargs
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][instruction.name] = 1 - error
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][instruction.name] = duration
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2][instruction.name] = 1 - error
+                calibration.two_qubit_gate_duration[qubit1, qubit2][instruction.name] = duration
 
         return calibration
 
