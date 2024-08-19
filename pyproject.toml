@@ -30,7 +30,7 @@ dependencies = [
     "packaging>=21.0",
     "tqdm>=4.29.0",
     "joblib>=1.3.0",
-    "numpy<3.0.0" # some of our dependencies are not yet compatible with numpy 2.0
+    "numpy<2.0.0" # some of our dependencies are not yet compatible with numpy 2.0
 ]
 
 
