@@ -32,8 +32,8 @@ def test_sanitized_devices(device: Device) -> None:
     for qubit1, qubit2 in device.coupling_map:
         assert (qubit1, qubit2) in device.calibration.two_qubit_gate_fidelity
         for gate in device.get_two_qubit_gates():
-            assert gate in device.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]
-            assert device.calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][gate] > 0
+            assert gate in device.calibration.two_qubit_gate_fidelity[qubit1, qubit2]
+            assert device.calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate] > 0
 
 
 def test_device_calibration_errors() -> None:

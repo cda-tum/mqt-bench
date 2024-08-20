@@ -15,7 +15,7 @@ ci:
 repos:
   # Standard hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.6.0"
+    rev: v4.6.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -28,9 +28,20 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
 
+  # Clean jupyter notebooks
+  - repo: https://github.com/srstevenson/nb-clean
+    rev: 3.3.0
+    hooks:
+      - id: nb-clean
+        args:
+          - --remove-empty-cells
+          - --preserve-cell-metadata
+          - raw_mimetype
+          - --
+
   # Handling unwanted unicode characters
   - repo: https://github.com/sirosen/texthooks
-    rev: "0.6.6"
+    rev: 0.6.7
     hooks:
       - id: fix-ligatures
       - id: fix-smartquotes
@@ -43,28 +54,9 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
 
-  # Clean jupyter notebooks
-  - repo: https://github.com/srstevenson/nb-clean
-    rev: "3.3.0"
-    hooks:
-      - id: nb-clean
-  # Check for spelling
-  - repo: https://github.com/codespell-project/codespell
-    rev: "v2.3.0"
-    hooks:
-      - id: codespell
-        args: ["-L", "wille,linz,fro"]
-        exclude: "mqt/bench/viewer/templates/legal.html"
-
-  # Format configuration files with prettier
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v4.0.0-alpha.8"
-    hooks:
-      - id: prettier
-        types_or: [yaml, markdown, html, css, javascript, json]
-
+  # Python linting and formatting using ruff
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.5
+    rev: v0.6.1
     hooks:
       - id: ruff
         args: ["--fix", "--show-fixes"]
@@ -79,11 +71,19 @@ repos:
       - id: blacken-docs
         additional_dependencies: [black==24.*]
 
+  # Format configuration files with prettier
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        types_or: [yaml, markdown, html, css, scss, javascript, json]
+
+  # Check static types with mypy
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.0
+    rev: v1.11.1
     hooks:
       - id: mypy
-        files: ^(src|tests)
+        files: ^(src/mqt|test/python)
         args: []
         additional_dependencies:
           - pytket_qiskit
@@ -97,6 +97,13 @@ repos:
           - types-tqdm
           - types-flask
 
+  # Check for spelling
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.23.6
+    hooks:
+      - id: typos
+        exclude: .html
+
   # Catch common capitalization mistakes
   - repo: local
     hooks:
@@ -104,7 +111,7 @@ repos:
         name: Disallow improper capitalization
         language: pygrep
         entry: PyBind|Numpy|Cmake|CCache|Github|PyTest|Mqt|Tum
-        exclude: .pre-commit-config.yaml
+        exclude: \.pre-commit-config\.yaml|\.joblib$
 
   # Check best practices for scientific Python code
   - repo: https://github.com/scientific-python/cookie
@@ -112,3 +119,17 @@ repos:
     hooks:
       - id: sp-repo-review
         additional_dependencies: ["repo-review[cli]"]
+
+  # Check JSON schemata
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.29.1
+    hooks:
+      - id: check-dependabot
+      - id: check-github-workflows
+      - id: check-readthedocs
+
+  # Check the pyproject.toml file
+  - repo: https://github.com/henryiii/validate-pyproject-schema-store
+    rev: 2024.08.08
+    hooks:
+      - id: validate-pyproject
