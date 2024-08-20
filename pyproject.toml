@@ -21,6 +21,7 @@ dynamic = ["version"]
 dependencies = [
     "pytket-qiskit>=0.53.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "pytket>=1.29.0",  # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
+    "qiskit!=1.20.0",  # there is a bug in 1.20.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit_optimization>=0.6",
     "qiskit_nature[pyscf]>=0.7",
     "qiskit_finance>=0.4.1",
