@@ -94,15 +94,16 @@ log_cli_level = "INFO"
 xfail_strict = true
 filterwarnings = [
     "error",
-    "ignore:.*pkg_resources.*:DeprecationWarning:",
-    "ignore:.*sre_.*:DeprecationWarning:",
-    "ignore:.*Rigetti.*:UserWarning:",
-    "ignore:.*Values in x.*:RuntimeWarning:",
-    "ignore:.*divide by zero encountered in det.*:RuntimeWarning:",
-    "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
-    "ignore::DeprecationWarning:.*(docplex).*",
-    "ignore::SyntaxWarning:.*(docplex).*",
-    "ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*",
+    'ignore:.*pkg_resources.*:DeprecationWarning:',
+    'ignore:.*sre_.*:DeprecationWarning:',
+    'ignore:.*Rigetti.*:UserWarning:',
+    'ignore:.*Values in x.*:RuntimeWarning:',
+    'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
+    'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
+    'ignore::DeprecationWarning:.*(docplex).*',
+    'ignore::SyntaxWarning:.*(docplex).*',
+    'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
+    'ignore:.*qiskit\.providers\.models.*:DeprecationWarning:qiskit.*',
 ]
 
 [tool.coverage]
