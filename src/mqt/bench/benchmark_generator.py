@@ -359,11 +359,6 @@ def get_benchmark(
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
-    if "gate_set_name" in kwargs:
-        msg = "gate_set_name is deprecated and will be removed in a future release. Use provider_name instead."
-        warn(msg, DeprecationWarning, stacklevel=2)
-        provider_name = kwargs["gate_set_name"]
-
     if benchmark_name not in utils.get_supported_benchmarks():
         msg = f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
         raise ValueError(msg)
