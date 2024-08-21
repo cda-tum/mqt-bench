@@ -103,7 +103,19 @@ filterwarnings = [
     'ignore::DeprecationWarning:.*(docplex).*',
     'ignore::SyntaxWarning:.*(docplex).*',
     'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
-    'ignore:.*is deprecated since Qiskit 1.2 and will be removed in Qiskit 2.0. With the removal of Qobj*:DeprecationWarning:',
+    'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
+    'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
+    'ignore:.*The class ``qiskit.providers.models.backendconfiguration.GateConfig`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.providers.models.backendconfiguration.BackendConfiguration`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.providers.models.backendconfiguration.QasmBackendConfiguration`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.providers.models.backendproperties.BackendProperties`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.primitives.base.base_estimator.BaseEstimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.primitives.base.base_sampler.BaseSampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
+    'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
+    'ignore:.*The function ``qiskit.primitives.utils.init_observable\(\)`` is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The function ``qiskit.primitives.utils.init_circuit\(\)`` is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The function ``qiskit.primitives.utils.final_measurement_mapping\(\)`` is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
 ]
 
 [tool.coverage]
