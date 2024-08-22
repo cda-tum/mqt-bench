@@ -101,48 +101,6 @@ class IBMProvider(Provider):
         device.calibration = calibration
         return device
 
-    @classmethod
-    def __import_backend_properties(cls, backend_properties: BackendProperties) -> DeviceCalibration:
-        """Import calibration data from a Qiskit `BackendProperties` object.
-
-        Arguments:
-            backend_properties: the Qiskit `BackendProperties` object.
-
-        Returns: Collection of calibration data
-        """
-        calibration = DeviceCalibration()
-        num_qubits = len(backend_properties.qubits)
-
-        for qubit in range(num_qubits):
-            calibration.t1[qubit] = cast(float, backend_properties.t1(qubit))
-            calibration.t2[qubit] = cast(float, backend_properties.t2(qubit))
-            calibration.readout_fidelity[qubit] = 1 - cast(float, backend_properties.readout_error(qubit))
-            calibration.readout_duration[qubit] = cast(float, backend_properties.readout_length(qubit))
-
-        calibration.single_qubit_gate_fidelity = {qubit: {} for qubit in range(num_qubits)}
-        calibration.single_qubit_gate_duration = {qubit: {} for qubit in range(num_qubits)}
-        for gate in backend_properties.gates:
-            # Skip `reset` gate as its error information is not exposed.
-            if gate.gate == "reset":
-                continue
-
-            error: float = backend_properties.gate_error(gate.gate, gate.qubits)
-            duration: float = backend_properties.gate_length(gate.gate, gate.qubits)
-            if len(gate.qubits) == 1:
-                qubit = gate.qubits[0]
-                calibration.single_qubit_gate_fidelity[qubit][gate.gate] = 1 - error
-                calibration.single_qubit_gate_duration[qubit][gate.gate] = duration
-            elif len(gate.qubits) == 2:
-                qubit1, qubit2 = gate.qubits
-                if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
-                    calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {}
-                calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate.gate] = 1 - error
-
-                if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
-                    calibration.two_qubit_gate_duration[qubit1, qubit2] = {}
-                calibration.two_qubit_gate_duration[qubit1, qubit2][gate.gate] = duration
-
-        return calibration
 
     @classmethod
     def __import_target(cls, target: Target) -> DeviceCalibration:
