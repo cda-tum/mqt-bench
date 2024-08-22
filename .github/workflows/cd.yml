@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/mqt.predictor
+      url: https://pypi.org/p/mqt.bench
     permissions:
       id-token: write
       attestations: write
