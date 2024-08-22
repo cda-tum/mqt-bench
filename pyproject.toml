@@ -153,7 +153,6 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 extend-include = ["*.ipynb"]
-src = ["src"]
 preview = true
 unsafe-fixes = true
 
@@ -223,12 +222,6 @@ convention = "google"
 # Enable free-threaded support
 free-threaded-support = true
 
-[tool.repo-review]
-ignore = [
-    "PC160", # "Uses codespell" -> switched to https://github.com/crate-ci/typos
-    "PC180", # "Uses prettier" -> switched to different prettier-mirror that is not recognized by the check
-    "RF003", # "src directory specified if used" -> obsolete for new ruff versions
-]
 
 [tool.typos]
 default.extend-ignore-re = [
