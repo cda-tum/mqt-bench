@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
 from qiskit.providers import BackendV2
@@ -100,7 +99,6 @@ class IBMProvider(Provider):
 
         device.calibration = calibration
         return device
-
 
     @classmethod
     def __import_target(cls, target: Target) -> DeviceCalibration:
