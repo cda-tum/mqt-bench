@@ -77,7 +77,7 @@ class DeviceCalibration:
             raise ValueError(msg)
 
         try:
-            return self.two_qubit_gate_fidelity[(qubit1, qubit2)][gate_type]
+            return self.two_qubit_gate_fidelity[qubit1, qubit2][gate_type]
         except KeyError:
             msg = f"Two-qubit fidelity for gate {gate_type} and qubits {qubit1} and {qubit2} not available."
             raise ValueError(msg) from None
@@ -95,7 +95,7 @@ class DeviceCalibration:
             raise ValueError(msg)
 
         try:
-            return self.two_qubit_gate_duration[(qubit1, qubit2)][gate_type]
+            return self.two_qubit_gate_duration[qubit1, qubit2][gate_type]
         except KeyError:
             msg = f"Two-qubit duration for gate {gate_type} and qubits {qubit1} and {qubit2} not available."
             raise ValueError(msg) from None

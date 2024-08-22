@@ -72,7 +72,7 @@ class QuantinuumProvider(Provider):
             calibration.readout_fidelity[qubit] = quantinuum_calibration["fidelity"]["spam"]["mean"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {
                 "rzz": quantinuum_calibration["fidelity"]["2q"]["mean"]
             }
         device.calibration = calibration

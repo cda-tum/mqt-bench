@@ -1,4 +1,4 @@
-"""Random benchmark definition."""
+"""Random benchmark definition."""  # noqa: A005
 
 from __future__ import annotations
 

@@ -8,10 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from qiskit.providers.models import BackendProperties
+    from qiskit.providers import BackendV2
     from qiskit.transpiler import Target
 
-from qiskit.providers import BackendV2
 
 from mqt.bench.devices import Device, DeviceCalibration, Provider
 
@@ -92,57 +91,14 @@ class IBMProvider(Provider):
             edge = f"{qubit1}_{qubit2}"
 
             error = ibm_calibration["properties"][str(qubit1)]["eCX"][edge]
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"cx": 1 - error}
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"cx": 1 - error}
 
             # data in nanoseconds, convert to SI unit (seconds)
             duration = ibm_calibration["properties"][str(qubit1)]["tCX"][edge] * 1e-9
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"cx": duration}
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"cx": duration}
 
         device.calibration = calibration
         return device
-
-    @classmethod
-    def __import_backend_properties(cls, backend_properties: BackendProperties) -> DeviceCalibration:
-        """Import calibration data from a Qiskit `BackendProperties` object.
-
-        Arguments:
-            backend_properties: the Qiskit `BackendProperties` object.
-
-        Returns: Collection of calibration data
-        """
-        calibration = DeviceCalibration()
-        num_qubits = len(backend_properties.qubits)
-
-        for qubit in range(num_qubits):
-            calibration.t1[qubit] = cast(float, backend_properties.t1(qubit))
-            calibration.t2[qubit] = cast(float, backend_properties.t2(qubit))
-            calibration.readout_fidelity[qubit] = 1 - cast(float, backend_properties.readout_error(qubit))
-            calibration.readout_duration[qubit] = cast(float, backend_properties.readout_length(qubit))
-
-        calibration.single_qubit_gate_fidelity = {qubit: {} for qubit in range(num_qubits)}
-        calibration.single_qubit_gate_duration = {qubit: {} for qubit in range(num_qubits)}
-        for gate in backend_properties.gates:
-            # Skip `reset` gate as its error information is not exposed.
-            if gate.gate == "reset":
-                continue
-
-            error: float = backend_properties.gate_error(gate.gate, gate.qubits)
-            duration: float = backend_properties.gate_length(gate.gate, gate.qubits)
-            if len(gate.qubits) == 1:
-                qubit = gate.qubits[0]
-                calibration.single_qubit_gate_fidelity[qubit][gate.gate] = 1 - error
-                calibration.single_qubit_gate_duration[qubit][gate.gate] = duration
-            elif len(gate.qubits) == 2:
-                qubit1, qubit2 = gate.qubits
-                if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
-                    calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][gate.gate] = 1 - error
-
-                if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
-                    calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][gate.gate] = duration
-
-        return calibration
 
     @classmethod
     def __import_target(cls, target: Target) -> DeviceCalibration:
@@ -183,14 +139,14 @@ class IBMProvider(Provider):
                 calibration.single_qubit_gate_duration[qubit][instruction.name] = duration
             elif len(qargs) == 2:
                 qubit1, qubit2 = qargs
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][instruction.name] = 1 - error
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][instruction.name] = duration
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2][instruction.name] = 1 - error
+                calibration.two_qubit_gate_duration[qubit1, qubit2][instruction.name] = duration
 
         return calibration
 
     @classmethod
-    def __import_backend_v2(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `BackendV2` object.
+    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
+        """Import device data from a Qiskit `Backend` object.
 
         Arguments:
             backend: the Qiskit `BackendV2` object.
@@ -204,18 +160,3 @@ class IBMProvider(Provider):
         device.coupling_map = backend.coupling_map.get_edges()
         device.calibration = cls.__import_target(backend.target)
         return device
-
-    @classmethod
-    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `Backend` object.
-
-        Arguments:
-            backend: the Qiskit `Backend` object.
-
-        Returns:
-            Collection of device data
-        """
-        if isinstance(backend, BackendV2):
-            return cls.__import_backend_v2(backend)
-        msg = f"Unsupported backend type {type(backend)}"
-        raise TypeError(msg)
