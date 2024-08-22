@@ -219,10 +219,6 @@ isort.required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.cibuildwheel]
-# Enable free-threaded support
-free-threaded-support = true
-
 [tool.repo-review]
 ignore = [
     "PC160", # "Uses codespell" -> switched to https://github.com/crate-ci/typos
