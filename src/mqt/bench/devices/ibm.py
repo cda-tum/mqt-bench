@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from qiskit.providers import BackendV2
     from qiskit.transpiler import Target
 
-from qiskit.providers import BackendV2
 
 from mqt.bench.devices import Device, DeviceCalibration, Provider
 
@@ -145,8 +145,8 @@ class IBMProvider(Provider):
         return calibration
 
     @classmethod
-    def __import_backend_v2(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `BackendV2` object.
+    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
+        """Import device data from a Qiskit `Backend` object.
 
         Arguments:
             backend: the Qiskit `BackendV2` object.
@@ -160,18 +160,3 @@ class IBMProvider(Provider):
         device.coupling_map = backend.coupling_map.get_edges()
         device.calibration = cls.__import_target(backend.target)
         return device
-
-    @classmethod
-    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `Backend` object.
-
-        Arguments:
-            backend: the Qiskit `Backend` object.
-
-        Returns:
-            Collection of device data
-        """
-        if isinstance(backend, BackendV2):
-            return cls.__import_backend_v2(backend)
-        msg = f"Unsupported backend type {type(backend)}"
-        raise TypeError(msg)
