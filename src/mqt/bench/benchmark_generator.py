@@ -27,12 +27,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from pytket.circuit import Circuit
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import resources
-else:
-    import importlib_resources as resources
-
 from dataclasses import dataclass
+from importlib import resources
 
 
 class Benchmark(TypedDict, total=False):

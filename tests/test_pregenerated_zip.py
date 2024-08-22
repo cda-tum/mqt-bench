@@ -3,19 +3,13 @@
 from __future__ import annotations
 
 import os
-import sys
-from typing import TYPE_CHECKING
+from importlib import resources
 
 import pytest
 
 from mqt.bench import utils
 from mqt.bench.viewer import Server
 from mqt.bench.viewer.main import app
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import resources
-else:
-    import importlib_resources as resources
 
 # only run test when executed on GitHub runner
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
