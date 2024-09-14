@@ -108,9 +108,8 @@ filterwarnings = [
     'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
     'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
     'ignore:.*qiskit.providers.models.* is deprecated since qiskit 1.2*:DeprecationWarning:qiskit.*',
-    'ignore:.*qiskit.providers.models.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
     'ignore:.*qiskit.primitives.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
-    'ignore:.*The class ``qiskit.qobj.pulse_qobj.PulseLibraryItem`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
     'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
 ]
