@@ -21,13 +21,13 @@ from pytket.placement import GraphPlacement, LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
-from mqt.bench import utils
+from .utils import convert_cmap_to_tuple_list, get_openqasm_gates, save_as_qasm
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
 
-    from mqt.bench.devices import Device, Provider
+    from .devices import Device, Provider
 
 
 def get_rebase(gate_set: list[str]) -> BasePass:
@@ -99,7 +99,7 @@ def get_indep_level(
     if file_precheck and path.is_file():
         return True
     try:
-        gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
+        gates = list(set(get_openqasm_gates()) - {"rccx"})
         qc = transpile(
             qc,
             basis_gates=gates,
@@ -113,7 +113,7 @@ def get_indep_level(
 
     if return_qc:
         return qc_tket
-    return utils.save_as_qasm(
+    return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_indep,
         target_directory=target_directory,
@@ -177,7 +177,7 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
     try:
-        gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
+        gates = list(set(get_openqasm_gates()) - {"rccx"})
         qc = transpile(
             qc,
             basis_gates=gates,
@@ -198,7 +198,7 @@ def get_native_gates_level(
 
     if return_qc:
         return qc_tket
-    return utils.save_as_qasm(
+    return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_native,
         gate_set,
@@ -270,7 +270,7 @@ def get_mapped_level(
         return True
 
     try:
-        gates = list(set(utils.get_openqasm_gates()) - {"rccx"})
+        gates = list(set(get_openqasm_gates()) - {"rccx"})
         qc = transpile(
             qc,
             basis_gates=gates,
@@ -284,7 +284,7 @@ def get_mapped_level(
         return False
 
     cmap = device.coupling_map
-    cmap_converted = utils.convert_cmap_to_tuple_list(cmap)
+    cmap_converted = convert_cmap_to_tuple_list(cmap)
     arch = Architecture(cmap_converted)
 
     # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
@@ -306,7 +306,7 @@ def get_mapped_level(
 
     if return_qc:
         return qc_tket
-    return utils.save_as_qasm(
+    return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_mapped,
         device.basis_gates,

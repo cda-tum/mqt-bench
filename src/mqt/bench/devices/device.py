@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from mqt.bench.devices import DeviceCalibration
+    from .calibration import DeviceCalibration
 
 
 @dataclass

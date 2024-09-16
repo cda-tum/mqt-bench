@@ -13,15 +13,15 @@ from warnings import warn
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
-from mqt.bench import qiskit_helper, tket_helper
-from mqt.bench.devices import (
+from . import qiskit_helper, tket_helper
+from .devices import (
     get_available_device_names,
     get_available_provider_names,
     get_available_providers,
     get_device_by_name,
     get_provider_by_name,
 )
-from mqt.bench.utils import (
+from .utils import (
     get_default_config_path,
     get_module_for_benchmark,
     get_supported_benchmarks,

@@ -14,7 +14,7 @@ else:
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from mqt.bench.devices import Device
+    from .device import Device
 
 from abc import ABC, abstractmethod
 
