@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
 
 class QubitProperties(TypedDict):

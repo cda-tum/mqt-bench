@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, Literal, overload
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
-    from mqt.bench.devices import Device, Provider
+    from .devices import Device, Provider
 
 from qiskit import transpile
 from qiskit.qasm2 import dumps
 
-from mqt.bench import utils
+from .utils import get_openqasm_gates, save_as_qasm
 
 
 @overload
@@ -65,12 +65,12 @@ def get_indep_level(
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
         return True
-    openqasm_gates = utils.get_openqasm_gates()
+    openqasm_gates = get_openqasm_gates()
     target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10)
 
     if return_qc:
         return target_independent
-    return utils.save_as_qasm(
+    return save_as_qasm(
         dumps(target_independent),
         filename_indep,
         target_directory=target_directory,
@@ -146,7 +146,7 @@ def get_native_gates_level(
     )
     if return_qc:
         return compiled_without_architecture
-    return utils.save_as_qasm(
+    return save_as_qasm(
         dumps(compiled_without_architecture),
         filename_native,
         gate_set,
@@ -225,7 +225,7 @@ def get_mapped_level(
     )
     if return_qc:
         return compiled_with_architecture
-    return utils.save_as_qasm(
+    return save_as_qasm(
         dumps(compiled_with_architecture),
         filename_mapped,
         device.basis_gates,

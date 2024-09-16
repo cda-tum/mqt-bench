@@ -9,7 +9,7 @@ from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
 
-from mqt.bench import CompilerSettings, QiskitSettings, TKETSettings, get_benchmark
+from . import CompilerSettings, QiskitSettings, TKETSettings, get_benchmark
 
 
 def main() -> None:

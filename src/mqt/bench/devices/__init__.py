@@ -7,16 +7,16 @@ See README.md or go to https://github.com/cda-tum/mqt-bench for more information
 from __future__ import annotations
 
 # ruff: noqa: I001
-from mqt.bench.devices.calibration import DeviceCalibration
-from mqt.bench.devices.device import Device
-from mqt.bench.devices.provider import Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
-from mqt.bench.devices.ibm import IBMProvider
-from mqt.bench.devices.ionq import IonQProvider
-from mqt.bench.devices.iqm import IQMProvider
-from mqt.bench.devices.oqc import OQCProvider
-from mqt.bench.devices.quantinuum import QuantinuumProvider
-from mqt.bench.devices.rigetti import RigettiProvider
+from .ibm import IBMProvider
+from .ionq import IonQProvider
+from .iqm import IQMProvider
+from .oqc import OQCProvider
+from .quantinuum import QuantinuumProvider
+from .rigetti import RigettiProvider
 
 
 class NotFoundError(Exception):
