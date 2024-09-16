@@ -18,12 +18,12 @@ import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-from mqt.bench import (
+from mqt.bench import evaluation
+from mqt.bench.benchmark_generator import (
     BenchmarkGenerator,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
-    evaluation,
     get_benchmark,
     qiskit_helper,
     timeout_watcher,

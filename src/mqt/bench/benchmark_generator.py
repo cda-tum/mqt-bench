@@ -13,12 +13,20 @@ from warnings import warn
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 
-from mqt.bench import devices, qiskit_helper, tket_helper, utils
+from mqt.bench import qiskit_helper, tket_helper
 from mqt.bench.devices import (
+    get_available_device_names,
     get_available_provider_names,
     get_available_providers,
     get_device_by_name,
     get_provider_by_name,
+)
+from mqt.bench.utils import (
+    get_default_config_path,
+    get_module_for_benchmark,
+    get_supported_benchmarks,
+    get_supported_compilers,
+    get_supported_levels,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -78,7 +86,7 @@ class BenchmarkGenerator:
     def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
         """Initialize the BenchmarkGenerator."""
         if cfg_path is None:
-            cfg_path = utils.get_default_config_path()
+            cfg_path = get_default_config_path()
         with Path(cfg_path).open(encoding="locale") as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
@@ -107,7 +115,7 @@ class BenchmarkGenerator:
 
     def define_benchmark_instances(self, benchmark: Benchmark) -> None:
         """Define the instances for a benchmark."""
-        lib = utils.get_module_for_benchmark(benchmark["name"])
+        lib = get_module_for_benchmark(benchmark["name"])
         file_precheck = benchmark["precheck_possible"]
         instances: list[tuple[int, str]] | list[int] | list[str] | range
         if benchmark["include"]:
@@ -355,12 +363,12 @@ def get_benchmark(
     Returns:
         Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
     """
-    if benchmark_name not in utils.get_supported_benchmarks():
-        msg = f"Selected benchmark is not supported. Valid benchmarks are {utils.get_supported_benchmarks()}."
+    if benchmark_name not in get_supported_benchmarks():
+        msg = f"Selected benchmark is not supported. Valid benchmarks are {get_supported_benchmarks()}."
         raise ValueError(msg)
 
-    if level not in utils.get_supported_levels():
-        msg = f"Selected level must be in {utils.get_supported_levels()}."
+    if level not in get_supported_levels():
+        msg = f"Selected level must be in {get_supported_levels()}."
         raise ValueError(msg)
 
     if benchmark_name not in ["shor", "groundstate"] and not (isinstance(circuit_size, int) and circuit_size > 0):
@@ -371,7 +379,7 @@ def get_benchmark(
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
-    lib = utils.get_module_for_benchmark(
+    lib = get_module_for_benchmark(
         benchmark_name.split("-")[0]
     )  # split is used to filter the ancillary mode for grover and qwalk
 
@@ -401,8 +409,8 @@ def get_benchmark(
 
     compiler = compiler.lower()
 
-    if compiler.lower() not in utils.get_supported_compilers():
-        msg = f"Selected compiler must be in {utils.get_supported_compilers()}."
+    if compiler.lower() not in get_supported_compilers():
+        msg = f"Selected compiler must be in {get_supported_compilers()}."
         raise ValueError(msg)
 
     if compiler_settings is None:
@@ -432,8 +440,8 @@ def get_benchmark(
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, provider, circuit_size, False, True)
 
-    if device_name not in devices.get_available_device_names():
-        msg = f"Selected device_name must be in {devices.get_available_device_names()}."
+    if device_name not in get_available_device_names():
+        msg = f"Selected device_name must be in {get_available_device_names()}."
         raise ValueError(msg)
 
     mapped_level = 3
@@ -464,7 +472,7 @@ def get_benchmark(
                 True,
             )
 
-    msg = f"Invalid level specified. Must be in {utils.get_supported_levels()}."
+    msg = f"Invalid level specified. Must be in {get_supported_levels()}."
     raise ValueError(msg)
 
 
