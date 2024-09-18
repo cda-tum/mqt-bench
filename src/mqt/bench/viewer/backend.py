@@ -344,6 +344,7 @@ class Backend:
             native_qiskit_opt_lvls.append(2) if "nativegates_qiskit_compiler_opt2" in k else None
             native_qiskit_opt_lvls.append(3) if "nativegates_qiskit_compiler_opt3" in k else None
             native_gatesets.append("ibm") if "nativegates_ibm" in k else None
+            native_gatesets.append("ibm_free_access") if "nativegates_ibm_free_access" in k else None
             native_gatesets.append("rigetti") if "nativegates_rigetti" in k else None
             native_gatesets.append("oqc") if "nativegates_oqc" in k else None
             native_gatesets.append("ionq") if "nativegates_ionq" in k else None
@@ -359,6 +360,9 @@ class Backend:
             mapped_tket_placements.append("line") if "mapped_tket_compiler_line" in k else None
             mapped_devices.append("ibm_montreal") if "device_ibm_montreal" in k else None
             mapped_devices.append("ibm_washington") if "device_ibm_washington" in k else None
+            mapped_devices.append("ibm_kyiv") if "ibm_kyiv" in k else None
+            mapped_devices.append("ibm_brisbane") if "ibm_brisbane" in k else None
+            mapped_devices.append("ibm_sherbrooke") if "ibm_sherbrooke" in k else None
             mapped_devices.append("rigetti_aspen_m3") if "device_rigetti_aspen_m3" in k else None
             mapped_devices.append("oqc_lucy") if "device_oqc_lucy" in k else None
             mapped_devices.append("ionq_harmony") if "device_ionq_harmony" in k else None
@@ -623,6 +627,9 @@ def get_target_device(filename: str) -> str:
     devices = [
         "ibm_washington",
         "ibm_montreal",
+        "ibm_kyiv",
+        "ibm_brisbane",
+        "ibm_sherbrooke",
         "rigetti_aspen_m3",
         "ionq_harmony",
         "ionq_aria1",
