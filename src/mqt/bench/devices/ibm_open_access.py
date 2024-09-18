@@ -30,8 +30,8 @@ class QubitProperties(TypedDict):
     tECR: dict[str, float]  # ns
 
 
-class IBMFreeAccessCalibration(TypedDict):
-    """Class to store the calibration data of an IBM device."""
+class IBMOpenAccessCalibration(TypedDict):
+    """Class to store the calibration data of an open-access IBM device."""
 
     name: str
     basis_gates: list[str]
@@ -39,14 +39,14 @@ class IBMFreeAccessCalibration(TypedDict):
     connectivity: list[list[int]]
     properties: dict[str, QubitProperties]
 
-class IBMFreeAccessProvider(Provider):
-    """Class to manage IBM devices."""
+class IBMOpenAccessProvider(Provider):
+    """Class to manage open-access IBM devices."""
 
-    provider_name = "ibm_free_access"
+    provider_name = "ibm_open_access"
 
     @classmethod
     def get_available_device_names(cls) -> list[str]:
-        """Get the names of all available IBM devices."""
+        """Get the names of all available open-access IBM devices."""
         return ["ibm_kyiv", "ibm_brisbane", "ibm_sherbrooke"]  # NOTE: update when adding new devices
 
     @classmethod
@@ -56,7 +56,7 @@ class IBMFreeAccessProvider(Provider):
 
     @classmethod
     def import_backend(cls, path: Path) -> Device:
-        """Import an IBM backend.
+        """Import an open-access IBM backend.
 
         Arguments:
             path: the path to the JSON file containing the calibration data.
@@ -64,37 +64,37 @@ class IBMFreeAccessProvider(Provider):
         Returns: the Device object
         """
         with path.open() as json_file:
-            ibm_calibration = cast(IBMFreeAccessCalibration, json.load(json_file))
+            open_access_ibm_calibration = cast(IBMOpenAccessCalibration, json.load(json_file))
 
         device = Device()
-        device.name = ibm_calibration["name"]
-        device.num_qubits = ibm_calibration["num_qubits"]
-        device.basis_gates = ibm_calibration["basis_gates"]
-        device.coupling_map = list(ibm_calibration["connectivity"])
+        device.name = open_access_ibm_calibration["name"]
+        device.num_qubits = open_access_ibm_calibration["num_qubits"]
+        device.basis_gates = open_access_ibm_calibration["basis_gates"]
+        device.coupling_map = list(open_access_ibm_calibration["connectivity"])
 
         calibration = DeviceCalibration()
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = {
-                "id": 1 - ibm_calibration["properties"][str(qubit)]["eID"],
+                "id": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eID"],
                 "rz": 1,  # rz is always perfect
-                "sx": 1 - ibm_calibration["properties"][str(qubit)]["eSX"],
-                "x": 1 - ibm_calibration["properties"][str(qubit)]["eX"]
+                "sx": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eSX"],
+                "x": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eX"]
             }
-            calibration.readout_fidelity[qubit] = 1 - ibm_calibration["properties"][str(qubit)]["eRO"]
+            calibration.readout_fidelity[qubit] = 1 - open_access_ibm_calibration["properties"][str(qubit)]["eRO"]
             # data in nanoseconds, convert to SI unit (seconds)
-            calibration.readout_duration[qubit] = ibm_calibration["properties"][str(qubit)]["tRO"] * 1e-9
+            calibration.readout_duration[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["tRO"] * 1e-9
             # data in microseconds, convert to SI unit (seconds)
-            calibration.t1[qubit] = ibm_calibration["properties"][str(qubit)]["T1"] * 1e-6
-            calibration.t2[qubit] = ibm_calibration["properties"][str(qubit)]["T2"] * 1e-6
+            calibration.t1[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["T1"] * 1e-6
+            calibration.t2[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["T2"] * 1e-6
 
         for qubit1, qubit2 in device.coupling_map:
             edge = f"{qubit1}_{qubit2}"
 
-            error = ibm_calibration["properties"][str(qubit1)]["eECR"][edge]
+            error = open_access_ibm_calibration["properties"][str(qubit1)]["eECR"][edge]
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"ecr": 1 - error}
 
             # data in nanoseconds, convert to SI unit (seconds)
-            duration = ibm_calibration["properties"][str(qubit1)]["eECR"][edge] * 1e-9
+            duration = open_access_ibm_calibration["properties"][str(qubit1)]["eECR"][edge] * 1e-9
             calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"ecr": duration}
 
         device.calibration = calibration

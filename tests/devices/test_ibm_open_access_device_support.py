@@ -5,22 +5,22 @@ from __future__ import annotations
 import pytest
 from qiskit_ibm_runtime.fake_provider import FakeKyiv
 
-from mqt.bench.devices import IBMFreeAcessProvider
+from mqt.bench.devices import IBMOpenAccessProvider
 
 
-def test_ibm_free_access_provider_methods() -> None:
+def test_ibm_open_access_provider_methods() -> None:
     """Test the methods of the IBMProvider class."""
-    assert IBMFreeAcessProvider.get_available_device_names() == ["ibm_kyiv", "ibm_brisbane", "ibm_sherbrooke"]
-    assert IBMFreeAcessProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "erc", "measure", "barrier"]]
-    assert IBMFreeAcessProvider.get_native_gates() == ["id", "rz", "sx", "x", "erc", "measure", "barrier"]
-    assert IBMFreeAcessProvider.get_max_qubits() == 127
+    assert IBMOpenAccessProvider.get_available_device_names() == ["ibm_kyiv", "ibm_brisbane", "ibm_sherbrooke"]
+    assert IBMOpenAccessProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "erc", "measure", "barrier"]]
+    assert IBMOpenAccessProvider.get_native_gates() == ["id", "rz", "sx", "x", "erc", "measure", "barrier"]
+    assert IBMOpenAccessProvider.get_max_qubits() == 127
     with pytest.raises(ValueError, match="Device ibm_unknown not found."):
-        IBMFreeAcessProvider.get_device("ibm_unknown")
+        IBMOpenAccessProvider.get_device("ibm_unknown")
 
 
 def test_get_ibm_kyiv_device() -> None:
-    """Test getting the IBM Washington device."""
-    device = IBMFreeAcessProvider.get_device("ibm_kyiv")
+    """Test getting the IBM Kyiv device."""
+    device = IBMOpenAccessProvider.get_device("ibm_kyiv")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 
@@ -46,8 +46,8 @@ def test_get_ibm_kyiv_device() -> None:
 
 
 def test_get_ibmq_brisbane_device() -> None:
-    """Test getting the IBM brisbane device."""
-    device = IBMFreeAcessProvider.get_device("ibm_brisbane")
+    """Test getting the IBM Brisbane device."""
+    device = IBMOpenAccessProvider.get_device("ibm_brisbane")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 
@@ -71,8 +71,8 @@ def test_get_ibmq_brisbane_device() -> None:
             assert device.get_two_qubit_gate_duration(gate, q0, q1) >= 0
 
 def test_get_ibmq_sherbrooke_device() -> None:
-    """Test getting the IBM brisbane device."""
-    device = IBMFreeAcessProvider.get_device("ibm_sherbrooke")
+    """Test getting the IBM Sherbrooke device."""
+    device = IBMOpenAccessProvider.get_device("ibm_sherbrooke")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 
@@ -98,4 +98,4 @@ def test_get_ibmq_sherbrooke_device() -> None:
 def test_import_unsupported_backend() -> None:
     """Test importing an unsupported backend type."""
     with pytest.raises(TypeError, match="Unsupported backend type <class 'str'>"):
-        IBMFreeAcessProvider.import_qiskit_backend("V3")
+        IBMOpenAccessProvider.import_qiskit_backend("V3")

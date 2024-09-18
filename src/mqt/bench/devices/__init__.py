@@ -12,7 +12,7 @@ from .device import Device
 from .provider import Provider
 
 from .ibm import IBMProvider
-from .ibm_free_access import IBMFreeAccessProvider
+from .ibm_free_access import IBMOpenAccessProvider
 from .ionq import IonQProvider
 from .iqm import IQMProvider
 from .oqc import OQCProvider
@@ -94,7 +94,7 @@ __all__ = [
     "Device",
     "DeviceCalibration",
     "IBMProvider",
-    "IBMFreeAccessProvider",
+    "IBMOpenAccessProvider",
     "IQMProvider",
     "IonQProvider",
     "OQCProvider",
