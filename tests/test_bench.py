@@ -18,17 +18,16 @@ import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-from mqt.bench import (
+from mqt.bench import evaluation, utils
+from mqt.bench.benchmark_generator import (
     BenchmarkGenerator,
     CompilerSettings,
     QiskitSettings,
     TKETSettings,
-    evaluation,
     get_benchmark,
     qiskit_helper,
     timeout_watcher,
     tket_helper,
-    utils,
 )
 from mqt.bench.benchmarks import (
     ae,
@@ -322,22 +321,6 @@ def test_routing() -> None:
     """Test the creation of the routing benchmark."""
     qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
-
-
-def test_get_benchmark_deprecation_warning() -> None:
-    """Test the deprecation warning for gate_set_name in get_benchmark."""
-    with pytest.warns(
-        DeprecationWarning,
-        match="gate_set_name is deprecated and will be removed in a future release. Use provider_name instead.",
-    ):
-        get_benchmark(
-            benchmark_name="dj",
-            level="mapped",
-            circuit_size=3,
-            compiler="tket",
-            device_name="oqc_lucy",
-            gate_set_name="oqc",
-        )
 
 
 def test_unidirectional_coupling_map() -> None:
@@ -737,7 +720,8 @@ def test_get_benchmark(
         if compiler == "tket":
             qc = tk_to_qiskit(qc)
         assert isinstance(qc, QuantumCircuit)
-        for instruction, _qargs, _cargs in qc.data:
+        for qc_instruction in qc.data:
+            instruction = qc_instruction.operation
             gate_type = instruction.name
             provider = get_provider_by_name(provider_name)
             assert gate_type in provider.get_native_gates() or gate_type == "barrier"

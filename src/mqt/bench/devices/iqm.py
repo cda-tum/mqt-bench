@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
 
 class Infidelity(TypedDict):
@@ -92,20 +94,16 @@ class IQMProvider(Provider):
         for qubit1, qubit2 in device.coupling_map:
             if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity:
                 continue  # Skip reverse direction
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {
                 "cz": 1.0 - iqm_calibration["error"]["two_q"][str(qubit1) + "-" + str(qubit2)]
             }
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {
                 "cz": iqm_calibration["timing"]["two_q"] * 1e-9  # ns to s
             }
 
             # Same values for the reverse direction
-            calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[
-                (qubit1, qubit2)
-            ]
-            calibration.two_qubit_gate_duration[(qubit2, qubit1)] = calibration.two_qubit_gate_duration[
-                (qubit1, qubit2)
-            ]
+            calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
+            calibration.two_qubit_gate_duration[qubit2, qubit1] = calibration.two_qubit_gate_duration[qubit1, qubit2]
 
         device.calibration = calibration
         return device

@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
 
 class Statistics(TypedDict):
@@ -81,7 +83,7 @@ class IonQProvider(Provider):
             calibration.t2[qubit] = ionq_calibration["timing"]["t2"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"rxx": ionq_calibration["fidelity"]["2q"]["mean"]}
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"rxx": ionq_calibration["timing"]["2q"]}
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"rxx": ionq_calibration["fidelity"]["2q"]["mean"]}
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"rxx": ionq_calibration["timing"]["2q"]}
         device.calibration = calibration
         return device

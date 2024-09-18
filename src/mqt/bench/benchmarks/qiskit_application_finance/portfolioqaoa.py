@@ -52,6 +52,4 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     qc = qaoa.ansatz.assign_parameters(qaoa_result.optimal_point)
 
     qc.name = "portfolioqaoa"
-    qc.measure_all()
-
     return qc

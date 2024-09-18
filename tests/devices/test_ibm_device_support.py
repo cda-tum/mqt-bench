@@ -111,9 +111,3 @@ def test_get_ibmq_montreal_device() -> None:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
             assert device.get_two_qubit_gate_duration(gate, q0, q1) >= 0
-
-
-def test_import_unsupported_backend() -> None:
-    """Test importing an unsupported backend type."""
-    with pytest.raises(TypeError, match="Unsupported backend type <class 'str'>"):
-        IBMProvider.import_qiskit_backend("V3")

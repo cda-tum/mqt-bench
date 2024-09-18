@@ -21,6 +21,7 @@ dynamic = ["version"]
 dependencies = [
     "pytket-qiskit>=0.53.0",  #  manages the dependencies for qiskit and tket in a combined fashion
     "pytket>=1.29.0",  # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
+    "qiskit!=1.2.0",  # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit_optimization>=0.6",
     "qiskit_nature[pyscf]>=0.7",
     "qiskit_finance>=0.4.1",
@@ -30,7 +31,9 @@ dependencies = [
     "packaging>=21.0",
     "tqdm>=4.29.0",
     "joblib>=1.3.0",
-    "numpy<2.0.0" # some of our dependencies are not yet compatible with numpy 2.0
+    "numpy>=1.26; python_version >= '3.12'",
+    "numpy>=1.24; python_version >= '3.11'",
+    "numpy>=1.22",
 ]
 
 
@@ -45,6 +48,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
@@ -55,7 +59,7 @@ test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
 coverage = ["mqt.bench[test]", "pytest-cov>=4"]
 docs = [
     "furo>=2023.08.17",
-    "sphinx~=7.0",
+    "sphinx>=7",
     "setuptools-scm>=7",
     "sphinxcontrib-bibtex>=2.4.2",
     "sphinx-copybutton",
@@ -92,15 +96,22 @@ log_cli_level = "INFO"
 xfail_strict = true
 filterwarnings = [
     "error",
-    "ignore:.*pkg_resources.*:DeprecationWarning:",
-    "ignore:.*sre_.*:DeprecationWarning:",
-    "ignore:.*Rigetti.*:UserWarning:",
-    "ignore:.*Values in x.*:RuntimeWarning:",
-    "ignore:.*divide by zero encountered in det.*:RuntimeWarning:",
-    "ignore:.*invalid value encountered in det.*:RuntimeWarning:",
-    "ignore::DeprecationWarning:.*(docplex).*",
-    "ignore::SyntaxWarning:.*(docplex).*",
-    "ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*",
+    'ignore:.*pkg_resources.*:DeprecationWarning:',
+    'ignore:.*sre_.*:DeprecationWarning:',
+    'ignore:.*Rigetti.*:UserWarning:',
+    'ignore:.*Values in x.*:RuntimeWarning:',
+    'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
+    'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
+    'ignore::DeprecationWarning:.*(docplex).*',
+    'ignore::SyntaxWarning:.*(docplex).*',
+    'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
+    'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
+    'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
+    'ignore:.*qiskit.providers.models.* is deprecated since qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*qiskit.primitives.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
+    'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
 ]
 
 [tool.coverage]
@@ -137,7 +148,6 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 extend-include = ["*.ipynb"]
-src = ["src"]
 preview = true
 unsafe-fixes = true
 
@@ -202,3 +212,18 @@ isort.required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+
+[tool.typos]
+default.extend-ignore-re = [
+  '"id": ".*",',
+  "(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",  # ignore line
+  "(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on" # ignore block
+]
+[tool.typos.default.extend-words]
+wille = "wille"
+anc = "anc"
+aer = "aer"
+fom = "fom"
+bench = "bench"
+benchs = "benchs"

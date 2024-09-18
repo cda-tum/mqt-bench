@@ -9,7 +9,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
 
 class QubitProperties(TypedDict):
@@ -176,7 +178,7 @@ class RigettiProvider(Provider):
                 fidelity["xx_plus_yy"] = -1.0
 
             # Save the fidelity data for the two-qubit gate
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = fidelity
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = fidelity
 
         # If there are missing values, use the average
         cz_avg = sum(cz_lst) / len(cz_lst)
@@ -187,16 +189,14 @@ class RigettiProvider(Provider):
             if qubit1 > qubit2:
                 continue
             # Check if the fidelity data is missing (== -1) and set to average if so
-            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cz"] = cz_avg
-            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["cp"] = cp_avg
-            if calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] < 0:
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)]["xx_plus_yy"] = xx_plus_yy_avg
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] = cz_avg
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] = cp_avg
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] = xx_plus_yy_avg
 
             # Rigetti calibration data is symmetric, set same values for reverse edge
-            calibration.two_qubit_gate_fidelity[(qubit2, qubit1)] = calibration.two_qubit_gate_fidelity[
-                (qubit1, qubit2)
-            ]
+            calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
         device.calibration = calibration
         return device

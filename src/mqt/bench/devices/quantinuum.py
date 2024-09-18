@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, TypedDict, cast
 if TYPE_CHECKING:
     from pathlib import Path
 
-from mqt.bench.devices import Device, DeviceCalibration, Provider
+from .calibration import DeviceCalibration
+from .device import Device
+from .provider import Provider
 
 
 class Statistics(TypedDict):
@@ -72,7 +74,7 @@ class QuantinuumProvider(Provider):
             calibration.readout_fidelity[qubit] = quantinuum_calibration["fidelity"]["spam"]["mean"]
 
         for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {
                 "rzz": quantinuum_calibration["fidelity"]["2q"]["mean"]
             }
         device.calibration = calibration
