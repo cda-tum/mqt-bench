@@ -12,7 +12,7 @@ from .device import Device
 from .provider import Provider
 
 from .ibm import IBMProvider
-from .ibm_free_access import IBMOpenAccessProvider
+from .ibm_open_access import IBMOpenAccessProvider
 from .ionq import IonQProvider
 from .iqm import IQMProvider
 from .oqc import OQCProvider
@@ -26,7 +26,7 @@ class NotFoundError(Exception):
 
 def get_available_providers() -> list[Provider]:
     """Get a list of all available providers."""
-    return [IBMProvider(), IBMFreeAcessProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
+    return [IBMProvider(), IBMOpenAccessProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
 
 
 def get_available_provider_names() -> list[str]:
