@@ -39,7 +39,7 @@ class IBMFreeAccessCalibration(TypedDict):
     connectivity: list[list[int]]
     properties: dict[str, QubitProperties]
 
-class IBMFreeAcessProvider(Provider):
+class IBMFreeAccessProvider(Provider):
     """Class to manage IBM devices."""
 
     provider_name = "ibm_free_access"
@@ -78,8 +78,7 @@ class IBMFreeAcessProvider(Provider):
                 "id": 1 - ibm_calibration["properties"][str(qubit)]["eID"],
                 "rz": 1,  # rz is always perfect
                 "sx": 1 - ibm_calibration["properties"][str(qubit)]["eSX"],
-                "x": 1 - ibm_calibration["properties"][str(qubit)]["eX"],
-                "ecr": 1 - ibm_calibration["properties"][str(qubit)]["eecr"]
+                "x": 1 - ibm_calibration["properties"][str(qubit)]["eX"]
             }
             calibration.readout_fidelity[qubit] = 1 - ibm_calibration["properties"][str(qubit)]["eRO"]
             # data in nanoseconds, convert to SI unit (seconds)
@@ -91,11 +90,11 @@ class IBMFreeAcessProvider(Provider):
         for qubit1, qubit2 in device.coupling_map:
             edge = f"{qubit1}_{qubit2}"
 
-            error = ibm_calibration["properties"][str(qubit1)]["eecr"][edge]
+            error = ibm_calibration["properties"][str(qubit1)]["eECR"][edge]
             calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"ecr": 1 - error}
 
             # data in nanoseconds, convert to SI unit (seconds)
-            duration = ibm_calibration["properties"][str(qubit1)]["eecr"][edge] * 1e-9
+            duration = ibm_calibration["properties"][str(qubit1)]["eECR"][edge] * 1e-9
             calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"ecr": duration}
 
         device.calibration = calibration

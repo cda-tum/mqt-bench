@@ -12,7 +12,7 @@ from mqt.bench.devices.device import Device
 from mqt.bench.devices.provider import Provider
 
 from mqt.bench.devices.ibm import IBMProvider
-from mqt.bench.devices.ibm_free_access import IBMFreeAcessProvider
+from mqt.bench.devices.ibm_free_access import IBMFreeAccessProvider
 from mqt.bench.devices.ionq import IonQProvider
 from mqt.bench.devices.iqm import IQMProvider
 from mqt.bench.devices.oqc import OQCProvider
@@ -94,7 +94,7 @@ __all__ = [
     "Device",
     "DeviceCalibration",
     "IBMProvider",
-    "IBMFreeAcessProvider",
+    "IBMFreeAccessProvider",
     "IQMProvider",
     "IonQProvider",
     "OQCProvider",
