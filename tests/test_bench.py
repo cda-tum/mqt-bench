@@ -422,6 +422,36 @@ def test_unidirectional_coupling_map() -> None:
             "",
         ),
         (
+                "dj",
+                "nativegates",
+                5,
+                None,
+                "qiskit",
+                CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+                "ibm_free_access",
+                "ibm_kyiv",
+        ),
+        (
+                "dj",
+                "nativegates",
+                5,
+                None,
+                "qiskit",
+                CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+                "ibm_free_access",
+                "ibm_brisbane",
+        ),
+        (
+                "dj",
+                "nativegates",
+                5,
+                None,
+                "qiskit",
+                CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+                "ibm_free_access",
+                "ibm_sherbrooke",
+        ),
+        (
             "dj",
             "nativegates",
             5,
@@ -806,6 +836,18 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_gateset",
             "rigetti_aspen_m3",
         )
+    match = "Selected provider_name must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            2,
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
+            "ibm_open_accessss",
+            "ibm_kyiv",
+        )
     match = "Selected device_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -818,7 +860,18 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "wrong_device",
         )
-
+    match = "Selected device_name must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            3,
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
+            "ibm_open_access",
+            "ibm_munich",
+        )
 
 def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
     """Test the creation of benchmarks from a configuration file and the evaluation of the created benchmarks."""
