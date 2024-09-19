@@ -11,8 +11,8 @@ from mqt.bench.devices import IBMOpenAccessProvider
 def test_ibm_open_access_provider_methods() -> None:
     """Test the methods of the IBMProvider class."""
     assert IBMOpenAccessProvider.get_available_device_names() == ["ibm_kyiv", "ibm_brisbane", "ibm_sherbrooke"]
-    assert IBMOpenAccessProvider.get_available_basis_gates() == [["erc", "id", "rz", "sx", "x", "measure", "barrier"]]
-    assert IBMOpenAccessProvider.get_native_gates() == ["erc", "id", "rz", "sx", "x", "measure", "barrier"]
+    assert IBMOpenAccessProvider.get_available_basis_gates() == [["ecr", "id", "rz", "sx", "x", "measure", "barrier"]]
+    assert IBMOpenAccessProvider.get_native_gates() == ["ecr", "id", "rz", "sx", "x", "measure", "barrier"]
     assert IBMOpenAccessProvider.get_max_qubits() == 127
     with pytest.raises(ValueError, match="Device ibm_unknown not found."):
         IBMOpenAccessProvider.get_device("ibm_unknown")
