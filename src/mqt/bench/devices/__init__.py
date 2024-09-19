@@ -26,7 +26,15 @@ class NotFoundError(Exception):
 
 def get_available_providers() -> list[Provider]:
     """Get a list of all available providers."""
-    return [IBMProvider(), IBMOpenAccessProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
+    return [
+        IBMProvider(),
+        IBMOpenAccessProvider(),
+        IonQProvider(),
+        OQCProvider(),
+        RigettiProvider(),
+        QuantinuumProvider(),
+        IQMProvider(),
+    ]
 
 
 def get_available_provider_names() -> list[str]:
@@ -93,8 +101,8 @@ def get_device_by_name(device_name: str) -> Device:
 __all__ = [
     "Device",
     "DeviceCalibration",
-    "IBMProvider",
     "IBMOpenAccessProvider",
+    "IBMProvider",
     "IQMProvider",
     "IonQProvider",
     "OQCProvider",
