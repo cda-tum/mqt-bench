@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-from qiskit_ibm_runtime.fake_provider import FakeKyiv
 
 from mqt.bench.devices import IBMOpenAccessProvider
 
@@ -95,7 +94,3 @@ def test_get_ibm_sherbrooke_device() -> None:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
             assert device.get_two_qubit_gate_duration(gate, q0, q1) >= 0
 
-def test_import_unsupported_backend() -> None:
-    """Test importing an unsupported backend type."""
-    with pytest.raises(TypeError, match="Unsupported backend type <class 'str'>"):
-        IBMOpenAccessProvider.import_qiskit_backend("V3")

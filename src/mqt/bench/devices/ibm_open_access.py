@@ -186,35 +186,3 @@ class IBMOpenAccessProvider(Provider):
                 calibration.two_qubit_gate_duration[(qubit1, qubit2)][instruction.name] = duration
 
         return calibration
-
-    @classmethod
-    def __import_backend_v2(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `BackendV2` object.
-
-        Arguments:
-            backend: the Qiskit `BackendV2` object.
-
-        Returns: Collection of device data
-        """
-        device = Device()
-        device.name = backend.name
-        device.num_qubits = backend.num_qubits
-        device.basis_gates = backend.operation_names
-        device.coupling_map = backend.coupling_map.get_edges()
-        device.calibration = cls.__import_target(backend.target)
-        return device
-
-    @classmethod
-    def import_qiskit_backend(cls, backend: BackendV2) -> Device:
-        """Import device data from a Qiskit `Backend` object.
-
-        Arguments:
-            backend: the Qiskit `Backend` object.
-
-        Returns:
-            Collection of device data
-        """
-        if isinstance(backend, BackendV2):
-            return cls.__import_backend_v2(backend)
-        msg = f"Unsupported backend type {type(backend)}"
-        raise TypeError(msg)
