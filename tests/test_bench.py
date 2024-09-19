@@ -307,7 +307,7 @@ def test_get_default_evaluation_output_path() -> None:
 def test_openqasm_gates() -> None:
     """Test the openqasm gates."""
     openqasm_gates = utils.get_openqasm_gates()
-    num_openqasm_gates = 42
+    num_openqasm_gates = 43
     assert len(openqasm_gates) == num_openqasm_gates
 
 

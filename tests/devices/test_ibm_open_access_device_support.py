@@ -11,8 +11,8 @@ from mqt.bench.devices import IBMOpenAccessProvider
 def test_ibm_open_access_provider_methods() -> None:
     """Test the methods of the IBMProvider class."""
     assert IBMOpenAccessProvider.get_available_device_names() == ["ibm_kyiv", "ibm_brisbane", "ibm_sherbrooke"]
-    assert IBMOpenAccessProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "erc", "measure", "barrier"]]
-    assert IBMOpenAccessProvider.get_native_gates() == ["id", "rz", "sx", "x", "erc", "measure", "barrier"]
+    assert IBMOpenAccessProvider.get_available_basis_gates() == [["erc", "id", "rz", "sx", "x", "measure", "barrier"]]
+    assert IBMOpenAccessProvider.get_native_gates() == ["erc", "id", "rz", "sx", "x", "measure", "barrier"]
     assert IBMOpenAccessProvider.get_max_qubits() == 127
     with pytest.raises(ValueError, match="Device ibm_unknown not found."):
         IBMOpenAccessProvider.get_device("ibm_unknown")
@@ -27,8 +27,8 @@ def test_get_ibm_kyiv_device() -> None:
     assert device.name == "ibm_kyiv"
     assert device.num_qubits == 127
 
-    assert all(gate in ["id", "rz", "sx", "x", "ecr", "measure", "barrier"] for gate in single_qubit_gates)
-    assert all(gate == "cx" for gate in two_qubit_gates)
+    assert all(gate in ["ecr", "id", "rz", "sx", "x", "measure", "barrier"] for gate in single_qubit_gates)
+    assert all(gate == "ecr" for gate in two_qubit_gates)
 
     for q in range(device.num_qubits):
         assert 0 <= device.get_readout_fidelity(q) <= 1
