@@ -1,4 +1,6 @@
-"""Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
+"""
+Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
+
 This script retrieves remote backend information from IBM Quantum, processes qubit properties
 from a CSV file, and combines them into a comprehensive JSON file.
 """
@@ -7,7 +9,6 @@ from __future__ import annotations
 
 import csv
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -24,7 +25,7 @@ def get_remote_information(backend_name: str) -> dict[str, Any]:
         backend_name (str): Name of the quantum backend to retrieve information for.
 
     Returns:
-        Dict[str, Any]: A dictionary containing backend information (name, number of qubits, basis gates, and connectivity).
+        dict[str, Any]: A dictionary containing backend information (name, number of qubits, basis gates, and connectivity).
     """
     service = QiskitRuntimeService(instance="ibm-q/open/main")
     backend = service.backend(backend_name)
@@ -54,7 +55,7 @@ def parse_ecr_errors(ecr_str: str) -> dict[str, float]:
         ecr_str (str): A string representing ECR error or gate time, in the format 'key:value;key:value...'.
 
     Returns:
-        Dict[str, float]: A dictionary where the keys are the ECR error or gate time names and the values are floats.
+        dict[str, float]: A dictionary where the keys are the ECR error or gate time names and the values are floats.
     """
     ecr_dict = {}
     if ecr_str:
@@ -75,7 +76,7 @@ def process_csv(input_file: str) -> dict[str, Any]:
         input_file (str): Path to the CSV file to be processed.
 
     Returns:
-        Dict[str, Any]: A dictionary containing qubit properties.
+        dict[str, Any]: A dictionary containing qubit properties.
     """
     properties = {}
 
@@ -89,7 +90,7 @@ def process_csv(input_file: str) -> dict[str, Any]:
             t1 = float(row["T1 (us)"])
             t2 = float(row["T2 (us)"])
             ero = float(row["Readout assignment error "])
-            to = float(row["Readout length (ns)"])
+            tro = float(row["Readout length (ns)"])
             eid = float(row["ID error "])
             esx = float(row["√x (sx) error "])
             ex = float(row["Pauli-X error "])
@@ -103,7 +104,7 @@ def process_csv(input_file: str) -> dict[str, Any]:
                 "T1": t1,
                 "T2": t2,
                 "eRO": ero,
-                "tRO": to,
+                "tRO": tro,
                 "eID": eid,
                 "eSX": esx,
                 "eX": ex,
@@ -128,7 +129,7 @@ def extract_backend_name_from_filename(filename: str) -> str:
     Raises:
         ValueError: If the filename does not contain enough underscores to extract the backend name.
     """
-    base_name = os.path.basename(filename)
+    base_name = Path(filename).name
     parts = base_name.split("_")
     if len(parts) < 2:
         msg = "Filename does not contain expected underscores to extract backend name."
