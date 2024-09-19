@@ -37,6 +37,7 @@ class IBMOpenAccessCalibration(TypedDict):
     connectivity: list[list[int]]
     properties: dict[str, QubitProperties]
 
+
 class IBMOpenAccessProvider(Provider):
     """Class to manage open-access IBM devices."""
 
@@ -76,7 +77,7 @@ class IBMOpenAccessProvider(Provider):
                 "id": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eID"],
                 "rz": 1,  # rz is always perfect
                 "sx": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eSX"],
-                "x": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eX"]
+                "x": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eX"],
             }
             calibration.readout_fidelity[qubit] = 1 - open_access_ibm_calibration["properties"][str(qubit)]["eRO"]
             # data in nanoseconds, convert to SI unit (seconds)
@@ -89,11 +90,11 @@ class IBMOpenAccessProvider(Provider):
             edge = f"{qubit1}_{qubit2}"
 
             error = open_access_ibm_calibration["properties"][str(qubit1)]["eECR"][edge]
-            calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {"ecr": 1 - error}
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"ecr": 1 - error}
 
             # data in nanoseconds, convert to SI unit (seconds)
             duration = open_access_ibm_calibration["properties"][str(qubit1)]["eECR"][edge] * 1e-9
-            calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {"ecr": duration}
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"ecr": duration}
 
         device.calibration = calibration
         return device
@@ -132,12 +133,12 @@ class IBMOpenAccessProvider(Provider):
             elif len(gate.qubits) == 2:
                 qubit1, qubit2 = gate.qubits
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
-                    calibration.two_qubit_gate_fidelity[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][gate.gate] = 1 - error
+                    calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {}
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate.gate] = 1 - error
 
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
-                    calibration.two_qubit_gate_duration[(qubit1, qubit2)] = {}
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][gate.gate] = duration
+                    calibration.two_qubit_gate_duration[qubit1, qubit2] = {}
+                calibration.two_qubit_gate_duration[qubit1, qubit2][gate.gate] = duration
 
         return calibration
 
@@ -180,7 +181,7 @@ class IBMOpenAccessProvider(Provider):
                 calibration.single_qubit_gate_duration[qubit][instruction.name] = duration
             elif len(qargs) == 2:
                 qubit1, qubit2 = qargs
-                calibration.two_qubit_gate_fidelity[(qubit1, qubit2)][instruction.name] = 1 - error
-                calibration.two_qubit_gate_duration[(qubit1, qubit2)][instruction.name] = duration
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2][instruction.name] = 1 - error
+                calibration.two_qubit_gate_duration[qubit1, qubit2][instruction.name] = duration
 
         return calibration
