@@ -11,8 +11,6 @@ if TYPE_CHECKING:
     from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
-from qiskit.providers import BackendV2
-
 from mqt.bench.devices import Device, DeviceCalibration, Provider
 
 
