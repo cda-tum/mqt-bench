@@ -428,7 +428,7 @@ def test_unidirectional_coupling_map() -> None:
                 None,
                 "qiskit",
                 CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-                "ibm_free_access",
+                "ibm_open_access",
                 "ibm_kyiv",
         ),
         (
@@ -438,7 +438,7 @@ def test_unidirectional_coupling_map() -> None:
                 None,
                 "qiskit",
                 CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-                "ibm_free_access",
+                "ibm_open_access",
                 "ibm_brisbane",
         ),
         (
@@ -448,7 +448,7 @@ def test_unidirectional_coupling_map() -> None:
                 None,
                 "qiskit",
                 CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-                "ibm_free_access",
+                "ibm_open_access",
                 "ibm_sherbrooke",
         ),
         (
