@@ -19,8 +19,6 @@ jobs:
   python-tests:
     name: 🐍 Test
     needs: change-detection
-    permissions:
-      id-token: write # Explicitly allows the `id-token: write` permission for this job
     if: fromJSON(needs.change-detection.outputs.run-python-tests)
     uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-ci.yml@v1.3
     with:
