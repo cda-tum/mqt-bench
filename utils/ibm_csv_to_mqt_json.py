@@ -1,5 +1,4 @@
-"""
-Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
+"""Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
 
 This script retrieves remote backend information from IBM Quantum, processes qubit properties
 from a CSV file, and combines them into a comprehensive JSON file.
@@ -90,7 +89,7 @@ def process_csv(input_file: str) -> dict[str, Any]:
             t1 = float(row["T1 (us)"])
             t2 = float(row["T2 (us)"])
             ero = float(row["Readout assignment error "])
-            tro = float(row["Readout length (ns)"])
+            to = float(row["Readout length (ns)"])
             eid = float(row["ID error "])
             esx = float(row["√x (sx) error "])
             ex = float(row["Pauli-X error "])
@@ -104,7 +103,7 @@ def process_csv(input_file: str) -> dict[str, Any]:
                 "T1": t1,
                 "T2": t2,
                 "eRO": ero,
-                "tRO": tro,
+                "tRO": to,
                 "eID": eid,
                 "eSX": esx,
                 "eX": ex,
