@@ -19,15 +19,12 @@ jobs:
   python-tests:
     name: 🐍 Test
     needs: change-detection
-    if: fromJSON(needs.change-detection.outputs.run-python-tests)
-    uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-ci.yml@v1.3
     permissions:
       id-token: write # Explicitly allows the `id-token: write` permission for this job
+    if: fromJSON(needs.change-detection.outputs.run-python-tests)
+    uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-ci.yml@v1.3
     with:
-      cmake-args: ""
-      cmake-args-ubuntu: -G Ninja
-      cmake-args-macos: -G Ninja -DMQT_CORE_WITH_GMP=ON
-      cmake-args-windows: -T ClangCL
+      skip-testing-latest-python: true
 
   code-ql:
     name: 📝 CodeQL
