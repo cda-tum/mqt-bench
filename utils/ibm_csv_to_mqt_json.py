@@ -1,21 +1,22 @@
-"""
-Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
+"""Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
 This script retrieves remote backend information from IBM Quantum, processes qubit properties
 from a CSV file, and combines them into a comprehensive JSON file.
 """
 
+from __future__ import annotations
+
 import csv
 import json
-import sys
-from qiskit_ibm_runtime import QiskitRuntimeService
-from pathlib import Path
 import os
-from typing import Dict, Any
+import sys
+from pathlib import Path
+from typing import Any
+
+from qiskit_ibm_runtime import QiskitRuntimeService
 
 
-def get_remote_information(backend_name: str) -> Dict[str, Any]:
-    """
-    Retrieves the remote backend information from IBM Quantum.
+def get_remote_information(backend_name: str) -> dict[str, Any]:
+    """Retrieves the remote backend information from IBM Quantum.
 
     This includes backend details like name, number of qubits, basis gates, and connectivity.
 
@@ -36,19 +37,16 @@ def get_remote_information(backend_name: str) -> Dict[str, Any]:
     gates.append("barrier")  # Add the 'barrier' gate
 
     # Extract backend information
-    backend_info = {
+    return {
         "name": backend_name,
         "num_qubits": backend.num_qubits,
         "basis_gates": gates,
-        "connectivity": coupling_map  # Already a list of lists
+        "connectivity": coupling_map,  # Already a list of lists
     }
 
-    return backend_info
 
-
-def parse_ecr_errors(ecr_str: str) -> Dict[str, float]:
-    """
-    Parses a string of ECR gate errors or gate time values into a dictionary.
+def parse_ecr_errors(ecr_str: str) -> dict[str, float]:
+    """Parses a string of ECR gate errors or gate time values into a dictionary.
 
     Each pair in the string is separated by a semicolon, with each key-value pair separated by a colon.
 
@@ -60,17 +58,16 @@ def parse_ecr_errors(ecr_str: str) -> Dict[str, float]:
     """
     ecr_dict = {}
     if ecr_str:
-        pairs = ecr_str.split(';')
+        pairs = ecr_str.split(";")
         for pair in pairs:
-            if ':' in pair:
-                key, value = pair.split(':')
+            if ":" in pair:
+                key, value = pair.split(":")
                 ecr_dict[key] = float(value)
     return ecr_dict
 
 
-def process_csv(input_file: str) -> Dict[str, Any]:
-    """
-    Processes a CSV file containing qubit properties and converts it into a structured dictionary.
+def process_csv(input_file: str) -> dict[str, Any]:
+    """Processes a CSV file containing qubit properties and converts it into a structured dictionary.
 
     Each row in the CSV corresponds to a qubit, and the columns represent different properties.
 
@@ -83,7 +80,7 @@ def process_csv(input_file: str) -> Dict[str, Any]:
     properties = {}
 
     input_path = Path(input_file)
-    with input_path.open(mode='r', encoding='utf-8') as csvfile:
+    with input_path.open(mode="r", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             qubit_id = row["Qubit"].strip('"')
@@ -92,7 +89,7 @@ def process_csv(input_file: str) -> Dict[str, Any]:
             t1 = float(row["T1 (us)"])
             t2 = float(row["T2 (us)"])
             ero = float(row["Readout assignment error "])
-            tro = float(row["Readout length (ns)"])
+            to = float(row["Readout length (ns)"])
             eid = float(row["ID error "])
             esx = float(row["√x (sx) error "])
             ex = float(row["Pauli-X error "])
@@ -106,20 +103,19 @@ def process_csv(input_file: str) -> Dict[str, Any]:
                 "T1": t1,
                 "T2": t2,
                 "eRO": ero,
-                "tRO": tro,
+                "tRO": to,
                 "eID": eid,
                 "eSX": esx,
                 "eX": ex,
                 "eECR": eecr,
-                "tECR": tecr
+                "tECR": tecr,
             }
 
     return properties
 
 
 def extract_backend_name_from_filename(filename: str) -> str:
-    """
-    Extracts the backend name from a CSV filename.
+    """Extracts the backend name from a CSV filename.
 
     The backend name is assumed to be the part of the filename before the first underscore.
 
@@ -133,16 +129,15 @@ def extract_backend_name_from_filename(filename: str) -> str:
         ValueError: If the filename does not contain enough underscores to extract the backend name.
     """
     base_name = os.path.basename(filename)
-    parts = base_name.split('_')
+    parts = base_name.split("_")
     if len(parts) < 2:
-        raise ValueError("Filename does not contain expected underscores to extract backend name.")
-    backend_name = f"{parts[0]}_{parts[1]}"
-    return backend_name
+        msg = "Filename does not contain expected underscores to extract backend name."
+        raise ValueError(msg)
+    return f"{parts[0]}_{parts[1]}"
 
 
 def main() -> None:
-    """
-    The main function of the script.
+    """The main function of the script.
 
     It expects a CSV file path as a command-line argument, extracts the backend name,
     processes the file, and writes the backend information along with the qubit properties to a JSON file.
@@ -183,7 +178,7 @@ def main() -> None:
     output_filename = f"{backend_name}_calibration.json"
     output_path = Path(output_filename)
     try:
-        with output_path.open('w', encoding='utf-8') as json_file:
+        with output_path.open("w", encoding="utf-8") as json_file:
             json.dump(output_data, json_file, indent=4)
         print(f"Data successfully written to {output_filename}")
     except Exception as e:
