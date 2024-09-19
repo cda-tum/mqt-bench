@@ -124,7 +124,6 @@ def main():
     """
     # Ensure exactly one command-line argument is provided
     if len(sys.argv) != 2:
-        print("Usage: python parse_qubits.py input.csv")
         sys.exit(1)
 
     input_csv = sys.argv[1]

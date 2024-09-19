@@ -1,4 +1,4 @@
-"""Module to manage IBM devices."""
+"""Module to manage open-access IBM devices."""
 
 from __future__ import annotations
 
