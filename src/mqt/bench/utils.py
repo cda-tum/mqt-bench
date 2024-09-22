@@ -18,7 +18,6 @@ from pytket import __version__ as __tket_version__
 from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
-from qiskit_optimization.applications import Maxcut
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
     from importlib import metadata, resources
@@ -114,6 +113,8 @@ def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
         n_nodes: number of graph nodes (and also number of qubits)
         degree: edges per node
     """
+    from qiskit_optimization.applications import Maxcut  # noqa: PLC0415 lazy import to reduce import cost
+
     graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
     maxcut = Maxcut(graph)
     return maxcut.to_quadratic_program()
