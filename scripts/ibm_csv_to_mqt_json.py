@@ -88,9 +88,14 @@ def process_csv(input_file: str) -> dict[str, Any]:
             # Extract and convert numeric values
             t1 = float(row["T1 (us)"])
             t2 = float(row["T2 (us)"])
+            frequency = float(row["Frequency (GHz)"])
+            anharmonicity = float(row["Anharmonicity (GHz)"])
             ero = float(row["Readout assignment error "])
+            prob_meas0_prep1 = float(row["Prob meas0 prep1 "])
+            prob_meas1_prep0 = float(row["Prob meas1 prep0 "])
             to = float(row["Readout length (ns)"])
             eid = float(row["ID error "])
+            rz_error = float(row["Z-axis rotation (rz) error "])
             esx = float(row["√x (sx) error "])
             ex = float(row["Pauli-X error "])
 
@@ -102,9 +107,14 @@ def process_csv(input_file: str) -> dict[str, Any]:
             properties[qubit_id] = {
                 "T1": t1,
                 "T2": t2,
+                "Frequency": frequency,
+                "Anharmonicity": anharmonicity,
                 "eRO": ero,
+                "Prob_meas0_prep1": prob_meas0_prep1,
+                "Prob_meas1_prep0": prob_meas1_prep0,
                 "tRO": to,
                 "eID": eid,
+                "rz_error": rz_error,
                 "eSX": esx,
                 "eX": ex,
                 "eECR": eecr,
@@ -179,7 +189,7 @@ def main() -> None:
     output_path = Path(output_filename)
     try:
         with output_path.open("w", encoding="utf-8") as json_file:
-            json.dump(output_data, json_file, indent=4)
+            json.dump(output_data, json_file, indent=2)
         print(f"Data successfully written to {output_filename}")
     except Exception as e:
         print(f"Failed to write JSON file: {e}")

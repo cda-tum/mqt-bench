@@ -11,8 +11,7 @@ from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
 
-from .ibm import IBMProvider
-from .ibm_open_access import IBMOpenAccessProvider
+from .ibm import IBMProvider, IBMOpenAccessProvider
 from .ionq import IonQProvider
 from .iqm import IQMProvider
 from .oqc import OQCProvider
@@ -101,7 +100,6 @@ def get_device_by_name(device_name: str) -> Device:
 __all__ = [
     "Device",
     "DeviceCalibration",
-    "IBMOpenAccessProvider",
     "IBMProvider",
     "IQMProvider",
     "IonQProvider",
