@@ -164,7 +164,7 @@ def get_openqasm_gates() -> list[str]:
         "rc3x",
         "c3x",
         "c3sqrtx",
-        "c4x"
+        "c4x",
     ]
 
 

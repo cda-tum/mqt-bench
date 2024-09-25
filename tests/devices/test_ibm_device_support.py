@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 
-from mqt.bench.devices import IBMProvider, IBMOpenAccessProvider
+from mqt.bench.devices import IBMOpenAccessProvider, IBMProvider
 
 
 def test_ibm_provider_methods() -> None:
@@ -176,6 +176,7 @@ SAMPLE_CALIBRATION_DATA = {
         },
     },
 }
+
 
 def test_ibm_open_access_provider_methods() -> None:
     """Test various methods of the IBMOpenAccessProvider class."""

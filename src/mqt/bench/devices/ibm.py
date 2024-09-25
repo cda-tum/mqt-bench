@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING, TypedDict, cast
 
 if TYPE_CHECKING:
     from pathlib import Path
+
     from qiskit.providers import BackendV2
-    from qiskit.transpiler import Target
     from qiskit.providers.models import BackendProperties
+    from qiskit.transpiler import Target
 
 from .calibration import DeviceCalibration
 from .device import Device
