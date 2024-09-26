@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "qiskit-ibm-runtime==0.29.1",
+# ]
+# ///
 """Utility script to convert IBM Quantum CSV calibration data to a structured JSON format.
 
 This script retrieves remote backend information from IBM Quantum, processes qubit properties
