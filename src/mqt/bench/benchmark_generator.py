@@ -426,12 +426,11 @@ def get_benchmark(
         if compiler == "tket":
             return tket_helper.get_indep_level(qc, circuit_size, False, True)
 
-    if provider_name not in get_available_provider_names():
-        msg = f"Selected provider_name must be in {get_available_provider_names()}."
-        raise ValueError(msg)
-
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
+        if provider_name not in get_available_provider_names():
+            msg = f"Selected provider_name must be in {get_available_provider_names()}."
+            raise ValueError(msg)
         provider = get_provider_by_name(provider_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
