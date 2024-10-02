@@ -439,11 +439,12 @@ def get_benchmark(
         if compiler == "tket":
             return tket_helper.get_native_gates_level(qc, provider, circuit_size, False, True)
 
+    if device_name not in get_available_device_names():
+        msg = f"Selected device_name must be in {get_available_device_names()}."
+        raise ValueError(msg)
+
     mapped_level = 3
     if level in ("mapped", mapped_level):
-        if device_name not in get_available_device_names():
-            msg = f"Selected device_name must be in {get_available_device_names()}."
-            raise ValueError(msg)
         device = get_device_by_name(device_name)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
