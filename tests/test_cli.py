@@ -55,6 +55,21 @@ if TYPE_CHECKING:
             provider_name="ibm",
             device_name="ibm_montreal",
         ))),
+        ([
+             "--level", "mapped",
+             "--algorithm", "ghz",
+             "--num-qubits", "20",
+             "--compiler", "qiskit",
+             "--qiskit-optimization-level", "2",
+             "--device", "ibm_montreal",
+         ], dumps(get_benchmark(
+            level="mapped",
+            benchmark_name="ghz",
+            circuit_size=20,
+            compiler="qiskit",
+            compiler_settings=CompilerSettings(QiskitSettings(optimization_level=2)),
+            device_name="ibm_montreal",
+        ))),
     ],
 )
 def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
