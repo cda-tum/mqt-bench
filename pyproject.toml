@@ -227,3 +227,6 @@ aer = "aer"
 fom = "fom"
 bench = "bench"
 benchs = "benchs"
+
+[tool.repo-review]
+ignore = ["GH200"]
