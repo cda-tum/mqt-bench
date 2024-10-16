@@ -53,7 +53,6 @@ def get_supported_benchmarks() -> list[str]:
         "realamprandom",
         "su2random",
         "twolocalrandom",
-        "vqe",
         "wstate",
         "shor",
     ]

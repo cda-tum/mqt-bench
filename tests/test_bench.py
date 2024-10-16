@@ -44,7 +44,6 @@ from mqt.bench.benchmarks import (
     shor,
     su2random,
     twolocalrandom,
-    vqe,
     wstate,
 )
 from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
@@ -92,7 +91,6 @@ def sample_filenames() -> list[str]:
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
         (qwalk, 3, False),
-        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
         (su2random, 3, True),
@@ -163,7 +161,6 @@ def test_quantumcircuit_indep_level(
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
         (qwalk, 3, False),
-        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
         (su2random, 3, True),
@@ -937,14 +934,6 @@ def test_calc_supermarq_features() -> None:
     assert dense_features.entanglement_ratio == 0.0
     assert dense_features.critical_depth == 0.0
     assert dense_features.program_communication == 0.0
-
-    regular_qc = get_benchmark("vqe", 1, 5)
-    regular_features = utils.calc_supermarq_features(regular_qc)
-    assert 0 < regular_features.parallelism < 1
-    assert 0 < regular_features.entanglement_ratio < 1
-    assert 0 < regular_features.critical_depth < 1
-    assert 0 < regular_features.program_communication < 1
-    assert 0 < regular_features.liveness < 1
 
 
 def test_benchmark_generator() -> None:

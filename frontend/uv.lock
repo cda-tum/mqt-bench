@@ -401,7 +401,7 @@ wheels = [
 
 [[package]]
 name = "mqt-bench"
-version = "1.1.8.dev9+g481be0c.d20241016"
+version = "1.1.8.dev14+g90296a5"
 source = { directory = "../" }
 dependencies = [
     { name = "joblib" },
@@ -410,6 +410,7 @@ dependencies = [
     { name = "pytket" },
     { name = "pytket-qiskit" },
     { name = "qiskit" },
+    { name = "qiskit-algorithms" },
     { name = "qiskit-optimization" },
 ]
 
@@ -433,6 +434,7 @@ requires-dist = [
     { name = "pytket-qiskit", specifier = ">=0.53.0" },
     { name = "qiskit", specifier = "!=1.2.0" },
     { name = "qiskit", extras = ["visualization"], marker = "extra == 'docs'" },
+    { name = "qiskit-algorithms", specifier = ">=0.3" },
     { name = "qiskit-optimization", specifier = ">=0.6" },
     { name = "setuptools-scm", marker = "extra == 'docs'", specifier = ">=8.1" },
     { name = "sphinx-autoapi", marker = "extra == 'docs'", specifier = ">=3" },
