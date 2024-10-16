@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import pytest
-
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 
-from mqt.bench.devices import Device, IBMOpenAccessProvider, IBMProvider
+from mqt.bench.devices import IBMOpenAccessProvider, IBMProvider
 
 
 def test_get_device_not_found() -> None:
