@@ -41,10 +41,8 @@ from mqt.bench.benchmarks import (
     qwalk,
     random,
     realamprandom,
-    routing,
     shor,
     su2random,
-    tsp,
     twolocalrandom,
     vqe,
     wstate,
@@ -93,7 +91,6 @@ def sample_filenames() -> list[str]:
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
         (vqe, 3, True),
         (random, 3, True),
@@ -165,7 +162,6 @@ def test_quantumcircuit_indep_level(
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
         (vqe, 3, True),
         (random, 3, True),
@@ -292,12 +288,6 @@ def test_openqasm_gates() -> None:
 def test_dj_constant_oracle() -> None:
     """Test the creation of the DJ benchmark constant oracle."""
     qc = dj.create_circuit(5, False)
-    assert qc.depth() > 0
-
-
-def test_routing() -> None:
-    """Test the creation of the routing benchmark."""
-    qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
 
 

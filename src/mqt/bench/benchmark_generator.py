@@ -134,9 +134,6 @@ class BenchmarkGenerator:
             elif benchmark["name"] == "shor":
                 instances = [lib.get_instance(choice) for choice in benchmark["instances"]]
 
-            elif benchmark["name"] in ("routing", "tsp"):
-                instances = range(benchmark["min_nodes"], benchmark["max_nodes"])
-
             else:
                 instances = range(
                     benchmark["min_qubits"],

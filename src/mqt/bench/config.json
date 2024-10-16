@@ -116,13 +116,6 @@
       "precheck_possible": true
     },
     {
-      "name": "routing",
-      "include": true,
-      "min_nodes": 2,
-      "max_nodes": 131,
-      "precheck_possible": false
-    },
-    {
       "name": "shor",
       "include": true,
       "instances": ["xsmall", "small", "medium", "large"],
@@ -135,13 +128,6 @@
       "max_qubits": 131,
       "stepsize": 1,
       "precheck_possible": true
-    },
-    {
-      "name": "tsp",
-      "include": true,
-      "min_nodes": 2,
-      "max_nodes": 131,
-      "precheck_possible": false
     },
     {
       "name": "twolocalrandom",
