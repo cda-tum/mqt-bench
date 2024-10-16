@@ -94,6 +94,7 @@ if TYPE_CHECKING:
             compiler_settings=CompilerSettings(QiskitSettings(optimization_level=2)),
             device_name="ibm_montreal",
         ))),
+        (["--help"], "usage: mqt.bench.cli"),
     ],
 )
 def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner) -> None:
