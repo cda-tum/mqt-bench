@@ -257,8 +257,6 @@ def calc_supermarq_features(
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     """Returns the module for a specific benchmark."""
-    if benchmark_name == "qnn":
-        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
 
 
