@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import sys
 from typing import TYPE_CHECKING, TypedDict, cast
-from qiskit.circuit.controlflow import ControlFlowOp
 
 # Conditional import for type hinting and other imports
 if TYPE_CHECKING:

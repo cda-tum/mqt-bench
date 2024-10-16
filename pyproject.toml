@@ -25,6 +25,7 @@ dependencies = [
     "qiskit_optimization>=0.6",
     "qiskit_nature[pyscf]>=0.7",
     "qiskit_finance>=0.4.1",
+    "qiskit_ibm_runtime>=0.11.0",  # Added qiskit_ibm_runtime dependency
     "pandas>=2.1.2",
     "flask>=2.3.0",
     "networkx>=2.8.8",
