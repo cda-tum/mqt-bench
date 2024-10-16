@@ -5,7 +5,6 @@ from __future__ import annotations
 import numpy as np
 from qiskit import AncillaRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import GroverOperator
-from qiskit_algorithms import Grover
 
 
 def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> QuantumCircuit:
@@ -27,7 +26,7 @@ def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> Quantu
     oracle.mcp(np.pi, q, flag)
 
     operator = GroverOperator(oracle, mcx_mode=ancillary_mode)
-    iterations = Grover.optimal_num_iterations(1, num_qubits)
+    iterations = round(np.arccos(np.sqrt(1 / 2**num_qubits)) / (2 * np.arcsin(np.sqrt(1 / 2**num_qubits))))
 
     num_qubits = operator.num_qubits - 1  # -1 because last qubit is "flag" qubit and already taken care of
 
