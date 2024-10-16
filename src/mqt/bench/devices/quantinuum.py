@@ -6,9 +6,6 @@ import json
 import sys
 from typing import TYPE_CHECKING, TypedDict, cast
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
@@ -57,7 +54,7 @@ class QuantinuumProvider(Provider):
     def import_backend(cls, name: str) -> Device:
         """Import an Quantinuum backend as a Device object.
 
-        Arguments
+        Arguments:
             name (str): The name of the Quantinuum backend whose calibration data needs to be imported.
                             This name will be used to locate the corresponding JSON calibration file.
 

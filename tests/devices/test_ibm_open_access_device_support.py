@@ -7,13 +7,12 @@ calibration data.
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-from unittest.mock import mock_open, patch
+from unittest.mock import patch
 
 import pytest
 
 from mqt.bench.devices import Device, IBMOpenAccessProvider
+
 
 def test_get_device_success() -> None:
     """Test successful retrieval of a device by name."""

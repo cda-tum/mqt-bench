@@ -7,13 +7,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
-    from importlib import resources
+    pass
 else:
-    import importlib_resources as resources
+    pass
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from .device import Device
 
 from abc import ABC, abstractmethod

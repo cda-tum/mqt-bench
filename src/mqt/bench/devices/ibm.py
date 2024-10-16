@@ -3,28 +3,22 @@
 from __future__ import annotations
 
 import json
-import sys
 from typing import TYPE_CHECKING, TypedDict, cast
 
 # Conditional import for type hinting and other imports
 if TYPE_CHECKING:
-    from pathlib import Path
     from qiskit.providers import BackendV2
     from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
+# Conditional import for importlib resources based on Python version
+from importlib import resources
+
 from qiskit_ibm_runtime import QiskitRuntimeService
+
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
-
-# Conditional import for importlib resources based on Python version
-if sys.version_info >= (3, 10):
-    from importlib import resources
-else:
-    import importlib_resources as resources
-
-
 
 
 class QubitPropertiesIBM(TypedDict):
@@ -181,9 +175,9 @@ class IBMProvider(Provider, BaseIBMProvider):
             name (str): The name of the IBM backend whose calibration data needs to be imported.
                           This name will be used to locate the corresponding JSON calibration file.
 
-          Returns:
+        Returns:
               Device: An instance of `Device`, loaded with the calibration data from the JSON file.
-          """
+        """
         # Assuming 'name' is already defined
         ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
 
@@ -282,7 +276,7 @@ class IBMOpenAccessProvider(Provider, BaseIBMProvider):
         connectivity = []
 
         # Loop over each tuple in the coupling map
-        for (a, b) in backend.coupling_map:
+        for a, b in backend.coupling_map:
             # Add both directions for each connection
             connectivity.append([a, b])  # Forward direction
             connectivity.append([b, a])  # Reverse direction

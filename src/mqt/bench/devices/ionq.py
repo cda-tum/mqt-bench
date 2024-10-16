@@ -3,23 +3,15 @@
 from __future__ import annotations
 
 import json
-import sys
-from typing import TYPE_CHECKING, TypedDict, cast
 
 # Conditional import for type hinting and other imports
-if TYPE_CHECKING:
-    from pathlib import Path
+# Conditional import for importlib resources based on Python version
+from importlib import resources
+from typing import TypedDict, cast
 
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
-
-# Conditional import for importlib resources based on Python version
-if sys.version_info >= (3, 10):
-    from importlib import resources
-else:
-    import importlib_resources as resources
-
 
 
 class Statistics(TypedDict):
@@ -62,7 +54,7 @@ class IonQProvider(Provider):
     def import_backend(cls, name: str) -> Device:
         """Import an IonQ backend as a Device object.
 
-        Arguments
+        Arguments:
             name (str): The name of the IonQ backend whose calibration data needs to be imported.
                             This name will be used to locate the corresponding JSON calibration file.
 
@@ -72,7 +64,7 @@ class IonQProvider(Provider):
         # Assuming 'name' is already defined
         ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
 
-        #print(ref)
+        # print(ref)
 
         # Use 'as_file' to access the resource as a path
         with resources.as_file(ref) as json_path:
@@ -86,7 +78,6 @@ class IonQProvider(Provider):
         device.num_qubits = ionq_calibration["num_qubits"]
         device.basis_gates = ionq_calibration["basis_gates"]
         device.coupling_map = list(ionq_calibration["connectivity"])
-
 
         calibration = DeviceCalibration()
 

@@ -4,12 +4,8 @@ from __future__ import annotations
 
 import json
 import sys
-
 import warnings
 from typing import TYPE_CHECKING, TypedDict, cast
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 from .calibration import DeviceCalibration
 from .device import Device
@@ -124,7 +120,7 @@ class RigettiProvider(Provider):
     def import_backend(cls, name: str) -> Device:
         """Import a Rigetti backend.
 
-        Arguments
+        Arguments:
             name (str): The name of the Quantinuum backend whose calibration data needs to be imported.
                             This name will be used to locate the corresponding JSON calibration file.
 
