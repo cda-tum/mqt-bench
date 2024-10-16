@@ -10,7 +10,8 @@ from typing import TYPE_CHECKING
 from flask import Flask, cli, jsonify, render_template, request, send_from_directory
 
 from mqt.bench import utils
-from mqt.bench.viewer.backend import Backend
+
+from .backend import Backend
 
 if TYPE_CHECKING:  # pragma: no cover
     from flask import Response
