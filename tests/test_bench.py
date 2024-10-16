@@ -33,10 +33,6 @@ from mqt.bench.benchmarks import (
     graphstate,
     groundstate,
     grover,
-    portfolioqaoa,
-    portfoliovqe,
-    pricingcall,
-    pricingput,
     qaoa,
     qft,
     qftentangled,
@@ -106,11 +102,7 @@ def sample_filenames() -> list[str]:
         (su2random, 3, True),
         (twolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
         (shor, 3, False),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -182,10 +174,6 @@ def test_quantumcircuit_indep_level(
         (su2random, 3, True),
         (twolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(

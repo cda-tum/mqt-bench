@@ -140,9 +140,6 @@ class BenchmarkGenerator:
             elif benchmark["name"] == "groundstate":
                 instances = benchmark["instances"]
 
-            elif benchmark["name"] in ("pricingcall", "pricingput"):
-                instances = range(benchmark["min_uncertainty"], benchmark["max_uncertainty"])
-
             else:
                 instances = range(
                     benchmark["min_qubits"],
