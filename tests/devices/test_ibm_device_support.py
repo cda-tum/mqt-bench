@@ -25,6 +25,7 @@ def test_get_device_not_found() -> None:
     with pytest.raises(ValueError, match="Device ibm_unknown not found."):
         IBMOpenAccessProvider.get_device("ibm_unknown")
 
+
 def test_ibm_provider_methods() -> None:
     """Test the methods of the IBMProvider class."""
     assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]

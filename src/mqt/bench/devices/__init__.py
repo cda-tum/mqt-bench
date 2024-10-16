@@ -100,8 +100,8 @@ def get_device_by_name(device_name: str) -> Device:
 __all__ = [
     "Device",
     "DeviceCalibration",
-    "IBMProvider",
     "IBMOpenAccessProvider",
+    "IBMProvider",
     "IQMProvider",
     "IonQProvider",
     "OQCProvider",

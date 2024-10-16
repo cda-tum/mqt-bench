@@ -6,9 +6,6 @@ import json
 import sys
 from typing import TYPE_CHECKING, TypedDict, cast
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
@@ -17,7 +14,6 @@ if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
     from importlib import resources
 else:
     import importlib_resources as resources
-
 
 
 class QubitProperties(TypedDict):
@@ -80,7 +76,7 @@ class OQCProvider(Provider):
     def import_backend(cls, name: str) -> Device:
         """Import an OQC backend.
 
-        Arguments
+        Arguments:
             name (str): The name of the OQC backend whose calibration data needs to be imported.
                             This name will be used to locate the corresponding JSON calibration file.
 
