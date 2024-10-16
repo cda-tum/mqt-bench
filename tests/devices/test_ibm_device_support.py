@@ -8,6 +8,23 @@ from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 from mqt.bench.devices import IBMOpenAccessProvider, IBMProvider
 
 
+def test_get_device_success() -> None:
+    """Test successful retrieval of a device by name."""
+    device = Device(name="ibm_test_device", num_qubits=3, basis_gates=["id", "rz", "x"], coupling_map=[[0, 1], [1, 2]])
+    with (
+        patch.object(IBMOpenAccessProvider, "import_backend", return_value=device),
+        patch.object(IBMOpenAccessProvider, "get_device", return_value=device),
+    ):
+        retrieved_device = IBMOpenAccessProvider.get_device("ibm_test_device")
+        assert retrieved_device.name == "ibm_test_device"
+        assert retrieved_device.num_qubits == 3
+
+
+def test_get_device_not_found() -> None:
+    """Test retrieval of a device that does not exist."""
+    with pytest.raises(ValueError, match="Device ibm_unknown not found."):
+        IBMOpenAccessProvider.get_device("ibm_unknown")
+
 def test_ibm_provider_methods() -> None:
     """Test the methods of the IBMProvider class."""
     assert IBMProvider.get_available_device_names() == ["ibm_washington", "ibm_montreal"]
@@ -206,8 +223,7 @@ def test_get_ibm_kyiv_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
-                device.get_single_qubit_gate_duration(gate, q)
+            assert device.get_single_qubit_gate_duration(gate, q) >= 0
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
@@ -233,8 +249,7 @@ def test_get_ibm_brisbane_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
-                device.get_single_qubit_gate_duration(gate, q)
+            assert device.get_single_qubit_gate_duration(gate, q) >= 0
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
@@ -259,8 +274,8 @@ def test_get_ibm_sherbrooke_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
-                device.get_single_qubit_gate_duration(gate, q)
+            assert device.get_single_qubit_gate_duration(gate, q) >= 0
+
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1

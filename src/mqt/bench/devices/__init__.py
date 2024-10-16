@@ -101,6 +101,7 @@ __all__ = [
     "Device",
     "DeviceCalibration",
     "IBMProvider",
+    "IBMOpenAccessProvider",
     "IQMProvider",
     "IonQProvider",
     "OQCProvider",

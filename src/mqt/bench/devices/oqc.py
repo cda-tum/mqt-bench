@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import TYPE_CHECKING, TypedDict, cast
 
 if TYPE_CHECKING:
@@ -11,6 +12,12 @@ if TYPE_CHECKING:
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
+
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+    from importlib import resources
+else:
+    import importlib_resources as resources
+
 
 
 class QubitProperties(TypedDict):
@@ -70,17 +77,24 @@ class OQCProvider(Provider):
         return ["rz", "sx", "x", "ecr", "measure", "barrier"]  # lucy
 
     @classmethod
-    def import_backend(cls, path: Path) -> Device:
+    def import_backend(cls, name: str) -> Device:
         """Import an OQC backend.
 
-        Arguments:
-            path: the path to the JSON file containing the calibration data.
+        Arguments
+            name (str): The name of the OQC backend whose calibration data needs to be imported.
+                            This name will be used to locate the corresponding JSON calibration file.
 
         Returns:
-            the Device object
+            Device: An instance of `Device`, loaded with the calibration data from the JSON file.
         """
-        with path.open() as json_file:
-            oqc_calibration = cast(OQCCalibration, json.load(json_file))
+        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
+
+        # Use 'as_file' to access the resource as a path
+        with resources.as_file(ref) as json_path:
+            # Open the file using json_path
+            with json_path.open() as json_file:
+                # Load the JSON data and cast it to IBMCalibration
+                oqc_calibration = cast(OQCCalibration, json.load(json_file))
 
         device = Device()
         device.name = oqc_calibration["name"]

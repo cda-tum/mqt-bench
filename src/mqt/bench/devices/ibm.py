@@ -3,18 +3,29 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import TYPE_CHECKING, TypedDict, cast
+from qiskit.circuit.controlflow import ControlFlowOp
 
+# Conditional import for type hinting and other imports
 if TYPE_CHECKING:
     from pathlib import Path
-
     from qiskit.providers import BackendV2
     from qiskit.providers.models import BackendProperties
     from qiskit.transpiler import Target
 
+from qiskit_ibm_runtime import QiskitRuntimeService
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
+
+# Conditional import for importlib resources based on Python version
+if sys.version_info >= (3, 10):
+    from importlib import resources
+else:
+    import importlib_resources as resources
+
+
 
 
 class QubitPropertiesIBM(TypedDict):
@@ -124,9 +135,15 @@ class BaseIBMProvider:
             if instruction.name in ["reset", "delay"]:
                 continue
 
-            instruction_props = target[instruction.name][qargs]
-            error: float = instruction_props.error
-            duration: float = instruction_props.duration
+            # Skip control flow operations like ForLoopOp, IfElseOp, SwitchCaseOp, etc.
+            try:
+                instruction_props = target[instruction.name][qargs]
+                error: float = instruction_props.error
+                duration: float = instruction_props.duration
+            except KeyError:
+                print(f"Instruction {instruction.name} not found in target.")
+                continue
+
             qubit = qargs[0]
             if instruction.name == "measure":
                 calibration.readout_fidelity[qubit] = 1 - error
@@ -158,16 +175,25 @@ class IBMProvider(Provider, BaseIBMProvider):
         return ["id", "rz", "sx", "x", "cx", "measure", "barrier"]  # washington, montreal
 
     @classmethod
-    def import_backend(cls, path: Path) -> Device:
+    def import_backend(cls, name: str) -> Device:
         """Import an IBM backend.
 
         Arguments:
-            path: the path to the JSON file containing the calibration data.
+            name (str): The name of the IBM backend whose calibration data needs to be imported.
+                          This name will be used to locate the corresponding JSON calibration file.
 
-        Returns: the Device object
-        """
-        with path.open() as json_file:
-            ibm_calibration = cast(IBMCalibration, json.load(json_file))
+          Returns:
+              Device: An instance of `Device`, loaded with the calibration data from the JSON file.
+          """
+        # Assuming 'name' is already defined
+        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
+
+        # Use 'as_file' to access the resource as a path
+        with resources.as_file(ref) as json_path:
+            # Open the file using json_path
+            with json_path.open() as json_file:
+                # Load the JSON data and cast it to IBMCalibration
+                ibm_calibration = cast(IBMCalibration, json.load(json_file))
 
         device = Device()
         device.name = ibm_calibration["name"]
@@ -232,42 +258,39 @@ class IBMOpenAccessProvider(Provider, BaseIBMProvider):
         return ["id", "rz", "sx", "x", "ecr", "measure", "barrier"]  # ibm_kyiv, ibm_brisbane, ibm_sherbrooke
 
     @classmethod
-    def import_backend(cls, path: Path) -> Device:
-        """Import an open-access IBM backend.
+    def import_backend(cls, name: str) -> Device:
+        """Import an IBM backend.
 
         Arguments:
             path: the path to the JSON file containing the calibration data.
 
         Returns: the Device object
         """
-        with path.open() as json_file:
-            open_access_ibm_calibration = cast(IBMOpenAccessCalibration, json.load(json_file))
+        service = QiskitRuntimeService(instance="ibm-q/open/main")
+        backend = service.backend(name)
 
         device = Device()
-        device.name = open_access_ibm_calibration["name"]
-        device.num_qubits = open_access_ibm_calibration["num_qubits"]
-        device.basis_gates = open_access_ibm_calibration["basis_gates"]
-        device.coupling_map = list(open_access_ibm_calibration["connectivity"])
+        device.name = backend.name
+        device.num_qubits = backend.num_qubits
 
-        calibration = DeviceCalibration()
-        for qubit in range(device.num_qubits):
-            calibration.single_qubit_gate_fidelity[qubit] = {
-                "id": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eID"],
-                "rz": 1,  # rz is always perfect
-                "sx": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eSX"],
-                "x": 1 - open_access_ibm_calibration["properties"][str(qubit)]["eX"],
-            }
-            calibration.readout_fidelity[qubit] = 1 - open_access_ibm_calibration["properties"][str(qubit)]["eRO"]
-            calibration.readout_duration[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["tRO"] * 1e-9
-            calibration.t1[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["T1"] * 1e-6
-            calibration.t2[qubit] = open_access_ibm_calibration["properties"][str(qubit)]["T2"] * 1e-6
+        gates = backend.basis_gates.copy()
+        gates.append("measure")  # Add the 'measure' gate
+        gates.append("barrier")  # Add the 'barrier' gate
 
-        for qubit1, qubit2 in device.coupling_map:
-            edge = f"{qubit1}_{qubit2}"
-            error = open_access_ibm_calibration["properties"][str(qubit1)]["eECR"][edge]
-            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"ecr": 1 - error}
-            duration = open_access_ibm_calibration["properties"][str(qubit1)]["tECR"][edge] * 1e-9
-            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"ecr": duration}
+        device.basis_gates = gates
 
-        device.calibration = calibration
+        # Initialize an empty list to hold the transformed connectivity
+        connectivity = []
+
+        # Loop over each tuple in the coupling map
+        for (a, b) in backend.coupling_map:
+            # Add both directions for each connection
+            connectivity.append([a, b])  # Forward direction
+            connectivity.append([b, a])  # Reverse direction
+
+        # Now connectivity is in the desired format
+        device.coupling_map = connectivity
+
+        device.calibration = cls.import_target(backend.target)
+
         return device
