@@ -26,6 +26,7 @@ dependencies = [
     # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit!=1.2.0",
     "qiskit_optimization>=0.6",
+    "qiskit-algorithms>=0.3",
     "networkx>=2.8.8",
     "joblib>=1.3.0",
     "numpy>=1.26; python_version >= '3.12'",
