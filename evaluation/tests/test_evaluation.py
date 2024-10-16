@@ -47,6 +47,12 @@ def sample_filenames() -> list[str]:
     ]
 
 
+def test_get_default_evaluation_output_path() -> None:
+    """Test the default evaluation output path."""
+    path = utils.get_default_evaluation_output_path()
+    assert Path(path).exists()
+
+
 def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
     """Test the creation of benchmarks from a configuration file and the evaluation of the created benchmarks."""
     config = {

@@ -295,12 +295,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
 
 
-def test_get_default_evaluation_output_path() -> None:
-    """Test the default evaluation output path."""
-    path = utils.get_default_evaluation_output_path()
-    assert Path(path).exists()
-
-
 def test_openqasm_gates() -> None:
     """Test the openqasm gates."""
     openqasm_gates = utils.get_openqasm_gates()
