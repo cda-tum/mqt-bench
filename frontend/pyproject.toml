@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=66.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mqt-bench-viewer"
+version = "1.0.0"
+description = "Frontend for MQT Bench"
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0.3",
+    "mqt-bench",
+    "packaging>=24.1",
+    "pandas>=2.2.3",
+    "tqdm>=4.66.5",
+]
+
+[project.scripts]
+"mqt.bench.viewer" = "mqt.bench.viewer.main:start_server"
+
+[tool.pytest.ini_options]
+minversion = "7.2"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--showlocals"]
+log_cli_level = "INFO"
+xfail_strict = true
+filterwarnings = [
+    "error",
+    'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
+    'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
+    'ignore:.*qiskit.providers.models.* is deprecated since qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*qiskit.primitives.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
+    'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
+]
+
+[tool.uv.sources]
+mqt-bench = { path = "../" }
+
+[tool.uv.workspace]
+members = ["evaluation"]

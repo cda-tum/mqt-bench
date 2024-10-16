@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=66.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mqt-bench-evaluation"
+version = "1.0.0"
+description = "Evaluation Functionality for MQT Bench"
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.9.2",
+    "mqt-bench",
+    "pandas>=2.2.3",
+    "seaborn>=0.13.2",
+]
+
+[tool.uv.sources]
+mqt-bench = { path = "../" }
