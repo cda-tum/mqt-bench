@@ -122,6 +122,18 @@ class BaseIBMProvider:
         calibration.single_qubit_gate_fidelity = {qubit: {} for qubit in range(num_qubits)}
         calibration.single_qubit_gate_duration = {qubit: {} for qubit in range(num_qubits)}
         coupling_map = target.build_coupling_map().get_edges()
+
+        # Initialize an empty list to hold the transformed connectivity
+        connectivity = []
+
+        # Loop over each tuple in the coupling map
+        for a, b in coupling_map:
+            # Add both directions for each connection
+            connectivity.extend(([a, b], [b, a]))
+
+        # Now connectivity is in the desired format
+        coupling_map = connectivity
+
         calibration.two_qubit_gate_fidelity = {(qubit1, qubit2): {} for qubit1, qubit2 in coupling_map}
         calibration.two_qubit_gate_duration = {(qubit1, qubit2): {} for qubit1, qubit2 in coupling_map}
         for instruction, qargs in target.instructions:
@@ -146,7 +158,12 @@ class BaseIBMProvider:
                 calibration.single_qubit_gate_duration[qubit][instruction.name] = duration
             elif len(qargs) == 2:
                 qubit1, qubit2 = qargs
+                if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
+                    calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {}
                 calibration.two_qubit_gate_fidelity[qubit1, qubit2][instruction.name] = 1 - error
+
+                if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
+                    calibration.two_qubit_gate_duration[qubit1, qubit2] = {}
                 calibration.two_qubit_gate_duration[qubit1, qubit2][instruction.name] = duration
 
         return calibration
