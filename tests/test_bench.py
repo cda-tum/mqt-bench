@@ -1,15 +1,12 @@
-"""Tests for the benchmark generation and evaluation."""
+"""Tests for the benchmark generation."""
 
 from __future__ import annotations
 
-import json
-import pickle
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytket
-from qiskit.qasm2 import dump
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
@@ -18,7 +15,7 @@ import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-from mqt.bench import evaluation, utils
+from mqt.bench import utils
 from mqt.bench.benchmark_generator import (
     BenchmarkGenerator,
     CompilerSettings,
@@ -820,44 +817,6 @@ def test_get_benchmark_faulty_parameters() -> None:
         )
 
 
-def test_create_benchmarks_from_config_and_evaluation(output_path: str) -> None:
-    """Test the creation of benchmarks from a configuration file and the evaluation of the created benchmarks."""
-    config = {
-        "timeout": 1,
-        "benchmarks": [
-            {
-                "name": "ghz",
-                "include": True,
-                "min_qubits": 20,
-                "max_qubits": 21,
-                "stepsize": 1,
-                "precheck_possible": True,
-            },
-            {
-                "name": "graphstate",
-                "include": True,
-                "min_qubits": 20,
-                "max_qubits": 21,
-                "stepsize": 1,
-                "precheck_possible": True,
-            },
-        ],
-    }
-    file = Path("test_config.json")
-    with file.open("w") as f:
-        json.dump(config, f)
-
-    generator = BenchmarkGenerator(cfg_path=str(file), qasm_output_path=output_path)
-    generator.create_benchmarks_from_config(num_jobs=-1)
-    file.unlink()
-
-    evaluation.create_statistics(source_directory=Path(output_path), target_directory=Path(output_path))
-
-    with (Path(output_path) / "evaluation_data.pkl").open("rb") as f:
-        res_dicts = pickle.load(f)
-    assert len(res_dicts) > 0
-
-
 def test_configure_end(output_path: str) -> None:
     """Removes all temporarily created files while testing."""
     # delete all files in the test directory and the directory itself
@@ -982,58 +941,6 @@ def test_oqc_benchmarks() -> None:
 
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
-
-
-def test_evaluate_qasm_file() -> None:
-    """Test the evaluation of a qasm file."""
-    qc = get_benchmark("dj", 1, 5)
-    filename = "test_5.qasm"
-    with Path(filename).open("w", encoding="locale") as f:
-        dump(qc, f)
-    path = Path(filename)
-    res = evaluation.evaluate_qasm_file(filename)
-    assert type(res) is evaluation.EvaluationResult
-    path.unlink()
-
-    res = evaluation.evaluate_qasm_file("invalid_path.qasm")
-    assert type(res) is evaluation.EvaluationResult
-    assert res.num_qubits == -1
-    assert res.depth == -1
-    assert res.num_gates == -1
-    assert res.num_multiple_qubit_gates == -1
-    assert res.supermarq_features == utils.SupermarqFeatures(-1.0, -1.0, -1.0, -1.0, -1.0)
-
-
-@pytest.mark.parametrize(
-    ("search_str", "expected_val"),
-    [
-        ("qiskit", 9),
-        ("tket", 3),
-        ("nativegates", 2),
-        ("indep", 2),
-        ("mapped", 8),
-        ("mapped_ibm_washington", 2),
-        ("mapped_ibm_montreal", 1),
-        ("mapped_oqc_lucy", 2),
-        ("mapped_rigetti_aspen_m3", 0),
-        ("mapped_ionq_harmony", 1),
-    ],
-)
-def test_count_occurrences(search_str: str, expected_val: int, sample_filenames: list[str]) -> None:
-    """Test the count_occurrences function."""
-    assert evaluation.count_occurrences(sample_filenames, search_str) == expected_val
-
-
-@pytest.mark.parametrize(
-    ("compiler", "expected_val"),
-    [
-        ("qiskit", [10, 54, 79, 9, 38, 5, 88, 3, 23]),
-        ("tket", [93, 2, 2]),
-    ],
-)
-def test_count_qubit_numbers_per_compiler(compiler: str, expected_val: list[int], sample_filenames: list[str]) -> None:
-    """Test the count_qubit_numbers_per_compiler function."""
-    assert evaluation.count_qubit_numbers_per_compiler(sample_filenames, compiler) == expected_val
 
 
 def test_calc_supermarq_features() -> None:

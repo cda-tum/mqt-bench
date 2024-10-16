@@ -37,6 +37,3 @@ filterwarnings = [
 
 [tool.uv.sources]
 mqt-bench = { path = "../" }
-
-[tool.uv.workspace]
-members = ["evaluation"]

@@ -585,7 +585,7 @@ wheels = [
 
 [[package]]
 name = "mqt-bench"
-version = "1.1.8.dev4+g2d8f23d.d20241016"
+version = "1.1.8.dev5+g444c933.d20241016"
 source = { directory = "../" }
 dependencies = [
     { name = "joblib" },
