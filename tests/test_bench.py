@@ -31,7 +31,6 @@ from mqt.bench.benchmarks import (
     dj,
     ghz,
     graphstate,
-    groundstate,
     grover,
     qaoa,
     qft,
@@ -1005,31 +1004,6 @@ def test_benchmark_helper_shor() -> None:
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
-
-
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_benchmark_groundstate_non_windows() -> None:
-    """Testing the Groundstate benchmarks."""
-    groundstate_instances = ["small", "medium", "large"]
-    for elem in groundstate_instances:
-        res_groundstate = groundstate.get_molecule(elem)
-        assert res_groundstate
-
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
-
-
-@pytest.mark.skipif(
-    sys.platform != "win32",
-    reason="Windows-specific test.",
-)
-def test_benchmark_groundstate_windows() -> None:
-    """Testing the Groundstate benchmarks on Windows."""
-    with pytest.raises(ImportError, match=r"PySCF is not installed"):
-        groundstate.create_circuit("small")
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:

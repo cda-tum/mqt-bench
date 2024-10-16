@@ -34,12 +34,6 @@
       "precheck_possible": true
     },
     {
-      "name": "groundstate",
-      "include": true,
-      "instances": ["small", "medium", "large"],
-      "precheck_possible": false
-    },
-    {
       "name": "grover",
       "include": true,
       "min_qubits": 2,

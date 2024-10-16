@@ -56,7 +56,6 @@ def get_supported_benchmarks() -> list[str]:
         "vqe",
         "wstate",
         "shor",
-        "groundstate",
         "routing",
         "tsp",
     ]
@@ -262,8 +261,6 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     """Returns the module for a specific benchmark."""
     if benchmark_name == "qnn":
         return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
-    if benchmark_name == "groundstate":
-        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
     if benchmark_name == "routing":
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
     if benchmark_name == "tsp":
