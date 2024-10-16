@@ -64,14 +64,9 @@ class IonQProvider(Provider):
         # Assuming 'name' is already defined
         ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
 
-        # print(ref)
-
-        # Use 'as_file' to access the resource as a path
-        with resources.as_file(ref) as json_path:
-            # Open the file using json_path
-            with json_path.open() as json_file:
-                # Load the JSON data and cast it to IBMCalibration
-                ionq_calibration = cast(IonQCalibration, json.load(json_file))
+        with resources.as_file(ref) as json_path, json_path.open() as json_file:
+            # Load the JSON data and cast it to QuantinuumCalibration
+            ionq_calibration = cast(IonQCalibration, json.load(json_file))
 
         device = Device()
         device.name = ionq_calibration["name"]

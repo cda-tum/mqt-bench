@@ -3,21 +3,10 @@
 from __future__ import annotations
 
 import pytest
+
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 
-from mqt.bench.devices import IBMOpenAccessProvider, IBMProvider
-
-
-def test_get_device_success() -> None:
-    """Test successful retrieval of a device by name."""
-    device = Device(name="ibm_test_device", num_qubits=3, basis_gates=["id", "rz", "x"], coupling_map=[[0, 1], [1, 2]])
-    with (
-        patch.object(IBMOpenAccessProvider, "import_backend", return_value=device),
-        patch.object(IBMOpenAccessProvider, "get_device", return_value=device),
-    ):
-        retrieved_device = IBMOpenAccessProvider.get_device("ibm_test_device")
-        assert retrieved_device.name == "ibm_test_device"
-        assert retrieved_device.num_qubits == 3
+from mqt.bench.devices import Device, IBMOpenAccessProvider, IBMProvider
 
 
 def test_get_device_not_found() -> None:
