@@ -124,7 +124,7 @@ class BaseIBMProvider:
         coupling_map = target.build_coupling_map().get_edges()
 
         # Initialize an empty list to hold the transformed connectivity
-        connectivity = []
+        connectivity: list[list[int]] = []
 
         # Loop over each tuple in the coupling map
         for a, b in coupling_map:
@@ -287,7 +287,7 @@ class IBMOpenAccessProvider(Provider, BaseIBMProvider):
         device.basis_gates = gates
 
         # Initialize an empty list to hold the transformed connectivity
-        connectivity = []
+        connectivity: list[list[int]] = []
 
         # Loop over each tuple in the coupling map
         for a, b in backend.coupling_map:
