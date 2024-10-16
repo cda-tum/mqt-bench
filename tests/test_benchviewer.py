@@ -2,19 +2,13 @@
 
 from __future__ import annotations
 
-import sys
+from importlib import resources
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
 from mqt.bench.viewer import Backend, BenchmarkConfiguration, Server, backend
 from mqt.bench.viewer.main import app
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import resources
-else:
-    import importlib_resources as resources
 
 
 @pytest.mark.parametrize(

@@ -2,21 +2,15 @@
 
 from __future__ import annotations
 
-import sys
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from importlib import resources
 from typing import TYPE_CHECKING
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
-    from importlib import resources
-else:
-    import importlib_resources as resources
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from .device import Device
-
-from abc import ABC, abstractmethod
 
 
 @dataclass

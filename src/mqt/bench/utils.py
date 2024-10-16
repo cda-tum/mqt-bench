@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-import sys
+from dataclasses import dataclass
 from datetime import date
+from importlib import import_module, metadata, resources
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:  # pragma: no cover
-    from types import ModuleType
-
-from importlib import import_module
 
 import networkx as nx
 import numpy as np
@@ -19,16 +15,10 @@ from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
 
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import metadata, resources
-else:
-    import importlib_metadata as metadata
-    import importlib_resources as resources
-
 if TYPE_CHECKING:  # pragma: no cover
-    from qiskit_optimization import QuadraticProgram
+    from types import ModuleType
 
-from dataclasses import dataclass
+    from qiskit_optimization import QuadraticProgram
 
 
 @dataclass
