@@ -252,7 +252,7 @@ class IBMOpenAccessProvider(Provider, BaseIBMProvider):
         """Import an IBM backend.
 
         Arguments:
-            path: the path to the JSON file containing the calibration data.
+            name: the name of the backend.
 
         Returns: the Device object
         """
@@ -275,8 +275,7 @@ class IBMOpenAccessProvider(Provider, BaseIBMProvider):
         # Loop over each tuple in the coupling map
         for a, b in backend.coupling_map:
             # Add both directions for each connection
-            connectivity.append([a, b])  # Forward direction
-            connectivity.append([b, a])  # Reverse direction
+            connectivity.extend(([a, b], [b, a]))
 
         # Now connectivity is in the desired format
         device.coupling_map = connectivity
