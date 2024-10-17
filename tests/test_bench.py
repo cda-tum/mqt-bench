@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
+import os
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
@@ -187,6 +188,11 @@ def test_quantumcircuit_indep_level(
         (pricingcall, 3, False),
         (pricingput, 3, False),
     ],
+)
+
+@pytest.mark.skipif(
+    os.getenv("IBM_TOKEN") is None,
+    reason="IBM_TOKEN environment variable is not set"
 )
 def test_quantumcircuit_native_and_mapped_levels(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str

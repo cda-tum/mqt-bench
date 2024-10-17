@@ -47,10 +47,12 @@ jobs:
       # set up nox for convenient testing
       - uses: wntrblm/nox@2024.10.09
 
-      # run the specific test that needs the secret
-      - name: 🐍 Run specific test
+      - name: 🐍 Run specific tests
         run: |
-          nox -s tests -- tests/devices/test_ibm_device_support.py --cov --cov-report=xml:coverage-specific.xml --cov-append
+          nox -s tests -- \
+            tests/devices/test_devices.py \
+            tests/devices/test_ibm_provider.py \
+            --cov --cov-report=xml:coverage-specific.xml --cov-append
 
       # upload coverage report for this specific test
       - name: Upload 🐍 coverage report for specific test
