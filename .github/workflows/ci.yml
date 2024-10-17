@@ -29,24 +29,25 @@ jobs:
     env:
       FORCE_COLOR: 3
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SECRET_VAR: ${{ secrets.IBM_TOKEN }}
+      IBM_TOKEN: ${{ secrets.IBM_TOKEN }}
     steps:
-      # check out the repository (including submodules and full history)
+      # Check out the repository (including submodules and full history)
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
 
-      # set up uv for faster Python package management
+      # Set up uv for faster Python package management
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
           enable-cache: true
 
-      # set up nox for convenient testing
+      # Set up nox for convenient testing
       - uses: wntrblm/nox@2024.10.09
 
+      # Run the specific tests
       - name: 🐍 Run specific tests
         run: |
           nox -s tests -- \
@@ -54,7 +55,7 @@ jobs:
             tests/devices/test_ibm_provider.py \
             --cov --cov-report=xml:coverage-specific.xml --cov-append
 
-      # upload coverage report for this specific test
+      # Upload coverage report for this specific test
       - name: Upload 🐍 coverage report for specific test
         uses: actions/upload-artifact@v4
         with:
