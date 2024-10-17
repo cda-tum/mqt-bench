@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
-import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
