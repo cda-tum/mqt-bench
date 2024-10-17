@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
+import os
 
 from mqt.bench.devices import (
     Device,
@@ -14,6 +15,9 @@ from mqt.bench.devices import (
     get_available_providers,
     get_provider_by_name,
 )
+
+if os.getenv("IBM_TOKEN") is None:
+    pytest.skip("IBM_TOKEN environment variable is not set, skipping the remaining tests.", allow_module_level=True)
 
 
 @pytest.mark.parametrize(
