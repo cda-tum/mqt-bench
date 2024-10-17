@@ -1,8 +1,9 @@
-"""Test the IBMProvider class and the IBM Washington and IBM Montreal devices."""
+"""Test the IBMProvider class and the IBM Washington, IBM Montreal, IBM Kyiv, IBM Brisbane, and IBM Sherbrooke devices."""
 
 from __future__ import annotations
 
 import pytest
+import os
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 
 from mqt.bench.devices import IBMOpenAccessProvider, IBMProvider
@@ -118,6 +119,8 @@ def test_get_ibmq_montreal_device() -> None:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
             assert device.get_two_qubit_gate_duration(gate, q0, q1) >= 0
 
+if os.getenv("IBM_TOKEN") is None:
+    pytest.skip("IBM_TOKEN environment variable is not set, skipping the remaining tests.", allow_module_level=True)
 
 def test_ibm_open_access_provider_methods() -> None:
     """Test various methods of the IBMOpenAccessProvider class."""
