@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from importlib import metadata
 from typing import cast
 
 from pytket.qasm import circuit_to_qasm_str
@@ -12,13 +13,27 @@ from qiskit.qasm2 import dumps as qiskit_circuit_to_str
 from . import CompilerSettings, QiskitSettings, TKETSettings, get_benchmark
 
 
+class CustomArgumentParser(argparse.ArgumentParser):
+    """Custom argument parser that includes version information in the help message."""
+
+    def format_help(self) -> str:
+        """Include version information in the help message."""
+        help_message = super().format_help()
+        version_info = (
+            f"\nMQT Bench version: {metadata.version('mqt.bench')}\n"
+            f"Qiskit version: {metadata.version('qiskit')}\n"
+            f"TKET version: {metadata.version('pytket')}\n"
+        )
+        return help_message + version_info
+
+
 def main() -> None:
     """Invoke :func:`get_benchmark` exactly once with the specified arguments.
 
     The resulting QASM string is printed to the standard output stream;
     no other output is generated.
     """
-    parser = argparse.ArgumentParser(description="Generate a single benchmark")
+    parser = CustomArgumentParser(description="Generate a single benchmark")
     parser.add_argument(
         "--level",
         type=str,

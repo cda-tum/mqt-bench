@@ -5,8 +5,8 @@ from __future__ import annotations
 import io
 import os
 import re
-import sys
 from dataclasses import dataclass
+from importlib import metadata
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -15,12 +15,6 @@ import pandas as pd
 import requests
 from packaging import version
 from tqdm import tqdm
-
-if TYPE_CHECKING or sys.version_info >= (3, 10, 0):  # pragma: no cover
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata
-
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Iterable

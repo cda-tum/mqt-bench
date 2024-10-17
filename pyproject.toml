@@ -19,9 +19,12 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 
 dependencies = [
-    "pytket-qiskit>=0.53.0",  #  manages the dependencies for qiskit and tket in a combined fashion
-    "pytket>=1.29.0",  # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
-    "qiskit!=1.2.0",  # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
+    #  manages the dependencies for qiskit and tket in a combined fashion
+    "pytket-qiskit>=0.53.0",
+    # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
+    "pytket>=1.29.0",
+    # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
+    "qiskit!=1.2.0",
     "qiskit_optimization>=0.6",
     "qiskit_nature[pyscf]>=0.7",
     "qiskit_finance>=0.4.1",
@@ -29,8 +32,6 @@ dependencies = [
     "pandas>=2.1.2",
     "flask>=2.3.0",
     "networkx>=2.8.8",
-    "packaging>=21.0",
-    "tqdm>=4.29.0",
     "joblib>=1.3.0",
     "numpy>=1.26; python_version >= '3.12'",
     "numpy>=1.24; python_version >= '3.11'",
@@ -76,7 +77,6 @@ docs = [
 dev = ["mqt.bench[coverage, docs]"]
 
 [project.scripts]
-"mqt.bench" = "mqt.bench.viewer.main:start_server"
 "create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
 "generate_mqt_bench" = "mqt.bench.benchmark_generator:generate"
 "mqt.bench.cli" = "mqt.bench.cli:main"
