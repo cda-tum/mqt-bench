@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from importlib import resources
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from pathlib import Path
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+    pass
+else:
+    pass
 
+if TYPE_CHECKING:
     from .device import Device
 
 
@@ -54,7 +57,7 @@ class Provider(ABC):
 
     @classmethod
     @abstractmethod
-    def import_backend(cls, path: Path) -> Device:
+    def import_backend(cls, name: str) -> Device:
         """Import a device from a file containing calibration data."""
 
     @classmethod
@@ -69,9 +72,9 @@ class Provider(ABC):
             msg = f"Device {name} not found."
             raise ValueError(msg)
 
-        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
-        with resources.as_file(ref) as json_path:
-            device = cls.import_backend(json_path)
-            if sanitize_device:
-                device.sanitize_device()
-            return device
+        device = cls.import_backend(name)
+
+        if sanitize_device:
+            device.sanitize_device()
+
+        return device

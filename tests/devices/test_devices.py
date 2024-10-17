@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import cast
 
 import pytest
@@ -14,6 +15,9 @@ from mqt.bench.devices import (
     get_available_providers,
     get_provider_by_name,
 )
+
+if os.getenv("IBM_TOKEN") is None:
+    pytest.skip("IBM_TOKEN environment variable is not set, skipping the remaining tests.", allow_module_level=True)
 
 
 @pytest.mark.parametrize(
@@ -103,7 +107,7 @@ def test_device_calibration_errors() -> None:
 def test_provider() -> None:
     """Test that all providers can be imported."""
     for provider in get_available_providers():
-        assert provider.provider_name in ["ibm", "rigetti", "oqc", "ionq", "quantinuum", "iqm"]
+        assert provider.provider_name in ["ibm", "ibm_open_access", "rigetti", "oqc", "ionq", "quantinuum", "iqm"]
 
     with pytest.raises(NotFoundError, match="Provider 'test' not found among available providers."):
         get_provider_by_name("test")
