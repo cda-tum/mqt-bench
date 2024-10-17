@@ -20,22 +20,7 @@ jobs:
     name: 🐍 Test
     needs: change-detection
     if: fromJSON(needs.change-detection.outputs.run-python-tests)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install dependencies for Qiskit
-        run: |
-          pip install qiskit
-          pip install qiskit-ibm-runtime
-
-      - name: Configure IBM Quantum Token
-        run: |
-          python -c "from qiskit_ibm_runtime import QiskitRuntimeService; QiskitRuntimeService.save_account(channel='ibm_quantum', token='$IBM_QUANTUM_TOKEN', overwrite=True)"
-        env:
-          IBM_QUANTUM_TOKEN: ${{ secrets.IBM_TOKEN }}
-
-      - name: Run Python Tests
-        uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-ci.yml@v1.4
-
+    uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-ci.yml@v1.4
 
   code-ql:
     name: 📝 CodeQL
