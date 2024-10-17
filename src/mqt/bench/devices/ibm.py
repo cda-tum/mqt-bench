@@ -160,11 +160,19 @@ class BaseIBMProvider:
                 qubit1, qubit2 = qargs
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_fidelity:
                     calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {}
+                if (qubit2, qubit1) not in calibration.two_qubit_gate_fidelity:
+                    calibration.two_qubit_gate_fidelity[qubit2, qubit1] = {}
+
                 calibration.two_qubit_gate_fidelity[qubit1, qubit2][instruction.name] = 1 - error
+                calibration.two_qubit_gate_fidelity[qubit2, qubit1][instruction.name] = 1 - error
 
                 if (qubit1, qubit2) not in calibration.two_qubit_gate_duration:
                     calibration.two_qubit_gate_duration[qubit1, qubit2] = {}
+                if (qubit2, qubit1) not in calibration.two_qubit_gate_duration:
+                    calibration.two_qubit_gate_duration[qubit2, qubit1] = {}
+
                 calibration.two_qubit_gate_duration[qubit1, qubit2][instruction.name] = duration
+                calibration.two_qubit_gate_duration[qubit2, qubit1][instruction.name] = duration
 
         return calibration
 
