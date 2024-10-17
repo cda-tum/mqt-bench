@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import os
 from typing import cast
 
 import pytest
-import os
 
 from mqt.bench.devices import (
     Device,
