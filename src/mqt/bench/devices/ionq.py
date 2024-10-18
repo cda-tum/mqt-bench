@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, TypedDict, cast
 
-if TYPE_CHECKING:
-    from pathlib import Path
+# Conditional import for type hinting and other imports
+# Conditional import for importlib resources based on Python version
+from importlib import resources
+from typing import TypedDict, cast
 
 from .calibration import DeviceCalibration
 from .device import Device
@@ -50,16 +51,21 @@ class IonQProvider(Provider):
         return ["rxx", "rz", "ry", "rx", "measure", "barrier"]  # harmony, aria1
 
     @classmethod
-    def import_backend(cls, path: Path) -> Device:
+    def import_backend(cls, name: str) -> Device:
         """Import an IonQ backend as a Device object.
 
         Arguments:
-            path: the path to the JSON file containing the calibration data.
+            name (str): The name of the IonQ backend whose calibration data needs to be imported.
+                            This name will be used to locate the corresponding JSON calibration file.
 
         Returns:
-            the Device object
+            Device: An instance of `Device`, loaded with the calibration data from the JSON file.
         """
-        with path.open() as json_file:
+        # Assuming 'name' is already defined
+        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
+
+        with resources.as_file(ref) as json_path, json_path.open() as json_file:
+            # Load the JSON data and cast it to QuantinuumCalibration
             ionq_calibration = cast(IonQCalibration, json.load(json_file))
 
         device = Device()
@@ -67,7 +73,9 @@ class IonQProvider(Provider):
         device.num_qubits = ionq_calibration["num_qubits"]
         device.basis_gates = ionq_calibration["basis_gates"]
         device.coupling_map = list(ionq_calibration["connectivity"])
+
         calibration = DeviceCalibration()
+
         for qubit in range(device.num_qubits):
             calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
                 ["ry", "rx"], ionq_calibration["fidelity"]["1q"]["mean"]
@@ -85,5 +93,9 @@ class IonQProvider(Provider):
         for qubit1, qubit2 in device.coupling_map:
             calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"rxx": ionq_calibration["fidelity"]["2q"]["mean"]}
             calibration.two_qubit_gate_duration[qubit1, qubit2] = {"rxx": ionq_calibration["timing"]["2q"]}
+
+        print(calibration)
+
         device.calibration = calibration
+
         return device

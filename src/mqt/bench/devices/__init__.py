@@ -11,7 +11,7 @@ from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
 
-from .ibm import IBMProvider
+from .ibm import IBMProvider, IBMOpenAccessProvider
 from .ionq import IonQProvider
 from .iqm import IQMProvider
 from .oqc import OQCProvider
@@ -25,7 +25,15 @@ class NotFoundError(Exception):
 
 def get_available_providers() -> list[Provider]:
     """Get a list of all available providers."""
-    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
+    return [
+        IBMProvider(),
+        IBMOpenAccessProvider(),
+        IonQProvider(),
+        OQCProvider(),
+        RigettiProvider(),
+        QuantinuumProvider(),
+        IQMProvider(),
+    ]
 
 
 def get_available_provider_names() -> list[str]:
@@ -92,6 +100,7 @@ def get_device_by_name(device_name: str) -> Device:
 __all__ = [
     "Device",
     "DeviceCalibration",
+    "IBMOpenAccessProvider",
     "IBMProvider",
     "IQMProvider",
     "IonQProvider",

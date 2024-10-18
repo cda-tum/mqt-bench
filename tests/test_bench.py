@@ -11,6 +11,8 @@ import pytket
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
+import os
+
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
@@ -188,6 +190,7 @@ def test_quantumcircuit_indep_level(
         (pricingput, 3, False),
     ],
 )
+@pytest.mark.skipif(os.getenv("IBM_TOKEN") is None, reason="IBM_TOKEN environment variable is not set")
 def test_quantumcircuit_native_and_mapped_levels(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
@@ -411,6 +414,36 @@ def test_unidirectional_coupling_map() -> None:
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ibm",
             "",
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+            "ibm_open_access",
+            "ibm_kyiv",
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+            "ibm_open_access",
+            "ibm_brisbane",
+        ),
+        (
+            "dj",
+            "nativegates",
+            5,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
+            "ibm_open_access",
+            "ibm_sherbrooke",
         ),
         (
             "dj",
@@ -797,6 +830,18 @@ def test_get_benchmark_faulty_parameters() -> None:
             "wrong_gateset",
             "rigetti_aspen_m3",
         )
+    match = "Selected provider_name must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            2,
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
+            "ibm_open_accessss",
+            "ibm_kyiv",
+        )
     match = "Selected device_name must be in"
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -808,6 +853,18 @@ def test_get_benchmark_faulty_parameters() -> None:
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "wrong_device",
+        )
+    match = "Selected device_name must be in"
+    with pytest.raises(ValueError, match=match):
+        get_benchmark(
+            "qpeexact",
+            3,
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
+            "ibm_open_access",
+            "ibm_munich",
         )
 
 
