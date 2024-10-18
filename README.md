@@ -55,7 +55,7 @@ print(qc_algorithmic_level.draw())
 
 ## Availability as a PennyLane Dataset
 
-MQT Bench is also available as a [PennyLane dataset](https://pennylane.ai/datasets/other/mqt-bench).
+MQT Bench is also available as a [PennyLane dataset](https://pennylane.ai/datasets/single-dataset/mqt-bench).
 
 ## References
 
