@@ -47,6 +47,13 @@ jobs:
       # Set up nox for convenient testing
       - uses: wntrblm/nox@2024.10.09
 
+      # Configure IBM Quantum account for Qiskit Runtime
+      - name: Configure IBM Quantum account for Qiskit Runtime
+        run: |
+          python -c "from qiskit_ibm_runtime import QiskitRuntimeService; \
+                     QiskitRuntimeService.save_account(channel='ibm_quantum', \
+                     token='$IBM_TOKEN')"
+
       # Run the specific tests
       - name: 🐍 Run specific tests
         run: |
