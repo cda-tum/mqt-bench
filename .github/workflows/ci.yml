@@ -52,7 +52,7 @@ jobs:
         run: |
           nox -s tests -- \
             tests/devices/test_devices.py \
-            tests/devices/test_ibm_provider.py \
+            test_bench.py::test_quantumcircuit_native_and_mapped_levels \
             --cov --cov-report=xml:coverage-specific.xml --cov-append
 
       # Upload coverage report for this specific test
