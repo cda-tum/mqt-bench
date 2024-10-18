@@ -47,6 +47,12 @@ jobs:
       # Set up nox for convenient testing
       - uses: wntrblm/nox@2024.10.09
 
+      # Install dependencies (including qiskit-ibm-runtime)
+      - name: Install Qiskit Runtime
+        run: |
+          python -m pip install --upgrade pip
+          pip install qiskit-ibm-runtime  
+
       # Configure IBM Quantum account for Qiskit Runtime
       - name: Configure IBM Quantum account for Qiskit Runtime
         run: |
