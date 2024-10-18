@@ -41,8 +41,6 @@ def get_supported_benchmarks() -> list[str]:
         "grover-v-chain",
         "ghz",
         "graphstate",
-        "portfolioqaoa",
-        "portfoliovqe",
         "qaoa",
         "qft",
         "qftentangled",
@@ -55,14 +53,8 @@ def get_supported_benchmarks() -> list[str]:
         "realamprandom",
         "su2random",
         "twolocalrandom",
-        "vqe",
         "wstate",
         "shor",
-        "pricingcall",
-        "pricingput",
-        "groundstate",
-        "routing",
-        "tsp",
     ]
 
 
@@ -264,19 +256,4 @@ def calc_supermarq_features(
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     """Returns the module for a specific benchmark."""
-    if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
-        return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
-    if benchmark_name == "qnn":
-        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
-    if benchmark_name == "groundstate":
-        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
-    if benchmark_name == "routing":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
-    if benchmark_name == "tsp":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
-
-
-def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
-    """Converts a coupling map to a list of tuples."""
-    return [(c[0], c[1]) for c in c_map]
