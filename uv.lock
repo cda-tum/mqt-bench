@@ -1190,7 +1190,7 @@ wheels = [
 
 [[package]]
 name = "mqt-bench"
-version = "1.1.8.dev19+g858b689.d20241028"
+version = "1.1.8.dev20+g0899c64.d20241028"
 source = { editable = "." }
 dependencies = [
     { name = "joblib" },
