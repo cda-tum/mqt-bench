@@ -36,7 +36,7 @@ ENV UV_LINK_MODE=copy \
 # `/src` will NOT be copied into the runtime container.
 COPY . /src
 RUN --mount=type=cache,target=/root/.cache \
-    cd /src && uv sync --locked --no-dev --no-editable
+    cd /src && uv sync --frozen --no-dev --no-editable
 
 ##########################################################################
 
