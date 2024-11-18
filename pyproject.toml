@@ -110,7 +110,7 @@ filterwarnings = [
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
     'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
-    'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.*',
+    'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.qiskit_convert',
 ]
 
 [tool.coverage]
