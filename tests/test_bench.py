@@ -709,7 +709,7 @@ def test_get_benchmark(
     assert qc.depth() > 0
     if provider_name and "oqc" not in provider_name:
         if compiler == "tket":
-            qc = tk_to_qiskit(qc)
+            qc = tk_to_qiskit(qc, replace_implicit_swaps=False)
         assert isinstance(qc, QuantumCircuit)
         for qc_instruction in qc.data:
             instruction = qc_instruction.operation
