@@ -27,10 +27,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
 
-    from .devices import Device, Provider
+    from .devices import Device
 
 
-def get_rebase(gate_set: list[str]) -> BasePass:
+def get_rebase(gateset: list[str]) -> BasePass:
     """Get the rebase pass for the given gate set."""
     op_dict = {
         "r": OpType.U3,
@@ -46,7 +46,7 @@ def get_rebase(gate_set: list[str]) -> BasePass:
         "ecr": OpType.ECR,
         "measure": OpType.Measure,
     }
-    return AutoRebase({op_dict[key] for key in gate_set if key in op_dict})
+    return AutoRebase({op_dict[key] for key in gateset if key in op_dict})
 
 
 @overload
@@ -123,7 +123,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[True],
@@ -135,7 +135,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[False],
@@ -146,7 +146,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
@@ -157,7 +157,7 @@ def get_native_gates_level(
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        provider: determines the native gate set
+        native_gateset: tuple containing the name of the gateset and the gateset itself
         num_qubits: number of qubits
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
         return_qc: flag if the actual circuit shall be returned
@@ -168,8 +168,9 @@ def get_native_gates_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
+    gateset_name, gateset = native_gateset
     if not target_filename:
-        filename_native = qc.name + "_nativegates_" + provider.provider_name + "_tket_" + str(num_qubits)
+        filename_native = qc.name + "_nativegates_" + gateset_name + "_tket_" + str(num_qubits)
     else:
         filename_native = target_filename
 
@@ -190,18 +191,17 @@ def get_native_gates_level(
         print("TKET Exception NativeGates: ", e)
         return False
 
-    gate_set = provider.get_native_gates()
-    native_gate_set_rebase = get_rebase(gate_set)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase = get_rebase(gateset)
+    native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase.apply(qc_tket)
 
     if return_qc:
         return qc_tket
     return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_native,
-        gate_set,
+        gateset,
         target_directory=target_directory,
     )
 
@@ -292,8 +292,8 @@ def get_mapped_level(
     diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
     qc_tket.add_blank_wires(diff)
 
-    native_gate_set_rebase = get_rebase(device.basis_gates)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase = get_rebase(device.basis_gates)
+    native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
     PlacementPass(placer).apply(qc_tket)
@@ -302,7 +302,7 @@ def get_mapped_level(
     SynthesiseTket().apply(qc_tket)
     if not qc_tket.valid_connectivity(arch, directed=True):
         CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase.apply(qc_tket)
 
     if return_qc:
         return qc_tket

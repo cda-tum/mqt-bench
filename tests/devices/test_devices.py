@@ -9,18 +9,14 @@ import pytest
 from mqt.bench.devices import (
     Device,
     DeviceCalibration,
-    NotFoundError,
     get_available_devices,
-    get_available_providers,
-    get_provider_by_name,
 )
 
 
-@pytest.mark.parametrize(
-    "device", get_available_devices(sanitize_device=True), ids=lambda device: cast(str, device.name)
-)
+@pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast(str, device.name))
 def test_sanitized_devices(device: Device) -> None:
     """Test that all devices can be sanitized and provide complete fidelity data."""
+    device.sanitize_device()
     assert device.calibration is not None
     for qubit in range(device.num_qubits):
         assert qubit in device.calibration.single_qubit_gate_fidelity
@@ -98,12 +94,3 @@ def test_device_calibration_errors() -> None:
         device.calibration.compute_average_readout_fidelity()
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.calibration.compute_average_readout_duration()
-
-
-def test_provider() -> None:
-    """Test that all providers can be imported."""
-    for provider in get_available_providers():
-        assert provider.provider_name in ["ibm", "rigetti", "oqc", "ionq", "quantinuum", "iqm"]
-
-    with pytest.raises(NotFoundError, match="Provider 'test' not found among available providers."):
-        get_provider_by_name("test")

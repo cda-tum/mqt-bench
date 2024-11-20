@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from importlib import resources
+from pathlib import Path
 
 
 @dataclass
@@ -235,3 +237,14 @@ class DeviceCalibration:
             raise ValueError(msg)
 
         return sum(self.readout_duration.values()) / len(self.readout_duration)
+
+
+def get_device_calibration_path(filename: str) -> Path:
+    """Get the path to the calibration file for a device."""
+    calibration_path = resources.files("mqt.bench") / "calibration_files" / f"{filename}_calibration.json"
+
+    if not calibration_path.is_file():
+        msg = f"Calibration file not found: {calibration_path}"
+        raise FileNotFoundError(msg)
+
+    return Path(str(calibration_path))

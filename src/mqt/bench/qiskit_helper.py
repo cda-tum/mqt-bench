@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, Literal, overload
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
-    from .devices import Device, Provider
+    from .devices import Device
 
 from qiskit import transpile
-from qiskit.qasm2 import dumps
+from qiskit.qasm2 import dumps as dumps2
 
 from .utils import get_openqasm_gates, save_as_qasm
 
@@ -71,7 +71,7 @@ def get_indep_level(
     if return_qc:
         return target_independent
     return save_as_qasm(
-        dumps(target_independent),
+        dumps2(target_independent),
         filename_indep,
         target_directory=target_directory,
     )
@@ -80,7 +80,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -93,7 +93,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -105,7 +105,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    native_gateset: tuple[str, list[str]],
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -117,7 +117,7 @@ def get_native_gates_level(
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        provider: determines the native gate set
+        native_gateset: tuple containing the name of the gateset and the gateset itself
         num_qubits: number of qubits
         opt_level: optimization level
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
@@ -129,9 +129,10 @@ def get_native_gates_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
+    gateset_name, gateset = native_gateset
     if not target_filename:
         filename_native = (
-            qc.name + "_nativegates_" + provider.provider_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
+            qc.name + "_nativegates_" + gateset_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         )
     else:
         filename_native = target_filename
@@ -140,16 +141,13 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
 
-    gate_set = provider.get_native_gates()
-    compiled_without_architecture = transpile(
-        qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
-    )
+    compiled_without_architecture = transpile(qc, basis_gates=gateset, optimization_level=opt_level, seed_transpiler=10)
     if return_qc:
         return compiled_without_architecture
     return save_as_qasm(
-        dumps(compiled_without_architecture),
+        dumps2(compiled_without_architecture),
         filename_native,
-        gate_set,
+        gateset,
         target_directory=target_directory,
     )
 
@@ -226,7 +224,7 @@ def get_mapped_level(
     if return_qc:
         return compiled_with_architecture
     return save_as_qasm(
-        dumps(compiled_with_architecture),
+        dumps2(compiled_with_architecture),
         filename_mapped,
         device.basis_gates,
         True,
