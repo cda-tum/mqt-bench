@@ -23,6 +23,7 @@ def test_get_ibm_washington_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
+            assert device.get_single_qubit_gate_duration(gate, q) >= 0
 
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
@@ -48,7 +49,7 @@ def test_get_ibmq_montreal_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-
+            assert device.get_single_qubit_gate_duration(gate, q) >= 0
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:
             assert 0 <= device.get_two_qubit_gate_fidelity(gate, q0, q1) <= 1
