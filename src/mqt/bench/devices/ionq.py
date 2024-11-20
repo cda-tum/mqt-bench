@@ -1,16 +1,31 @@
-"""Module to manage IonQ devices."""
+"""IonQ devices."""
 
 from __future__ import annotations
 
 import json
 from typing import TYPE_CHECKING, TypedDict, cast
 
+from .calibration import DeviceCalibration, get_device_calibration_path
+from .device import Device
+
 if TYPE_CHECKING:
     from pathlib import Path
 
-from .calibration import DeviceCalibration
-from .device import Device
-from .provider import Provider
+
+def get_ionq_harmony(sanitize_device: bool = False) -> Device:
+    """Get the IonQ Harmony device."""
+    dev = import_ionq_device(get_device_calibration_path("ionq_harmony"))
+    if sanitize_device:
+        dev.sanitize_device()
+    return dev
+
+
+def get_ionq_aria1(sanitize_device: bool = False) -> Device:
+    """Get the IonQ Lucy device."""
+    dev = import_ionq_device(get_device_calibration_path("ionq_aria1"))
+    if sanitize_device:
+        dev.sanitize_device()
+    return dev
 
 
 class Statistics(TypedDict):
@@ -34,56 +49,39 @@ class IonQCalibration(TypedDict):
     timing: Timing
 
 
-class IonQProvider(Provider):
-    """Class to manage IonQ devices."""
+def import_ionq_device(path: Path) -> Device:
+    """Import an IonQ backend as a Device object.
 
-    provider_name = "ionq"
+    Arguments:
+    path: the path to the JSON file containing the calibration data.
 
-    @classmethod
-    def get_available_device_names(cls) -> list[str]:
-        """Get the names of all available IonQ devices."""
-        return ["ionq_harmony", "ionq_aria1"]  # NOTE: update when adding new devices
+    Returns:
+        the Device object
+    """
+    with path.open() as json_file:
+        ionq_calibration = cast("IonQCalibration", json.load(json_file))
 
-    @classmethod
-    def get_native_gates(cls) -> list[str]:
-        """Get a list of provider specific native gates."""
-        return ["rxx", "rz", "ry", "rx", "measure", "barrier"]  # harmony, aria1
+    device = Device()
+    device.name = ionq_calibration["name"]
+    device.gateset_name = "ionq"
+    device.num_qubits = ionq_calibration["num_qubits"]
+    device.basis_gates = ionq_calibration["basis_gates"]
+    device.coupling_map = list(ionq_calibration["connectivity"])
+    calibration = DeviceCalibration()
+    for qubit in range(device.num_qubits):
+        calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
+            ["ry", "rx"], ionq_calibration["fidelity"]["1q"]["mean"]
+        )
+        calibration.single_qubit_gate_fidelity[qubit]["rz"] = 1  # rz is always perfect
+        calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(["ry", "rx"], ionq_calibration["timing"]["1q"])
+        calibration.single_qubit_gate_duration[qubit]["rz"] = 0  # rz is always instantaneous
+        calibration.readout_fidelity[qubit] = ionq_calibration["fidelity"]["spam"]["mean"]
+        calibration.readout_duration[qubit] = ionq_calibration["timing"]["readout"]
+        calibration.t1[qubit] = ionq_calibration["timing"]["t1"]
+        calibration.t2[qubit] = ionq_calibration["timing"]["t2"]
 
-    @classmethod
-    def import_backend(cls, path: Path) -> Device:
-        """Import an IonQ backend as a Device object.
-
-        Arguments:
-            path: the path to the JSON file containing the calibration data.
-
-        Returns:
-            the Device object
-        """
-        with path.open() as json_file:
-            ionq_calibration = cast("IonQCalibration", json.load(json_file))
-
-        device = Device()
-        device.name = ionq_calibration["name"]
-        device.num_qubits = ionq_calibration["num_qubits"]
-        device.basis_gates = ionq_calibration["basis_gates"]
-        device.coupling_map = list(ionq_calibration["connectivity"])
-        calibration = DeviceCalibration()
-        for qubit in range(device.num_qubits):
-            calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
-                ["ry", "rx"], ionq_calibration["fidelity"]["1q"]["mean"]
-            )
-            calibration.single_qubit_gate_fidelity[qubit]["rz"] = 1  # rz is always perfect
-            calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
-                ["ry", "rx"], ionq_calibration["timing"]["1q"]
-            )
-            calibration.single_qubit_gate_duration[qubit]["rz"] = 0  # rz is always instantaneous
-            calibration.readout_fidelity[qubit] = ionq_calibration["fidelity"]["spam"]["mean"]
-            calibration.readout_duration[qubit] = ionq_calibration["timing"]["readout"]
-            calibration.t1[qubit] = ionq_calibration["timing"]["t1"]
-            calibration.t2[qubit] = ionq_calibration["timing"]["t2"]
-
-        for qubit1, qubit2 in device.coupling_map:
-            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"rxx": ionq_calibration["fidelity"]["2q"]["mean"]}
-            calibration.two_qubit_gate_duration[qubit1, qubit2] = {"rxx": ionq_calibration["timing"]["2q"]}
-        device.calibration = calibration
-        return device
+    for qubit1, qubit2 in device.coupling_map:
+        calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {"rxx": ionq_calibration["fidelity"]["2q"]["mean"]}
+        calibration.two_qubit_gate_duration[qubit1, qubit2] = {"rxx": ionq_calibration["timing"]["2q"]}
+    device.calibration = calibration
+    return device

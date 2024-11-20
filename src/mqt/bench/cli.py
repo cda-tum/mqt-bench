@@ -45,7 +45,7 @@ def main() -> None:
     parser.add_argument("--compiler", type=str, help="Name of the compiler")
     parser.add_argument("--qiskit-optimization-level", type=int, help="Qiskit compiler optimization level")
     parser.add_argument("--tket-placement", type=str, help="TKET placement")
-    parser.add_argument("--native-gate-set", type=str, help="Name of the provider")
+    parser.add_argument("--native-gateset", type=str, help="Name of the provider")
     parser.add_argument("--device", type=str, help="Name of the device")
     args = parser.parse_args()
 
@@ -73,7 +73,7 @@ def main() -> None:
             qiskit=qiskit_settings,
             tket=tket_settings,
         ),
-        provider_name=args.native_gate_set,
+        provider_name=args.native_gateset,
         device_name=args.device,
     )
 

@@ -6,7 +6,19 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from .calibration import DeviceCalibration
+
+
+@dataclass
+class NoCalibrationDevice:
+    """A class to represent a quantum device before reading the calibration data."""
+
+    name: str
+    gateset_name: str
+    gateset: list[str]
+    constructor: Callable[[bool], Device]
 
 
 @dataclass
@@ -22,10 +34,15 @@ class Device:
     """
 
     name: str = ""
+    gateset_name: str = ""
     num_qubits: int = 0
     basis_gates: list[str] = field(default_factory=list)
     coupling_map: list[list[int]] = field(default_factory=list)
     calibration: DeviceCalibration | None = None
+
+    def get_native_gates(self) -> list[str]:
+        """Get a list of native gates supported by the device."""
+        return self.basis_gates
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit fidelity for a given gate type and qubit.

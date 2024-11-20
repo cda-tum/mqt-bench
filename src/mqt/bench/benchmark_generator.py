@@ -16,10 +16,10 @@ from qiskit import QuantumCircuit
 from . import qiskit_helper, tket_helper
 from .devices import (
     get_available_device_names,
-    get_available_provider_names,
-    get_available_providers,
+    get_available_devices,
+    get_available_native_gatesets,
     get_device_by_name,
-    get_provider_by_name,
+    get_native_gateset_by_name,
 )
 from .utils import (
     get_default_config_path,
@@ -170,57 +170,57 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate mapped level benchmarks for a given benchmark."""
-        for provider in get_available_providers():
-            for device in provider.get_available_devices():
-                for opt_level in [0, 1, 2, 3]:
-                    for parameter_instance in parameter_space:
-                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                        if not qc:
+        for device in get_available_devices():
+            calibrated_device = device.constructor(False)
+            for opt_level in [0, 1, 2, 3]:
+                for parameter_instance in parameter_space:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
+                        break
+                    assert isinstance(qc, QuantumCircuit)
+                    if qc.num_qubits <= calibrated_device.num_qubits:
+                        res = timeout_watcher(
+                            qiskit_helper.get_mapped_level,
+                            self.timeout,
+                            [
+                                qc,
+                                qc.num_qubits,
+                                calibrated_device,
+                                opt_level,
+                                file_precheck,
+                                False,
+                                self.qasm_output_path,
+                            ],
+                        )
+                        if not res:
                             break
-                        assert isinstance(qc, QuantumCircuit)
-                        if qc.num_qubits <= device.num_qubits:
-                            res = timeout_watcher(
-                                qiskit_helper.get_mapped_level,
-                                self.timeout,
-                                [
-                                    qc,
-                                    qc.num_qubits,
-                                    device,
-                                    opt_level,
-                                    file_precheck,
-                                    False,
-                                    self.qasm_output_path,
-                                ],
-                            )
-                            if not res:
-                                break
-                        else:
-                            break
+                    else:
+                        break
 
-                for lineplacement in (False, True):
-                    for parameter_instance in parameter_space:
-                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                        if not qc:
+            for lineplacement in (False, True):
+                for parameter_instance in parameter_space:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
+                        break
+                    assert isinstance(qc, QuantumCircuit)
+                    if qc.num_qubits <= calibrated_device.num_qubits:
+                        res = timeout_watcher(
+                            tket_helper.get_mapped_level,
+                            self.timeout,
+                            [
+                                qc,
+                                qc.num_qubits,
+                                calibrated_device,
+                                lineplacement,
+                                file_precheck,
+                                False,
+                                self.qasm_output_path,
+                            ],
+                        )
+                        if not res:
                             break
-                        assert isinstance(qc, QuantumCircuit)
-                        if qc.num_qubits <= device.num_qubits:
-                            res = timeout_watcher(
-                                tket_helper.get_mapped_level,
-                                self.timeout,
-                                [
-                                    qc,
-                                    qc.num_qubits,
-                                    device,
-                                    lineplacement,
-                                    file_precheck,
-                                    False,
-                                    self.qasm_output_path,
-                                ],
-                            )
-                            if not res:
-                                break
-                        else:
-                            break
+                    else:
+                        break
 
     def generate_native_gates_levels(
         self,
@@ -229,7 +229,7 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate native gates level benchmarks for a given benchmark."""
-        for provider in get_available_providers():
+        for native_gateset in get_available_native_gatesets():
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
@@ -241,7 +241,7 @@ class BenchmarkGenerator:
                         self.timeout,
                         [
                             qc,
-                            provider,
+                            native_gateset,
                             qc.num_qubits,
                             opt_level,
                             file_precheck,
@@ -262,7 +262,7 @@ class BenchmarkGenerator:
                     self.timeout,
                     [
                         qc,
-                        provider,
+                        native_gateset,
                         qc.num_qubits,
                         file_precheck,
                         False,
@@ -302,7 +302,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit: ...
@@ -316,7 +316,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> Circuit: ...
@@ -330,7 +330,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit: ...
@@ -343,7 +343,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit:
@@ -356,7 +356,7 @@ def get_benchmark(
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
         compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
-        provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
+        gateset: Name of the gateset or tuple containing the name of the gateset and the gateset itself (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
         kwargs: Additional arguments for the benchmark generation
 
@@ -428,16 +428,14 @@ def get_benchmark(
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
-        if provider_name not in get_available_provider_names():
-            msg = f"Selected provider_name must be in {get_available_provider_names()}."
-            raise ValueError(msg)
-        provider = get_provider_by_name(provider_name)
+        if isinstance(gateset, str):
+            gateset = get_native_gateset_by_name(gateset)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
-            return qiskit_helper.get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
+            return qiskit_helper.get_native_gates_level(qc, gateset, circuit_size, opt_level, False, True)
         if compiler == "tket":
-            return tket_helper.get_native_gates_level(qc, provider, circuit_size, False, True)
+            return tket_helper.get_native_gates_level(qc, gateset, circuit_size, False, True)
 
     if device_name not in get_available_device_names():
         msg = f"Selected device_name must be in {get_available_device_names()}."
