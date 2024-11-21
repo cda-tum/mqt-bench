@@ -17,7 +17,7 @@ from pytket.passes import (
     RoutingPass,
     SynthesiseTket,
 )
-from pytket.placement import GraphPlacement, LinePlacement
+from pytket.placement import LinePlacement
 from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit, transpile
 
@@ -211,7 +211,6 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[True],
     target_directory: str = "./",
@@ -224,7 +223,6 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[False],
     target_directory: str = "./",
@@ -236,7 +234,6 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
@@ -258,10 +255,8 @@ def get_mapped_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    placement = "line" if lineplacement else "graph"
-
     if not target_filename:
-        filename_mapped = qc.name + "_mapped_" + device.name + "_tket_" + placement + "_" + str(num_qubits)
+        filename_mapped = qc.name + "_mapped_" + device.name + "_tket_" + str(num_qubits)
     else:
         filename_mapped = target_filename
 
@@ -295,7 +290,7 @@ def get_mapped_level(
     native_gateset_rebase = get_rebase(device.basis_gates)
     native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
-    placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
+    placer = LinePlacement(arch)
     PlacementPass(placer).apply(qc_tket)
     RoutingPass(arch).apply(qc_tket)
     PeepholeOptimise2Q(allow_swaps=False).apply(qc_tket)

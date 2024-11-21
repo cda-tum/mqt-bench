@@ -20,7 +20,6 @@ from mqt.bench.benchmark_generator import (
     BenchmarkGenerator,
     CompilerSettings,
     QiskitSettings,
-    TKETSettings,
     get_benchmark,
     qiskit_helper,
     timeout_watcher,
@@ -216,7 +215,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
 
         for device in get_available_devices():
-            calibrated_device = device.constructor(sanitize_device=True)
+            calibrated_device = device.constructor()
             # Creating the circuit on target-dependent: mapped level qiskit
             if calibrated_device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
@@ -262,13 +261,12 @@ def test_quantumcircuit_native_and_mapped_levels(
 
         for device in get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            calibrated_device = device.constructor(sanitize_device=True)
+            calibrated_device = device.constructor()
             if calibrated_device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
                     calibrated_device,
-                    True,
                     file_precheck=False,
                     return_qc=False,
                     target_directory=output_path,
@@ -278,7 +276,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                     qc,
                     qc.num_qubits,
                     calibrated_device,
-                    False,
                     file_precheck=True,
                     return_qc=False,
                     target_directory=output_path,
@@ -312,7 +309,6 @@ def test_unidirectional_coupling_map() -> None:
         level="mapped",
         circuit_size=3,
         compiler="tket",
-        compiler_settings=CompilerSettings(tket=TKETSettings(placement="graphplacement")),
         gateset_name="oqc",
         device_name="oqc_lucy",
     )
@@ -336,7 +332,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "dj",
             "alg",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -346,7 +342,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "wstate",
             0,
-            6,
+            3,
             None,
             "tket",
             None,
@@ -356,7 +352,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "ghz",
             "indep",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -366,7 +362,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "graphstate",
             1,
-            4,
+            3,
             None,
             "qiskit",
             None,
@@ -376,7 +372,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "graphstate",
             1,
-            4,
+            3,
             None,
             "tket",
             None,
@@ -386,7 +382,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "dj",
             "nativegates",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -396,7 +392,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "dj",
             "nativegates",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -406,7 +402,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "dj",
             "nativegates",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -416,7 +412,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "dj",
             "nativegates",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -426,7 +422,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qft",
             2,
-            6,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
@@ -436,7 +432,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qft",
             2,
-            6,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
@@ -447,7 +443,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qft",
             2,
-            6,
+            3,
             None,
             "tket",
             None,
@@ -457,7 +453,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -467,7 +463,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -477,7 +473,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -487,7 +483,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -497,7 +493,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -507,7 +503,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -517,7 +513,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeexact",
             "mapped",
-            5,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -527,7 +523,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -537,17 +533,17 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "tket",
-            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            None,
             "ibm_falcon",
             "ibm_washington",
         ),
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -557,17 +553,17 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "tket",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            None,
             "ibm_falcon",
             "ibm_montreal",
         ),
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -577,17 +573,17 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "tket",
-            CompilerSettings(tket=TKETSettings(placement="lineplacement")),
+            None,
             "rigetti",
             "rigetti_aspen_m3",
         ),
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
@@ -597,27 +593,27 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "tket",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            None,
             "oqc",
             "oqc_lucy",
         ),
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "tket",
-            CompilerSettings(tket=TKETSettings(placement="graphplacement")),
+            None,
             "quantinuum",
             "quantinuum_h2",
         ),
         (
             "qpeinexact",
             3,
-            4,
+            3,
             None,
             "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
@@ -627,7 +623,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "grover-noancilla",
             "alg",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -637,7 +633,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qwalk-noancilla",
             "alg",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -647,7 +643,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "grover-v-chain",
             "alg",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -657,7 +653,7 @@ def test_unidirectional_coupling_map() -> None:
         (
             "qwalk-v-chain",
             "alg",
-            5,
+            3,
             None,
             "qiskit",
             None,
@@ -850,7 +846,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
         get_device_by_name("ibm_washington"),
         False,
         False,
-        False,
         directory,
         filename,
     )
@@ -887,7 +882,6 @@ def test_oqc_benchmarks() -> None:
         qc,
         qc.num_qubits,
         get_device_by_name("oqc_lucy"),
-        lineplacement=False,
         file_precheck=False,
         return_qc=False,
         target_directory=directory,
@@ -1043,7 +1037,6 @@ def test_tket_mapped_circuit_qubit_number() -> None:
         qc,
         qc.num_qubits,
         get_device_by_name("ibm_washington"),
-        True,
         file_precheck=False,
         return_qc=True,
     )
