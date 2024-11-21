@@ -292,7 +292,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset_name: str = "ibm_falcon",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit: ...
@@ -306,7 +306,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
-    gateset_name: str = "ibm_falcon",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> Circuit: ...
@@ -320,7 +320,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset_name: str = "ibm_falcon",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit: ...
@@ -333,7 +333,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset_name: str = "ibm_falcon",
+    gateset: str | tuple[str, list[str]] = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit:
@@ -346,7 +346,7 @@ def get_benchmark(
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
         compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit)
-        gateset_name: "ibm_falcon", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
+        gateset: Name of the gateset or tuple containing the name of the gateset and the gateset itself (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
         kwargs: Additional arguments for the benchmark generation
 
@@ -418,13 +418,14 @@ def get_benchmark(
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
-        native_gateset = get_native_gateset_by_name(gateset_name)
+        if isinstance(gateset, str):
+            gateset = get_native_gateset_by_name(gateset)
         if compiler == "qiskit":
             assert compiler_settings.qiskit is not None
             opt_level = compiler_settings.qiskit.optimization_level
-            return qiskit_helper.get_native_gates_level(qc, native_gateset, circuit_size, opt_level, False, True)
+            return qiskit_helper.get_native_gates_level(qc, gateset, circuit_size, opt_level, False, True)
         if compiler == "tket":
-            return tket_helper.get_native_gates_level(qc, native_gateset, circuit_size, False, True)
+            return tket_helper.get_native_gates_level(qc, gateset, circuit_size, False, True)
 
     if device_name not in get_available_device_names():
         msg = f"Selected device_name must be in {get_available_device_names()}."
