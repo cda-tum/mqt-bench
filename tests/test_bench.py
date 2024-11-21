@@ -216,7 +216,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
 
         for device in get_available_devices():
-            calibrated_device = device.constructor()
+            calibrated_device = device.constructor(sanitize_device=True)
             # Creating the circuit on target-dependent: mapped level qiskit
             if calibrated_device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
@@ -262,7 +262,7 @@ def test_quantumcircuit_native_and_mapped_levels(
 
         for device in get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            calibrated_device = device.constructor()
+            calibrated_device = device.constructor(sanitize_device=True)
             if calibrated_device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
