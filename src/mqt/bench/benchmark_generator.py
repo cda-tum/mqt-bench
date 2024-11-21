@@ -17,9 +17,10 @@ from . import qiskit_helper, tket_helper
 from .devices import (
     get_available_device_names,
     get_available_devices,
+    get_available_native_gatesets,
     get_device_by_name,
+    get_native_gateset_by_name,
 )
-from .native_gates import get_available_native_gatesets, get_native_gateset_by_name
 from .utils import (
     get_default_config_path,
     get_module_for_benchmark,
@@ -170,20 +171,21 @@ class BenchmarkGenerator:
     ) -> None:
         """Generate mapped level benchmarks for a given benchmark."""
         for device in get_available_devices():
+            calibrated_device = device.constructor()
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                     if not qc:
                         break
                     assert isinstance(qc, QuantumCircuit)
-                    if qc.num_qubits <= device.num_qubits:
+                    if qc.num_qubits <= calibrated_device.num_qubits:
                         res = timeout_watcher(
                             qiskit_helper.get_mapped_level,
                             self.timeout,
                             [
                                 qc,
                                 qc.num_qubits,
-                                device,
+                                calibrated_device,
                                 opt_level,
                                 file_precheck,
                                 False,
@@ -201,14 +203,14 @@ class BenchmarkGenerator:
                     if not qc:
                         break
                     assert isinstance(qc, QuantumCircuit)
-                    if qc.num_qubits <= device.num_qubits:
+                    if qc.num_qubits <= calibrated_device.num_qubits:
                         res = timeout_watcher(
                             tket_helper.get_mapped_level,
                             self.timeout,
                             [
                                 qc,
                                 qc.num_qubits,
-                                device,
+                                calibrated_device,
                                 lineplacement,
                                 file_precheck,
                                 False,

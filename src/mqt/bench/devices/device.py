@@ -6,7 +6,19 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from .calibration import DeviceCalibration
+
+
+@dataclass
+class NoCalibrationDevice:
+    """A class to represent a quantum device before reading the calibration data."""
+
+    name: str
+    gateset_name: str
+    gate_set: list[str]
+    constructor: Callable[[], Device]
 
 
 @dataclass

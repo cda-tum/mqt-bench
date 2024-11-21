@@ -9,27 +9,29 @@ import pytest
 from mqt.bench.devices import (
     Device,
     DeviceCalibration,
+    NoCalibrationDevice,
     get_available_devices,
 )
 
 
 @pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast(str, device.name))
-def test_sanitized_devices(device: Device) -> None:
+def test_sanitized_devices(device: NoCalibrationDevice) -> None:
     """Test that all devices can be sanitized and provide complete fidelity data."""
-    device.sanitize_device()
-    assert device.calibration is not None
-    for qubit in range(device.num_qubits):
-        assert qubit in device.calibration.single_qubit_gate_fidelity
-        for gate in device.get_single_qubit_gates():
-            assert gate in device.calibration.single_qubit_gate_fidelity[qubit]
-            assert device.calibration.single_qubit_gate_fidelity[qubit][gate] > 0
-        assert qubit in device.calibration.readout_fidelity
+    calibrated_device = device.constructor()
+    calibrated_device.sanitize_device()
+    assert calibrated_device.calibration is not None
+    for qubit in range(calibrated_device.num_qubits):
+        assert qubit in calibrated_device.calibration.single_qubit_gate_fidelity
+        for gate in calibrated_device.get_single_qubit_gates():
+            assert gate in calibrated_device.calibration.single_qubit_gate_fidelity[qubit]
+            assert calibrated_device.calibration.single_qubit_gate_fidelity[qubit][gate] > 0
+        assert qubit in calibrated_device.calibration.readout_fidelity
 
-    for qubit1, qubit2 in device.coupling_map:
-        assert (qubit1, qubit2) in device.calibration.two_qubit_gate_fidelity
-        for gate in device.get_two_qubit_gates():
-            assert gate in device.calibration.two_qubit_gate_fidelity[qubit1, qubit2]
-            assert device.calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate] > 0
+    for qubit1, qubit2 in calibrated_device.coupling_map:
+        assert (qubit1, qubit2) in calibrated_device.calibration.two_qubit_gate_fidelity
+        for gate in calibrated_device.get_two_qubit_gates():
+            assert gate in calibrated_device.calibration.two_qubit_gate_fidelity[qubit1, qubit2]
+            assert calibrated_device.calibration.two_qubit_gate_fidelity[qubit1, qubit2][gate] > 0
 
 
 def test_device_calibration_errors() -> None:
@@ -94,3 +96,9 @@ def test_device_calibration_errors() -> None:
         device.calibration.compute_average_readout_fidelity()
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.calibration.compute_average_readout_duration()
+
+
+def test_no_calibration_devices() -> None:
+    """Test that no calibration devices have the same gate set as the calibrated ones."""
+    for no_calibration_device in get_available_devices():
+        assert set(no_calibration_device.gate_set) == set(no_calibration_device.constructor().basis_gates)

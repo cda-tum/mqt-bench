@@ -49,8 +49,12 @@ from mqt.bench.benchmarks import (
     vqe,
     wstate,
 )
-from mqt.bench.devices import get_available_devices, get_device_by_name
-from mqt.bench.native_gates import get_available_native_gatesets, get_native_gateset_by_name
+from mqt.bench.devices import (
+    get_available_devices,
+    get_available_native_gatesets,
+    get_device_by_name,
+    get_native_gateset_by_name,
+)
 
 
 @pytest.fixture
@@ -188,7 +192,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert qc.num_qubits == input_value
 
     native_gatesets = get_available_native_gatesets()
-    for gateset in native_gatesets.items():
+    for gateset in native_gatesets:
         opt_level = 0
         res = qiskit_helper.get_native_gates_level(
             qc,
@@ -212,12 +216,13 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
 
         for device in get_available_devices():
+            calibrated_device = device.constructor()
             # Creating the circuit on target-dependent: mapped level qiskit
-            if device.num_qubits >= qc.num_qubits:
+            if calibrated_device.num_qubits >= qc.num_qubits:
                 res = qiskit_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
-                    device,
+                    calibrated_device,
                     opt_level,
                     file_precheck=False,
                     return_qc=False,
@@ -227,7 +232,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                 res = qiskit_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
-                    device,
+                    calibrated_device,
                     opt_level,
                     file_precheck=True,
                     return_qc=False,
@@ -235,7 +240,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
 
-    for gateset in get_available_native_gatesets().items():
+    for gateset in get_available_native_gatesets():
         res = tket_helper.get_native_gates_level(
             qc,
             gateset,
@@ -257,11 +262,12 @@ def test_quantumcircuit_native_and_mapped_levels(
 
         for device in get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
-            if device.num_qubits >= qc.num_qubits:
+            calibrated_device = device.constructor()
+            if calibrated_device.num_qubits >= qc.num_qubits:
                 res = tket_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
-                    device,
+                    calibrated_device,
                     True,
                     file_precheck=False,
                     return_qc=False,
@@ -271,7 +277,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                 res = tket_helper.get_mapped_level(
                     qc,
                     qc.num_qubits,
-                    device,
+                    calibrated_device,
                     False,
                     file_precheck=True,
                     return_qc=False,
