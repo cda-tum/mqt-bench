@@ -18,8 +18,7 @@ from mqt.bench.devices import (
 @pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast(str, device.name))
 def test_sanitized_devices(device: NoCalibrationDevice) -> None:
     """Test that all devices can be sanitized and provide complete fidelity data."""
-    calibrated_device = device.constructor()
-    calibrated_device.sanitize_device()
+    calibrated_device = device.constructor(sanitize_device=True)
     assert calibrated_device.calibration is not None
     for qubit in range(calibrated_device.num_qubits):
         assert qubit in calibrated_device.calibration.single_qubit_gate_fidelity

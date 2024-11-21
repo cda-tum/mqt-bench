@@ -66,18 +66,10 @@ class QiskitSettings:
 
 
 @dataclass
-class TKETSettings:
-    """Data class for the TKET compiler settings."""
-
-    placement: str = "lineplacement"
-
-
-@dataclass
 class CompilerSettings:
     """Data class for the compiler settings."""
 
     qiskit: QiskitSettings | None = None
-    tket: TKETSettings | None = None
 
 
 class BenchmarkGenerator:
@@ -197,30 +189,28 @@ class BenchmarkGenerator:
                     else:
                         break
 
-            for lineplacement in (False, True):
-                for parameter_instance in parameter_space:
-                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                    if not qc:
+            for parameter_instance in parameter_space:
+                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                if not qc:
+                    break
+                assert isinstance(qc, QuantumCircuit)
+                if qc.num_qubits <= calibrated_device.num_qubits:
+                    res = timeout_watcher(
+                        tket_helper.get_mapped_level,
+                        self.timeout,
+                        [
+                            qc,
+                            qc.num_qubits,
+                            calibrated_device,
+                            file_precheck,
+                            False,
+                            self.qasm_output_path,
+                        ],
+                    )
+                    if not res:
                         break
-                    assert isinstance(qc, QuantumCircuit)
-                    if qc.num_qubits <= calibrated_device.num_qubits:
-                        res = timeout_watcher(
-                            tket_helper.get_mapped_level,
-                            self.timeout,
-                            [
-                                qc,
-                                qc.num_qubits,
-                                calibrated_device,
-                                lineplacement,
-                                file_precheck,
-                                False,
-                                self.qasm_output_path,
-                            ],
-                        )
-                        if not res:
-                            break
-                    else:
-                        break
+                else:
+                    break
 
     def generate_native_gates_levels(
         self,
@@ -355,7 +345,7 @@ def get_benchmark(
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
         benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
         compiler: "qiskit" or "tket"
-        compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
+        compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit)
         gateset: Name of the gateset or tuple containing the name of the gateset and the gateset itself (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
         kwargs: Additional arguments for the benchmark generation
@@ -414,7 +404,7 @@ def get_benchmark(
         raise ValueError(msg)
 
     if compiler_settings is None:
-        compiler_settings = CompilerSettings(QiskitSettings(), TKETSettings())
+        compiler_settings = CompilerSettings(QiskitSettings())
     elif not isinstance(compiler_settings, CompilerSettings):
         msg = "compiler_settings must be of type CompilerSettings or None."  # type: ignore[unreachable]
         raise ValueError(msg)
@@ -457,14 +447,10 @@ def get_benchmark(
                 True,
             )
         if compiler == "tket":
-            assert compiler_settings.tket is not None
-            placement = compiler_settings.tket.placement.lower()
-            lineplacement = placement == "lineplacement"
             return tket_helper.get_mapped_level(
                 qc,
                 circuit_size,
                 device,
-                lineplacement,
                 False,
                 True,
             )

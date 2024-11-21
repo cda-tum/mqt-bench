@@ -187,7 +187,7 @@ class Device:
 
         # remove any edge from the coupling map that has a fidelity of 0 for all gates (see ibm_washington)
         self.coupling_map = [
-            edge
+            list(edge)
             for edge in self.coupling_map
             if all(fidelity != 0 for fidelity in self.calibration.two_qubit_gate_fidelity[tuple(edge)].values())
         ]

@@ -9,13 +9,11 @@ from __future__ import annotations
 from mqt.bench.benchmark_generator import (
     CompilerSettings,
     QiskitSettings,
-    TKETSettings,
     get_benchmark,
 )
 
 __all__ = [
     "CompilerSettings",
     "QiskitSettings",
-    "TKETSettings",
     "get_benchmark",
 ]
