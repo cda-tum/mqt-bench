@@ -148,6 +148,7 @@ def get_native_gates_level(
         approx = generate_basic_approximations(gateset, depth=3)
         skd = SolovayKitaev(recursion_degree=2, basic_approximations=approx)
         compiled_without_architecture = skd(qc.decompose(reps=3).remove_final_measurements(inplace=False))
+        compiled_without_architecture.measure_all()
     else:
         compiled_without_architecture = transpile(
             qc, basis_gates=gateset, optimization_level=opt_level, seed_transpiler=10
