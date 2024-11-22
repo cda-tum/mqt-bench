@@ -43,7 +43,7 @@ if TYPE_CHECKING:
              "--algorithm", "ghz",
              "--num-qubits", "20",
              "--compiler", "qiskit",
-             "--native-gate-set", "ibm_falcon",
+             "--native-gateset", "ibm_falcon",
              "--device", None,
          ], dumps(get_benchmark(level="nativegates", benchmark_name="ghz", circuit_size=20, compiler="qiskit", gateset_name="ibm_falcon"))),
         ([
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
              "--num-qubits", "20",
              "--compiler", "qiskit",
              "--qiskit-optimization-level", "2",
-             "--native-gate-set", "ibm_falcon",
+             "--native-gateset", "ibm_falcon",
              "--device", "ibm_montreal",
          ], dumps(get_benchmark(
             level="mapped",
@@ -84,7 +84,7 @@ if TYPE_CHECKING:
              "--num-qubits", "20",
              "--compiler", "qiskit",
              "--qiskit-optimization-level", "2",
-             "--native-gate-set", None,
+             "--native-gateset", None,
              "--device", "ibm_montreal",
          ], dumps(get_benchmark(
             level="mapped",
