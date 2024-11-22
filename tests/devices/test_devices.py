@@ -11,7 +11,10 @@ from mqt.bench.devices import (
     Device,
     DeviceCalibration,
     NoCalibrationDevice,
+    calibration,
     get_available_devices,
+    get_device_by_name,
+    get_native_gateset_by_name,
 )
 
 
@@ -97,8 +100,47 @@ def test_device_calibration_errors() -> None:
     with pytest.raises(ValueError, match=re.escape("Readout duration values not available.")):
         device.calibration.compute_average_readout_duration()
 
+    with pytest.raises(FileNotFoundError, match="Calibration file not found*"):
+        calibration.get_device_calibration_path("test")
+
+    actual_dev = get_device_by_name("ionq_aria1")
+    qubit = 100
+    gate_type = "wrong_gate"
+    with pytest.raises(
+        ValueError, match=f"Single-qubit fidelity for gate {gate_type} and qubit {qubit} not available."
+    ):
+        actual_dev.calibration.get_single_qubit_gate_fidelity(gate_type, qubit)
+    with pytest.raises(
+        ValueError, match=f"Single-qubit duration for gate {gate_type} and qubit {qubit} not available."
+    ):
+        actual_dev.calibration.get_single_qubit_gate_duration(gate_type, qubit)
+    with pytest.raises(
+        ValueError, match=f"Two-qubit fidelity for gate {gate_type} and qubits {qubit} and {qubit} not available."
+    ):
+        actual_dev.calibration.get_two_qubit_gate_fidelity(gate_type, qubit, qubit)
+    with pytest.raises(
+        ValueError, match=f"Two-qubit duration for gate {gate_type} and qubits {qubit} and {qubit} not available."
+    ):
+        actual_dev.calibration.get_two_qubit_gate_duration(gate_type, qubit, qubit)
+    with pytest.raises(ValueError, match=f"Readout fidelity for qubit {qubit} not available."):
+        actual_dev.calibration.get_readout_fidelity(qubit)
+    with pytest.raises(ValueError, match=f"Readout duration for qubit {qubit} not available."):
+        actual_dev.calibration.get_readout_duration(qubit)
+    with pytest.raises(ValueError, match=f"T1 for qubit {qubit} not available."):
+        actual_dev.calibration.get_t1(qubit)
+    with pytest.raises(ValueError, match=f"T2 for qubit {qubit} not available."):
+        actual_dev.calibration.get_t2(qubit)
+
 
 def test_no_calibration_devices() -> None:
     """Test that no calibration devices have the same gate set as the calibrated ones."""
     for no_calibration_device in get_available_devices():
-        assert set(no_calibration_device.gate_set) == set(no_calibration_device.constructor().basis_gates)
+        assert set(no_calibration_device.gateset) == set(no_calibration_device.constructor().basis_gates)
+
+
+def test_unsupported_device() -> None:
+    """Test that unsupported devices raise errors."""
+    with pytest.raises(ValueError, match="Device unsupported not found in available devices."):
+        get_device_by_name("unsupported")
+    with pytest.raises(ValueError, match="Gateset unsupported not found in available gatesets."):
+        get_native_gateset_by_name("unsupported")
