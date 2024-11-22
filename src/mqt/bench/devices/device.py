@@ -17,8 +17,8 @@ class NoCalibrationDevice:
 
     name: str
     gateset_name: str
-    gate_set: list[str]
-    constructor: Callable[[], Device]
+    gateset: list[str]
+    constructor: Callable[[bool], Device]
 
 
 @dataclass

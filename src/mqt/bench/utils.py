@@ -162,7 +162,7 @@ def get_openqasm_gates() -> list[str]:
 def save_as_qasm(
     qc_str: str,
     filename: str,
-    gate_set: list[str] | None = None,
+    gateset: list[str] | None = None,
     mapped: bool = False,
     c_map: list[list[int]] | None = None,
     target_directory: str = "",
@@ -172,7 +172,7 @@ def save_as_qasm(
     Arguments:
         qc_str: Quantum circuit to be stored as a string
         filename: filename
-        gate_set: set of used gates
+        gateset: set of used gates
         mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
         c_map: coupling map of used hardware layout
         target_directory: directory where the qasm file is stored
@@ -196,8 +196,8 @@ def save_as_qasm(
             f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         elif "tket" in filename:
             f.write("// TKET version: " + str(__tket_version__) + "\n")
-        if gate_set:
-            f.write("// Used Gate Set: " + str(gate_set) + "\n")
+        if gateset:
+            f.write("// Used Gate Set: " + str(gateset) + "\n")
         if mapped:
             f.write("// Coupling List: " + str(c_map) + "\n")
         f.write("\n")

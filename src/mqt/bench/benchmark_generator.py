@@ -163,7 +163,7 @@ class BenchmarkGenerator:
     ) -> None:
         """Generate mapped level benchmarks for a given benchmark."""
         for device in get_available_devices():
-            calibrated_device = device.constructor()
+            calibrated_device = device.constructor(False)
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
