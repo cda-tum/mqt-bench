@@ -134,7 +134,7 @@ def test_device_calibration_errors() -> None:
 def test_no_calibration_devices() -> None:
     """Test that no calibration devices have the same gate set as the calibrated ones."""
     for no_calibration_device in get_available_devices():
-        assert set(no_calibration_device.gate_set) == set(no_calibration_device.constructor().basis_gates)
+        assert set(no_calibration_device.gateset) == set(no_calibration_device.constructor().basis_gates)
 
 
 def test_unsupported_device() -> None:
