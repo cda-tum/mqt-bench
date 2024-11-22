@@ -40,10 +40,6 @@ class Device:
     coupling_map: list[list[int]] = field(default_factory=list)
     calibration: DeviceCalibration | None = None
 
-    def get_native_gates(self) -> list[str]:
-        """Get a list of native gates supported by the device."""
-        return self.basis_gates
-
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit fidelity for a given gate type and qubit.
 

@@ -11,6 +11,8 @@ from mqt.bench.devices import (
     DeviceCalibration,
     NoCalibrationDevice,
     get_available_devices,
+    get_device_by_name,
+    get_native_gateset_by_name,
 )
 
 
@@ -101,3 +103,11 @@ def test_no_calibration_devices() -> None:
     """Test that no calibration devices have the same gate set as the calibrated ones."""
     for no_calibration_device in get_available_devices():
         assert set(no_calibration_device.gate_set) == set(no_calibration_device.constructor().basis_gates)
+
+
+def test_unsupported_device() -> None:
+    """Test that unsupported devices raise errors."""
+    with pytest.raises(ValueError, match="Device unsupported not found in available devices."):
+        get_device_by_name("unsupported")
+    with pytest.raises(ValueError, match="Gateset unsupported not found in available gatesets."):
+        get_native_gateset_by_name("unsupported")
