@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, cast
 
-from qiskit_ibm_runtime.fake_provider import FakeMontrealV2, FakeWashingtonV2
+from qiskit_ibm_runtime.fake_provider import FakeMontrealV2, FakeTorino, FakeWashingtonV2
 
 from .calibration import DeviceCalibration
 from .device import Device
@@ -13,10 +14,20 @@ if TYPE_CHECKING:
     from qiskit.providers import BackendV2
     from qiskit.transpiler import Target
 
+logger = logging.getLogger(__name__)
+
 
 def get_ibm_washington(sanitize_device: bool = False) -> Device:
     """Get the IBM Washington device."""
     dev = import_qiskit_backend(FakeWashingtonV2(), "ibm_washington", "ibm_falcon")
+    if sanitize_device:
+        dev.sanitize_device()
+    return dev
+
+
+def get_ibm_torino(sanitize_device: bool = False) -> Device:
+    """Get the IBM Torino device."""
+    dev = import_qiskit_backend(FakeTorino(), "ibm_torino", "ibm_heron_r1")
     if sanitize_device:
         dev.sanitize_device()
     return dev
@@ -72,13 +83,15 @@ def import_target(target: Target) -> DeviceCalibration:
     calibration.two_qubit_gate_fidelity = {(qubit1, qubit2): {} for qubit1, qubit2 in coupling_map}
     calibration.two_qubit_gate_duration = {(qubit1, qubit2): {} for qubit1, qubit2 in coupling_map}
     for instruction, qargs in target.instructions:
-        # Skip `reset` and `delay` gate as their error information is not exposed.
         if instruction.name == "reset" or instruction.name == "delay":
             continue
-
-        instruction_props = target[instruction.name][qargs]
-        error: float = instruction_props.error
-        duration: float = instruction_props.duration
+        # Skip control flow operations like ForLoopOp, IfElseOp, SwitchCaseOp, etc.
+        try:
+            instruction_props = target[instruction.name][qargs]
+            error: float = instruction_props.error
+            duration: float = instruction_props.duration
+        except KeyError:
+            continue
         qubit = qargs[0]
         if instruction.name == "measure":
             calibration.readout_fidelity[qubit] = 1 - error
