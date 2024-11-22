@@ -213,7 +213,6 @@ def test_quantumcircuit_native_and_mapped_levels(
             target_directory=output_path,
         )
         assert res
-
         for device in get_available_devices():
             calibrated_device = device.constructor()
             # Creating the circuit on target-dependent: mapped level qiskit
@@ -240,24 +239,37 @@ def test_quantumcircuit_native_and_mapped_levels(
                 assert res
 
     for gateset in get_available_native_gatesets():
-        res = tket_helper.get_native_gates_level(
-            qc,
-            gateset,
-            qc.num_qubits,
-            file_precheck=False,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-        res = tket_helper.get_native_gates_level(
-            qc,
-            gateset,
-            qc.num_qubits,
-            file_precheck=True,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
+        if gateset[0] != "clifford+t":
+            res = tket_helper.get_native_gates_level(
+                qc,
+                gateset,
+                qc.num_qubits,
+                file_precheck=False,
+                return_qc=False,
+                target_directory=output_path,
+            )
+            assert res
+            res = tket_helper.get_native_gates_level(
+                qc,
+                gateset,
+                qc.num_qubits,
+                file_precheck=True,
+                return_qc=False,
+                target_directory=output_path,
+            )
+            assert res
+        else:
+            with pytest.raises(
+                ValueError, match=r"The gateset 'clifford\+t' is not supported by TKET. Please use Qiskit instead."
+            ):
+                tket_helper.get_native_gates_level(
+                    qc,
+                    gateset,
+                    qc.num_qubits,
+                    file_precheck=False,
+                    return_qc=False,
+                    target_directory=output_path,
+                )
 
         for device in get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
