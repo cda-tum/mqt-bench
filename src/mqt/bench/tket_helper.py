@@ -169,6 +169,9 @@ def get_native_gates_level(
         else: True/False indicating whether the function call was successful or not
     """
     gateset_name, gateset = native_gateset
+    if gateset_name == "clifford+t":
+        msg = "The gateset 'clifford+t' is not supported by TKET. Please use Qiskit instead."
+        raise ValueError(msg)
     if not target_filename:
         filename_native = qc.name + "_nativegates_" + gateset_name + "_tket_" + str(num_qubits)
     else:

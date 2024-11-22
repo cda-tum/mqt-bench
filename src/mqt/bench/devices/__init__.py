@@ -82,8 +82,12 @@ __all__ = [
 
 def get_available_native_gatesets() -> list[tuple[str, list[str]]]:
     """Get a list of all available native gatesets."""
-    return [(device.gateset_name, device.gateset) for device in get_available_devices()]
-    # available_gatesets.append(("clifford+t", ["id", "h", "s", "cx", "t"]))
+    available_gatesets = [(device.gateset_name, device.gateset) for device in get_available_devices()]
+    available_gatesets.append((
+        "clifford+t",
+        ["s", "sdg", "t", "tdg", "z", "h", "cx"],
+    ))
+    return available_gatesets
 
 
 def get_native_gateset_by_name(gateset_name: str) -> tuple[str, list[str]]:

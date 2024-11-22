@@ -12,6 +12,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from qiskit import transpile
 from qiskit.qasm2 import dumps as dumps2
+from qiskit.synthesis import generate_basic_approximations
+from qiskit.transpiler.passes import SolovayKitaev
 
 from .utils import get_openqasm_gates, save_as_qasm
 
@@ -141,7 +143,16 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
 
-    compiled_without_architecture = transpile(qc, basis_gates=gateset, optimization_level=opt_level, seed_transpiler=10)
+    if gateset_name == "clifford+t":
+        gateset.remove("cx")
+        approx = generate_basic_approximations(gateset, depth=3)
+        skd = SolovayKitaev(recursion_degree=2, basic_approximations=approx)
+        compiled_without_architecture = skd(qc.decompose(reps=3).remove_final_measurements(inplace=False))
+        compiled_without_architecture.measure_all()
+    else:
+        compiled_without_architecture = transpile(
+            qc, basis_gates=gateset, optimization_level=opt_level, seed_transpiler=10
+        )
     if return_qc:
         return compiled_without_architecture
     return save_as_qasm(

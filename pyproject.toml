@@ -125,6 +125,7 @@ filterwarnings = [
     'ignore:.*Providing non-standard gates.*is deprecated for both ``transpile`` and ``generate_preset_pass_manager`` as of Qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
     'ignore:.*is pending deprecation as of qiskit 1.3..*:PendingDeprecationWarning:',
     'ignore:.*The class ``qiskit.providers.exceptions.BackendPropertyError`` is deprecated as of qiskit 1.4.*:DeprecationWarning:',
+    'ignore:.*he SolovayKitaev algorithm relies *.:RuntimeWarning:qiskit.synthesis.discrete_basis.generate_basis_approximations',
 ]
 
 [tool.coverage]
