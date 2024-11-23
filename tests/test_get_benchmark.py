@@ -1,14 +1,11 @@
 """Tests for the get_benchmark method."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
 
-import pytket
-
-
 import pytest
+import pytket
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
@@ -27,7 +24,16 @@ from mqt.bench.devices import (
 
 
 @pytest.mark.parametrize(
-    "benchmark_name, level, circuit_size, benchmark_instance_name, compiler, compiler_settings, gateset_name, device_name",
+    (
+        "benchmark_name",
+        "level",
+        "circuit_size",
+        "benchmark_instance_name",
+        "compiler",
+        "compiler_settings",
+        "gateset_name",
+        "device_name",
+    ),
     [
         # Algorithm-level tests
         ("dj", "alg", 3, None, "qiskit", None, "", ""),
@@ -35,18 +41,33 @@ from mqt.bench.devices import (
         ("shor", "alg", None, "xsmall", "qiskit", None, "", ""),
         ("grover-noancilla", "alg", 3, None, "qiskit", None, "", ""),
         ("qwalk-v-chain", "alg", 3, None, "qiskit", None, "", ""),
-
         # Independent level tests
         ("ghz", "indep", 3, None, "qiskit", None, "", ""),
         ("graphstate", 1, 3, None, "qiskit", None, "", ""),
         ("graphstate", 1, 3, None, "tket", None, "", ""),
-
         # Native gates level tests
-        ("dj", "nativegates", 3, None, "qiskit", CompilerSettings(qiskit=QiskitSettings(optimization_level=0)), "ionq", ""),
+        (
+            "dj",
+            "nativegates",
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=0)),
+            "ionq",
+            "",
+        ),
         ("qft", 2, 3, None, "tket", None, "rigetti", "rigetti_aspen_m3"),
-
         # Mapped level tests
-        ("ghz", "mapped", 3, None, "qiskit", CompilerSettings(qiskit=QiskitSettings(optimization_level=0)), "", "ibm_washington"),
+        (
+            "ghz",
+            "mapped",
+            3,
+            None,
+            "qiskit",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=0)),
+            "",
+            "ibm_washington",
+        ),
         ("ghz", 3, 3, None, "tket", None, "ibm_falcon", "ibm_montreal"),
         ("ghz", 3, 3, None, "qiskit", CompilerSettings(qiskit=QiskitSettings(optimization_level=0)), "", "ionq_aria1"),
     ],
@@ -82,8 +103,6 @@ def test_get_benchmark(
             gate_type = instruction.name
             gateset = get_native_gateset_by_name(gateset_name)
             assert gate_type in gateset.gates or gate_type == "barrier"
-
-
 
 
 def test_get_benchmark_faulty_parameters() -> None:
@@ -177,6 +196,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "wrong_device",
         )
+
 
 def test_oqc_benchmarks() -> None:
     """Test the creation of benchmarks for the OQC devices."""
@@ -309,7 +329,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     path.unlink()
 
 
-
 def test_unidirectional_coupling_map() -> None:
     """Test the unidirectional coupling map for the OQC Lucy device."""
     qc = get_benchmark(
@@ -323,6 +342,7 @@ def test_unidirectional_coupling_map() -> None:
     # check that all gates in the circuit are in the coupling map
     cmap = utils.convert_cmap_to_tuple_list(get_device_by_name("oqc_lucy").coupling_map)
     assert qc.valid_connectivity(arch=pytket.architecture.Architecture(cmap), directed=True)
+
 
 def test_calc_supermarq_features() -> None:
     """Test the calculation of the supermarq features."""

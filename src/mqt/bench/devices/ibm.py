@@ -23,20 +23,14 @@ class IBMDevice(Device):
     def __init__(self, backend: BackendV2, device_name: str, gateset_name: str) -> None:
         """Initialize the IBM device."""
         self.name = device_name
-        self.num_qubits = backend.num_qubits
         self.gateset = Gateset(gateset_name, backend.operation_names)
+        self.num_qubits = backend.num_qubits
         self.coupling_map = backend.coupling_map
         self.calibration = None
         self.target = backend.target
 
     def read_calibration(self) -> None:
-        """Import calibration data from a Qiskit `Target` object.
-
-        Arguments:
-            target: the Qiskit `Target` object.
-
-        Returns: Collection of calibration data
-        """
+        """Read the calibration data for the device."""
         calibration = DeviceCalibration()
         num_qubits = len(self.target.qubit_properties)
 
