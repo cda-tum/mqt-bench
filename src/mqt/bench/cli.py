@@ -44,7 +44,7 @@ def main() -> None:
     parser.add_argument("--num-qubits", type=int, help="Number of Qubits", required=True)
     parser.add_argument("--compiler", type=str, help="Name of the compiler")
     parser.add_argument("--qiskit-optimization-level", type=int, help="Qiskit compiler optimization level")
-    parser.add_argument("--native-gateset", type=str, help="Name of the provider")
+    parser.add_argument("--gateset", type=str, help="Name of the provider")
     parser.add_argument("--device", type=str, help="Name of the device")
     args = parser.parse_args()
 
@@ -67,7 +67,7 @@ def main() -> None:
         compiler_settings=CompilerSettings(
             qiskit=qiskit_settings,
         ),
-        provider_name=args.native_gateset,
+        provider_name=args.gateset,
         device_name=args.device,
     )
 

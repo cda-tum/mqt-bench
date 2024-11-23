@@ -27,7 +27,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
 
-    from .devices import Device
+    from .devices import Device, Gateset
 
 
 def get_rebase(gateset: list[str]) -> BasePass:
@@ -123,7 +123,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[True],
@@ -135,7 +135,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[False],
@@ -146,7 +146,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
@@ -157,7 +157,7 @@ def get_native_gates_level(
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        native_gateset: tuple containing the name of the gateset and the gateset itself
+        gateset: tuple containing the name of the gateset and the gateset itself
         num_qubits: number of qubits
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
         return_qc: flag if the actual circuit shall be returned
@@ -168,12 +168,11 @@ def get_native_gates_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    gateset_name, gateset = native_gateset
-    if gateset_name == "clifford+t":
+    if gateset.gateset_name == "clifford+t":
         msg = "The gateset 'clifford+t' is not supported by TKET. Please use Qiskit instead."
         raise ValueError(msg)
     if not target_filename:
-        filename_native = qc.name + "_nativegates_" + gateset_name + "_tket_" + str(num_qubits)
+        filename_native = qc.name + "_nativegates_" + gateset.gateset_name + "_tket_" + str(num_qubits)
     else:
         filename_native = target_filename
 
@@ -194,7 +193,7 @@ def get_native_gates_level(
         print("TKET Exception NativeGates: ", e)
         return False
 
-    native_gateset_rebase = get_rebase(gateset)
+    native_gateset_rebase = get_rebase(gateset.gates)
     native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     native_gateset_rebase.apply(qc_tket)
@@ -204,7 +203,7 @@ def get_native_gates_level(
     return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_native,
-        gateset,
+        gateset.gates,
         target_directory=target_directory,
     )
 

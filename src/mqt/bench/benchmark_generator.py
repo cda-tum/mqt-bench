@@ -35,6 +35,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from pytket.circuit import Circuit
 
+    from .devices import Gateset
+
 from dataclasses import dataclass
 from importlib import resources
 
@@ -292,7 +294,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["qiskit"] = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset: str | tuple[str, list[str]] = "ibm_falcon",
+    gateset: str | Gateset = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit: ...
@@ -306,7 +308,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: Literal["tket"] = "tket",
     compiler_settings: CompilerSettings | None = None,
-    gateset: str | tuple[str, list[str]] = "ibm_falcon",
+    gateset: str | Gateset = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> Circuit: ...
@@ -320,7 +322,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset: str | tuple[str, list[str]] = "ibm_falcon",
+    gateset: str | Gateset = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit: ...
@@ -333,7 +335,7 @@ def get_benchmark(
     benchmark_instance_name: str | None = None,
     compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
-    gateset: str | tuple[str, list[str]] = "ibm_falcon",
+    gateset: str | Gateset = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit | Circuit:

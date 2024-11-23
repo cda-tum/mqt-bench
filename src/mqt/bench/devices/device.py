@@ -12,12 +12,19 @@ if TYPE_CHECKING:
 
 
 @dataclass
+class Gateset:
+    """A class to represent a set of native gates."""
+
+    gateset_name: str
+    gates: list[str]
+
+
+@dataclass
 class NoCalibrationDevice:
     """A class to represent a quantum device before reading the calibration data."""
 
     name: str
-    gateset_name: str
-    gateset: list[str]
+    gateset: Gateset
     constructor: Callable[[bool], Device]
 
 

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Literal, overload
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit import QuantumCircuit
 
-    from .devices import Device
+    from .devices import Device, Gateset
 
 from qiskit import transpile
 from qiskit.qasm2 import dumps as dumps2
@@ -82,7 +82,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -95,7 +95,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -107,7 +107,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    native_gateset: tuple[str, list[str]],
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -119,7 +119,7 @@ def get_native_gates_level(
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        native_gateset: tuple containing the name of the gateset and the gateset itself
+        gateset: tuple containing the name of the gateset and the gateset itself
         num_qubits: number of qubits
         opt_level: optimization level
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
@@ -131,10 +131,9 @@ def get_native_gates_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    gateset_name, gateset = native_gateset
     if not target_filename:
         filename_native = (
-            qc.name + "_nativegates_" + gateset_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
+            qc.name + "_nativegates_" + gateset.gateset_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
         )
     else:
         filename_native = target_filename
@@ -143,22 +142,22 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
 
-    if gateset_name == "clifford+t":
-        gateset.remove("cx")
-        approx = generate_basic_approximations(gateset, depth=3)
+    if gateset.gateset_name == "clifford+t":
+        gateset.gates.remove("cx")
+        approx = generate_basic_approximations(gateset.gates, depth=3)
         skd = SolovayKitaev(recursion_degree=2, basic_approximations=approx)
         compiled_without_architecture = skd(qc.decompose(reps=3).remove_final_measurements(inplace=False))
         compiled_without_architecture.measure_all()
     else:
         compiled_without_architecture = transpile(
-            qc, basis_gates=gateset, optimization_level=opt_level, seed_transpiler=10
+            qc, basis_gates=gateset.gates, optimization_level=opt_level, seed_transpiler=10
         )
     if return_qc:
         return compiled_without_architecture
     return save_as_qasm(
         dumps2(compiled_without_architecture),
         filename_native,
-        gateset,
+        gateset.gates,
         target_directory=target_directory,
     )
 
