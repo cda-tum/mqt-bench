@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
@@ -40,7 +41,6 @@ from mqt.bench.devices import (
         ("shor", "alg", None, "xsmall", "qiskit", None, "", ""),
         ("grover-noancilla", "alg", 3, None, "qiskit", None, "", ""),
         ("qwalk-v-chain", "alg", 3, None, "qiskit", None, "", ""),
-        ("groundstate", "alg", None, "small", "qiskit", None, "", ""),
         # Independent level tests
         ("ghz", "indep", 3, None, "qiskit", None, "", ""),
         ("graphstate", 1, 3, None, "qiskit", None, "", ""),
@@ -103,6 +103,15 @@ def test_get_benchmark(
             gate_type = instruction.name
             gateset = get_native_gateset_by_name(gateset_name)
             assert gate_type in gateset.gates or gate_type == "barrier"
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="PySCF is not available on Windows.",
+)
+def test_get_benchmark_groundstate() -> None:
+    """Test the Groundstate benchmark when not on Windows."""
+    assert get_benchmark("groundstate", "alg", None, "small", "qiskit").depth() > 0
 
 
 def test_get_benchmark_faulty_parameters() -> None:
