@@ -6,26 +6,73 @@ import json
 from typing import TYPE_CHECKING, TypedDict, cast
 
 from .calibration import DeviceCalibration, get_device_calibration_path
-from .device import Device
+from .device import Device, Gateset
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def get_iqm_adonis(sanitize_device: bool = False) -> Device:
-    """Get the IQM Adonis device."""
-    dev = import_iqm_device(get_device_calibration_path("iqm_adonis"))
-    if sanitize_device:
-        dev.sanitize_device()
-    return dev
+class IQMDevice(Device):
+    """IQM device."""
+
+    def __init__(self, calibration_path: Path) -> None:
+        """Initialize the device."""
+        with calibration_path.open() as json_file:
+            self.iqm_calibration = cast(IQMCalibration, json.load(json_file))
+        self.calibration = None
+
+        self.name = self.iqm_calibration["name"]
+        self.gateset = Gateset("iqm", self.iqm_calibration["basis_gates"])
+        self.num_qubits = self.iqm_calibration["num_qubits"]
+        self.coupling_map = list(self.iqm_calibration["connectivity"])
+
+    def read_calibration(self) -> None:
+        """Read the calibration data for the device."""
+        calibration = DeviceCalibration()
+        for qubit in range(self.num_qubits):
+            calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
+                ["r"], 1.0 - self.iqm_calibration["error"]["one_q"][str(qubit)]
+            )
+            calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
+                ["r"],
+                self.iqm_calibration["timing"]["one_q"] * 1e-9,  # ns to s
+            )
+            calibration.readout_fidelity[qubit] = 1.0 - self.iqm_calibration["error"]["readout"][str(qubit)]
+            calibration.readout_duration[qubit] = self.iqm_calibration["timing"]["readout"] * 1e-9  # ns to s
+            calibration.t1[qubit] = self.iqm_calibration["timing"]["t1"][str(qubit)] * 1e-9  # ns to s
+            calibration.t2[qubit] = self.iqm_calibration["timing"]["t2"][str(qubit)] * 1e-9  # ns to s
+
+        for qubit1, qubit2 in self.coupling_map:
+            if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity:
+                continue  # Skip reverse direction
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {
+                "cz": 1.0 - self.iqm_calibration["error"]["two_q"][str(qubit1) + "-" + str(qubit2)]
+            }
+            calibration.two_qubit_gate_duration[qubit1, qubit2] = {
+                "cz": self.iqm_calibration["timing"]["two_q"] * 1e-9  # ns to s
+            }
+
+            # Same values for the reverse direction
+            calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
+            calibration.two_qubit_gate_duration[qubit2, qubit1] = calibration.two_qubit_gate_duration[qubit1, qubit2]
+
+        self.calibration = calibration
 
 
-def get_iqm_apollo(sanitize_device: bool = False) -> Device:
-    """Get the IQM Apollo device."""
-    dev = import_iqm_device(get_device_calibration_path("iqm_apollo"))
-    if sanitize_device:
-        dev.sanitize_device()
-    return dev
+class IQMAdonis(IQMDevice):
+    """IQM Adonis device."""
+
+    def __init__(self) -> None:
+        """Initialize the IQM Adonis device."""
+        super().__init__(get_device_calibration_path("iqm_adonis"))
+
+
+class IQMApollo(IQMDevice):
+    """IQM Apollo device."""
+
+    def __init__(self) -> None:
+        """Initialize the IQM Apollo device."""
+        super().__init__(get_device_calibration_path("iqm_apollo"))
 
 
 class Infidelity(TypedDict):
@@ -58,52 +105,3 @@ class IQMCalibration(TypedDict):
     error: Infidelity
     num_qubits: int
     timing: Timing
-
-
-def import_iqm_device(path: Path) -> Device:
-    """Import an iqm backend as a Device object.
-
-    Args:
-        path: the path to the JSON file containing the calibration data.
-
-    Returns: the Device object
-    """
-    with path.open() as json_file:
-        iqm_calibration = cast("IQMCalibration", json.load(json_file))
-
-    device = Device()
-    device.name = iqm_calibration["name"]
-    device.gateset_name = "iqm"
-    device.num_qubits = iqm_calibration["num_qubits"]
-    device.basis_gates = iqm_calibration["basis_gates"]
-    device.coupling_map = list(iqm_calibration["connectivity"])
-    calibration = DeviceCalibration()
-    for qubit in range(device.num_qubits):
-        calibration.single_qubit_gate_fidelity[qubit] = dict.fromkeys(
-            ["r"], 1.0 - iqm_calibration["error"]["one_q"][str(qubit)]
-        )
-        calibration.single_qubit_gate_duration[qubit] = dict.fromkeys(
-            ["r"],
-            iqm_calibration["timing"]["one_q"] * 1e-9,  # ns to s
-        )
-        calibration.readout_fidelity[qubit] = 1.0 - iqm_calibration["error"]["readout"][str(qubit)]
-        calibration.readout_duration[qubit] = iqm_calibration["timing"]["readout"] * 1e-9  # ns to s
-        calibration.t1[qubit] = iqm_calibration["timing"]["t1"][str(qubit)] * 1e-9  # ns to s
-        calibration.t2[qubit] = iqm_calibration["timing"]["t2"][str(qubit)] * 1e-9  # ns to s
-
-    for qubit1, qubit2 in device.coupling_map:
-        if (qubit1, qubit2) in calibration.two_qubit_gate_fidelity:
-            continue  # Skip reverse direction
-        calibration.two_qubit_gate_fidelity[qubit1, qubit2] = {
-            "cz": 1.0 - iqm_calibration["error"]["two_q"][str(qubit1) + "-" + str(qubit2)]
-        }
-        calibration.two_qubit_gate_duration[qubit1, qubit2] = {
-            "cz": iqm_calibration["timing"]["two_q"] * 1e-9  # ns to s
-        }
-
-        # Same values for the reverse direction
-        calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
-        calibration.two_qubit_gate_duration[qubit2, qubit1] = calibration.two_qubit_gate_duration[qubit1, qubit2]
-
-    device.calibration = calibration
-    return device

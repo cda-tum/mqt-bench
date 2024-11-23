@@ -4,21 +4,96 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TypedDict, cast
 
 from .calibration import DeviceCalibration, get_device_calibration_path
-from .device import Device
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from .device import Device, Gateset
 
 
-def get_rigetti_aspen_m3(sanitize_device: bool = False) -> Device:
-    """Get the Rigetti Aspen-3 device."""
-    dev = import_rigetti_device(get_device_calibration_path("rigetti_aspen_m3"))
-    if sanitize_device:
-        dev.sanitize_device()
-    return dev
+class RigettiAspenM3(Device):
+    """Rigetti Aspen M3 device."""
+
+    def __init__(self) -> None:
+        """Initialize the Rigetti Aspen M3 device."""
+        with get_device_calibration_path("rigetti_aspen_m3").open() as json_file:
+            self.rigetti_calibration = cast(RigettiCalibration, json.load(json_file))
+        self.calibration = None
+
+        self.name = self.rigetti_calibration["name"]
+        self.gateset = Gateset("rigetti", self.rigetti_calibration["basis_gates"])
+        self.num_qubits = self.rigetti_calibration["num_qubits"]
+        self.coupling_map = [
+            [from_rigetti_index(a), from_rigetti_index(b)] for a, b in self.rigetti_calibration["connectivity"]
+        ]
+
+    def read_calibration(self) -> None:
+        """Read the calibration data for the device."""
+        calibration = DeviceCalibration()
+        for qubit in range(self.num_qubits):
+            rigetti_index = to_rigetti_index(qubit)
+            calibration.single_qubit_gate_fidelity[qubit] = {
+                gate: self.rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["f1QRB"] for gate in ["rx", "rz"]
+            }
+            calibration.readout_fidelity[qubit] = self.rigetti_calibration["properties"]["1Q"][str(rigetti_index)][
+                "fRO"
+            ]
+            calibration.t1[qubit] = self.rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["T1"]
+            calibration.t2[qubit] = self.rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["T2"]
+
+        # Store the fidelity data of all two-qubit gates for averaging
+        cz_lst, cp_lst, xx_plus_yy_lst = [], [], []
+        msg = (
+            "Rigetti device fidelity data is not available for some two-qubit gates."
+            "The average value of the available gates will be used for the missing ones."
+        )
+        warnings.warn(msg, stacklevel=1)
+
+        for qubit1, qubit2 in self.coupling_map:
+            rigetti_index1 = to_rigetti_index(qubit1)
+            rigetti_index2 = to_rigetti_index(qubit2)
+            if qubit1 > qubit2:  # Rigetti calibration data is symmetric
+                continue  # Reverse edge will be set later
+
+            edge = f"{rigetti_index1}-{rigetti_index2}"
+            fidelity = {}
+            try:  # Collect the fidelity data if available and save in lst for averaging
+                fidelity["cz"] = self.rigetti_calibration["properties"]["2Q"][edge]["fCZ"]
+                cz_lst.append(fidelity["cz"])
+            except KeyError:  # If not available, set to -1 to indicate missing
+                fidelity["cz"] = -1.0
+            try:
+                fidelity["cp"] = self.rigetti_calibration["properties"]["2Q"][edge]["fCPHASE"]
+                cp_lst.append(fidelity["cp"])
+            except KeyError:
+                fidelity["cp"] = -1.0
+            try:
+                fidelity["xx_plus_yy"] = self.rigetti_calibration["properties"]["2Q"][edge]["fXY"]
+                xx_plus_yy_lst.append(fidelity["xx_plus_yy"])
+            except KeyError:
+                fidelity["xx_plus_yy"] = -1.0
+
+            # Save the fidelity data for the two-qubit gate
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = fidelity
+
+        # If there are missing values, use the average
+        cz_avg = sum(cz_lst) / len(cz_lst)
+        cp_avg = sum(cp_lst) / len(cp_lst)
+        xx_plus_yy_avg = sum(xx_plus_yy_lst) / len(xx_plus_yy_lst)
+
+        for qubit1, qubit2 in self.coupling_map:
+            if qubit1 > qubit2:
+                continue
+            # Check if the fidelity data is missing (== -1) and set to average if so
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] = cz_avg
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] = cp_avg
+            if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] < 0:
+                calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] = xx_plus_yy_avg
+
+            # Rigetti calibration data is symmetric, set same values for reverse edge
+            calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
+        self.calibration = calibration
 
 
 class QubitProperties(TypedDict):
@@ -103,92 +178,3 @@ def to_rigetti_index(index: int) -> int:
     column = (index % (ring_size * columns)) // ring_size
     ring = (index % (ring_size * columns)) % ring_size
     return row * 100 + column * 10 + ring
-
-
-def import_rigetti_device(path: Path) -> Device:
-    """Import a Rigetti backend.
-
-    Arguments:
-        path: the path to the JSON file containing the calibration data.
-
-    Returns:
-        the Device object
-    """
-    with path.open() as json_file:
-        rigetti_calibration = cast("RigettiCalibration", json.load(json_file))
-
-    device = Device()
-    device.name = rigetti_calibration["name"]
-    device.gateset_name = "rigetti"
-    device.num_qubits = rigetti_calibration["num_qubits"]
-    device.basis_gates = rigetti_calibration["basis_gates"]
-
-    device.coupling_map = [
-        [from_rigetti_index(a), from_rigetti_index(b)] for a, b in rigetti_calibration["connectivity"]
-    ]
-
-    calibration = DeviceCalibration()
-    for qubit in range(device.num_qubits):
-        rigetti_index = to_rigetti_index(qubit)
-        calibration.single_qubit_gate_fidelity[qubit] = {
-            gate: rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["f1QRB"] for gate in ["rx", "rz"]
-        }
-        calibration.readout_fidelity[qubit] = rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["fRO"]
-        calibration.t1[qubit] = rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["T1"]
-        calibration.t2[qubit] = rigetti_calibration["properties"]["1Q"][str(rigetti_index)]["T2"]
-
-    # Store the fidelity data of all two-qubit gates for averaging
-    cz_lst, cp_lst, xx_plus_yy_lst = [], [], []
-    msg = (
-        "Rigetti device fidelity data is not available for some two-qubit gates."
-        "The average value of the available gates will be used for the missing ones."
-    )
-    warnings.warn(msg, stacklevel=1)
-
-    for qubit1, qubit2 in device.coupling_map:
-        rigetti_index1 = to_rigetti_index(qubit1)
-        rigetti_index2 = to_rigetti_index(qubit2)
-        if qubit1 > qubit2:  # Rigetti calibration data is symmetric
-            continue  # Reverse edge will be set later
-
-        edge = f"{rigetti_index1}-{rigetti_index2}"
-        fidelity = {}
-        try:  # Collect the fidelity data if available and save in lst for averaging
-            fidelity["cz"] = rigetti_calibration["properties"]["2Q"][edge]["fCZ"]
-            cz_lst.append(fidelity["cz"])
-        except KeyError:  # If not available, set to -1 to indicate missing
-            fidelity["cz"] = -1.0
-        try:
-            fidelity["cp"] = rigetti_calibration["properties"]["2Q"][edge]["fCPHASE"]
-            cp_lst.append(fidelity["cp"])
-        except KeyError:
-            fidelity["cp"] = -1.0
-        try:
-            fidelity["xx_plus_yy"] = rigetti_calibration["properties"]["2Q"][edge]["fXY"]
-            xx_plus_yy_lst.append(fidelity["xx_plus_yy"])
-        except KeyError:
-            fidelity["xx_plus_yy"] = -1.0
-
-        # Save the fidelity data for the two-qubit gate
-        calibration.two_qubit_gate_fidelity[qubit1, qubit2] = fidelity
-
-    # If there are missing values, use the average
-    cz_avg = sum(cz_lst) / len(cz_lst)
-    cp_avg = sum(cp_lst) / len(cp_lst)
-    xx_plus_yy_avg = sum(xx_plus_yy_lst) / len(xx_plus_yy_lst)
-
-    for qubit1, qubit2 in device.coupling_map:
-        if qubit1 > qubit2:
-            continue
-        # Check if the fidelity data is missing (== -1) and set to average if so
-        if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] < 0:
-            calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cz"] = cz_avg
-        if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] < 0:
-            calibration.two_qubit_gate_fidelity[qubit1, qubit2]["cp"] = cp_avg
-        if calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] < 0:
-            calibration.two_qubit_gate_fidelity[qubit1, qubit2]["xx_plus_yy"] = xx_plus_yy_avg
-
-        # Rigetti calibration data is symmetric, set same values for reverse edge
-        calibration.two_qubit_gate_fidelity[qubit2, qubit1] = calibration.two_qubit_gate_fidelity[qubit1, qubit2]
-    device.calibration = calibration
-    return device

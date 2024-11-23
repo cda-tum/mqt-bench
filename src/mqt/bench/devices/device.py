@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from .calibration import DeviceCalibration
 
 
@@ -20,32 +19,26 @@ class Gateset:
 
 
 @dataclass
-class NoCalibrationDevice:
-    """A class to represent a quantum device before reading the calibration data."""
-
-    name: str
-    gateset: Gateset
-    constructor: Callable[[bool], Device]
-
-
-@dataclass
-class Device:
+class Device(ABC):
     """A class to represent a (generic) quantum device.
 
     Attributes:
         name: name of the device
         num_qubits: number of qubits
-        basis_gates: list of basis gates supported by the device
+        gateset: list of basis gates supported by the device
         coupling_map: coupling map of the device's qubits
         calibration: calibration information for the device
     """
 
     name: str = ""
-    gateset_name: str = ""
+    gateset: Gateset = field(default_factory=Gateset)  # type: ignore[arg-type]
     num_qubits: int = 0
-    basis_gates: list[str] = field(default_factory=list)
     coupling_map: list[list[int]] = field(default_factory=list)
     calibration: DeviceCalibration | None = None
+
+    @abstractmethod
+    def read_calibration(self) -> None:
+        """Read the calibration data for the device."""
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit fidelity for a given gate type and qubit.
@@ -55,10 +48,11 @@ class Device:
         qubit: index of the qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()  #
 
-        if gate_type not in self.basis_gates:
+        assert self.calibration is not None
+
+        if gate_type not in self.gateset.gates:
             msg = f"Gate {gate_type} not supported by device {self.name}."
             raise ValueError(msg)
 
@@ -72,10 +66,10 @@ class Device:
         qubit: index of the qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
-        if gate_type not in self.basis_gates:
+        if gate_type not in self.gateset.gates:
             msg = f"Gate {gate_type} not supported by device {self.name}."
             raise ValueError(msg)
 
@@ -90,10 +84,10 @@ class Device:
         qubit2: index of the second qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
-        if gate_type not in self.basis_gates:
+        if gate_type not in self.gateset.gates:
             msg = f"Gate {gate_type} not supported by device {self.name}."
             raise ValueError(msg)
 
@@ -108,10 +102,10 @@ class Device:
         qubit2: index of the second qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
-        if gate_type not in self.basis_gates:
+        if gate_type not in self.gateset.gates:
             msg = f"Gate {gate_type} not supported by device {self.name}."
             raise ValueError(msg)
 
@@ -124,8 +118,8 @@ class Device:
         qubit: index of the qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
         return self.calibration.get_readout_fidelity(qubit)
 
@@ -136,8 +130,8 @@ class Device:
         qubit: index of the qubit
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
         return self.calibration.get_readout_duration(qubit)
 
@@ -147,6 +141,8 @@ class Device:
         Returns:
         list of single-qubit gates
         """
+        if self.calibration is None:
+            self.read_calibration()
         assert self.calibration is not None
         return {gate for qubit in range(self.num_qubits) for gate in self.calibration.single_qubit_gate_fidelity[qubit]}
 
@@ -156,6 +152,8 @@ class Device:
         Returns:
         list of two-qubit gates
         """
+        if self.calibration is None:
+            self.read_calibration()
         assert self.calibration is not None
         return {
             gate
@@ -175,8 +173,8 @@ class Device:
         This is accomplished by substituting the missing fidelity data with the average fidelity for the gate.
         """
         if self.calibration is None:
-            msg = f"Calibration data not available for device {self.name}."
-            raise ValueError(msg)
+            self.read_calibration()
+        assert self.calibration is not None
 
         # ensure that all single-qubit gates have fidelity data for all qubits in the coupling map
         for gate in self.get_single_qubit_gates():

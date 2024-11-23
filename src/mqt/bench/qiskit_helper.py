@@ -227,7 +227,7 @@ def get_mapped_level(
     compiled_with_architecture = transpile(
         qc,
         optimization_level=opt_level,
-        basis_gates=device.basis_gates,
+        basis_gates=device.gateset.gates,
         coupling_map=c_map,
         seed_transpiler=10,
     )
@@ -236,7 +236,7 @@ def get_mapped_level(
     return save_as_qasm(
         dumps2(compiled_with_architecture),
         filename_mapped,
-        device.basis_gates,
+        device.gateset.gates,
         True,
         c_map,
         target_directory,

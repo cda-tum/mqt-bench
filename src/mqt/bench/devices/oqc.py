@@ -3,21 +3,43 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TypedDict, cast
 
 from .calibration import DeviceCalibration, get_device_calibration_path
-from .device import Device
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from .device import Device, Gateset
 
 
-def get_oqc_lucy(sanitize_device: bool = False) -> Device:
-    """Get the OQC Lucy device."""
-    dev = import_oqc_device(get_device_calibration_path("oqc_lucy"))
-    if sanitize_device:
-        dev.sanitize_device()
-    return dev
+class OQCLucy(Device):
+    """OQC Lucy device."""
+
+    def __init__(self) -> None:
+        """Initialize the device."""
+        with get_device_calibration_path("oqc_lucy").open() as json_file:
+            self.oqc_calibration = cast(OQCCalibration, json.load(json_file))
+        self.calibration = None
+
+        self.name = self.oqc_calibration["name"]
+        self.gateset = Gateset("oqc", self.oqc_calibration["basis_gates"])
+        self.num_qubits = self.oqc_calibration["num_qubits"]
+        self.coupling_map = list(self.oqc_calibration["connectivity"])
+
+    def read_calibration(self) -> None:
+        """Read the calibration data for the device."""
+        calibration = DeviceCalibration()
+        for qubit in range(self.num_qubits):
+            calibration.single_qubit_gate_fidelity[qubit] = {
+                gate: self.oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRB"] for gate in ["rz", "sx", "x"]
+            }
+            calibration.readout_fidelity[qubit] = self.oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRO"]
+            # data in microseconds, convert to SI unit (seconds)
+            calibration.t1[qubit] = self.oqc_calibration["properties"]["one_qubit"][str(qubit)]["T1"] * 1e-6
+            calibration.t2[qubit] = self.oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"] * 1e-6
+
+        for qubit1, qubit2 in self.coupling_map:
+            calibration.two_qubit_gate_fidelity[qubit1, qubit2] = dict.fromkeys(
+                ["ecr"], self.oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fECR"]
+            )
+        self.calibration = calibration
 
 
 class QubitProperties(TypedDict):
@@ -59,40 +81,3 @@ class OQCCalibration(TypedDict):
     num_qubits: int
     connectivity: list[list[int]]
     properties: Properties
-
-
-def import_oqc_device(path: Path) -> Device:
-    """Import an OQC backend.
-
-    Arguments:
-        path: the path to the JSON file containing the calibration data.
-
-    Returns:
-        the Device object
-    """
-    with path.open() as json_file:
-        oqc_calibration = cast("OQCCalibration", json.load(json_file))
-
-    device = Device()
-    device.name = oqc_calibration["name"]
-    device.gateset_name = "oqc"
-    device.num_qubits = oqc_calibration["num_qubits"]
-    device.basis_gates = oqc_calibration["basis_gates"]
-    device.coupling_map = list(oqc_calibration["connectivity"])
-
-    calibration = DeviceCalibration()
-    for qubit in range(device.num_qubits):
-        calibration.single_qubit_gate_fidelity[qubit] = {
-            gate: oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRB"] for gate in ["rz", "sx", "x"]
-        }
-        calibration.readout_fidelity[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["fRO"]
-        # data in microseconds, convert to SI unit (seconds)
-        calibration.t1[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T1"] * 1e-6
-        calibration.t2[qubit] = oqc_calibration["properties"]["one_qubit"][str(qubit)]["T2"] * 1e-6
-
-    for qubit1, qubit2 in device.coupling_map:
-        calibration.two_qubit_gate_fidelity[qubit1, qubit2] = dict.fromkeys(
-            ["ecr"], oqc_calibration["properties"]["two_qubit"][f"{qubit1}-{qubit2}"]["fECR"]
-        )
-    device.calibration = calibration
-    return device
