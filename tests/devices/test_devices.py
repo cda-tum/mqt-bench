@@ -13,6 +13,7 @@ from mqt.bench.devices import (
     get_device_by_name,
     get_native_gateset_by_name,
 )
+from mqt.bench.devices.calibration import get_device_calibration_path
 from mqt.bench.devices.ionq import DeviceCalibration, IonQHarmony
 
 
@@ -146,3 +147,9 @@ def test_device_calibration_errors() -> None:
         device.calibration.compute_average_readout_fidelity()
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.calibration.compute_average_readout_duration()
+
+
+def test_get_device_calibration_path() -> None:
+    """Test if the correct error message is shown if the calibration file does not exist."""
+    with pytest.raises(FileNotFoundError, match="Calibration file not found"):
+        get_device_calibration_path("wrong_path")
