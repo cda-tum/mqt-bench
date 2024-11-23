@@ -8,6 +8,7 @@ import pytest
 
 from mqt.bench.devices import (
     Device,
+    IBMWashington,
     get_available_devices,
     get_device_by_name,
     get_native_gateset_by_name,
@@ -43,25 +44,49 @@ def test_unsupported_device() -> None:
         get_native_gateset_by_name("unsupported")
 
 
-def test_device_calibration_errors() -> None:
+def test_device_calibration_autoread() -> None:
     """Test that all device calibration methods raise errors when no calibration data is available."""
-    device = IonQHarmony()
+    device = IBMWashington()
     qubit1, qubit2 = 0, 1
-    gate1 = "rx"
-    gate2 = "rxx"
+    gate1 = "x"
+    gate2 = "cx"
+    wrong_gate = "wrong"
+    wrong_qubit = -1
 
-    # Test all methods with missing calibration data
+    # Test all methods with missing calibration data and therefore autoread
     assert 0 <= device.get_single_qubit_gate_fidelity(gate1, qubit1) <= 1
+    with pytest.raises(
+        ValueError, match=f"Single-qubit fidelity for gate {wrong_gate} and qubit {wrong_qubit} not available."
+    ):
+        device.calibration.get_single_qubit_gate_fidelity(wrong_gate, wrong_qubit)
     device.calibration = None
     device.get_single_qubit_gate_duration(gate1, qubit1)
+    with pytest.raises(
+        ValueError, match=f"Single-qubit duration for gate {wrong_gate} and qubit {wrong_qubit} not available."
+    ):
+        device.calibration.get_single_qubit_gate_duration(wrong_gate, wrong_qubit)
     device.calibration = None
     device.get_two_qubit_gate_fidelity(gate2, qubit1, qubit2)
+    with pytest.raises(
+        ValueError,
+        match=f"Two-qubit fidelity for gate {wrong_gate} and qubits {wrong_qubit} and {wrong_qubit} not available.",
+    ):
+        device.calibration.get_two_qubit_gate_fidelity(wrong_gate, wrong_qubit, wrong_qubit)
     device.calibration = None
     device.get_two_qubit_gate_duration(gate2, qubit1, qubit2)
+    with pytest.raises(
+        ValueError,
+        match=f"Two-qubit duration for gate {wrong_gate} and qubits {wrong_qubit} and {wrong_qubit} not available.",
+    ):
+        device.calibration.get_two_qubit_gate_duration(wrong_gate, wrong_qubit, wrong_qubit)
     device.calibration = None
     device.get_readout_fidelity(qubit1)
+    with pytest.raises(ValueError, match=f"Readout fidelity for qubit {wrong_qubit} not available."):
+        device.calibration.get_readout_fidelity(wrong_qubit)
     device.calibration = None
     device.get_readout_duration(qubit1)
+    with pytest.raises(ValueError, match=f"Readout duration for qubit {wrong_qubit} not available."):
+        device.calibration.get_readout_duration(wrong_qubit)
     device.calibration = None
     device.sanitize_device()
     device.calibration = None
@@ -71,8 +96,13 @@ def test_device_calibration_errors() -> None:
     for gate in device.get_two_qubit_gates():
         assert gate in device.gateset.gates
 
+    with pytest.raises(ValueError, match=f"T1 for qubit {wrong_qubit} not available."):
+        device.calibration.get_t1(wrong_qubit)
+    with pytest.raises(ValueError, match=f"T2 for qubit {wrong_qubit} not available."):
+        device.calibration.get_t2(wrong_qubit)
 
-def test_device_calibration_autoread() -> None:
+
+def test_device_calibration_errors() -> None:
     """Test that all device calibration methods raise errors when no calibration data is available."""
     device = IonQHarmony()
     device.calibration = DeviceCalibration()
