@@ -37,7 +37,7 @@ def get_available_device_names() -> list[str]:
     return [device.name for device in get_available_devices()]
 
 
-def get_device_by_name(device_name: str, sanitize_device: bool = False) -> Device:
+def get_device_by_name(device_name: str) -> Device:
     """Get a device by its name.
 
     Arguments:
@@ -46,8 +46,6 @@ def get_device_by_name(device_name: str, sanitize_device: bool = False) -> Devic
     """
     for device in get_available_devices():
         if device.name == device_name:
-            if sanitize_device:
-                device.sanitize_device()
             return device
 
     msg = f"Device {device_name} not found in available devices."
