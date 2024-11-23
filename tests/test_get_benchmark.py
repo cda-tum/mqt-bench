@@ -9,11 +9,10 @@ import pytket
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 
-from mqt.bench import utils
+from mqt.bench import get_benchmark, utils
 from mqt.bench.benchmark_generator import (
     CompilerSettings,
     QiskitSettings,
-    get_benchmark,
     qiskit_helper,
     tket_helper,
 )
@@ -376,3 +375,28 @@ def test_calc_supermarq_features() -> None:
     assert 0 < regular_features.critical_depth < 1
     assert 0 < regular_features.program_communication < 1
     assert 0 < regular_features.liveness < 1
+
+
+def test_clifford_t() -> None:
+    """Test the Clifford+T gateset."""
+    qc = get_benchmark(
+        benchmark_name="ghz",
+        level="nativegates",
+        circuit_size=3,
+        compiler="qiskit",
+        gateset="clifford+t",
+    )
+
+    for gate_type in qc.count_ops():
+        assert gate_type in get_native_gateset_by_name("clifford+t").gates or gate_type in {"measure", "barrier"}
+
+    with pytest.raises(
+        ValueError, match=r"The gateset 'clifford\+t' is not supported by TKET. Please use Qiskit instead."
+    ):
+        get_benchmark(
+            benchmark_name="ghz",
+            level="nativegates",
+            circuit_size=3,
+            compiler="tket",
+            gateset="clifford+t",
+        )
