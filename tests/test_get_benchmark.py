@@ -41,6 +41,7 @@ from mqt.bench.devices import (
         ("shor", "alg", None, "xsmall", "qiskit", None, "", ""),
         ("grover-noancilla", "alg", 3, None, "qiskit", None, "", ""),
         ("qwalk-v-chain", "alg", 3, None, "qiskit", None, "", ""),
+        ("groundstate", "alg", None, "small", "qiskit", None, "", ""),
         # Independent level tests
         ("ghz", "indep", 3, None, "qiskit", None, "", ""),
         ("graphstate", 1, 3, None, "qiskit", None, "", ""),

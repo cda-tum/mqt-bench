@@ -379,9 +379,6 @@ def get_benchmark(
             anc_mode = "noancilla"
         elif "v-chain" in benchmark_name:
             anc_mode = "v-chain"
-        else:
-            msg = "Either `noancilla` or `v-chain` must be specified for ancillary mode of Grover and QWalk benchmarks."
-            raise ValueError(msg)
 
         qc = lib.create_circuit(circuit_size, ancillary_mode=anc_mode)
 
@@ -455,9 +452,7 @@ def get_benchmark(
                 False,
                 True,
             )
-
-    msg = f"Invalid level specified. Must be in {get_supported_levels()}."
-    raise ValueError(msg)
+    return None
 
 
 def generate(num_jobs: int = -1) -> None:

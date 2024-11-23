@@ -48,7 +48,7 @@ class Device(ABC):
         qubit: index of the qubit
         """
         if self.calibration is None:
-            self.read_calibration()  #
+            self.read_calibration()
 
         assert self.calibration is not None
 

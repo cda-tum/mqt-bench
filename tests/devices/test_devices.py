@@ -12,6 +12,7 @@ from mqt.bench.devices import (
     get_device_by_name,
     get_native_gateset_by_name,
 )
+from mqt.bench.devices.ionq import DeviceCalibration, IonQHarmony
 
 
 @pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast(str, device.name))
@@ -40,3 +41,78 @@ def test_unsupported_device() -> None:
         get_device_by_name("unsupported")
     with pytest.raises(ValueError, match="Gateset unsupported not found in available gatesets."):
         get_native_gateset_by_name("unsupported")
+
+
+def test_device_calibration_errors() -> None:
+    """Test that all device calibration methods raise errors when no calibration data is available."""
+    device = IonQHarmony()
+    qubit1, qubit2 = 0, 1
+    gate1 = "rx"
+    gate2 = "rxx"
+
+    # Test all methods with missing calibration data
+    assert 0 <= device.get_single_qubit_gate_fidelity(gate1, qubit1) <= 1
+    device.calibration = None
+    device.get_single_qubit_gate_duration(gate1, qubit1)
+    device.calibration = None
+    device.get_two_qubit_gate_fidelity(gate2, qubit1, qubit2)
+    device.calibration = None
+    device.get_two_qubit_gate_duration(gate2, qubit1, qubit2)
+    device.calibration = None
+    device.get_readout_fidelity(qubit1)
+    device.calibration = None
+    device.get_readout_duration(qubit1)
+    device.calibration = None
+    device.sanitize_device()
+    device.calibration = None
+    for gate in device.get_single_qubit_gates():
+        assert gate in device.gateset.gates
+    device.calibration = None
+    for gate in device.get_two_qubit_gates():
+        assert gate in device.gateset.gates
+
+
+def test_device_calibration_autoread() -> None:
+    """Test that all device calibration methods raise errors when no calibration data is available."""
+    device = IonQHarmony()
+    device.calibration = DeviceCalibration()
+    qubit1, qubit2 = -1, -2
+    gate = "wrong"
+
+    # Test all methods with missing calibration data
+    with pytest.raises(ValueError, match="Gate wrong not supported by device ionq_harmony."):
+        device.get_single_qubit_gate_fidelity(gate, qubit1)
+    with pytest.raises(ValueError, match="Gate wrong not supported by device ionq_harmony."):
+        device.get_single_qubit_gate_duration(gate, qubit1)
+    with pytest.raises(ValueError, match="Gate wrong not supported by device ionq_harmony."):
+        device.get_two_qubit_gate_fidelity(gate, qubit1, qubit2)
+    with pytest.raises(ValueError, match="Gate wrong not supported by device ionq_harmony."):
+        device.get_two_qubit_gate_duration(gate, qubit1, qubit2)
+    with pytest.raises(ValueError, match="Readout fidelity values not available."):
+        device.get_readout_fidelity(qubit1)
+    with pytest.raises(ValueError, match="Readout duration values not available."):
+        device.get_readout_duration(qubit1)
+    with pytest.raises(ValueError, match="Single-qubit gate fidelity values not available."):
+        device.calibration.get_single_qubit_gate_fidelity(gate, qubit1)
+    with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+        device.calibration.get_single_qubit_gate_duration(gate, qubit1)
+    with pytest.raises(ValueError, match="Two-qubit gate fidelity values not available."):
+        device.calibration.get_two_qubit_gate_fidelity(gate, qubit1, qubit2)
+    with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
+        device.calibration.get_two_qubit_gate_duration(gate, qubit1, qubit2)
+    with pytest.raises(ValueError, match="T1 values not available."):
+        device.calibration.get_t1(qubit1)
+    with pytest.raises(ValueError, match="T2 values not available."):
+        device.calibration.get_t2(qubit1)
+    with pytest.raises(ValueError, match="Single-qubit gate fidelity values not available."):
+        device.calibration.compute_average_single_qubit_gate_fidelity(gate)
+    with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+        device.calibration.compute_average_single_qubit_gate_duration(gate)
+    with pytest.raises(ValueError, match="Two-qubit gate fidelity values not available."):
+        device.calibration.compute_average_two_qubit_gate_fidelity(gate)
+    with pytest.raises(ValueError, match="Two-qubit gate duration values not available."):
+        device.calibration.compute_average_two_qubit_gate_duration(gate)
+    with pytest.raises(ValueError, match="Readout fidelity values not available."):
+        device.calibration.compute_average_readout_fidelity()
+    with pytest.raises(ValueError, match="Readout duration values not available."):
+        device.calibration.compute_average_readout_duration()
