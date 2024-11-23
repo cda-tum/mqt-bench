@@ -289,7 +289,7 @@ def get_mapped_level(
     diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
     qc_tket.add_blank_wires(diff)
 
-    native_gateset_rebase = get_rebase(device.basis_gates)
+    native_gateset_rebase = get_rebase(device.gateset.gates)
     native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
     placer = LinePlacement(arch)
@@ -306,7 +306,7 @@ def get_mapped_level(
     return save_as_qasm(
         circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
         filename_mapped,
-        device.basis_gates,
+        device.gateset.gates,
         True,
         cmap,
         target_directory,

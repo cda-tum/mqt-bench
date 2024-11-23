@@ -165,21 +165,20 @@ class BenchmarkGenerator:
     ) -> None:
         """Generate mapped level benchmarks for a given benchmark."""
         for device in get_available_devices():
-            calibrated_device = device.constructor(False)
             for opt_level in [0, 1, 2, 3]:
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                     if not qc:
                         break
                     assert isinstance(qc, QuantumCircuit)
-                    if qc.num_qubits <= calibrated_device.num_qubits:
+                    if qc.num_qubits <= device.num_qubits:
                         res = timeout_watcher(
                             qiskit_helper.get_mapped_level,
                             self.timeout,
                             [
                                 qc,
                                 qc.num_qubits,
-                                calibrated_device,
+                                device,
                                 opt_level,
                                 file_precheck,
                                 False,
@@ -196,14 +195,14 @@ class BenchmarkGenerator:
                 if not qc:
                     break
                 assert isinstance(qc, QuantumCircuit)
-                if qc.num_qubits <= calibrated_device.num_qubits:
+                if qc.num_qubits <= device.num_qubits:
                     res = timeout_watcher(
                         tket_helper.get_mapped_level,
                         self.timeout,
                         [
                             qc,
                             qc.num_qubits,
-                            calibrated_device,
+                            device,
                             file_precheck,
                             False,
                             self.qasm_output_path,
