@@ -7,7 +7,7 @@ See README.md or go to https://github.com/cda-tum/mqt-bench for more information
 from __future__ import annotations
 
 from .calibration import DeviceCalibration
-from .device import Device, NoCalibrationDevice
+from .device import Device, Gateset, NoCalibrationDevice
 from .ibm import get_ibm_montreal, get_ibm_torino, get_ibm_washington
 from .ionq import get_ionq_aria1, get_ionq_harmony
 from .iqm import get_iqm_adonis, get_iqm_apollo
@@ -20,32 +20,38 @@ def get_available_devices() -> list[NoCalibrationDevice]:
     """Get a list of all available devices."""
     return [
         NoCalibrationDevice(
-            "ibm_montreal", "ibm_falcon", ["delay", "measure", "reset", "x", "rz", "sx", "cx", "id"], get_ibm_montreal
+            "ibm_montreal",
+            Gateset("ibm_falcon", ["delay", "measure", "reset", "x", "rz", "sx", "cx", "id"]),
+            get_ibm_montreal,
         ),
         NoCalibrationDevice(
             "ibm_washington",
-            "ibm_falcon",
-            ["cx", "rz", "measure", "delay", "x", "reset", "sx", "id"],
+            Gateset("ibm_falcon", ["cx", "rz", "measure", "delay", "x", "reset", "sx", "id"]),
             get_ibm_washington,
         ),
         NoCalibrationDevice(
             "ibm_torino",
-            "ibm_heron_r1",
-            ["cz", "id", "delay", "measure", "reset", "rz", "sx", "x", "if_else", "for_loop", "switch_case"],
+            Gateset(
+                "ibm_heron_r1",
+                ["cz", "id", "delay", "measure", "reset", "rz", "sx", "x", "if_else", "for_loop", "switch_case"],
+            ),
             get_ibm_torino,
         ),
-        NoCalibrationDevice("ionq_aria1", "ionq", ["rxx", "rz", "ry", "rx", "measure", "barrier"], get_ionq_aria1),
-        NoCalibrationDevice("ionq_harmony", "ionq", ["rxx", "rz", "ry", "rx", "measure", "barrier"], get_ionq_harmony),
-        NoCalibrationDevice("iqm_adonis", "iqm", ["r", "cz", "measure", "barrier"], get_iqm_adonis),
-        NoCalibrationDevice("iqm_apollo", "iqm", ["r", "cz", "measure", "barrier"], get_iqm_apollo),
-        NoCalibrationDevice("oqc_lucy", "oqc", ["rz", "sx", "x", "ecr", "measure", "barrier"], get_oqc_lucy),
         NoCalibrationDevice(
-            "quantinuum_h2", "quantinuum", ["rzz", "rz", "ry", "rx", "measure", "barrier"], get_quantinuum_h2
+            "ionq_aria1", Gateset("ionq", ["rxx", "rz", "ry", "rx", "measure", "barrier"]), get_ionq_aria1
+        ),
+        NoCalibrationDevice(
+            "ionq_harmony", Gateset("ionq", ["rxx", "rz", "ry", "rx", "measure", "barrier"]), get_ionq_harmony
+        ),
+        NoCalibrationDevice("iqm_adonis", Gateset("iqm", ["r", "cz", "measure", "barrier"]), get_iqm_adonis),
+        NoCalibrationDevice("iqm_apollo", Gateset("iqm", ["r", "cz", "measure", "barrier"]), get_iqm_apollo),
+        NoCalibrationDevice("oqc_lucy", Gateset("oqc", ["rz", "sx", "x", "ecr", "measure", "barrier"]), get_oqc_lucy),
+        NoCalibrationDevice(
+            "quantinuum_h2", Gateset("quantinuum", ["rzz", "rz", "ry", "rx", "measure", "barrier"]), get_quantinuum_h2
         ),
         NoCalibrationDevice(
             "rigetti_aspen_m3",
-            "rigetti",
-            ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"],
+            Gateset("rigetti", ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]),
             get_rigetti_aspen_m3,
         ),
     ]
@@ -74,30 +80,33 @@ def get_device_by_name(device_name: str, sanitize_device: bool = False) -> Devic
 __all__ = [
     "Device",
     "DeviceCalibration",
+    "Gateset",
     "get_available_device_names",
     "get_available_devices",
     "get_device_by_name",
 ]
 
 
-def get_available_native_gatesets() -> list[tuple[str, list[str]]]:
+def get_available_native_gatesets() -> list[Gateset]:
     """Get a list of all available native gatesets."""
-    available_gatesets = [(device.gateset_name, device.gateset) for device in get_available_devices()]
-    available_gatesets.append((
-        "clifford+t",
-        ["s", "sdg", "t", "tdg", "z", "h", "cx"],
-    ))
+    available_gatesets = [device.gateset for device in get_available_devices()]
+    available_gatesets.append(
+        Gateset(
+            "clifford+t",
+            ["s", "sdg", "t", "tdg", "z", "h", "cx"],
+        )
+    )
     return available_gatesets
 
 
-def get_native_gateset_by_name(gateset_name: str) -> tuple[str, list[str]]:
+def get_native_gateset_by_name(desired_gateset_name: str) -> Gateset:
     """Get a native gateset by its name.
 
     Arguments:
-        gateset_name: the name of the gateset
+        desired_gateset_name: the name of the gateset
     """
-    for tmp_name, tmp_gateset in get_available_native_gatesets():
-        if tmp_name == gateset_name:
-            return tmp_name, tmp_gateset
-    msg = f"Gateset {gateset_name} not found in available gatesets."
+    for gateset in get_available_native_gatesets():
+        if gateset.gateset_name == desired_gateset_name:
+            return gateset
+    msg = f"Gateset {desired_gateset_name} not found in available gatesets."
     raise ValueError(msg)

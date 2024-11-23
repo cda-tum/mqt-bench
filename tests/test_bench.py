@@ -161,6 +161,7 @@ def test_quantumcircuit_indep_level(
 
 
 def test_native_gates_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) -> None:
+    """Test the native gates level for the Qiskit compiler."""
     native_gatesets = get_available_native_gatesets()
     for gateset in native_gatesets:
         opt_level = 0
@@ -187,8 +188,9 @@ def test_native_gates_level_qiskit(quantum_circuit: QuantumCircuit, output_path:
 
 
 def test_native_gates_level_tket(quantum_circuit: QuantumCircuit, output_path: str) -> None:
+    """Test the native gates level for the TKET compiler."""
     for gateset in get_available_native_gatesets():
-        if gateset[0] != "clifford+t":
+        if gateset.gateset_name != "clifford+t":
             res = tket_helper.get_native_gates_level(
                 quantum_circuit,
                 gateset,
@@ -222,6 +224,7 @@ def test_native_gates_level_tket(quantum_circuit: QuantumCircuit, output_path: s
 
 
 def test_mapped_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) -> None:
+    """Test the mapped level for the Qiskit compiler."""
     for device in get_available_devices():
         calibrated_device = device.constructor()
         if calibrated_device.num_qubits >= quantum_circuit.num_qubits:
@@ -248,6 +251,7 @@ def test_mapped_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) 
 
 
 def test_mapped_level_tket(quantum_circuit: QuantumCircuit, output_path: str) -> None:
+    """Test the mapped level for the TKET compiler."""
     for device in get_available_devices():
         calibrated_device = device.constructor()
         if calibrated_device.num_qubits >= quantum_circuit.num_qubits:
@@ -297,7 +301,7 @@ def test_unidirectional_coupling_map() -> None:
         level="mapped",
         circuit_size=3,
         compiler="tket",
-        gateset_name="oqc",
+        gateset="oqc",
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
@@ -529,8 +533,8 @@ def test_get_benchmark(
         for qc_instruction in qc.data:
             instruction = qc_instruction.operation
             gate_type = instruction.name
-            _, gateset = get_native_gateset_by_name(gateset_name)
-            assert gate_type in gateset or gate_type == "barrier"
+            gateset = get_native_gateset_by_name(gateset_name)
+            assert gate_type in gateset.gates or gate_type == "barrier"
 
 
 def test_get_benchmark_faulty_parameters() -> None:
