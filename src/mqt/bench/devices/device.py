@@ -39,7 +39,6 @@ class Device(ABC):
     @abstractmethod
     def read_calibration(self) -> None:
         """Read the calibration data for the device."""
-        ...
 
     def get_single_qubit_gate_fidelity(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit fidelity for a given gate type and qubit.
