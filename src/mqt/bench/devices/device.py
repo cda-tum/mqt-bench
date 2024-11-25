@@ -25,7 +25,7 @@ class Device(ABC):
     Attributes:
         name: name of the device
         num_qubits: number of qubits
-        gateset: list of basis gates supported by the device
+        gateset: gateset of the device
         coupling_map: coupling map of the device's qubits
         calibration: calibration information for the device
     """

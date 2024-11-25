@@ -13,7 +13,7 @@ class QuantinuumH2(Device):
     """Quantinuum H2 device."""
 
     def __init__(self) -> None:
-        """Initialize the device."""
+        """Initialize the Quantinuum device."""
         with get_device_calibration_path("quantinuum_h2").open() as json_file:
             self.quantinuum_calibration = cast(QuantinuumCalibration, json.load(json_file))
         self.calibration = None

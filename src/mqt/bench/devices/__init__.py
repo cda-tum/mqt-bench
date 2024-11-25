@@ -42,7 +42,6 @@ def get_device_by_name(device_name: str) -> Device:
 
     Arguments:
         device_name: the name of the device
-        sanitize_device: whether to sanitize the device's calibration data
     """
     for device in get_available_devices():
         if device.name == device_name:
@@ -64,7 +63,10 @@ __all__ = [
 
 def get_available_native_gatesets() -> list[Gateset]:
     """Get a list of all available native gatesets."""
-    available_gatesets = [device.gateset for device in get_available_devices()]
+    available_gatesets = []
+    for device in get_available_devices():
+        if device.gateset not in available_gatesets:
+            available_gatesets.append(device.gateset)
     available_gatesets.append(
         Gateset(
             "clifford+t",
@@ -74,14 +76,14 @@ def get_available_native_gatesets() -> list[Gateset]:
     return available_gatesets
 
 
-def get_native_gateset_by_name(desired_gateset_name: str) -> Gateset:
+def get_native_gateset_by_name(gateset_name: str) -> Gateset:
     """Get a native gateset by its name.
 
     Arguments:
-        desired_gateset_name: the name of the gateset
+        gateset_name: the name of the gateset
     """
     for gateset in get_available_native_gatesets():
-        if gateset.gateset_name == desired_gateset_name:
+        if gateset.gateset_name == gateset_name:
             return gateset
-    msg = f"Gateset {desired_gateset_name} not found in available gatesets."
+    msg = f"Gateset {gateset_name} not found in available gatesets."
     raise ValueError(msg)
