@@ -23,6 +23,7 @@ from .devices import (
 )
 from .utils import (
     get_default_config_path,
+    get_default_qasm_output_path,
     get_module_for_benchmark,
     get_supported_benchmarks,
     get_supported_compilers,
@@ -38,7 +39,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .devices import Gateset
 
 from dataclasses import dataclass
-from importlib import resources
 
 
 class Benchmark(TypedDict, total=False):
@@ -86,7 +86,7 @@ class BenchmarkGenerator:
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
         if qasm_output_path is None:
-            self.qasm_output_path = str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
+            self.qasm_output_path = get_default_qasm_output_path()
         else:
             self.qasm_output_path = qasm_output_path
 
