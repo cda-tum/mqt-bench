@@ -20,7 +20,6 @@ class DeviceCalibration:
         readout_duration: readout duration for each qubit
         t1: T1 time for each qubit
         t2: T2 time for each qubit
-        frequency: frequency for each qubit
     """
 
     single_qubit_gate_fidelity: dict[int, dict[str, float]] = field(default_factory=dict)

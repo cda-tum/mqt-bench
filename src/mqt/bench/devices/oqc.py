@@ -13,7 +13,7 @@ class OQCLucy(Device):
     """OQC Lucy device."""
 
     def __init__(self) -> None:
-        """Initialize the device."""
+        """Initialize the OQC device."""
         with get_device_calibration_path("oqc_lucy").open() as json_file:
             self.oqc_calibration = cast(OQCCalibration, json.load(json_file))
         self.calibration = None
