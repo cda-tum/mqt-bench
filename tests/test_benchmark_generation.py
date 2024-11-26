@@ -8,10 +8,15 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
+    from collections.abc import Callable
 
     from qiskit import QuantumCircuit
 
+
 import pytest
+from qiskit.qasm2 import LEGACY_CUSTOM_INSTRUCTIONS
+from qiskit.qasm2 import load as load_qasm2
+from qiskit.qasm3 import load as load_qasm3
 
 from mqt.bench import utils
 from mqt.bench.benchmark_generator import (
@@ -118,56 +123,54 @@ def test_quantumcircuit_indep_level(
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
-    res = qiskit_helper.get_indep_level(
-        qc,
-        input_value,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=output_path,
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
+    evaluate_benchmark_with_qasm_formats(
+        qiskit_helper.get_indep_level, (qc, input_value, False, False, output_path, filename), output_path
     )
-    assert res
+
     res = qiskit_helper.get_indep_level(
         qc,
         input_value,
         file_precheck=True,
         return_qc=False,
         target_directory=output_path,
+        target_filename=filename,
+        qasm_format="qasm3",
     )
     assert res
+    filepath.unlink()
+
+    evaluate_benchmark_with_qasm_formats(
+        tket_helper.get_indep_level, (qc, input_value, False, False, output_path, filename), output_path
+    )
 
     res = tket_helper.get_indep_level(
         qc,
         input_value,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=output_path,
-    )
-    assert res
-    res = tket_helper.get_indep_level(
-        qc,
-        input_value,
         file_precheck=True,
         return_qc=False,
         target_directory=output_path,
+        target_filename=filename,
+        qasm_format="qasm3",
     )
     assert res
+    filepath.unlink()
 
 
 def test_native_gates_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) -> None:
     """Test the native gates level for the Qiskit compiler."""
     native_gatesets = get_available_native_gatesets()
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
+    opt_level = 0
     for gateset in native_gatesets:
-        opt_level = 0
-        res = qiskit_helper.get_native_gates_level(
-            quantum_circuit,
-            gateset,
-            quantum_circuit.num_qubits,
-            opt_level,
-            file_precheck=False,
-            return_qc=False,
-            target_directory=output_path,
+        evaluate_benchmark_with_qasm_formats(
+            qiskit_helper.get_native_gates_level,
+            (quantum_circuit, gateset, quantum_circuit.num_qubits, 0, False, False, output_path, filename),
+            output_path,
         )
-        assert res
+
         res = qiskit_helper.get_native_gates_level(
             quantum_circuit,
             gateset,
@@ -176,23 +179,26 @@ def test_native_gates_level_qiskit(quantum_circuit: QuantumCircuit, output_path:
             file_precheck=True,
             return_qc=False,
             target_directory=output_path,
+            target_filename=filename,
+            qasm_format="qasm3",
         )
         assert res
+        filepath.unlink()
 
 
 def test_native_gates_level_tket(quantum_circuit: QuantumCircuit, output_path: str) -> None:
     """Test the native gates level for the TKET compiler."""
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
+
     for gateset in get_available_native_gatesets():
         if gateset.gateset_name != "clifford+t":
-            res = tket_helper.get_native_gates_level(
-                quantum_circuit,
-                gateset,
-                quantum_circuit.num_qubits,
-                file_precheck=False,
-                return_qc=False,
-                target_directory=output_path,
+            evaluate_benchmark_with_qasm_formats(
+                tket_helper.get_native_gates_level,
+                (quantum_circuit, gateset, quantum_circuit.num_qubits, False, False, output_path, filename),
+                output_path,
             )
-            assert res
+
             res = tket_helper.get_native_gates_level(
                 quantum_circuit,
                 gateset,
@@ -200,8 +206,11 @@ def test_native_gates_level_tket(quantum_circuit: QuantumCircuit, output_path: s
                 file_precheck=True,
                 return_qc=False,
                 target_directory=output_path,
+                target_filename=filename,
+                qasm_format="qasm3",
             )
             assert res
+            filepath.unlink()
         else:
             with pytest.raises(
                 ValueError, match=r"The gateset 'clifford\+t' is not supported by TKET. Please use Qiskit instead."
@@ -218,18 +227,16 @@ def test_native_gates_level_tket(quantum_circuit: QuantumCircuit, output_path: s
 
 def test_mapped_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) -> None:
     """Test the mapped level for the Qiskit compiler."""
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
     for device in get_available_devices():
         if device.num_qubits >= quantum_circuit.num_qubits:
-            res = qiskit_helper.get_mapped_level(
-                quantum_circuit,
-                quantum_circuit.num_qubits,
-                device,
-                opt_level=0,
-                file_precheck=False,
-                return_qc=False,
-                target_directory=output_path,
+            evaluate_benchmark_with_qasm_formats(
+                qiskit_helper.get_mapped_level,
+                (quantum_circuit, quantum_circuit.num_qubits, device, 0, False, False, output_path, filename),
+                output_path,
             )
-            assert res
+
             res = qiskit_helper.get_mapped_level(
                 quantum_circuit,
                 quantum_circuit.num_qubits,
@@ -238,23 +245,25 @@ def test_mapped_level_qiskit(quantum_circuit: QuantumCircuit, output_path: str) 
                 file_precheck=True,
                 return_qc=False,
                 target_directory=output_path,
+                target_filename=filename,
+                qasm_format="qasm3",
             )
             assert res
+            filepath.unlink()
 
 
 def test_mapped_level_tket(quantum_circuit: QuantumCircuit, output_path: str) -> None:
     """Test the mapped level for the TKET compiler."""
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
     for device in get_available_devices():
         if device.num_qubits >= quantum_circuit.num_qubits:
-            res = tket_helper.get_mapped_level(
-                quantum_circuit,
-                quantum_circuit.num_qubits,
-                device,
-                file_precheck=False,
-                return_qc=False,
-                target_directory=output_path,
+            evaluate_benchmark_with_qasm_formats(
+                tket_helper.get_mapped_level,
+                (quantum_circuit, quantum_circuit.num_qubits, device, False, False, output_path, filename),
+                output_path,
             )
-            assert res
+
             res = tket_helper.get_mapped_level(
                 quantum_circuit,
                 quantum_circuit.num_qubits,
@@ -262,8 +271,11 @@ def test_mapped_level_tket(quantum_circuit: QuantumCircuit, output_path: str) ->
                 file_precheck=True,
                 return_qc=False,
                 target_directory=output_path,
+                target_filename=filename,
+                qasm_format="qasm3",
             )
             assert res
+            filepath.unlink()
 
 
 def test_openqasm_gates() -> None:
@@ -365,3 +377,18 @@ def test_benchmark_groundstate_windows() -> None:
     """Testing the Groundstate benchmarks on Windows."""
     with pytest.raises(ImportError, match=r"PySCF is not installed"):
         groundstate.create_circuit("small")
+
+
+def evaluate_benchmark_with_qasm_formats(
+    fct: Callable, args: list[int | QuantumCircuit | str | bool], output_path: str
+) -> None:
+    """Evaluate the benchmarks with different QASM formats."""
+    for qasm_format in ["qasm2", "qasm3"]:
+        res = fct(*args, qasm_format=qasm_format)
+        filepath = Path(output_path) / "testfile.qasm"
+        if qasm_format == "qasm2":
+            assert load_qasm2(filepath, custom_instructions=LEGACY_CUSTOM_INSTRUCTIONS)
+            assert res
+        else:
+            assert load_qasm3(filepath)
+            assert res
