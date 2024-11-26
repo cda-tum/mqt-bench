@@ -191,7 +191,6 @@ def save_as_qasm(
         c_map = []
 
     file = Path(target_directory, filename + ".qasm")
-    print(file)
 
     if qasm_format == "qasm2":
         if isinstance(qc, QuantumCircuit):
