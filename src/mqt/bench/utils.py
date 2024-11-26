@@ -47,7 +47,7 @@ def get_supported_benchmarks() -> list[str]:
         "qpeinexact",
         "qwalk-noancilla",
         "qwalk-v-chain",
-        "random",
+        "randomcircuit",
         "realamprandom",
         "su2random",
         "twolocalrandom",

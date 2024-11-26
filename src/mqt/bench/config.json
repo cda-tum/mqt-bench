@@ -100,7 +100,7 @@
       "precheck_possible": false
     },
     {
-      "name": "random",
+      "name": "randomcircuit",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 131,
