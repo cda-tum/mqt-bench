@@ -27,6 +27,7 @@ from mqt.bench.benchmark_generator import (
 )
 from mqt.bench.benchmarks import (
     ae,
+    bv,
     dj,
     ghz,
     graphstate,
@@ -68,29 +69,11 @@ def quantum_circuit() -> str:
     return ghz.create_circuit(3)
 
 
-@pytest.fixture
-def sample_filenames() -> list[str]:
-    """Fixture to return a list of sample filenames."""
-    return [
-        "ae_indep_qiskit_10.qasm",
-        "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
-        "ae_indep_tket_93.qasm",
-        "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
-        "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
-        "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
-        "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
-        "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
-        "qnn_mapped_ionq_harmony_qiskit_opt3_3.qasm",
-        "qnn_mapped_oqc_lucy_tket_line_2.qasm",
-        "qaoa_mapped_quantinuum_h2_tket_graph_2.qasm",
-        "dj_mapped_quantinuum_h2_qiskit_opt3_23.qasm",
-    ]
-
-
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
+        (bv, 3, True),
         (ghz, 2, True),
         (dj, 3, True),
         (graphstate, 3, True),
