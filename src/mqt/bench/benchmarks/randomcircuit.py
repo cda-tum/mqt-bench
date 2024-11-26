@@ -26,5 +26,5 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
         optimization_level=1,
     )
     qc.measure_all()
-    qc.name = "random"
+    qc.name = "randomcircuit"
     return qc
