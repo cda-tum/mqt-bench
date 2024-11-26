@@ -11,7 +11,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from .devices import Device, Gateset
 
 from qiskit import transpile
-from qiskit.qasm2 import dumps as dumps2
 from qiskit.synthesis import generate_basic_approximations
 from qiskit.transpiler.passes import SolovayKitaev
 
@@ -26,6 +25,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
@@ -37,6 +37,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool: ...
 
 
@@ -47,6 +48,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -57,14 +59,17 @@ def get_indep_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename or qc.name + "_indep_qiskit_" + str(num_qubits)
+    filename_indep = target_filename or qc.name + "_indep_qiskit_" + str(num_qubits) + "_" + qasm_format
 
     path = Path(target_directory, filename_indep + ".qasm")
+    print(path, target_directory)
     if file_precheck and path.is_file():
         return True
     openqasm_gates = get_openqasm_gates()
@@ -72,10 +77,9 @@ def get_indep_level(
 
     if return_qc:
         return target_independent
+
     return save_as_qasm(
-        dumps2(target_independent),
-        filename_indep,
-        target_directory=target_directory,
+        qc=target_independent, filename=filename_indep, qasm_format=qasm_format, target_directory=target_directory
     )
 
 
@@ -89,6 +93,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
@@ -102,6 +107,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool: ...
 
 
@@ -114,6 +120,7 @@ def get_native_gates_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
@@ -126,6 +133,7 @@ def get_native_gates_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
 
     Returns:
         if return_qc == True: quantum circuit object
@@ -143,8 +151,9 @@ def get_native_gates_level(
         return True
 
     if gateset.gateset_name == "clifford+t":
-        gateset.gates.remove("cx")
-        approx = generate_basic_approximations(gateset.gates, depth=3)
+        gateset_without_cx = gateset.gates.copy()
+        gateset_without_cx.remove("cx")
+        approx = generate_basic_approximations(gateset_without_cx, depth=3)
         skd = SolovayKitaev(recursion_degree=2, basic_approximations=approx)
         compiled_without_architecture = skd(qc.decompose(reps=3).remove_final_measurements(inplace=False))
         compiled_without_architecture.measure_all()
@@ -154,10 +163,12 @@ def get_native_gates_level(
         )
     if return_qc:
         return compiled_without_architecture
+
     return save_as_qasm(
-        dumps2(compiled_without_architecture),
-        filename_native,
-        gateset.gates,
+        qc=compiled_without_architecture,
+        filename=filename_native,
+        qasm_format=qasm_format,
+        gateset=gateset.gates,
         target_directory=target_directory,
     )
 
@@ -172,6 +183,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
@@ -185,6 +197,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool: ...
 
 
@@ -197,6 +210,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -209,6 +223,7 @@ def get_mapped_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
 
     Returns:
         if return_qc == True: quantum circuit object
@@ -233,11 +248,13 @@ def get_mapped_level(
     )
     if return_qc:
         return compiled_with_architecture
+
     return save_as_qasm(
-        dumps2(compiled_with_architecture),
-        filename_mapped,
-        device.gateset.gates,
-        True,
-        c_map,
-        target_directory,
+        qc=compiled_with_architecture,
+        filename=filename_mapped,
+        qasm_format=qasm_format,
+        gateset=device.gateset.gates,
+        mapped=True,
+        c_map=c_map,
+        target_directory=target_directory,
     )
