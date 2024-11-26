@@ -93,7 +93,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
@@ -107,7 +107,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> bool: ...
 
 
@@ -120,7 +120,7 @@ def get_native_gates_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
@@ -183,7 +183,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
@@ -197,7 +197,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> bool: ...
 
 
@@ -210,7 +210,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm",
+    qasm_format: str = "qasm3",
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
