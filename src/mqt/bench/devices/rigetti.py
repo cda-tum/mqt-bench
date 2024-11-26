@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import json
+import sys
 import warnings
 from typing import TYPE_CHECKING, TypedDict, cast
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 from .calibration import DeviceCalibration
 from .device import Device
 from .provider import Provider
+
+if TYPE_CHECKING or sys.version_info >= (3, 10, 0):
+    from importlib import resources
+else:
+    import importlib_resources as resources
 
 
 class QubitProperties(TypedDict):
@@ -114,16 +117,20 @@ class RigettiProvider(Provider):
         return row * 100 + column * 10 + ring
 
     @classmethod
-    def import_backend(cls, path: Path) -> Device:
+    def import_backend(cls, name: str) -> Device:
         """Import a Rigetti backend.
 
         Arguments:
-            path: the path to the JSON file containing the calibration data.
+            name (str): The name of the Quantinuum backend whose calibration data needs to be imported.
+                            This name will be used to locate the corresponding JSON calibration file.
 
         Returns:
-            the Device object
+            Device: An instance of `Device`, loaded with the calibration data from the JSON file.
         """
-        with path.open() as json_file:
+        ref = resources.files("mqt.bench") / "calibration_files" / f"{name}_calibration.json"
+
+        with resources.as_file(ref) as json_path, json_path.open() as json_file:
+            # Load the JSON data and cast it to RigettiCalibration
             rigetti_calibration = cast(RigettiCalibration, json.load(json_file))
 
         device = Device()
