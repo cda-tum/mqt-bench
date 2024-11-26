@@ -92,16 +92,6 @@ def get_default_qasm_output_path() -> str:
     return str(resources.files("mqt.bench") / "qasm_output")
 
 
-def get_default_evaluation_output_path() -> str:
-    """Returns the path where all .qasm files are stored."""
-    return str(resources.files("mqt.bench") / "evaluation")
-
-
-def get_zip_folder_path() -> str:
-    """Returns the path where the zip file is stored."""
-    return str(resources.files("mqt.bench") / "qasm_output")
-
-
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 

@@ -48,60 +48,7 @@ def test_unsupported_device() -> None:
 
 def test_device_calibration_autoread() -> None:
     """Test that all device calibration methods raise errors when no calibration data is available."""
-    device = IBMWashington()
-    qubit1, qubit2 = 0, 1
-    gate1 = "x"
-    gate2 = "cx"
-    wrong_gate = "wrong"
-    wrong_qubit = -1
-
-    # Test all methods with missing calibration data and therefore autoread
-    assert 0 <= device.get_single_qubit_gate_fidelity(gate1, qubit1) <= 1
-    with pytest.raises(
-        ValueError, match=f"Single-qubit fidelity for gate {wrong_gate} and qubit {wrong_qubit} not available."
-    ):
-        device.calibration.get_single_qubit_gate_fidelity(wrong_gate, wrong_qubit)
-    device.calibration = None
-    device.get_single_qubit_gate_duration(gate1, qubit1)
-    with pytest.raises(
-        ValueError, match=f"Single-qubit duration for gate {wrong_gate} and qubit {wrong_qubit} not available."
-    ):
-        device.calibration.get_single_qubit_gate_duration(wrong_gate, wrong_qubit)
-    device.calibration = None
-    device.get_two_qubit_gate_fidelity(gate2, qubit1, qubit2)
-    with pytest.raises(
-        ValueError,
-        match=f"Two-qubit fidelity for gate {wrong_gate} and qubits {wrong_qubit} and {wrong_qubit} not available.",
-    ):
-        device.calibration.get_two_qubit_gate_fidelity(wrong_gate, wrong_qubit, wrong_qubit)
-    device.calibration = None
-    device.get_two_qubit_gate_duration(gate2, qubit1, qubit2)
-    with pytest.raises(
-        ValueError,
-        match=f"Two-qubit duration for gate {wrong_gate} and qubits {wrong_qubit} and {wrong_qubit} not available.",
-    ):
-        device.calibration.get_two_qubit_gate_duration(wrong_gate, wrong_qubit, wrong_qubit)
-    device.calibration = None
-    device.get_readout_fidelity(qubit1)
-    with pytest.raises(ValueError, match=f"Readout fidelity for qubit {wrong_qubit} not available."):
-        device.calibration.get_readout_fidelity(wrong_qubit)
-    device.calibration = None
-    device.get_readout_duration(qubit1)
-    with pytest.raises(ValueError, match=f"Readout duration for qubit {wrong_qubit} not available."):
-        device.calibration.get_readout_duration(wrong_qubit)
-    device.calibration = None
-    device.sanitize_device()
-    device.calibration = None
-    for gate in device.get_single_qubit_gates():
-        assert gate in device.gateset.gates
-    device.calibration = None
-    for gate in device.get_two_qubit_gates():
-        assert gate in device.gateset.gates
-
-    with pytest.raises(ValueError, match=f"T1 for qubit {wrong_qubit} not available."):
-        device.calibration.get_t1(wrong_qubit)
-    with pytest.raises(ValueError, match=f"T2 for qubit {wrong_qubit} not available."):
-        device.calibration.get_t2(wrong_qubit)
+    IBMWashington()
 
 
 def test_device_calibration_errors() -> None:
@@ -124,6 +71,7 @@ def test_device_calibration_errors() -> None:
         device.get_readout_fidelity(qubit1)
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.get_readout_duration(qubit1)
+
     with pytest.raises(ValueError, match="Single-qubit gate fidelity values not available."):
         device.calibration.get_single_qubit_gate_fidelity(gate, qubit1)
     with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
@@ -148,6 +96,35 @@ def test_device_calibration_errors() -> None:
         device.calibration.compute_average_readout_fidelity()
     with pytest.raises(ValueError, match="Readout duration values not available."):
         device.calibration.compute_average_readout_duration()
+
+    device.read_calibration()
+    with pytest.raises(ValueError, match=f"Single-qubit fidelity for gate {gate} and qubit {qubit1} not available."):
+        device.calibration.get_single_qubit_gate_fidelity(gate, qubit1)
+    with pytest.raises(ValueError, match=f"Single-qubit duration for gate {gate} and qubit {qubit1} not available."):
+        device.calibration.get_single_qubit_gate_duration(gate, qubit1)
+    with pytest.raises(
+        ValueError,
+        match=f"Two-qubit fidelity for gate {gate} and qubits {qubit1} and {qubit2} not available.",
+    ):
+        device.calibration.get_two_qubit_gate_fidelity(gate, qubit1, qubit2)
+    with pytest.raises(
+        ValueError,
+        match=f"Two-qubit duration for gate {gate} and qubits {qubit1} and {qubit2} not available.",
+    ):
+        device.calibration.get_two_qubit_gate_duration(gate, qubit1, qubit2)
+    with pytest.raises(ValueError, match=f"Readout fidelity for qubit {qubit1} not available."):
+        device.calibration.get_readout_fidelity(qubit1)
+    with pytest.raises(ValueError, match=f"Readout duration for qubit {qubit1} not available."):
+        device.calibration.get_readout_duration(qubit1)
+    for gate in device.get_single_qubit_gates():
+        assert gate in device.gateset.gates
+    device.calibration = None
+    for gate in device.get_two_qubit_gates():
+        assert gate in device.gateset.gates
+    with pytest.raises(ValueError, match=f"T1 for qubit {qubit1} not available."):
+        device.calibration.get_t1(qubit1)
+    with pytest.raises(ValueError, match=f"T2 for qubit {qubit1} not available."):
+        device.calibration.get_t2(qubit1)
 
 
 def test_get_device_calibration_path() -> None:

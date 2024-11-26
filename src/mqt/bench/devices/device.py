@@ -47,8 +47,7 @@ class Device(ABC):
         gate_type: name of the gate
         qubit: index of the qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
 
         assert self.calibration is not None
 
@@ -58,6 +57,11 @@ class Device(ABC):
 
         return self.calibration.get_single_qubit_gate_fidelity(gate_type, qubit)
 
+    def check_calibration(self) -> None:
+        """Check if the calibration data is read and do so if that was not the case."""
+        if self.calibration is None:
+            self.read_calibration()
+
     def get_single_qubit_gate_duration(self, gate_type: str, qubit: int) -> float:
         """Get the single-qubit gate duration for a given gate type and qubit.
 
@@ -65,8 +69,7 @@ class Device(ABC):
         gate_type: name of the gate
         qubit: index of the qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         if gate_type not in self.gateset.gates:
@@ -83,8 +86,7 @@ class Device(ABC):
         qubit1: index of the first qubit
         qubit2: index of the second qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         if gate_type not in self.gateset.gates:
@@ -101,8 +103,7 @@ class Device(ABC):
         qubit1: index of the first qubit
         qubit2: index of the second qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         if gate_type not in self.gateset.gates:
@@ -117,8 +118,7 @@ class Device(ABC):
         Arguments:
         qubit: index of the qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         return self.calibration.get_readout_fidelity(qubit)
@@ -129,8 +129,7 @@ class Device(ABC):
         Arguments:
         qubit: index of the qubit
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         return self.calibration.get_readout_duration(qubit)
@@ -141,8 +140,7 @@ class Device(ABC):
         Returns:
         list of single-qubit gates
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
         return {gate for qubit in range(self.num_qubits) for gate in self.calibration.single_qubit_gate_fidelity[qubit]}
 
@@ -152,8 +150,7 @@ class Device(ABC):
         Returns:
         list of two-qubit gates
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
         return {
             gate
@@ -172,8 +169,7 @@ class Device(ABC):
          * all two-qubit gates have fidelity data for all qubit pairs in the coupling map.
         This is accomplished by substituting the missing fidelity data with the average fidelity for the gate.
         """
-        if self.calibration is None:
-            self.read_calibration()
+        self.check_calibration()
         assert self.calibration is not None
 
         # ensure that all single-qubit gates have fidelity data for all qubits in the coupling map

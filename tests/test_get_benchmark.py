@@ -94,7 +94,7 @@ def test_get_benchmark(
         device_name,
     )
     assert qc.depth() > 0
-    if gateset_name and "oqc" not in gateset_name:
+    if gateset_name:
         if compiler == "tket":
             qc = tk_to_qiskit(qc, replace_implicit_swaps=False)
         assert isinstance(qc, QuantumCircuit)
@@ -205,74 +205,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "wrong_device",
         )
-
-
-def test_oqc_benchmarks() -> None:
-    """Test the creation of benchmarks for the OQC devices."""
-    qc = get_benchmark("ghz", 1, 5)
-    directory = "."
-    filename = "ghz_oqc"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-
-    tket_helper.get_native_gates_level(
-        qc,
-        get_native_gateset_by_name("oqc"),
-        qc.num_qubits,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
-
-    directory = "."
-    filename = "ghz_oqc2"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    tket_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        get_device_by_name("oqc_lucy"),
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
-    directory = "."
-    filename = "ghz_oqc3"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    qiskit_helper.get_native_gates_level(
-        qc,
-        get_native_gateset_by_name("oqc"),
-        qc.num_qubits,
-        opt_level=1,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
-    directory = "."
-    filename = "ghz_oqc4"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    qiskit_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        get_device_by_name("oqc_lucy"),
-        opt_level=1,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:
