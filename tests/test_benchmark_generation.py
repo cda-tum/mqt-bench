@@ -96,9 +96,6 @@ def test_quantumcircuit_alg_level(
 ) -> None:
     """Test the creation of the algorithm level benchmarks for the benchmarks."""
     qc = benchmark.create_circuit(input_value)
-    if "ae" in qc.name or "shor" in qc.name or "graph" in qc.name:
-        return
-
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
