@@ -156,10 +156,7 @@ def test_quantumcircuit_indep_level(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
     """Test the creation of the independent level benchmarks for the benchmarks."""
-    if benchmark in (grover, qwalk):
-        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
-    else:
-        qc = benchmark.create_circuit(input_value)
+    qc = benchmark.create_circuit(input_value)
 
     if scalable:
         assert qc.num_qubits == input_value
