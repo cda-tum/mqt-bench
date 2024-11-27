@@ -144,6 +144,7 @@ class BenchmarkGenerator:
         file_precheck: bool,
     ) -> None:
         """Generate all benchmarks for a given benchmark."""
+        self.generate_alg_levels(file_precheck, lib, parameter_space)
         self.generate_indep_levels(file_precheck, lib, parameter_space)
         self.generate_native_gates_levels(file_precheck, lib, parameter_space)
         self.generate_mapped_levels(file_precheck, lib, parameter_space)
@@ -155,8 +156,34 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate mapped level benchmarks for a given benchmark."""
-        for device in get_available_devices():
-            for opt_level in [0, 1, 2, 3]:
+        for qasm_format in ["qasm2", "qasm3"]:
+            for device in get_available_devices():
+                for opt_level in [0, 1, 2, 3]:
+                    for parameter_instance in parameter_space:
+                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                        if not qc:
+                            break
+                        assert isinstance(qc, QuantumCircuit)
+                        if qc.num_qubits <= device.num_qubits:
+                            res = timeout_watcher(
+                                qiskit_helper.get_mapped_level,
+                                self.timeout,
+                                [
+                                    qc,
+                                    qc.num_qubits,
+                                    device,
+                                    opt_level,
+                                    file_precheck,
+                                    False,
+                                    self.qasm_output_path,
+                                    qasm_format,
+                                ],
+                            )
+                            if not res:
+                                break
+                        else:
+                            break
+
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                     if not qc:
@@ -164,45 +191,14 @@ class BenchmarkGenerator:
                     assert isinstance(qc, QuantumCircuit)
                     if qc.num_qubits <= device.num_qubits:
                         res = timeout_watcher(
-                            qiskit_helper.get_mapped_level,
+                            tket_helper.get_mapped_level,
                             self.timeout,
-                            [
-                                qc,
-                                qc.num_qubits,
-                                device,
-                                opt_level,
-                                file_precheck,
-                                False,
-                                self.qasm_output_path,
-                            ],
+                            [qc, qc.num_qubits, device, file_precheck, False, self.qasm_output_path, qasm_format],
                         )
                         if not res:
                             break
                     else:
                         break
-
-            for parameter_instance in parameter_space:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                if qc.num_qubits <= device.num_qubits:
-                    res = timeout_watcher(
-                        tket_helper.get_mapped_level,
-                        self.timeout,
-                        [
-                            qc,
-                            qc.num_qubits,
-                            device,
-                            file_precheck,
-                            False,
-                            self.qasm_output_path,
-                        ],
-                    )
-                    if not res:
-                        break
-                else:
-                    break
 
     def generate_native_gates_levels(
         self,
@@ -211,48 +207,73 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate native gates level benchmarks for a given benchmark."""
-        for native_gateset in get_available_native_gatesets():
-            for opt_level in [0, 1, 2, 3]:
+        for qasm_format in ["qasm2", "qasm3"]:
+            for native_gateset in get_available_native_gatesets():
+                for opt_level in [0, 1, 2, 3]:
+                    for parameter_instance in parameter_space:
+                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                        if not qc:
+                            break
+                        assert isinstance(qc, QuantumCircuit)
+                        res = timeout_watcher(
+                            qiskit_helper.get_native_gates_level,
+                            self.timeout,
+                            [
+                                qc,
+                                native_gateset,
+                                qc.num_qubits,
+                                opt_level,
+                                file_precheck,
+                                False,
+                                self.qasm_output_path,
+                                qasm_format,
+                            ],
+                        )
+                        if not res:
+                            break
+
                 for parameter_instance in parameter_space:
                     qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
                     if not qc:
                         break
                     assert isinstance(qc, QuantumCircuit)
                     res = timeout_watcher(
-                        qiskit_helper.get_native_gates_level,
+                        tket_helper.get_native_gates_level,
                         self.timeout,
                         [
                             qc,
                             native_gateset,
                             qc.num_qubits,
-                            opt_level,
                             file_precheck,
                             False,
                             self.qasm_output_path,
+                            qasm_format,
                         ],
                     )
                     if not res:
                         break
 
+    def generate_alg_levels(
+        self,
+        file_precheck: bool,
+        lib: ModuleType,
+        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
+    ) -> None:
+        """Generate algorithm level benchmarks for a given benchmark."""
+        for function in [qiskit_helper.get_alg_level]:
             for parameter_instance in parameter_space:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                res = timeout_watcher(
-                    tket_helper.get_native_gates_level,
-                    self.timeout,
-                    [
-                        qc,
-                        native_gateset,
-                        qc.num_qubits,
-                        file_precheck,
-                        False,
-                        self.qasm_output_path,
-                    ],
-                )
-                if not res:
-                    break
+                for qasm_format in ["qasm3"]:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
+                        break
+                    assert isinstance(qc, QuantumCircuit)
+                    res = timeout_watcher(
+                        function,
+                        self.timeout,
+                        [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
+                    )
+                    if not res:
+                        break
 
     def generate_indep_levels(
         self,
@@ -263,17 +284,18 @@ class BenchmarkGenerator:
         """Generate independent level benchmarks for a given benchmark."""
         for function in [qiskit_helper.get_indep_level, tket_helper.get_indep_level]:
             for parameter_instance in parameter_space:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                res = timeout_watcher(
-                    function,
-                    self.timeout,
-                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path],
-                )
-                if not res:
-                    break
+                for qasm_format in ["qasm2", "qasm3"]:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
+                        break
+                    assert isinstance(qc, QuantumCircuit)
+                    res = timeout_watcher(
+                        function,
+                        self.timeout,
+                        [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
+                    )
+                    if not res:
+                        break
 
 
 @overload
