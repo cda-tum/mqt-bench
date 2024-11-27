@@ -92,7 +92,6 @@ def get_default_qasm_output_path() -> str:
     return str(resources.files("mqt.bench") / "qasm_output")
 
 
-
 def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
     """Returns a quadratic problem formulation of a max cut problem of a random graph.
 

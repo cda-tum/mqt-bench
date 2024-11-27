@@ -375,6 +375,7 @@ def evaluate_benchmark_with_qasm_formats(
         else:
             assert load_qasm3(filepath)
 
+
 def test_bv() -> None:
     """Test the creation of the BV benchmark."""
     qc = bv.create_circuit(3)
