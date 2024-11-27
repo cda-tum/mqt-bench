@@ -18,7 +18,6 @@ from qiskit import QuantumCircuit
 from qiskit.qasm2 import LEGACY_CUSTOM_INSTRUCTIONS
 from qiskit.qasm2 import load as load_qasm2
 from qiskit.qasm3 import load as load_qasm3
-from qiskit.qasm3.exceptions import QASM3ExporterError
 
 from mqt.bench import utils
 from mqt.bench.benchmark_generator import (
@@ -106,27 +105,22 @@ def test_quantumcircuit_alg_level(
     assert benchmark.__name__.split(".")[-1] in qc.name
     filename = "testfile"
     filepath = Path(output_path) / (filename + ".qasm")
-    if "ae" not in qc.name and "shor" not in qc.name:
-        res = qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
-        assert res
-        assert load_qasm3(filepath)
+    res = qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
+    assert res
+    assert load_qasm3(filepath)
 
-        res = qiskit_helper.get_alg_level(
-            qc,
-            input_value,
-            file_precheck=True,
-            return_qc=False,
-            target_directory=output_path,
-            target_filename=filename,
-            qasm_format="qasm3",
-        )
-        assert res
-        assert load_qasm3(filepath)
-        filepath.unlink()
-
-    else:
-        with pytest.raises(QASM3ExporterError, match="non-unitary subroutine calls are not yet supported"):
-            qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
+    res = qiskit_helper.get_alg_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=output_path,
+        target_filename=filename,
+        qasm_format="qasm3",
+    )
+    assert res
+    assert load_qasm3(filepath)
+    filepath.unlink()
 
     with pytest.raises(
         ValueError, match="'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
