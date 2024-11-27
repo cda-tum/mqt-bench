@@ -15,6 +15,47 @@ from qiskit import transpile
 from .utils import get_openqasm_gates, save_as_qasm
 
 
+def get_alg_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: bool = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool | QuantumCircuit:
+    """Handles the creation of the benchmark on the algorithm level.
+
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
+
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
+    """
+    if return_qc:
+        return qc
+
+    if qasm_format == "qasm2":
+        msg = "'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+        raise ValueError(msg)
+    filename_alg = target_filename or qc.name + "_alg_qiskit_" + str(num_qubits) + "_" + qasm_format
+
+    path = Path(target_directory, filename_alg + ".qasm")
+
+    if file_precheck and path.is_file():
+        return True
+
+    return save_as_qasm(qc=qc, filename=filename_alg, qasm_format="qasm3", target_directory=target_directory)
+
+
 @overload
 def get_indep_level(
     qc: QuantumCircuit,
@@ -67,7 +108,6 @@ def get_indep_level(
     filename_indep = target_filename or qc.name + "_indep_qiskit_" + str(num_qubits) + "_" + qasm_format
 
     path = Path(target_directory, filename_indep + ".qasm")
-    print(path, target_directory)
     if file_precheck and path.is_file():
         return True
     openqasm_gates = get_openqasm_gates()
