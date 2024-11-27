@@ -31,7 +31,6 @@ from mqt.bench.benchmarks import (
     dj,
     ghz,
     graphstate,
-    groundstate,
     grover,
     qaoa,
     qft,
@@ -42,11 +41,9 @@ from mqt.bench.benchmarks import (
     qwalk,
     randomcircuit,
     realamprandom,
-    routing,
     shor,
     su2random,
     twolocalrandom,
-    vqe,
     wstate,
 )
 from mqt.bench.devices import (
@@ -85,7 +82,6 @@ def quantum_circuit() -> str:
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
         (qwalk, 3, False),
-        (vqe, 3, True),
         (randomcircuit, 3, True),
         (realamprandom, 3, True),
         (su2random, 3, True),
@@ -274,12 +270,6 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-def test_routing() -> None:
-    """Test the creation of the routing benchmark."""
-    qc = routing.create_circuit(4, 2)
-    assert qc.depth() > 0
-
-
 def test_configure_end(output_path: str) -> None:
     """Removes all temporarily created files while testing."""
     # delete all files in the test directory and the directory itself
@@ -335,31 +325,6 @@ def test_benchmark_helper_shor() -> None:
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
-
-
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_benchmark_groundstate_non_windows() -> None:
-    """Testing the Groundstate benchmarks."""
-    groundstate_instances = ["small", "medium", "large"]
-    for elem in groundstate_instances:
-        res_groundstate = groundstate.get_molecule(elem)
-        assert res_groundstate
-
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
-
-
-@pytest.mark.skipif(
-    sys.platform != "win32",
-    reason="Windows-specific test.",
-)
-def test_benchmark_groundstate_windows() -> None:
-    """Testing the Groundstate benchmarks on Windows."""
-    with pytest.raises(ImportError, match=r"PySCF is not installed"):
-        groundstate.create_circuit("small")
 
 
 def evaluate_benchmark_with_qasm_formats(
