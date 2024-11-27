@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -12,8 +13,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from qiskit import QuantumCircuit
 
-
 import pytest
+from qiskit import QuantumCircuit
 from qiskit.qasm2 import LEGACY_CUSTOM_INSTRUCTIONS
 from qiskit.qasm2 import load as load_qasm2
 from qiskit.qasm3 import load as load_qasm3
@@ -90,14 +91,68 @@ def quantum_circuit() -> str:
         (shor, 3, False),
     ],
 )
+def test_quantumcircuit_alg_level(
+    benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
+) -> None:
+    """Test the creation of the algorithm level benchmarks for the benchmarks."""
+    qc = benchmark.create_circuit(input_value)
+    if scalable:
+        assert qc.num_qubits == input_value
+    assert benchmark.__name__.split(".")[-1] in qc.name
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
+    res = qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
+    assert res
+    assert load_qasm3(filepath)
+
+    res = qiskit_helper.get_alg_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=output_path,
+        target_filename=filename,
+        qasm_format="qasm3",
+    )
+    assert res
+    assert load_qasm3(filepath)
+    filepath.unlink()
+
+    with pytest.raises(
+        ValueError, match="'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+    ):
+        qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
+
+
+@pytest.mark.parametrize(
+    ("benchmark", "input_value", "scalable"),
+    [
+        (ae, 3, True),
+        (bv, 3, True),
+        (ghz, 2, True),
+        (dj, 3, True),
+        (graphstate, 3, True),
+        (grover, 3, False),
+        (qaoa, 3, True),
+        (qft, 3, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
+        (qwalk, 3, False),
+        (randomcircuit, 3, True),
+        (vqerealamprandom, 3, True),
+        (vqesu2random, 3, True),
+        (vqetwolocalrandom, 3, True),
+        (wstate, 3, True),
+        (shor, 3, False),
+    ],
+)
 def test_quantumcircuit_indep_level(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
     """Test the creation of the independent level benchmarks for the benchmarks."""
-    if benchmark in (grover, qwalk):
-        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
-    else:
-        qc = benchmark.create_circuit(input_value)
+    qc = benchmark.create_circuit(input_value)
 
     if scalable:
         assert qc.num_qubits == input_value
@@ -319,12 +374,19 @@ def test_get_module_for_benchmark() -> None:
         assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
-def test_benchmark_helper_shor() -> None:
+def test_shor() -> None:
     """Testing the Shor benchmarks."""
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
+
+    with pytest.raises(ValueError, match="The input needs to be an odd integer greater than 3."):
+        shor.Shor._validate_input(2, 2)  # noqa: SLF001
+    with pytest.raises(ValueError, match="a must have value >= 2, was 1"):
+        shor.Shor._validate_input(4, 1)  # noqa: SLF001
+    with pytest.raises(ValueError, match=re.escape("The integer a needs to satisfy a < N and gcd(a, N) = 1.")):
+        shor.Shor._validate_input(3, 6)  # noqa: SLF001
 
 
 def evaluate_benchmark_with_qasm_formats(
@@ -355,3 +417,21 @@ def test_bv() -> None:
 
     with pytest.raises(ValueError, match="Length of hidden_string must be num_qubits - 1."):
         bv.create_circuit(3, hidden_string="wrong")
+
+
+def test_ae() -> None:
+    """Test the creation of the AE benchmark with wrong input."""
+    with pytest.raises(ValueError, match=re.escape("Number of qubits must be at least 2 (1 evaluation + 1 target).")):
+        ae.create_circuit(1)
+
+
+def test_get_default_qasm_output_path() -> None:
+    """Test the default QASM output path."""
+    assert Path(utils.get_default_qasm_output_path())
+
+
+def test_save_as_qasm() -> None:
+    """Test the save_as_qasm function with wrong input."""
+    qc = QuantumCircuit(0)
+    with pytest.raises(ValueError, match="Unknown qasm format: wrong_format"):
+        utils.save_as_qasm(qc=qc, filename="testfile", qasm_format="wrong_format")

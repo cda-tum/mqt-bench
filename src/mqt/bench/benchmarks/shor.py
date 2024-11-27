@@ -208,15 +208,12 @@ class Shor:
             ValueError: Invalid input
 
         """
-        if to_be_factored_number < 3:
-            msg = f"{'N'} must have value >= {3}, was {to_be_factored_number}"
-            raise ValueError(msg)
         if a < 2:
             msg = f"{'a'} must have value >= {2}, was {a}"
             raise ValueError(msg)
 
-        if to_be_factored_number < 1 or to_be_factored_number % 2 == 0:
-            msg = "The input needs to be an odd integer greater than 1."
+        if to_be_factored_number < 3 or to_be_factored_number % 2 == 0:
+            msg = "The input needs to be an odd integer greater than 3."
             raise ValueError(msg)
 
         if a >= to_be_factored_number or math.gcd(a, to_be_factored_number) != 1:
