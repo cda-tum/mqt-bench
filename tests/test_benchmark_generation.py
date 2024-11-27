@@ -374,3 +374,18 @@ def evaluate_benchmark_with_qasm_formats(
             assert load_qasm2(filepath, custom_instructions=LEGACY_CUSTOM_INSTRUCTIONS)
         else:
             assert load_qasm3(filepath)
+
+def test_bv() -> None:
+    """Test the creation of the BV benchmark."""
+    qc = bv.create_circuit(3)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    qc = bv.create_circuit(3, dynamic=True)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    with pytest.raises(ValueError, match="Length of hidden_string must be num_qubits - 1."):
+        bv.create_circuit(3, hidden_string="wrong")
