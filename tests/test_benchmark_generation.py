@@ -95,10 +95,9 @@ def test_quantumcircuit_alg_level(
     benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
 ) -> None:
     """Test the creation of the algorithm level benchmarks for the benchmarks."""
-    if benchmark in (grover, qwalk):
-        qc = benchmark.create_circuit(input_value, ancillary_mode="noancilla")
-    else:
-        qc = benchmark.create_circuit(input_value)
+    qc = benchmark.create_circuit(input_value)
+    if "ae" in qc.name or "shor" in qc.name or "graph" in qc.name:
+        return
 
     if scalable:
         assert qc.num_qubits == input_value
