@@ -116,7 +116,7 @@
       "precheck_possible": true
     },
     {
-      "name": "realamprandom",
+      "name": "vqerealamprandom",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 131,
@@ -130,7 +130,7 @@
       "precheck_possible": false
     },
     {
-      "name": "su2random",
+      "name": "vqesu2random",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 131,
@@ -138,7 +138,7 @@
       "precheck_possible": true
     },
     {
-      "name": "twolocalrandom",
+      "name": "vqetwolocalrandom",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 131,
