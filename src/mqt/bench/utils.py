@@ -23,8 +23,6 @@ from qiskit.qasm3 import dumps as dumps3
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
 
-    from qiskit_optimization import QuadraticProgram
-
 
 @dataclass
 class SupermarqFeatures:
@@ -47,8 +45,6 @@ def get_supported_benchmarks() -> list[str]:
         "grover-v-chain",
         "ghz",
         "graphstate",
-        "portfolioqaoa",
-        "portfoliovqe",
         "qaoa",
         "qft",
         "qftentangled",
@@ -61,14 +57,8 @@ def get_supported_benchmarks() -> list[str]:
         "realamprandom",
         "su2random",
         "twolocalrandom",
-        "vqe",
         "wstate",
         "shor",
-        "pricingcall",
-        "pricingput",
-        "groundstate",
-        "routing",
-        "tsp",
     ]
 
 
@@ -90,20 +80,6 @@ def get_default_config_path() -> str:
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.bench") / "qasm_output")
-
-
-def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
-    """Returns a quadratic problem formulation of a max cut problem of a random graph.
-
-    Arguments:
-        n_nodes: number of graph nodes (and also number of qubits)
-        degree: edges per node
-    """
-    from qiskit_optimization.applications import Maxcut  # noqa: PLC0415 lazy import to reduce import cost
-
-    graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
-    maxcut = Maxcut(graph)
-    return maxcut.to_quadratic_program()
 
 
 def get_openqasm_gates() -> list[str]:
@@ -278,16 +254,8 @@ def calc_supermarq_features(
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     """Returns the module for a specific benchmark."""
-    if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
-        return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
     if benchmark_name == "qnn":
         return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
-    if benchmark_name == "groundstate":
-        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
-    if benchmark_name == "routing":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
-    if benchmark_name == "tsp":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
 
 

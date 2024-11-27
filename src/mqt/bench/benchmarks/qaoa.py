@@ -2,34 +2,49 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from qiskit.primitives import Sampler
-from qiskit_algorithms.minimum_eigensolvers import QAOA
-from qiskit_algorithms.optimizers import SLSQP
-from qiskit_optimization import QuadraticProgram
-
-from mqt.bench.utils import get_examplary_max_cut_qp
-
-if TYPE_CHECKING:  # pragma: no cover
-    from qiskit import QuantumCircuit
+import numpy as np
+from qiskit import QuantumCircuit
 
 
-def create_circuit(num_qubits: int) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the Quantum Approximation Optimization Algorithm for a specific max-cut example.
+def create_circuit(num_qubits: int, repetitions: int = 2, seed: int = 42) -> QuantumCircuit:
+    """Constructs a quantum circuit implementing QAOA for a Max-Cut example with random parameters.
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit
+        num_qubits: Number of qubits in the circuit (equal to the number of graph nodes).
+        repetitions: Number of QAOA layers (repetitions of the ansatz).
+        seed: Random seed for reproducibility.
 
     Returns:
-        QuantumCircuit: quantum circuit implementing the Quantum Approximation Optimization Algorithm
+        QuantumCircuit: Quantum circuit implementing QAOA.
     """
-    qp = get_examplary_max_cut_qp(num_qubits)
-    assert isinstance(qp, QuadraticProgram)
+    # Set the random number generator
+    rng = np.random.default_rng(seed)
 
-    qaoa = QAOA(sampler=Sampler(), reps=2, optimizer=SLSQP(maxiter=25))
-    qaoa_result = qaoa.compute_minimum_eigenvalue(qp.to_ising()[0])
-    qc = qaoa.ansatz.assign_parameters(qaoa_result.optimal_point)
+    # Example adjacency matrix for Max-Cut (toy problem)
+    adjacency_matrix = rng.integers(0, 2, size=(num_qubits, num_qubits))
+    adjacency_matrix = np.triu(adjacency_matrix, 1)  # Upper triangular part for undirected graph
+
+    # Random initialization of parameters
+    gamma_values = rng.uniform(0, np.pi, repetitions)
+    beta_values = rng.uniform(0, np.pi, repetitions)
+
+    # Initialize QAOA circuit
+    qc = QuantumCircuit(num_qubits)
+
+    # Start in uniform superposition
+    qc.h(range(num_qubits))
+
+    # Define cost and mixer operators for each layer
+    for layer in range(repetitions):
+        # Cost Hamiltonian
+        for i in range(num_qubits):
+            for j in range(i + 1, num_qubits):
+                if adjacency_matrix[i, j] != 0:
+                    qc.rzz(2 * gamma_values[layer], i, j)
+
+        # Mixer Hamiltonian
+        for i in range(num_qubits):
+            qc.rx(2 * beta_values[layer], i)
 
     qc.name = "qaoa"
 

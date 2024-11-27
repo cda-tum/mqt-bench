@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
@@ -103,15 +102,6 @@ def test_get_benchmark(
             gate_type = instruction.name
             gateset = get_native_gateset_by_name(gateset_name)
             assert gate_type in gateset.gates or gate_type == "barrier"
-
-
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_get_benchmark_groundstate() -> None:
-    """Test the Groundstate benchmark when not on Windows."""
-    assert get_benchmark("groundstate", "alg", None, "small", "qiskit").depth() > 0
 
 
 def test_get_benchmark_faulty_parameters() -> None:
@@ -309,7 +299,7 @@ def test_calc_supermarq_features() -> None:
     assert dense_features.critical_depth == 0.0
     assert dense_features.program_communication == 0.0
 
-    regular_qc = get_benchmark("vqe", 1, 5)
+    regular_qc = get_benchmark("qaoa", 1, 5)
     regular_features = utils.calc_supermarq_features(regular_qc)
     assert 0 < regular_features.parallelism < 1
     assert 0 < regular_features.entanglement_ratio < 1
