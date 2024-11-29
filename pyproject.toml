@@ -22,7 +22,7 @@ dependencies = [
     #  manages the dependencies for qiskit and tket in a combined fashion
     "pytket-qiskit>=0.53.0",
     # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
-    "pytket>=1.29.0,<1.36.0",
+    "pytket>=1.29.0",
     # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit!=1.2.0",
     "qiskit_optimization>=0.6",
