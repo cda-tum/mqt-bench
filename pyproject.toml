@@ -184,15 +184,13 @@ extend-select = [
     "SLF",         # flake8-self
     "SLOT",        # flake8-slots
     "SIM",         # flake8-simplify
-    "TCH",         # flake8-type-checking
+    "TC",         # flake8-type-checking
     "TID",         # flake8-tidy-imports
     "TRY",         # tryceratops
     "UP",          # pyupgrade
     "YTT",         # flake8-2020
 ]
 ignore = [
-    "ANN101",  # Missing type annotation for self in method
-    "ANN102",  # Missing type annotation for cls in classmethod
     "ISC001",  # Conflicts with formatter
     "E501",    # Line too long (Black is enough)
     "PLR",     # Design related pylint codes
