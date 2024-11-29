@@ -60,7 +60,7 @@ class IonQProvider(Provider):
             the Device object
         """
         with path.open() as json_file:
-            ionq_calibration = cast(IonQCalibration, json.load(json_file))
+            ionq_calibration = cast("IonQCalibration", json.load(json_file))
 
         device = Device()
         device.name = ionq_calibration["name"]

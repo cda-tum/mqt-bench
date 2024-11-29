@@ -80,7 +80,7 @@ class OQCProvider(Provider):
             the Device object
         """
         with path.open() as json_file:
-            oqc_calibration = cast(OQCCalibration, json.load(json_file))
+            oqc_calibration = cast("OQCCalibration", json.load(json_file))
 
         device = Device()
         device.name = oqc_calibration["name"]

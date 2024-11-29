@@ -70,7 +70,7 @@ class IQMProvider(Provider):
         Returns: the Device object
         """
         with path.open() as json_file:
-            iqm_calibration = cast(IQMCalibration, json.load(json_file))
+            iqm_calibration = cast("IQMCalibration", json.load(json_file))
 
         device = Device()
         device.name = iqm_calibration["name"]

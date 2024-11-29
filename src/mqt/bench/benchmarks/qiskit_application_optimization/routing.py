@@ -10,11 +10,11 @@ from qiskit.primitives import Estimator
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import SLSQP
 from qiskit_optimization import QuadraticProgram
-from qiskit_optimization.problems import LinearExpression, QuadraticExpression
 
 if TYPE_CHECKING:  # pragma: no cover
     from numpy.typing import NDArray
     from qiskit import QuantumCircuit
+    from qiskit_optimization.problems import LinearExpression, QuadraticExpression
 
 
 class Initializer:
@@ -106,7 +106,7 @@ class QuantumOptimizer:
             # Evaluates the cost distance from a binary representation of a path
             def fun(x: NDArray[np.float64]) -> float:
                 return cast(
-                    float,
+                    "float",
                     np.dot(np.around(x), np.dot(q, np.around(x))) + np.dot(g, np.around(x)) + c,
                 )
 
@@ -114,7 +114,7 @@ class QuantumOptimizer:
         except Exception:
             cost = 0
 
-        return q, g, cast(float, c), cost
+        return q, g, cast("float", c), cost
 
     def construct_problem(self, q: QuadraticExpression, g: LinearExpression, c: float) -> QuadraticProgram:
         """Constructs the problem."""
@@ -155,8 +155,8 @@ def create_circuit(num_nodes: int = 3, num_vehs: int = 2) -> QuantumCircuit:
 
     quantum_optimizer = QuantumOptimizer(instance, n, k)
     q, g, c, _binary_cost = quantum_optimizer.binary_representation(x_sol=np.array(0.0, dtype=float))
-    q_casted = cast(QuadraticExpression, q)
-    g_casted = cast(LinearExpression, g)
+    q_casted = cast("QuadraticExpression", q)
+    g_casted = cast("LinearExpression", g)
     qp = quantum_optimizer.construct_problem(q_casted, g_casted, c)
     # Instantiate the quantum optimizer class with parameters:
     qc = quantum_optimizer.solve_problem(qp)

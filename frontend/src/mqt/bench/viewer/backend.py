@@ -244,7 +244,7 @@ class Backend:
                     ]
                     db_filtered = pd.concat([db_filtered, db_tmp6])
 
-        return cast(list[str], db_filtered["filename"].to_list())
+        return cast("list[str]", db_filtered["filename"].to_list())
 
     def generate_zip_ephemeral_chunks(
         self,
@@ -567,7 +567,7 @@ def get_opt_level(filename: str) -> int:
     pat = re.compile(r"opt\d")
     m = pat.search(filename)
     num = m.group()[-1:] if m else -1
-    return int(cast(str, num))
+    return int(cast("str", num))
 
 
 def get_num_qubits(filename: str) -> int:
@@ -582,7 +582,7 @@ def get_num_qubits(filename: str) -> int:
     pat = re.compile(r"(\d+)\.")
     m = pat.search(filename)
     num = m.group()[0:-1] if m else -1
-    return int(cast(str, num))
+    return int(cast("str", num))
 
 
 def get_tket_settings(filename: str) -> str | None:

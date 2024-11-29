@@ -66,7 +66,7 @@ class IBMProvider(Provider):
         Returns: the Device object
         """
         with path.open() as json_file:
-            ibm_calibration = cast(IBMCalibration, json.load(json_file))
+            ibm_calibration = cast("IBMCalibration", json.load(json_file))
 
         device = Device()
         device.name = ibm_calibration["name"]
@@ -116,8 +116,8 @@ class IBMProvider(Provider):
 
         for qubit in range(num_qubits):
             qubit_props = target.qubit_properties[qubit]
-            calibration.t1[qubit] = cast(float, qubit_props.t1)
-            calibration.t2[qubit] = cast(float, qubit_props.t2)
+            calibration.t1[qubit] = cast("float", qubit_props.t1)
+            calibration.t2[qubit] = cast("float", qubit_props.t2)
 
         calibration.single_qubit_gate_fidelity = {qubit: {} for qubit in range(num_qubits)}
         calibration.single_qubit_gate_duration = {qubit: {} for qubit in range(num_qubits)}

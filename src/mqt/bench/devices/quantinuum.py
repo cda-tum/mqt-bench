@@ -58,7 +58,7 @@ class QuantinuumProvider(Provider):
             the Device object
         """
         with path.open() as json_file:
-            quantinuum_calibration = cast(QuantinuumCalibration, json.load(json_file))
+            quantinuum_calibration = cast("QuantinuumCalibration", json.load(json_file))
 
         device = Device()
         device.name = quantinuum_calibration["name"]
