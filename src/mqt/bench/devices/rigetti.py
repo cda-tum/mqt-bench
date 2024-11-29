@@ -124,7 +124,7 @@ class RigettiProvider(Provider):
             the Device object
         """
         with path.open() as json_file:
-            rigetti_calibration = cast(RigettiCalibration, json.load(json_file))
+            rigetti_calibration = cast("RigettiCalibration", json.load(json_file))
 
         device = Device()
         device.name = rigetti_calibration["name"]

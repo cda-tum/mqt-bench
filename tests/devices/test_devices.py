@@ -17,7 +17,7 @@ from mqt.bench.devices import (
 
 
 @pytest.mark.parametrize(
-    "device", get_available_devices(sanitize_device=True), ids=lambda device: cast(str, device.name)
+    "device", get_available_devices(sanitize_device=True), ids=lambda device: cast("str", device.name)
 )
 def test_sanitized_devices(device: Device) -> None:
     """Test that all devices can be sanitized and provide complete fidelity data."""
