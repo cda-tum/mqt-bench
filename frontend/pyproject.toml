@@ -18,6 +18,11 @@ dependencies = [
 [project.scripts]
 "mqt.bench.viewer" = "mqt.bench.viewer.main:start_server"
 
+
+[tool.setuptools.package-data]
+"mqt.bench.viewer" = ["static/**/*", "templates/*"]
+
+
 [tool.pytest.ini_options]
 minversion = "7.2"
 testpaths = ["tests"]
