@@ -31,6 +31,7 @@ dependencies = [
     "numpy>=1.26; python_version >= '3.12'",
     "numpy>=1.24; python_version >= '3.11'",
     "numpy>=1.22",
+    "scikit-learn>=1.5.2",
 ]
 
 
@@ -110,7 +111,6 @@ filterwarnings = [
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
     'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
-    'ignore:.*he SolovayKitaev algorithm relies *.:RuntimeWarning:qiskit.synthesis.discrete_basis.generate_basis_approximations',
     # TKET Warnings
     'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.qiskit_convert',
     # Qiskit 1.3 deprecations
