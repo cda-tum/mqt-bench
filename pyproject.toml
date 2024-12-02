@@ -116,7 +116,7 @@ filterwarnings = [
     # TKET Warnings
     'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.qiskit_convert',
     # Qiskit 1.3 deprecations
-    'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:',
     'ignore:.*The class ``qiskit.pulse.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.qobj.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
     'ignore:.*The property ``qiskit.transpiler.target.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
