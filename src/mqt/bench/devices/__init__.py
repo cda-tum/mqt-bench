@@ -70,7 +70,28 @@ def get_available_native_gatesets() -> list[Gateset]:
     available_gatesets.append(
         Gateset(
             "clifford+t",
-            ["s", "sdg", "t", "tdg", "z", "h", "cx"],
+            [
+                "i",
+                "x",
+                "y",
+                "z",
+                "h",
+                "s",
+                "sdg",
+                "t",
+                "tdg",
+                "sx",
+                "sxdg",
+                "cx",
+                "cy",
+                "cz",
+                "swap",
+                "iswap",
+                "dcx",
+                "ecr",
+                "measure",
+                "barrier",
+            ],
         )
     )
     return available_gatesets
