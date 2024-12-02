@@ -311,23 +311,23 @@ def test_calc_supermarq_features() -> None:
 def test_clifford_t() -> None:
     """Test the Clifford+T gateset."""
     qc = get_benchmark(
-        benchmark_name="ghz",
+        benchmark_name="qft",
         level="nativegates",
-        circuit_size=3,
+        circuit_size=4,
         compiler="qiskit",
         gateset="clifford+t",
     )
 
     for gate_type in qc.count_ops():
-        assert gate_type in get_native_gateset_by_name("clifford+t").gates or gate_type in {"measure", "barrier"}
+        assert gate_type in get_native_gateset_by_name("clifford+t").gates
 
     with pytest.raises(
         ValueError, match=r"The gateset 'clifford\+t' is not supported by TKET. Please use Qiskit instead."
     ):
         get_benchmark(
-            benchmark_name="ghz",
+            benchmark_name="qft",
             level="nativegates",
-            circuit_size=3,
+            circuit_size=4,
             compiler="tket",
             gateset="clifford+t",
         )
