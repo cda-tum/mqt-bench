@@ -18,7 +18,7 @@ class IQMDevice(Device):
     def __init__(self, calibration_path: Path) -> None:
         """Initialize the device."""
         with calibration_path.open() as json_file:
-            self.iqm_calibration = cast(IQMCalibration, json.load(json_file))
+            self.iqm_calibration = cast("IQMCalibration", json.load(json_file))
         self.calibration = None
 
         self.name = self.iqm_calibration["name"]

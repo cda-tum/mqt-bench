@@ -16,7 +16,7 @@ class RigettiAspenM3(Device):
     def __init__(self) -> None:
         """Initialize the Rigetti Aspen M3 device."""
         with get_device_calibration_path("rigetti_aspen_m3").open() as json_file:
-            self.rigetti_calibration = cast(RigettiCalibration, json.load(json_file))
+            self.rigetti_calibration = cast("RigettiCalibration", json.load(json_file))
         self.calibration = None
 
         self.name = self.rigetti_calibration["name"]

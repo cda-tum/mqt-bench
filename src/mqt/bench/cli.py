@@ -83,6 +83,6 @@ def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
     if algorithm.startswith("shor_"):
         as_list = algorithm.split("_", 2)
         assert len(as_list) == 2
-        return cast(tuple[str, str], tuple(as_list))
+        return cast("tuple[str, str]", tuple(as_list))
 
     return algorithm, None

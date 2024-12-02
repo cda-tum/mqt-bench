@@ -17,7 +17,7 @@ from mqt.bench.devices.calibration import get_device_calibration_path
 from mqt.bench.devices.ionq import DeviceCalibration, IonQHarmony
 
 
-@pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast(str, device.name))
+@pytest.mark.parametrize("device", get_available_devices(), ids=lambda device: cast("str", device.name))
 def test_sanitized_devices(device: Device) -> None:
     """Test that all devices can be sanitized and provide complete fidelity data."""
     device.read_calibration()
