@@ -273,8 +273,3 @@ def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     if benchmark_name == "tsp":
         return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
-
-
-def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
-    """Converts a coupling map to a list of tuples."""
-    return [(c[0], c[1]) for c in c_map]
