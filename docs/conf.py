@@ -58,6 +58,7 @@ extensions = [
     "nbsphinx",
     "sphinxext.opengraph",
     "sphinx_autodoc_typehints",
+    "jupyter_sphinx",
 ]
 
 pygments_style = "colorful"
@@ -73,7 +74,7 @@ intersphinx_mapping = {
     "mqt": ("https://mqt.readthedocs.io/en/latest/", None),
 }
 
-nbsphinx_execute = "auto"
+nbsphinx_execute = "always"
 highlight_language = "python3"
 nbsphinx_execute_arguments = [
     "--InlineBackend.figure_formats={'svg', 'pdf'}",
