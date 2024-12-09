@@ -44,7 +44,7 @@ class Initializer:
                 instance[ii, jj] = (xc[ii] - xc[jj]) ** 2 + (yc[ii] - yc[jj]) ** 2
                 instance[jj, ii] = instance[ii, jj]
 
-        return xc, yc, instance
+        return cast("NDArray[np.float64]", xc), cast("NDArray[np.float64]", yc), instance
 
 
 class QuantumOptimizer:

@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from numpy.typing import NDArray
 import math
+from typing import cast
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
@@ -68,7 +69,7 @@ class Shor:
                 if bits_little_endian[j] == "1":
                     angles[i] += pow(2, -k)
 
-        return angles * np.pi
+        return cast("NDArray[np.float64]", angles * np.pi)
 
     @staticmethod
     def _phi_add_gate(angles: NDArray[np.float64] | ParameterVector) -> Gate:
