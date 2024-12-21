@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from qiskit_ibm_runtime.fake_provider import FakeMontrealV2
 
@@ -14,7 +16,7 @@ def test_ibm_provider_methods() -> None:
     assert IBMProvider.get_available_basis_gates() == [["id", "rz", "sx", "x", "cx", "measure", "barrier"]]
     assert IBMProvider.get_native_gates() == ["id", "rz", "sx", "x", "cx", "measure", "barrier"]
     assert IBMProvider.get_max_qubits() == 127
-    with pytest.raises(ValueError, match="Device ibm_unknown not found."):
+    with pytest.raises(ValueError, match=re.escape("Device ibm_unknown not found.")):
         IBMProvider.get_device("ibm_unknown")
 
 
@@ -78,7 +80,7 @@ def test_get_ibm_washington_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+            with pytest.raises(ValueError, match=re.escape("Single-qubit gate duration values not available.")):
                 device.get_single_qubit_gate_duration(gate, q)
 
     for q0, q1 in device.coupling_map:
@@ -105,7 +107,7 @@ def test_get_ibmq_montreal_device() -> None:
 
         for gate in single_qubit_gates:
             assert 0 <= device.get_single_qubit_gate_fidelity(gate, q) <= 1
-            with pytest.raises(ValueError, match="Single-qubit gate duration values not available."):
+            with pytest.raises(ValueError, match=re.escape("Single-qubit gate duration values not available.")):
                 device.get_single_qubit_gate_duration(gate, q)
     for q0, q1 in device.coupling_map:
         for gate in two_qubit_gates:

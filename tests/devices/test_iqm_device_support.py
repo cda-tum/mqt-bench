@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from mqt.bench.devices import IQMProvider
@@ -19,7 +21,7 @@ def test_iqm_provider_methods() -> None:
     assert IQMProvider.get_available_basis_gates() == [["r", "cz", "measure", "barrier"]]
     assert IQMProvider.get_native_gates() == ["r", "cz", "measure", "barrier"]
     assert IQMProvider.get_max_qubits() == 20
-    with pytest.raises(ValueError, match="Device iqm_unknown not found."):
+    with pytest.raises(ValueError, match=re.escape("Device iqm_unknown not found.")):
         IQMProvider.get_device("iqm_unknown")
 
 
