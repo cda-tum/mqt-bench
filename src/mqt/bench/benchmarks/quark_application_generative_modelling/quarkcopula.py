@@ -1,6 +1,10 @@
-from qiskit import QuantumCircuit
+from __future__ import annotations
+
 from math import comb
+
 import numpy as np
+from qiskit import QuantumCircuit
+
 
 def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
     """Returns a Qiskit circuit based on the copula circuit architecture from the QUARK framework.
@@ -9,7 +13,6 @@ def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
         num_qubits: number of qubits of the returned quantum circuit
         depth: depth of the returned quantum circuit
     """
-
     rng = np.random.default_rng(10)
 
     n_registers = 2

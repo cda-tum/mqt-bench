@@ -1,8 +1,11 @@
-"""Cardinality circuit from the generative modeling application in QUARK framework. https://github.com/QUARK-framework/QUARK"""
+"""Cardinality circuit from the generative modeling application in QUARK framework. https://github.com/QUARK-framework/QUARK."""
 
+from __future__ import annotations
+
+import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import RXXGate
-import numpy as np
+
 
 def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
     """Returns a Qiskit circuit based on the cardinality circuit architecture from the QUARK framework.
@@ -11,7 +14,6 @@ def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
         num_qubits: number of qubits of the returned quantum circuit
         depth: depth of the returned quantum circuit
     """
-
     rng = np.random.default_rng(10)
     qc = QuantumCircuit(num_qubits)
 
@@ -42,4 +44,3 @@ def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
     qc.name = "quark_cardinality_circuit"
 
     return qc
-
