@@ -25,6 +25,7 @@ dependencies = [
     "pytket>=1.29.0",
     # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit!=1.2.0",
+    "qiskit-aer!=0.16.1",
     "qiskit_optimization>=0.6",
     "qiskit_nature[pyscf]>=0.7",
     "qiskit_finance>=0.4.1",
