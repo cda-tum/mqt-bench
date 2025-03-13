@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import networkx as nx
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit.library import GraphState
+from qiskit.circuit.library import GraphStateGate
 
 
 def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
@@ -19,7 +19,8 @@ def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
 
     g = nx.random_regular_graph(degree, num_qubits)
     a = nx.convert_matrix.to_numpy_array(g)
-    qc.compose(GraphState(a), inplace=True)
+    qc.compose(GraphStateGate(a), inplace=True)
+    qc = qc.decompose()
     qc.measure_all()
 
     return qc

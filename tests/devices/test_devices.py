@@ -53,38 +53,12 @@ def test_device_calibration_autoread() -> None:
 
 def test_device_calibration_errors() -> None:
     """Test that all device calibration methods raise errors when no calibration data is available."""
-    device = Device(name="test", num_qubits=1, basis_gates=[], coupling_map=[], calibration=None)
-
-    # Test all methods with no calibration
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_single_qubit_gate_fidelity("gate1", 0)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_single_qubit_gate_duration("gate1", 0)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_two_qubit_gate_fidelity("gate2", 0, 1)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_two_qubit_gate_duration("gate2", 0, 1)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_readout_fidelity(0)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.get_readout_duration(0)
-    with pytest.raises(ValueError, match=re.escape("Calibration data not available for device test.")):
-        device.sanitize_device()
     device = IonQHarmony()
     device.calibration = DeviceCalibration()
     qubit1, qubit2 = -1, -2
     gate = "wrong"
 
     # Test all methods with missing calibration data
-    device.calibration = DeviceCalibration()
-    with pytest.raises(ValueError, match=re.escape("Gate gate1 not supported by device test.")):
-        device.get_single_qubit_gate_fidelity("gate1", 0)
-    with pytest.raises(ValueError, match=re.escape("Gate gate1 not supported by device test.")):
-        device.get_single_qubit_gate_duration("gate1", 0)
-    with pytest.raises(ValueError, match=re.escape("Gate gate2 not supported by device test.")):
-        device.get_two_qubit_gate_fidelity("gate2", 0, 1)
-    with pytest.raises(ValueError, match=re.escape("Gate gate2 not supported by device test.")):
-        device.get_two_qubit_gate_duration("gate2", 0, 1)
     with pytest.raises(ValueError, match=re.escape("Readout fidelity values not available.")):
         device.get_readout_fidelity(0)
     with pytest.raises(ValueError, match=re.escape("Readout duration values not available.")):

@@ -23,7 +23,7 @@ from typing import cast
 
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit import Gate, Instruction, ParameterVector
+from qiskit.circuit import Instruction, ParameterVector
 from qiskit.circuit.library import QFT
 
 
@@ -71,20 +71,20 @@ class Shor:
         return cast("NDArray[np.float64]", angles * np.pi)
 
     @staticmethod
-    def _phi_add_gate(angles: NDArray[np.float64] | ParameterVector) -> Gate:
+    def _phi_add_gate(angles: NDArray[np.float64] | ParameterVector) -> QuantumCircuit:
         """Gate that performs addition by a in Fourier Space."""
         circuit = QuantumCircuit(len(angles), name="phi_add_a")
         for i, angle in enumerate(angles):
             circuit.p(angle, i)
-        return circuit.to_gate()
+        return circuit
 
     def _double_controlled_phi_add_mod_n(
         self,
         angles: NDArray[np.float64] | ParameterVector,
-        c_phi_add_n: Gate,
-        iphi_add_n: Gate,
-        qft: Gate,
-        iqft: Gate,
+        c_phi_add_n: QuantumCircuit,
+        iphi_add_n: QuantumCircuit,
+        qft: QuantumCircuit,
+        iqft: QuantumCircuit,
     ) -> QuantumCircuit:
         """Creates a circuit which implements double-controlled modular addition by a."""
         ctrl_qreg = QuantumRegister(2, "ctrl")
@@ -96,38 +96,36 @@ class Shor:
         cc_phi_add_a = self._phi_add_gate(angles).control(2)
         cc_iphi_add_a = cc_phi_add_a.inverse()
 
-        circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit = circuit.compose(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
 
-        circuit.append(iphi_add_n, b_qreg)
+        circuit = circuit.compose(iphi_add_n, b_qreg)
 
-        circuit.append(iqft, b_qreg)
+        circuit = circuit.compose(iqft, b_qreg)
         circuit.cx(b_qreg[-1], flag_qreg[0])
-        circuit.append(qft, b_qreg)
+        circuit = circuit.compose(qft, b_qreg)
 
-        circuit.append(c_phi_add_n, [*flag_qreg, *b_qreg])
+        circuit = circuit.compose(c_phi_add_n, [*flag_qreg, *b_qreg])
 
-        circuit.append(cc_iphi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit = circuit.compose(cc_iphi_add_a, [*ctrl_qreg, *b_qreg])
 
-        circuit.append(iqft, b_qreg)
+        circuit = circuit.compose(iqft, b_qreg)
         circuit.x(b_qreg[-1])
         circuit.cx(b_qreg[-1], flag_qreg[0])
         circuit.x(b_qreg[-1])
-        circuit.append(qft, b_qreg)
+        circuit = circuit.compose(qft, b_qreg)
 
-        circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
-
-        return circuit
+        return circuit.compose(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
 
     def _controlled_multiple_mod_n(
         self,
         num_bits_necessary: int,
         to_be_factored_number: int,
         a: int,
-        c_phi_add_n: Gate,
-        iphi_add_n: Gate,
-        qft: Gate,
-        iqft: Gate,
-    ) -> Instruction:
+        c_phi_add_n: QuantumCircuit,
+        iphi_add_n: QuantumCircuit,
+        qft: QuantumCircuit,
+        iqft: QuantumCircuit,
+    ) -> QuantumCircuit:
         """Implements modular multiplication by a as an instruction."""
         ctrl_qreg = QuantumRegister(1, "ctrl")
         x_qreg = QuantumRegister(num_bits_necessary, "x")
@@ -145,19 +143,19 @@ class Shor:
             bound = adder.assign_parameters({angle_params: angles})
             circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
 
-        circuit.append(qft, b_qreg)
+        circuit = circuit.compose(qft, b_qreg)
 
         # perform controlled addition by a on the aux register in Fourier space
         for i in range(num_bits_necessary):
             append_adder(modulo_adder, a, i)
 
-        circuit.append(iqft, b_qreg)
+        circuit = circuit.compose(iqft, b_qreg)
 
         # perform controlled subtraction by a in Fourier space on both the aux and down register
         for i in range(num_bits_necessary):
             circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
 
-        circuit.append(qft, b_qreg)
+        circuit = circuit.compose(qft, b_qreg)
 
         a_inv = pow(a, -1, mod=to_be_factored_number)
 
@@ -165,9 +163,7 @@ class Shor:
         for i in reversed(range(num_bits_necessary)):
             append_adder(modulo_adder_inv, a_inv, i)
 
-        circuit.append(iqft, b_qreg)
-
-        return circuit.to_instruction()
+        return circuit.compose(iqft, b_qreg)
 
     def _power_mod_n(self, num_bits_necessary: int, to_be_factored_number: int, a: int) -> Instruction:
         """Implements modular exponentiation a^x as an instruction."""
@@ -177,7 +173,7 @@ class Shor:
 
         circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"{a}^x mod {to_be_factored_number}")
 
-        qft = QFT(num_bits_necessary + 1, do_swaps=False).to_gate()
+        qft = QFT(num_bits_necessary + 1, do_swaps=False)
         iqft = qft.inverse()
 
         # Create gates to perform addition/subtraction by N in Fourier Space
@@ -192,7 +188,7 @@ class Shor:
             modulo_multiplier = self._controlled_multiple_mod_n(
                 num_bits_necessary, to_be_factored_number, partial_a, c_phi_add_n, iphi_add_n, qft, iqft
             )
-            circuit.append(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
+            circuit = circuit.compose(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
 
         return circuit
 
@@ -254,7 +250,7 @@ class Shor:
 
         # Apply modulo exponentiation
         modulo_power = self._power_mod_n(num_bits_necessary, to_be_factored_number, a)
-        circuit = circuit.compose(modulo_power.decompose(reps=2), circuit.qubits)
+        circuit = circuit.compose(modulo_power.decompose(reps=4), circuit.qubits)
 
         # Apply inverse QFT
         iqft = QFT(len(up_qreg)).inverse()

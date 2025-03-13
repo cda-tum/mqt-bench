@@ -35,7 +35,7 @@ def create_circuit(num_qubits: int, ancillary_mode: str = "noancilla") -> Quantu
     qc = QuantumCircuit(q2, flag, name="grover")
     qc.compose(state_preparation, inplace=True)
 
-    qc.compose(operator.power(iterations), inplace=True)
+    qc.compose(operator.power(iterations).decompose(reps=4), inplace=True)
     qc.measure_all()
     qc.name = qc.name + "-" + ancillary_mode
 
