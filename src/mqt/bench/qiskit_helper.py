@@ -53,7 +53,7 @@ def get_alg_level(
     if file_precheck and path.is_file():
         return True
 
-    return save_as_qasm(qc=qc, filename=filename_alg, qasm_format="qasm3", target_directory=target_directory)
+    return save_as_qasm(qc=qc, filename=filename_alg, qasm_format=qasm_format, target_directory=target_directory)
 
 
 @overload

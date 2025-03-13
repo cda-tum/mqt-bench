@@ -5,7 +5,7 @@ from __future__ import annotations
 from mqt.bench.devices import get_device_by_name
 
 
-def test_get_ibm_washington_device() -> None:
+def test_get_ibmq_washington_device() -> None:
     """Test getting the IBM Washington device."""
     device = get_device_by_name("ibm_washington")
     single_qubit_gates = device.get_single_qubit_gates()

@@ -20,6 +20,7 @@ def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
     g = nx.random_regular_graph(degree, num_qubits)
     a = nx.convert_matrix.to_numpy_array(g)
     qc.compose(GraphState(a), inplace=True)
+    qc = qc.decompose()
     qc.measure_all()
 
     return qc
