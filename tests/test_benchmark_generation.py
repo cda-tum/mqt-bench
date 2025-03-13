@@ -119,7 +119,7 @@ def test_quantumcircuit_alg_level(
     filepath.unlink()
 
     with pytest.raises(
-        ValueError, match="'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+        ValueError, match=re.escape("'qasm2' is not supported for the algorithm level, please use 'qasm3' instead.")
     ):
         qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
 
@@ -381,9 +381,9 @@ def test_shor() -> None:
         res_shor = shor.get_instance(elem)
         assert res_shor
 
-    with pytest.raises(ValueError, match="The input needs to be an odd integer greater than 3."):
+    with pytest.raises(ValueError, match=re.escape("The input needs to be an odd integer greater than 3.")):
         shor.Shor._validate_input(2, 2)  # noqa: SLF001
-    with pytest.raises(ValueError, match="a must have value >= 2, was 1"):
+    with pytest.raises(ValueError, match=re.escape("a must have value >= 2, was 1")):
         shor.Shor._validate_input(4, 1)  # noqa: SLF001
     with pytest.raises(ValueError, match=re.escape("The integer a needs to satisfy a < N and gcd(a, N) = 1.")):
         shor.Shor._validate_input(3, 6)  # noqa: SLF001
@@ -415,7 +415,7 @@ def test_bv() -> None:
     assert qc.num_qubits == 3
     assert "bv" in qc.name
 
-    with pytest.raises(ValueError, match="Length of hidden_string must be num_qubits - 1."):
+    with pytest.raises(ValueError, match=re.escape("Length of hidden_string must be num_qubits - 1.")):
         bv.create_circuit(3, hidden_string="wrong")
 
 

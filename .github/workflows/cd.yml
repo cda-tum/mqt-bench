@@ -10,7 +10,7 @@ on:
 jobs:
   python-packaging:
     name: 🐍 Packaging
-    uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-packaging.yml@v1.5
+    uses: cda-tum/mqt-workflows/.github/workflows/reusable-python-packaging.yml@v1.7
     with:
       pure-python: true
 
@@ -33,7 +33,7 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Generate artifact attestation for sdist and wheel(s)
-        uses: actions/attest-build-provenance@v1.4.4
+        uses: actions/attest-build-provenance@v2
         with:
           subject-path: "dist/*"
       - uses: pypa/gh-action-pypi-publish@release/v1
