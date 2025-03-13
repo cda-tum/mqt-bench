@@ -194,7 +194,7 @@ class Shor:
             )
             circuit.append(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
 
-        return circuit.to_instruction()
+        return circuit
 
     @staticmethod
     def _validate_input(to_be_factored_number: int, a: int) -> None:
@@ -254,9 +254,8 @@ class Shor:
 
         # Apply modulo exponentiation
         modulo_power = self._power_mod_n(num_bits_necessary, to_be_factored_number, a)
-        circuit.append(modulo_power, circuit.qubits)
+        circuit = circuit.compose(modulo_power.decompose(reps=2), circuit.qubits)
 
         # Apply inverse QFT
-        iqft = QFT(len(up_qreg)).inverse().to_gate()
-        circuit.append(iqft, up_qreg)
-        return circuit
+        iqft = QFT(len(up_qreg)).inverse()
+        return circuit.compose(iqft, up_qreg)
