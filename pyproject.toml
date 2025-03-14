@@ -25,6 +25,7 @@ dependencies = [
     "pytket>=1.29.0",
     # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
     "qiskit!=1.2.0",
+    "qiskit_ibm_runtime<0.37.0",
     "qiskit_qasm3_import>=0.5.0",
     "networkx>=2.8.8",
     "joblib>=1.3.0",
