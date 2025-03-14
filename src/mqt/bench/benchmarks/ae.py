@@ -4,66 +4,66 @@ from __future__ import annotations
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
 
 
-def create_circuit(num_qubits: int) -> QuantumCircuit:
+def create_circuit(num_qubits: int, probability: float = 0.2) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit
+        num_qubits: Total number of qubits, including evaluation and target qubits.
+        probability: Probability of the "good" state.
+
+    Returns:
+        QuantumCircuit: The constructed amplitude estimation circuit.
     """
-    ae = AmplitudeEstimation(
-        num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
-    )
-    problem = get_estimation_problem()
+    if num_qubits < 2:
+        msg = "Number of qubits must be at least 2 (1 evaluation + 1 target)."
+        raise ValueError(msg)
 
-    qc = ae.construct_circuit(problem)
+    num_eval_qubits = num_qubits - 1  # Number of evaluation qubits
+    qc = QuantumCircuit(num_qubits, num_eval_qubits)
+
+    # Define the Bernoulli A operator
+    theta_p = 2 * np.arcsin(np.sqrt(probability))
+    a = QuantumCircuit(1)
+    a.ry(theta_p, 0)
+
+    # Apply Hadamard gates to the evaluation qubits
+    qc.h(range(num_eval_qubits))
+
+    # Controlled applications of A and powers of Q
+    for i in range(num_eval_qubits):
+        # Apply controlled A (rotation Ry on target qubit)
+        qc.ry(theta_p, num_eval_qubits)  # Apply A
+        qc.cry(theta_p, i, num_eval_qubits)  # Controlled A
+
+        # Apply controlled Q (Grover operator)
+        qc.z(num_eval_qubits)  # Apply S_0
+        qc.ry(-theta_p, num_eval_qubits)  # Apply A†
+        qc.cry(-theta_p, i, num_eval_qubits)  # Controlled A†
+
+    # Inverse QFT
+    for i in range(num_eval_qubits // 2):
+        qc.swap(i, num_eval_qubits - i - 1)
+    for i in range(num_eval_qubits):
+        qc.h(i)
+        for j in range(i + 1, num_eval_qubits):
+            qc.cp(-np.pi / (2 ** (j - i)), j, i)
+
+    # Measure the evaluation qubits
+    qc.measure(range(num_eval_qubits), range(num_eval_qubits))
+
+    # qc = qc.decompose(reps=1)
     qc.name = "ae"
-    qc.measure_all()
-
     return qc
 
 
-class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
-    """A circuit representing the Bernoulli Q operator."""
+def inverse_qft(num_qubits: int) -> QuantumCircuit:
+    """Constructs the inverse Quantum Fourier Transform circuit.
 
-    def __init__(self, probability: float) -> None:
-        """Initialize the Bernoulli Q operator."""
-        super().__init__(1)  # circuit on 1 qubit
+    Arguments:
+        num_qubits: Number of qubits.
 
-        self._theta_p = 2 * np.arcsin(np.sqrt(probability))
-        self.ry(2 * self._theta_p, 0)
-
-    def __eq__(self, other: object) -> bool:
-        """Return if the operators are equal."""
-        return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
-
-    def __hash__(self) -> int:
-        """Return a hash of the operator."""
-        return hash(self._theta_p)
-
-    def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
-        """Return a circuit implementing the power of the operator."""
-        q_k = QuantumCircuit(1)
-        q_k.ry(2 * power * self._theta_p, 0)
-        return q_k
-
-
-def get_estimation_problem() -> EstimationProblem:
-    """Returns a estimation problem instance for a fixed p value."""
-    p = 0.2
-
-    """A circuit representing the Bernoulli A operator."""
-    a = QuantumCircuit(1)
-    theta_p = 2 * np.arcsin(np.sqrt(p))
-    a.ry(theta_p, 0)
-
-    """A circuit representing the Bernoulli Q operator."""
-    q = BernoulliQ(p)
-
-    return EstimationProblem(
-        state_preparation=a,  # A operator
-        grover_operator=q,  # Q operator
-        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
-    )
+    Returns:
+        QuantumCircuit: The inverse QFT circuit.
+    """

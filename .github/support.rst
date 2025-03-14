@@ -1,5 +1,5 @@
 Support
-=======
+#######
 
 If you are stuck with a problem using MQT Bench or have questions, please do get in touch at our `Issues <https://github.com/cda-tum/mqt-bench/issues>`_ or `Discussions <https://github.com/cda-tum/mqt-bench/discussions>`_. We'd love to help.
 
