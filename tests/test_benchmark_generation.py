@@ -435,7 +435,9 @@ def test_ae() -> None:
 
 def test_get_default_qasm_output_path() -> None:
     """Test the default QASM output path."""
-    assert Path(utils.get_default_qasm_output_path())
+    default_output_path = utils.get_default_qasm_output_path()
+    assert default_output_path
+    assert BenchmarkGenerator().qasm_output_path == default_output_path
 
 
 def test_save_as_qasm() -> None:
