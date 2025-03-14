@@ -118,6 +118,14 @@ def test_quantumcircuit_alg_level(
     assert load_qasm3(filepath)
     filepath.unlink()
 
+    res = qiskit_helper.get_alg_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=True,
+    )
+    assert res.num_qubits >= input_value
+
     with pytest.raises(
         ValueError, match=re.escape("'qasm2' is not supported for the algorithm level, please use 'qasm3' instead.")
     ):
