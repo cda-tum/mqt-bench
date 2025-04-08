@@ -18,7 +18,7 @@ class IonQDevice(Device):
     def __init__(self, calibration_path: Path) -> None:
         """Initialize the IonQ device."""
         with calibration_path.open() as json_file:
-            self.ionq_calibration = cast(IonQCalibration, json.load(json_file))
+            self.ionq_calibration = cast("IonQCalibration", json.load(json_file))
         self.calibration = None
 
         self.name = self.ionq_calibration["name"]
