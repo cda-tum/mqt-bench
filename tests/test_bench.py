@@ -31,12 +31,7 @@ from mqt.bench.benchmarks import (
     dj,
     ghz,
     graphstate,
-    groundstate,
     grover,
-    portfolioqaoa,
-    portfoliovqe,
-    pricingcall,
-    pricingput,
     qaoa,
     qft,
     qftentangled,
@@ -46,12 +41,9 @@ from mqt.bench.benchmarks import (
     qwalk,
     random,
     realamprandom,
-    routing,
     shor,
     su2random,
-    tsp,
     twolocalrandom,
-    vqe,
     wstate,
 )
 from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
@@ -98,19 +90,13 @@ def sample_filenames() -> list[str]:
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
         (su2random, 3, True),
         (twolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
         (shor, 3, False),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -174,18 +160,12 @@ def test_quantumcircuit_indep_level(
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 3, True),
         (random, 3, True),
         (realamprandom, 3, True),
         (su2random, 3, True),
         (twolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(
@@ -305,12 +285,6 @@ def test_openqasm_gates() -> None:
 def test_dj_constant_oracle() -> None:
     """Test the creation of the DJ benchmark constant oracle."""
     qc = dj.create_circuit(5, False)
-    assert qc.depth() > 0
-
-
-def test_routing() -> None:
-    """Test the creation of the routing benchmark."""
-    qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
 
 
@@ -961,14 +935,6 @@ def test_calc_supermarq_features() -> None:
     assert dense_features.critical_depth == 0.0
     assert dense_features.program_communication == 0.0
 
-    regular_qc = get_benchmark("vqe", 1, 5)
-    regular_features = utils.calc_supermarq_features(regular_qc)
-    assert 0 < regular_features.parallelism < 1
-    assert 0 < regular_features.entanglement_ratio < 1
-    assert 0 < regular_features.critical_depth < 1
-    assert 0 < regular_features.program_communication < 1
-    assert 0 < regular_features.liveness < 1
-
 
 def test_benchmark_generator() -> None:
     """Test the BenchmarkGenerator class."""
@@ -1017,31 +983,6 @@ def test_benchmark_helper_shor() -> None:
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
-
-
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_benchmark_groundstate_non_windows() -> None:
-    """Testing the Groundstate benchmarks."""
-    groundstate_instances = ["small", "medium", "large"]
-    for elem in groundstate_instances:
-        res_groundstate = groundstate.get_molecule(elem)
-        assert res_groundstate
-
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
-
-
-@pytest.mark.skipif(
-    sys.platform != "win32",
-    reason="Windows-specific test.",
-)
-def test_benchmark_groundstate_windows() -> None:
-    """Testing the Groundstate benchmarks on Windows."""
-    with pytest.raises(ImportError, match=r"PySCF is not installed"):
-        groundstate.create_circuit("small")
 
 
 def test_tket_mapped_circuit_qubit_number() -> None:
