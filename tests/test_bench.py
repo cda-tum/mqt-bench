@@ -1057,3 +1057,8 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     )
     assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127
+
+def test_create_ae_circuit_with_invalid_qubit_number():
+    """Testing the minimum number of qubits in the amplitude estimation circuit."""
+    with pytest.raises(ValueError, match=r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."):
+        get_benchmark("ae", 1, 1)
