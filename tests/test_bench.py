@@ -1015,11 +1015,11 @@ def test_validate_input() -> None:
         shor.create_circuit(4, 3)
 
     # Case 4: a >= N.
-    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\\(a, N\\) = 1."):
+    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
         shor.create_circuit(15, 15)
 
     # Case 5: gcd(a, N) != 1 (for example, N=15 and a=6, since gcd(15,6)=3).
-    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\\(a, N\\) = 1."):
+    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
         shor.create_circuit(15, 6)
 
     # Case 6: Valid input (should not raise any exception).
