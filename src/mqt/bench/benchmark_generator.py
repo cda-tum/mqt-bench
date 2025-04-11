@@ -189,28 +189,28 @@ class BenchmarkGenerator:
                         else:
                             break
 
-            for parameter_instance in parameter_space:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                if qc.num_qubits <= device.num_qubits:
-                    res = timeout_watcher(
-                        tket_helper.get_mapped_level,
-                        self.timeout,
-                        [
-                            qc,
-                            qc.num_qubits,
-                            device,
-                            file_precheck,
-                            False,
-                            self.qasm_output_path,
-                        ],
-                    )
-                    if not res:
+                for parameter_instance in parameter_space:
+                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                    if not qc:
                         break
-                else:
-                    break
+                    assert isinstance(qc, QuantumCircuit)
+                    if qc.num_qubits <= device.num_qubits:
+                        res = timeout_watcher(
+                            tket_helper.get_mapped_level,
+                            self.timeout,
+                            [
+                                qc,
+                                qc.num_qubits,
+                                device,
+                                file_precheck,
+                                False,
+                                self.qasm_output_path,
+                            ],
+                        )
+                        if not res:
+                            break
+                    else:
+                        break
 
     def generate_native_gates_levels(
         self,
