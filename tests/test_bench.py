@@ -1002,7 +1002,6 @@ def test_tket_mapped_circuit_qubit_number() -> None:
 
 def test_validate_input() -> None:
     """Test the _validate_input() method for various edge cases."""
-
     # Case 1: to_be_factored_number (N) < 3.
     with pytest.raises(ValueError, match="N must have value >= 3, was 2"):
         shor.create_circuit(2, 2)
