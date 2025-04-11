@@ -998,3 +998,33 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     )
     assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127
+
+
+def test_validate_input() -> None:
+    """Test the _validate_input() method for various edge cases."""
+
+    # Case 1: to_be_factored_number (N) < 3.
+    with pytest.raises(ValueError, match="N must have value >= 3, was 2"):
+        shor.create_circuit(2, 2)
+
+    # Case 2: a < 2.
+    with pytest.raises(ValueError, match="a must have value >= 2, was 1"):
+        shor.create_circuit(15, 1)
+
+    # Case 3: N is even (and thus not odd).
+    with pytest.raises(ValueError, match="The input needs to be an odd integer greater than 1."):
+        shor.create_circuit(4, 3)
+
+    # Case 4: a >= N.
+    with pytest.raises(ValueError, match="The integer a needs to satisfy a < N and gcd\\(a, N\\) = 1."):
+        shor.create_circuit(15, 15)
+
+    # Case 5: gcd(a, N) != 1 (for example, N=15 and a=6, since gcd(15,6)=3).
+    with pytest.raises(ValueError, match="The integer a needs to satisfy a < N and gcd\\(a, N\\) = 1."):
+        shor.create_circuit(15, 6)
+
+    # Case 6: Valid input (should not raise any exception).
+    try:
+        shor.create_circuit(15, 2)
+    except ValueError as e:
+        pytest.fail(f"Unexpected ValueError raised for valid input: {e}")
