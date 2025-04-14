@@ -42,48 +42,12 @@
       "precheck_possible": true
     },
     {
-      "name": "groundstate",
-      "include": true,
-      "instances": ["small", "medium", "large"],
-      "precheck_possible": false
-    },
-    {
       "name": "grover",
       "include": true,
       "min_qubits": 2,
       "max_qubits": 131,
       "stepsize": 1,
       "ancillary_mode": ["noancilla", "v-chain"],
-      "precheck_possible": false
-    },
-    {
-      "name": "portfolioqaoa",
-      "include": true,
-      "min_qubits": 3,
-      "max_qubits": 14,
-      "stepsize": 1,
-      "precheck_possible": true
-    },
-    {
-      "name": "portfoliovqe",
-      "include": true,
-      "min_qubits": 3,
-      "max_qubits": 14,
-      "stepsize": 1,
-      "precheck_possible": true
-    },
-    {
-      "name": "pricingcall",
-      "include": true,
-      "min_uncertainty": 2,
-      "max_uncertainty": 131,
-      "precheck_possible": false
-    },
-    {
-      "name": "pricingput",
-      "include": true,
-      "min_uncertainty": 2,
-      "max_uncertainty": 131,
       "precheck_possible": false
     },
     {
@@ -160,13 +124,6 @@
       "precheck_possible": true
     },
     {
-      "name": "routing",
-      "include": true,
-      "min_nodes": 2,
-      "max_nodes": 131,
-      "precheck_possible": false
-    },
-    {
       "name": "shor",
       "include": true,
       "instances": ["xsmall", "small", "medium", "large"],
@@ -181,24 +138,9 @@
       "precheck_possible": true
     },
     {
-      "name": "tsp",
-      "include": true,
-      "min_nodes": 2,
-      "max_nodes": 131,
-      "precheck_possible": false
-    },
-    {
       "name": "twolocalrandom",
       "include": true,
       "min_qubits": 2,
-      "max_qubits": 131,
-      "stepsize": 1,
-      "precheck_possible": true
-    },
-    {
-      "name": "vqe",
-      "include": true,
-      "min_qubits": 3,
       "max_qubits": 131,
       "stepsize": 1,
       "precheck_possible": true
