@@ -25,6 +25,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
     num_params = qc.num_parameters
     qc = qc.assign_parameters(2 * np.pi * rng.random(num_params))
     qc.measure_all()
-    qc.name = "realamprandom"
+    qc.name = "vqerealamprandom"
 
     return qc
