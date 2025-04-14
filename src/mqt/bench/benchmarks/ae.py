@@ -4,66 +4,53 @@ from __future__ import annotations
 
 import numpy as np
 from qiskit import QuantumCircuit
-from qiskit_algorithms import AmplitudeEstimation, EstimationProblem
+from qiskit.circuit.library import PhaseEstimation
 
 
-def create_circuit(num_qubits: int) -> QuantumCircuit:
+def create_circuit(num_qubits: int, probability: float = 0.2) -> QuantumCircuit:
     """Returns a quantum circuit implementing Quantum Amplitude Estimation.
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit
-    """
-    ae = AmplitudeEstimation(
-        num_eval_qubits=num_qubits - 1,  # -1 because of the to be estimated qubit
-    )
-    problem = get_estimation_problem()
+        num_qubits: Total number of qubits, including evaluation and target qubits.
+        probability: Probability of the "good" state.
 
-    qc = ae.construct_circuit(problem)
+    Returns:
+        QuantumCircuit: The constructed amplitude estimation circuit.
+    """
+    if num_qubits < 2:
+        msg = "Number of qubits must be at least 2 (1 evaluation + 1 target)."
+        raise ValueError(msg)
+
+    # Compute the rotation angle: theta_p = 2 * arcsin(sqrt(p))
+    theta_p = 2 * np.arcsin(np.sqrt(probability))
+
+    # Create the state-preparation operator (A operator) as a single-qubit circuit.
+    state_preparation = QuantumCircuit(1)
+    state_preparation.ry(theta_p, 0)
+
+    # Create the Grover operator (Bernoulli Q operator) as a single-qubit circuit.
+    # It applies a rotation of 2 * theta_p, which corresponds to an effective rotation of 4*arcsin(sqrt(p)).
+    grover_operator = QuantumCircuit(1)
+    grover_operator.ry(2 * theta_p, 0)
+
+    # Compute the number of evaluation qubits (phase estimation qubits).
+    num_eval_qubits = num_qubits - 1
+
+    # Build the phase estimation circuit with the specified number of evaluation qubits and the Grover operator.
+    pe = PhaseEstimation(num_eval_qubits, grover_operator)
+
+    # Create the overall circuit using the quantum registers from the phase estimation circuit.
+    qc = QuantumCircuit(*pe.qregs)
+
+    # Compose the state-preparation operator on the target qubit. We assume that the target qubit
+    # is the last qubit in the register list.
+    qc.compose(state_preparation, list(range(num_eval_qubits, qc.num_qubits)), inplace=True)
+
+    # Compose the phase estimation component.
+    qc.compose(pe, inplace=True)
+
+    # Name the circuit and add measurements to all evaluation qubits.
     qc.name = "ae"
     qc.measure_all()
 
     return qc
-
-
-class BernoulliQ(QuantumCircuit):  # type: ignore[misc]
-    """A circuit representing the Bernoulli Q operator."""
-
-    def __init__(self, probability: float) -> None:
-        """Initialize the Bernoulli Q operator."""
-        super().__init__(1)  # circuit on 1 qubit
-
-        self._theta_p = 2 * np.arcsin(np.sqrt(probability))
-        self.ry(2 * self._theta_p, 0)
-
-    def __eq__(self, other: object) -> bool:
-        """Return if the operators are equal."""
-        return isinstance(other, BernoulliQ) and self._theta_p == other._theta_p
-
-    def __hash__(self) -> int:
-        """Return a hash of the operator."""
-        return hash(self._theta_p)
-
-    def power(self, power: float, _matrix_power: bool = True) -> QuantumCircuit:
-        """Return a circuit implementing the power of the operator."""
-        q_k = QuantumCircuit(1)
-        q_k.ry(2 * power * self._theta_p, 0)
-        return q_k
-
-
-def get_estimation_problem() -> EstimationProblem:
-    """Returns a estimation problem instance for a fixed p value."""
-    p = 0.2
-
-    """A circuit representing the Bernoulli A operator."""
-    a = QuantumCircuit(1)
-    theta_p = 2 * np.arcsin(np.sqrt(p))
-    a.ry(theta_p, 0)
-
-    """A circuit representing the Bernoulli Q operator."""
-    q = BernoulliQ(p)
-
-    return EstimationProblem(
-        state_preparation=a,  # A operator
-        grover_operator=q,  # Q operator
-        objective_qubits=[0],  # the "good" state Psi1 is identified as measuring |1> in qubit 0
-    )
