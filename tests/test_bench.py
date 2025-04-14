@@ -321,7 +321,7 @@ def test_unidirectional_coupling_map() -> None:
         level="mapped",
         circuit_size=3,
         compiler="tket",
-        gateset="oqc",
+        provider_name="oqc",
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
