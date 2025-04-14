@@ -17,20 +17,19 @@ from pytket.passes import (
     RoutingPass,
     SynthesiseTket,
 )
-from pytket.placement import GraphPlacement, LinePlacement
-from pytket.qasm import circuit_to_qasm_str
+from pytket.placement import LinePlacement
 from qiskit import QuantumCircuit, transpile
 
-from .utils import convert_cmap_to_tuple_list, get_openqasm_gates, save_as_qasm
+from .utils import get_openqasm_gates, save_as_qasm
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
     from pytket.circuit import Circuit
 
-    from .devices import Device, Provider
+    from .devices import Device, Gateset
 
 
-def get_rebase(gate_set: list[str]) -> BasePass:
+def get_rebase(gateset: list[str]) -> BasePass:
     """Get the rebase pass for the given gate set."""
     op_dict = {
         "r": OpType.U3,
@@ -46,7 +45,7 @@ def get_rebase(gate_set: list[str]) -> BasePass:
         "ecr": OpType.ECR,
         "measure": OpType.Measure,
     }
-    return AutoRebase({op_dict[key] for key in gate_set if key in op_dict})
+    return AutoRebase({op_dict[key] for key in gateset if key in op_dict})
 
 
 @overload
@@ -57,6 +56,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> Circuit: ...
 
 
@@ -68,6 +68,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool: ...
 
 
@@ -78,6 +79,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -88,6 +90,7 @@ def get_indep_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
 
     Returns:
         if return_qc == True: quantum circuit object
@@ -114,8 +117,9 @@ def get_indep_level(
     if return_qc:
         return qc_tket
     return save_as_qasm(
-        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
-        filename_indep,
+        qc=qc_tket,
+        filename=filename_indep,
+        qasm_format=qasm_format,
         target_directory=target_directory,
     )
 
@@ -123,53 +127,60 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> Circuit: ...
 
 
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool: ...
 
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        provider: determines the native gate set
+        gateset: contains the name of the gateset and a list of native gates
         num_qubits: number of qubits
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
+    if gateset.gateset_name == "clifford+t":
+        msg = "The gateset 'clifford+t' is not supported by TKET. Please use Qiskit instead."
+        raise ValueError(msg)
     if not target_filename:
-        filename_native = qc.name + "_nativegates_" + provider.provider_name + "_tket_" + str(num_qubits)
+        filename_native = qc.name + "_nativegates_" + gateset.gateset_name + "_tket_" + str(num_qubits)
     else:
         filename_native = target_filename
 
@@ -190,18 +201,18 @@ def get_native_gates_level(
         print("TKET Exception NativeGates: ", e)
         return False
 
-    gate_set = provider.get_native_gates()
-    native_gate_set_rebase = get_rebase(gate_set)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase = get_rebase(gateset.gates)
+    native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase.apply(qc_tket)
 
     if return_qc:
         return qc_tket
     return save_as_qasm(
-        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
-        filename_native,
-        gate_set,
+        qc=qc_tket,
+        filename=filename_native,
+        qasm_format=qasm_format,
+        gateset=gateset.gates,
         target_directory=target_directory,
     )
 
@@ -211,11 +222,11 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> Circuit: ...
 
 
@@ -224,11 +235,11 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool: ...
 
 
@@ -236,11 +247,11 @@ def get_mapped_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
     device: Device,
-    lineplacement: bool,
     file_precheck: bool,
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
+    qasm_format: str = "qasm2",
 ) -> bool | Circuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -248,20 +259,18 @@ def get_mapped_level(
         qc: quantum circuit which the to be created benchmark circuit is based on
         num_qubits: number of qubits
         device: target device
-        lineplacement: if true line placement is used, else graph placement
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    placement = "line" if lineplacement else "graph"
-
     if not target_filename:
-        filename_mapped = qc.name + "_mapped_" + device.name + "_tket_" + placement + "_" + str(num_qubits)
+        filename_mapped = qc.name + "_mapped_" + device.name + "_tket_" + str(num_qubits)
     else:
         filename_mapped = target_filename
 
@@ -284,7 +293,7 @@ def get_mapped_level(
         return False
 
     cmap = device.coupling_map
-    cmap_converted = convert_cmap_to_tuple_list(cmap)
+    cmap_converted = [(c[0], c[1]) for c in cmap]
     arch = Architecture(cmap_converted)
 
     # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
@@ -292,25 +301,27 @@ def get_mapped_level(
     diff = highest_used_qubit_index + 1 - qc_tket.n_qubits  # offset of one is added because the indices start at 0
     qc_tket.add_blank_wires(diff)
 
-    native_gate_set_rebase = get_rebase(device.basis_gates)
-    native_gate_set_rebase.apply(qc_tket)
+    native_gateset_rebase = get_rebase(device.gateset.gates)
+    native_gateset_rebase.apply(qc_tket)
     FullPeepholeOptimise(target_2qb_gate=OpType.TK2).apply(qc_tket)
-    placer = LinePlacement(arch) if lineplacement else GraphPlacement(arch)
+    placer = LinePlacement(arch)
     PlacementPass(placer).apply(qc_tket)
     RoutingPass(arch).apply(qc_tket)
     PeepholeOptimise2Q(allow_swaps=False).apply(qc_tket)
     SynthesiseTket().apply(qc_tket)
     if not qc_tket.valid_connectivity(arch, directed=True):
         CXMappingPass(arc=arch, placer=placer, directed_cx=True, delay_measures=False).apply(qc_tket)
-    native_gate_set_rebase.apply(qc_tket)
-
+    native_gateset_rebase.apply(qc_tket)
     if return_qc:
         return qc_tket
+
     return save_as_qasm(
-        circuit_to_qasm_str(qc_tket, maxwidth=qc.num_qubits),
-        filename_mapped,
-        device.basis_gates,
-        True,
-        cmap,
-        target_directory,
+        qc=qc_tket,
+        filename=filename_mapped,
+        qasm_format=qasm_format,
+        gateset=device.gateset.gates,
+        mapped=True,
+        c_map=cmap,
+        target_directory=target_directory,
+        initial_qubits=qc.num_qubits,
     )
