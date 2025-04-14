@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 from qiskit import QuantumCircuit
+from qiskit.circuit.library import PhaseEstimation
 
 
 def create_circuit(num_qubits: int, probability: float = 0.2) -> QuantumCircuit:
@@ -20,50 +21,36 @@ def create_circuit(num_qubits: int, probability: float = 0.2) -> QuantumCircuit:
         msg = "Number of qubits must be at least 2 (1 evaluation + 1 target)."
         raise ValueError(msg)
 
-    num_eval_qubits = num_qubits - 1  # Number of evaluation qubits
-    qc = QuantumCircuit(num_qubits, num_eval_qubits)
-
-    # Define the Bernoulli A operator
+    # Compute the rotation angle: theta_p = 2 * arcsin(sqrt(p))
     theta_p = 2 * np.arcsin(np.sqrt(probability))
-    a = QuantumCircuit(1)
-    a.ry(theta_p, 0)
 
-    # Apply Hadamard gates to the evaluation qubits
-    qc.h(range(num_eval_qubits))
+    # Create the state-preparation operator (A operator) as a single-qubit circuit.
+    state_preparation = QuantumCircuit(1)
+    state_preparation.ry(theta_p, 0)
 
-    # Controlled applications of A and powers of Q
-    for i in range(num_eval_qubits):
-        # Apply controlled A (rotation Ry on target qubit)
-        qc.ry(theta_p, num_eval_qubits)  # Apply A
-        qc.cry(theta_p, i, num_eval_qubits)  # Controlled A
+    # Create the Grover operator (Bernoulli Q operator) as a single-qubit circuit.
+    # It applies a rotation of 2 * theta_p, which corresponds to an effective rotation of 4*arcsin(sqrt(p)).
+    grover_operator = QuantumCircuit(1)
+    grover_operator.ry(2 * theta_p, 0)
 
-        # Apply controlled Q (Grover operator)
-        qc.z(num_eval_qubits)  # Apply S_0
-        qc.ry(-theta_p, num_eval_qubits)  # Apply A†
-        qc.cry(-theta_p, i, num_eval_qubits)  # Controlled A†
+    # Compute the number of evaluation qubits (phase estimation qubits).
+    num_eval_qubits = num_qubits - 1
 
-    # Inverse QFT
-    for i in range(num_eval_qubits // 2):
-        qc.swap(i, num_eval_qubits - i - 1)
-    for i in range(num_eval_qubits):
-        qc.h(i)
-        for j in range(i + 1, num_eval_qubits):
-            qc.cp(-np.pi / (2 ** (j - i)), j, i)
+    # Build the phase estimation circuit with the specified number of evaluation qubits and the Grover operator.
+    pe = PhaseEstimation(num_eval_qubits, grover_operator)
 
-    # Measure the evaluation qubits
-    qc.measure(range(num_eval_qubits), range(num_eval_qubits))
+    # Create the overall circuit using the quantum registers from the phase estimation circuit.
+    qc = QuantumCircuit(*pe.qregs)
 
-    # qc = qc.decompose(reps=1)
+    # Compose the state-preparation operator on the target qubit. We assume that the target qubit
+    # is the last qubit in the register list.
+    qc.compose(state_preparation, list(range(num_eval_qubits, qc.num_qubits)), inplace=True)
+
+    # Compose the phase estimation component.
+    qc.compose(pe, inplace=True)
+
+    # Name the circuit and add measurements to all evaluation qubits.
     qc.name = "ae"
+    qc.measure_all()
+
     return qc
-
-
-def inverse_qft(num_qubits: int) -> QuantumCircuit:
-    """Constructs the inverse Quantum Fourier Transform circuit.
-
-    Arguments:
-        num_qubits: Number of qubits.
-
-    Returns:
-        QuantumCircuit: The inverse QFT circuit.
-    """
