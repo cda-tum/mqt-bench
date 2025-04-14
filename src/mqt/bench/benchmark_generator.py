@@ -134,15 +134,6 @@ class BenchmarkGenerator:
             elif benchmark["name"] == "shor":
                 instances = [lib.get_instance(choice) for choice in benchmark["instances"]]
 
-            elif benchmark["name"] in ("routing", "tsp"):
-                instances = range(benchmark["min_nodes"], benchmark["max_nodes"])
-
-            elif benchmark["name"] == "groundstate":
-                instances = benchmark["instances"]
-
-            elif benchmark["name"] in ("pricingcall", "pricingput"):
-                instances = range(benchmark["min_uncertainty"], benchmark["max_uncertainty"])
-
             else:
                 instances = range(
                     benchmark["min_qubits"],
@@ -353,7 +344,7 @@ def get_benchmark(
         benchmark_name: name of the to be generated benchmark
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
-        benchmark_instance_name: Input selection for some benchmarks, namely "groundstate" and "shor"
+        benchmark_instance_name: Input selection for some benchmarks, namely and "shor"
         compiler: "qiskit" or "tket"
         compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit or placement for TKET)
         provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
@@ -371,11 +362,11 @@ def get_benchmark(
         msg = f"Selected level must be in {get_supported_levels()}."
         raise ValueError(msg)
 
-    if benchmark_name not in ["shor", "groundstate"] and not (isinstance(circuit_size, int) and circuit_size > 0):
+    if benchmark_name != "shor" and not (isinstance(circuit_size, int) and circuit_size > 0):
         msg = "circuit_size must be None or int for this benchmark."
         raise ValueError(msg)
 
-    if benchmark_name in ["shor", "groundstate"] and not isinstance(benchmark_instance_name, str):
+    if benchmark_name == "shor" and not isinstance(benchmark_instance_name, str):
         msg = "benchmark_instance_name must be defined for this benchmark."
         raise ValueError(msg)
 
@@ -397,9 +388,6 @@ def get_benchmark(
     elif benchmark_name == "shor":
         to_be_factored_number, a_value = lib.get_instance(benchmark_instance_name)
         qc = lib.create_circuit(to_be_factored_number, a_value)
-
-    elif benchmark_name == "groundstate":
-        qc = lib.create_circuit(benchmark_instance_name)
 
     else:
         qc = lib.create_circuit(circuit_size)

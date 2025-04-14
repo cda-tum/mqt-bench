@@ -28,15 +28,11 @@ from mqt.bench.benchmark_generator import (
 )
 from mqt.bench.benchmarks import (
     ae,
+    bv,
     dj,
     ghz,
     graphstate,
-    groundstate,
     grover,
-    portfolioqaoa,
-    portfoliovqe,
-    pricingcall,
-    pricingput,
     qaoa,
     qft,
     qftentangled,
@@ -44,14 +40,11 @@ from mqt.bench.benchmarks import (
     qpeexact,
     qpeinexact,
     qwalk,
-    random,
-    realamprandom,
-    routing,
+    randomcircuit,
     shor,
-    su2random,
-    tsp,
-    twolocalrandom,
-    vqe,
+    vqerealamprandom,
+    vqesu2random,
+    vqetwolocalrandom,
     wstate,
 )
 from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
@@ -88,6 +81,7 @@ def sample_filenames() -> list[str]:
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
+        (bv, 3, True),
         (ghz, 2, True),
         (dj, 3, True),
         (graphstate, 3, True),
@@ -98,19 +92,13 @@ def sample_filenames() -> list[str]:
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 3, True),
-        (random, 3, True),
-        (realamprandom, 3, True),
-        (su2random, 3, True),
-        (twolocalrandom, 3, True),
+        (randomcircuit, 3, True),
+        (vqerealamprandom, 3, True),
+        (vqesu2random, 3, True),
+        (vqetwolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
         (shor, 3, False),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_indep_level(
@@ -164,6 +152,7 @@ def test_quantumcircuit_indep_level(
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
+        (bv, 3, True),
         (ghz, 3, True),
         (dj, 3, True),
         (graphstate, 3, True),
@@ -174,18 +163,12 @@ def test_quantumcircuit_indep_level(
         (qnn, 3, True),
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
-        (tsp, 3, False),
         (qwalk, 3, False),
-        (vqe, 3, True),
-        (random, 3, True),
-        (realamprandom, 3, True),
-        (su2random, 3, True),
-        (twolocalrandom, 3, True),
+        (randomcircuit, 3, True),
+        (vqerealamprandom, 3, True),
+        (vqesu2random, 3, True),
+        (vqetwolocalrandom, 3, True),
         (wstate, 3, True),
-        (portfolioqaoa, 3, True),
-        (portfoliovqe, 3, True),
-        (pricingcall, 3, False),
-        (pricingput, 3, False),
     ],
 )
 def test_quantumcircuit_native_and_mapped_levels(
@@ -302,15 +285,25 @@ def test_openqasm_gates() -> None:
     assert len(openqasm_gates) == num_openqasm_gates
 
 
+def test_bv() -> None:
+    """Test the creation of the BV benchmark."""
+    qc = bv.create_circuit(3)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    qc = bv.create_circuit(3, dynamic=True)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    with pytest.raises(ValueError, match=r"Length of hidden_string must be num_qubits - 1."):
+        bv.create_circuit(3, hidden_string="wrong")
+
+
 def test_dj_constant_oracle() -> None:
     """Test the creation of the DJ benchmark constant oracle."""
     qc = dj.create_circuit(5, False)
-    assert qc.depth() > 0
-
-
-def test_routing() -> None:
-    """Test the creation of the routing benchmark."""
-    qc = routing.create_circuit(4, 2)
     assert qc.depth() > 0
 
 
@@ -960,14 +953,6 @@ def test_calc_supermarq_features() -> None:
     assert dense_features.critical_depth == 0.0
     assert dense_features.program_communication == 0.0
 
-    regular_qc = get_benchmark("vqe", 1, 5)
-    regular_features = utils.calc_supermarq_features(regular_qc)
-    assert 0 < regular_features.parallelism < 1
-    assert 0 < regular_features.entanglement_ratio < 1
-    assert 0 < regular_features.critical_depth < 1
-    assert 0 < regular_features.program_communication < 1
-    assert 0 < regular_features.liveness < 1
-
 
 def test_benchmark_generator() -> None:
     """Test the BenchmarkGenerator class."""
@@ -1018,31 +1003,6 @@ def test_benchmark_helper_shor() -> None:
         assert res_shor
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="PySCF is not available on Windows.",
-)
-def test_benchmark_groundstate_non_windows() -> None:
-    """Testing the Groundstate benchmarks."""
-    groundstate_instances = ["small", "medium", "large"]
-    for elem in groundstate_instances:
-        res_groundstate = groundstate.get_molecule(elem)
-        assert res_groundstate
-
-    qc = groundstate.create_circuit("small")
-    assert qc.depth() > 0
-
-
-@pytest.mark.skipif(
-    sys.platform != "win32",
-    reason="Windows-specific test.",
-)
-def test_benchmark_groundstate_windows() -> None:
-    """Testing the Groundstate benchmarks on Windows."""
-    with pytest.raises(ImportError, match=r"PySCF is not installed"):
-        groundstate.create_circuit("small")
-
-
 def test_tket_mapped_circuit_qubit_number() -> None:
     """Test the number of qubits in the tket-mapped circuit."""
     qc = get_benchmark("ghz", 1, 5)
@@ -1056,3 +1016,38 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     )
     assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127
+
+
+def test_validate_input() -> None:
+    """Test the _validate_input() method for various edge cases."""
+    # Case 1: to_be_factored_number (N) < 3.
+    with pytest.raises(ValueError, match=r"N must have value >= 3, was 2"):
+        shor.create_circuit(2, 2)
+
+    # Case 2: a < 2.
+    with pytest.raises(ValueError, match=r"a must have value >= 2, was 1"):
+        shor.create_circuit(15, 1)
+
+    # Case 3: N is even (and thus not odd).
+    with pytest.raises(ValueError, match=r"The input needs to be an odd integer greater than 1."):
+        shor.create_circuit(4, 3)
+
+    # Case 4: a >= N.
+    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
+        shor.create_circuit(15, 15)
+
+    # Case 5: gcd(a, N) != 1 (for example, N=15 and a=6, since gcd(15,6)=3).
+    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
+        shor.create_circuit(15, 6)
+
+    # Case 6: Valid input (should not raise any exception).
+    try:
+        shor.create_circuit(15, 2)
+    except ValueError as e:
+        pytest.fail(f"Unexpected ValueError raised for valid input: {e}")
+
+
+def test_create_ae_circuit_with_invalid_qubit_number() -> None:
+    """Testing the minimum number of qubits in the amplitude estimation circuit."""
+    with pytest.raises(ValueError, match=r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."):
+        get_benchmark("ae", 1, 1)
