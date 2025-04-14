@@ -314,6 +314,21 @@ def test_routing() -> None:
     assert qc.depth() > 0
 
 
+def test_unidirectional_coupling_map() -> None:
+    """Test the unidirectional coupling map for the OQC Lucy device."""
+    qc = get_benchmark(
+        benchmark_name="dj",
+        level="mapped",
+        circuit_size=3,
+        compiler="tket",
+        gateset="oqc",
+        device_name="oqc_lucy",
+    )
+    # check that all gates in the circuit are in the coupling map
+    cmap = [(c[0], c[1]) for c in OQCProvider.get_device("oqc_lucy").coupling_map]
+    assert qc.valid_connectivity(arch=pytket.architecture.Architecture(cmap), directed=True)
+
+
 @pytest.mark.parametrize(
     (
         "benchmark_name",
