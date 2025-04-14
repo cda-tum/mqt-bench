@@ -10,7 +10,7 @@ from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
 
-from . import CompilerSettings, QiskitSettings, TKETSettings, get_benchmark
+from . import CompilerSettings, QiskitSettings, get_benchmark
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -44,7 +44,6 @@ def main() -> None:
     parser.add_argument("--num-qubits", type=int, help="Number of Qubits", required=True)
     parser.add_argument("--compiler", type=str, help="Name of the compiler")
     parser.add_argument("--qiskit-optimization-level", type=int, help="Qiskit compiler optimization level")
-    parser.add_argument("--tket-placement", type=str, help="TKET placement")
     parser.add_argument("--native-gate-set", type=str, help="Name of the provider")
     parser.add_argument("--device", type=str, help="Name of the device")
     args = parser.parse_args()
@@ -52,10 +51,6 @@ def main() -> None:
     qiskit_settings = QiskitSettings()
     if args.qiskit_optimization_level is not None:
         qiskit_settings = QiskitSettings(args.qiskit_optimization_level)
-
-    tket_settings = TKETSettings()
-    if args.tket_placement is not None:
-        tket_settings = TKETSettings(args.tket_placement)
 
     # Note: Assertions about argument validity are in get_benchmark()
 
@@ -71,7 +66,6 @@ def main() -> None:
         compiler=args.compiler,
         compiler_settings=CompilerSettings(
             qiskit=qiskit_settings,
-            tket=tket_settings,
         ),
         provider_name=args.native_gate_set,
         device_name=args.device,
