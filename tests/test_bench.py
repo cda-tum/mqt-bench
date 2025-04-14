@@ -28,6 +28,7 @@ from mqt.bench.benchmark_generator import (
 )
 from mqt.bench.benchmarks import (
     ae,
+    bv,
     dj,
     ghz,
     graphstate,
@@ -80,6 +81,7 @@ def sample_filenames() -> list[str]:
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
+        (bv, 3, True),
         (ghz, 2, True),
         (dj, 3, True),
         (graphstate, 3, True),
@@ -150,6 +152,7 @@ def test_quantumcircuit_indep_level(
     ("benchmark", "input_value", "scalable"),
     [
         (ae, 3, True),
+        (bv, 3, True),
         (ghz, 3, True),
         (dj, 3, True),
         (graphstate, 3, True),
@@ -280,6 +283,22 @@ def test_openqasm_gates() -> None:
     openqasm_gates = utils.get_openqasm_gates()
     num_openqasm_gates = 42
     assert len(openqasm_gates) == num_openqasm_gates
+
+
+def test_bv() -> None:
+    """Test the creation of the BV benchmark."""
+    qc = bv.create_circuit(3)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    qc = bv.create_circuit(3, dynamic=True)
+    assert qc.depth() > 0
+    assert qc.num_qubits == 3
+    assert "bv" in qc.name
+
+    with pytest.raises(ValueError, match=r"Length of hidden_string must be num_qubits - 1."):
+        bv.create_circuit(3, hidden_string="wrong")
 
 
 def test_dj_constant_oracle() -> None:
@@ -998,3 +1017,9 @@ def test_tket_mapped_circuit_qubit_number() -> None:
     )
     assert isinstance(res, pytket.Circuit)
     assert res.n_qubits == 127
+
+
+def test_create_ae_circuit_with_invalid_qubit_number() -> None:
+    """Testing the minimum number of qubits in the amplitude estimation circuit."""
+    with pytest.raises(ValueError, match=r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."):
+        get_benchmark("ae", 1, 1)

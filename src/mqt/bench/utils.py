@@ -34,6 +34,7 @@ def get_supported_benchmarks() -> list[str]:
     """Returns a list of all supported benchmarks."""
     return [
         "ae",
+        "bv",
         "dj",
         "grover-noancilla",
         "grover-v-chain",
