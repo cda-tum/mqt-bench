@@ -20,7 +20,7 @@ from pytket.passes import (
 from pytket.placement import LinePlacement
 from qiskit import QuantumCircuit, transpile
 
-from .utils import convert_cmap_to_tuple_list, get_openqasm_gates, save_as_qasm
+from .utils import get_openqasm_gates, save_as_qasm
 
 if TYPE_CHECKING:  # pragma: no cover
     from pytket._tket.passes import BasePass
@@ -292,7 +292,7 @@ def get_mapped_level(
         return False
 
     cmap = device.coupling_map
-    cmap_converted = convert_cmap_to_tuple_list(cmap)
+    cmap_converted = [(c[0], c[1]) for c in cmap]
     arch = Architecture(cmap_converted)
 
     # add blank wires to the circuit such that afterwards the number of qubits is equal to the number of qubits of the architecture
