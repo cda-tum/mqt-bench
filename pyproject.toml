@@ -19,12 +19,9 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 
 dependencies = [
-    #  manages the dependencies for qiskit and tket in a combined fashion
-    "pytket-qiskit>=0.53.0",
-    # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
-    "pytket>=1.29.0",
     # Qiskit 1.2.1 contains some fixes for importing OpenQASM 3 files
     "qiskit>=1.2.1",
+    "qiskit<=1.4.2",
     "qiskit_ibm_runtime<0.37.0", # FakeBackends have been removed with 0.37.0
     "qiskit-aer!=0.16.1", # excludig 0.16.1 due to an CI error for linux arm64 runners
     "qiskit_qasm3_import>=0.5.0",
@@ -106,14 +103,11 @@ filterwarnings = [
     # Qiskit 1.2 deprecations
     'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
     'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
-    'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
     'ignore:.*qiskit.providers.models.* is deprecated since qiskit 1.2*:DeprecationWarning:qiskit.*',
     'ignore:.*qiskit.primitives.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
     'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
-    # TKET Warnings
-    'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.qiskit_convert',
     # Qiskit 1.3 deprecations
     'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.pulse.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
@@ -150,11 +144,7 @@ explicit_package_bases = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pytket.*", "qiskit_finance.*"]
-implicit_reexport = true
-
-[[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_algorithms.*", "qiskit_ibm_runtime.*", "pytest_console_scripts.*"]
+module = ["qiskit.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_ibm_runtime.*", "pytest_console_scripts.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

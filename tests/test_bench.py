@@ -6,13 +6,10 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pytket
-
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
-from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
 from qiskit.qasm3 import load as load_qasm3
 
@@ -24,7 +21,6 @@ from mqt.bench.benchmark_generator import (
     get_benchmark,
     qiskit_helper,
     timeout_watcher,
-    tket_helper,
 )
 from mqt.bench.benchmarks import (
     ae,
@@ -63,17 +59,17 @@ def sample_filenames() -> list[str]:
     """Fixture to return a list of sample filenames."""
     return [
         "ae_indep_qiskit_10.qasm",
-        "ghz_nativegates_rigetti_qiskit_opt3_54.qasm",
-        "ae_indep_tket_93.qasm",
-        "wstate_nativegates_rigetti_qiskit_opt0_79.qasm",
-        "ae_mapped_ibm_montreal_qiskit_opt1_9.qasm",
-        "ae_mapped_ibm_washington_qiskit_opt0_38.qasm",
-        "ae_mapped_oqc_lucy_qiskit_opt0_5.qasm",
-        "ae_mapped_ibm_washington_qiskit_opt2_88.qasm",
-        "qnn_mapped_ionq_harmony_qiskit_opt3_3.qasm",
-        "qnn_mapped_oqc_lucy_tket_line_2.qasm",
-        "qaoa_mapped_quantinuum_h2_tket_graph_2.qasm",
-        "dj_mapped_quantinuum_h2_qiskit_opt3_23.qasm",
+        "ghz_nativegates_rigetti_opt3_54.qasm",
+        "ae_indep_93.qasm",
+        "wstate_nativegates_rigetti_opt0_79.qasm",
+        "ae_mapped_ibm_montreal_opt1_9.qasm",
+        "ae_mapped_ibm_washington_opt0_38.qasm",
+        "ae_mapped_oqc_lucy_opt0_5.qasm",
+        "ae_mapped_ibm_washington_opt2_88.qasm",
+        "qnn_mapped_ionq_harmony_opt3_3.qasm",
+        "qnn_mapped_oqc_lucy_2.qasm",
+        "qaoa_mapped_quantinuum_h2_graph_2.qasm",
+        "dj_mapped_quantinuum_h2_opt3_23.qasm",
     ]
 
 
@@ -195,23 +191,6 @@ def test_quantumcircuit_indep_level(
     )
     assert res
 
-    res = tket_helper.get_indep_level(
-        qc,
-        input_value,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=output_path,
-    )
-    assert res
-    res = tket_helper.get_indep_level(
-        qc,
-        input_value,
-        file_precheck=True,
-        return_qc=False,
-        target_directory=output_path,
-    )
-    assert res
-
 
 @pytest.mark.parametrize(
     ("benchmark", "input_value", "scalable"),
@@ -298,48 +277,6 @@ def test_quantumcircuit_native_and_mapped_levels(
                 )
                 assert res
 
-    for provider in providers:
-        res = tket_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            file_precheck=False,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-        res = tket_helper.get_native_gates_level(
-            qc,
-            provider,
-            qc.num_qubits,
-            file_precheck=True,
-            return_qc=False,
-            target_directory=output_path,
-        )
-        assert res
-
-        for device in provider.get_available_devices():
-            # Creating the circuit on target-dependent: mapped level qiskit
-            if device.num_qubits >= qc.num_qubits:
-                res = tket_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    file_precheck=False,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-                res = tket_helper.get_mapped_level(
-                    qc,
-                    qc.num_qubits,
-                    device,
-                    file_precheck=True,
-                    return_qc=False,
-                    target_directory=output_path,
-                )
-                assert res
-
 
 def test_openqasm_gates() -> None:
     """Test the openqasm gates."""
@@ -370,28 +307,12 @@ def test_dj_constant_oracle() -> None:
     assert qc.depth() > 0
 
 
-def test_unidirectional_coupling_map() -> None:
-    """Test the unidirectional coupling map for the OQC Lucy device."""
-    qc = get_benchmark(
-        benchmark_name="dj",
-        level="mapped",
-        circuit_size=3,
-        compiler="tket",
-        provider_name="oqc",
-        device_name="oqc_lucy",
-    )
-    # check that all gates in the circuit are in the coupling map
-    cmap = [(c[0], c[1]) for c in OQCProvider.get_device("oqc_lucy").coupling_map]
-    assert qc.valid_connectivity(arch=pytket.architecture.Architecture(cmap), directed=True)
-
-
 @pytest.mark.parametrize(
     (
         "benchmark_name",
         "level",
         "circuit_size",
         "benchmark_instance_name",
-        "compiler",
         "compiler_settings",
         "provider_name",
         "device_name",
@@ -402,7 +323,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -412,7 +332,6 @@ def test_unidirectional_coupling_map() -> None:
             0,
             3,
             None,
-            "tket",
             None,
             "",
             "",
@@ -422,7 +341,6 @@ def test_unidirectional_coupling_map() -> None:
             "indep",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -432,7 +350,6 @@ def test_unidirectional_coupling_map() -> None:
             1,
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -442,7 +359,6 @@ def test_unidirectional_coupling_map() -> None:
             1,
             3,
             None,
-            "tket",
             None,
             "",
             "",
@@ -452,7 +368,6 @@ def test_unidirectional_coupling_map() -> None:
             "nativegates",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ionq",
             "",
@@ -462,7 +377,6 @@ def test_unidirectional_coupling_map() -> None:
             "nativegates",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ibm",
             "",
@@ -472,7 +386,6 @@ def test_unidirectional_coupling_map() -> None:
             "nativegates",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "rigetti",
             "rigetti_aspen_m3",
@@ -482,7 +395,6 @@ def test_unidirectional_coupling_map() -> None:
             "nativegates",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "oqc",
             "oqc_lucy",
@@ -492,7 +404,6 @@ def test_unidirectional_coupling_map() -> None:
             2,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ionq",
             "ionq_harmony1",
@@ -502,18 +413,16 @@ def test_unidirectional_coupling_map() -> None:
             2,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
             "ibm",
             "ibm_montreal",
         ),
-        ("qft", 2, 6, None, "tket", None, "rigetti", "rigetti_aspen_m3"),
+        ("qft", 2, 6, None, None, "rigetti", "rigetti_aspen_m3"),
         (
             "qft",
             2,
             3,
             None,
-            "tket",
             None,
             "oqc",
             "oqc_lucy",
@@ -523,7 +432,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_washington",
@@ -533,7 +441,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
@@ -543,7 +450,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m3",
@@ -553,7 +459,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ionq",
             "ionq_harmony",
@@ -563,7 +468,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ionq",
             "ionq_aria1",
@@ -573,7 +477,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "ionq",
             "ionq_aria1",
@@ -583,7 +486,6 @@ def test_unidirectional_coupling_map() -> None:
             "mapped",
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "oqc",
             "oqc_lucy",
@@ -593,7 +495,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_washington",
@@ -603,7 +504,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "tket",
             None,
             "ibm",
             "ibm_washington",
@@ -613,7 +513,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "ibm",
             "ibm_montreal",
@@ -623,7 +522,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "tket",
             None,
             "ibm",
             "ibm_montreal",
@@ -633,7 +531,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m3",
@@ -643,7 +540,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "tket",
             None,
             "rigetti",
             "rigetti_aspen_m3",
@@ -653,7 +549,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "oqc",
             "oqc_lucy",
@@ -663,7 +558,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "tket",
             None,
             "oqc",
             "oqc_lucy",
@@ -673,7 +567,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "tket",
             None,
             "quantinuum",
             "quantinuum_h2",
@@ -683,7 +576,6 @@ def test_unidirectional_coupling_map() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
             "quantinuum",
             "quantinuum_h2",
@@ -693,7 +585,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -703,7 +594,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -713,7 +603,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -723,7 +612,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             3,
             None,
-            "qiskit",
             None,
             "",
             "",
@@ -733,7 +621,6 @@ def test_unidirectional_coupling_map() -> None:
             "alg",
             None,
             "xsmall",
-            "qiskit",
             None,
             "",
             "",
@@ -745,7 +632,6 @@ def test_get_benchmark(
     level: str | int,
     circuit_size: int | None,
     benchmark_instance_name: str | None,
-    compiler: str,
     compiler_settings: CompilerSettings | None,
     provider_name: str,
     device_name: str,
@@ -756,15 +642,12 @@ def test_get_benchmark(
         level,
         circuit_size,
         benchmark_instance_name,
-        compiler,
         compiler_settings,
         provider_name,
         device_name,
     )
     assert qc.depth() > 0
     if provider_name and "oqc" not in provider_name:
-        if compiler == "tket":
-            qc = tk_to_qiskit(qc, replace_implicit_swaps=False)
         assert isinstance(qc, QuantumCircuit)
         for qc_instruction in qc.data:
             instruction = qc_instruction.operation
@@ -785,7 +668,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             8,
             "wrong_size",
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m3",
@@ -797,7 +679,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             1,
             -1,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m3",
@@ -810,24 +691,11 @@ def test_get_benchmark_faulty_parameters() -> None:
             1,
             3,
             2,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "rigetti_aspen_m3",
         )
 
-    match = "Selected compiler must be in"
-    with pytest.raises(ValueError, match=match):
-        get_benchmark(
-            "qpeexact",
-            1,
-            3,
-            None,
-            "wrong_compiler",
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "rigetti",
-            "rigetti_aspen_m3",
-        )
     match = "compiler_settings must be of type CompilerSettings or None"
     with pytest.raises(ValueError, match=match):
         get_benchmark(  # type: ignore[call-overload]
@@ -835,7 +703,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             1,
             3,
             None,
-            "qiskit",
             "wrong_compiler_settings",
             "rigetti",
             "rigetti_aspen_m3",
@@ -847,7 +714,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             2,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "wrong_gateset",
             "rigetti_aspen_m3",
@@ -859,7 +725,6 @@ def test_get_benchmark_faulty_parameters() -> None:
             3,
             3,
             None,
-            "qiskit",
             CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
             "rigetti",
             "wrong_device",
@@ -905,23 +770,6 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     assert path.is_file()
     path.unlink()
 
-    filename = "ae_test_tket"
-    qc = get_benchmark("ae", abstraction_level, 7)
-    assert qc
-    res = tket_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        IBMProvider.get_device("ibm_washington"),
-        False,
-        False,
-        directory,
-        filename,
-    )
-    assert res
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    assert path.is_file()
-    path.unlink()
-
 
 def test_oqc_benchmarks() -> None:
     """Test the creation of benchmarks for the OQC devices."""
@@ -930,36 +778,6 @@ def test_oqc_benchmarks() -> None:
     filename = "ghz_oqc"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
 
-    tket_helper.get_native_gates_level(
-        qc,
-        OQCProvider(),
-        qc.num_qubits,
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
-
-    directory = "."
-    filename = "ghz_oqc2"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
-    tket_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        OQCProvider().get_device("oqc_lucy"),
-        file_precheck=False,
-        return_qc=False,
-        target_directory=directory,
-        target_filename=filename,
-    )
-    assert QuantumCircuit.from_qasm_file(str(path))
-    path.unlink()
-    directory = "."
-    filename = "ghz_oqc3"
-    path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_native_gates_level(
         qc,
         OQCProvider(),
@@ -974,7 +792,7 @@ def test_oqc_benchmarks() -> None:
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
     directory = "."
-    filename = "ghz_oqc4"
+    filename = "ghz_oqc2"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
     qiskit_helper.get_mapped_level(
         qc,
@@ -1064,20 +882,6 @@ def test_benchmark_helper_shor() -> None:
     for elem in shor_instances:
         res_shor = shor.get_instance(elem)
         assert res_shor
-
-
-def test_tket_mapped_circuit_qubit_number() -> None:
-    """Test the number of qubits in the tket-mapped circuit."""
-    qc = get_benchmark("ghz", 1, 5)
-    res = tket_helper.get_mapped_level(
-        qc,
-        qc.num_qubits,
-        IBMProvider().get_device("ibm_washington"),
-        file_precheck=False,
-        return_qc=True,
-    )
-    assert isinstance(res, pytket.Circuit)
-    assert res.n_qubits == 127
 
 
 def test_validate_input() -> None:

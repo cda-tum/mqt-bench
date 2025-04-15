@@ -85,7 +85,6 @@ repos:
         files: ^(src/mqt|test/python)
         args: []
         additional_dependencies:
-          - pytket_qiskit
           - importlib_resources
           - pytest
           - types-setuptools

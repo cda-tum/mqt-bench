@@ -46,7 +46,7 @@ def get_alg_level(
     if qasm_format == "qasm2":
         msg = "'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
         raise ValueError(msg)
-    filename_alg = target_filename or qc.name + "_alg_qiskit_" + str(num_qubits) + "_" + qasm_format
+    filename_alg = target_filename or qc.name + "_alg_" + str(num_qubits) + "_" + qasm_format
 
     path = Path(target_directory, filename_alg + ".qasm")
 
@@ -105,7 +105,7 @@ def get_indep_level(
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename or qc.name + "_indep_qiskit_" + str(num_qubits) + "_" + qasm_format
+    filename_indep = target_filename or qc.name + "_indep_" + str(num_qubits) + "_" + qasm_format
 
     path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
@@ -179,7 +179,7 @@ def get_native_gates_level(
     """
     if not target_filename:
         filename_native = (
-            qc.name + "_nativegates_" + provider.provider_name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
+            qc.name + "_nativegates_" + provider.provider_name + "_opt" + str(opt_level) + "_" + str(num_qubits)
         )
     else:
         filename_native = target_filename
@@ -261,7 +261,7 @@ def get_mapped_level(
         else: True/False indicating whether the function call was successful or not
     """
     if not target_filename:
-        filename_mapped = qc.name + "_mapped_" + device.name + "_qiskit_opt" + str(opt_level) + "_" + str(num_qubits)
+        filename_mapped = qc.name + "_mapped_" + device.name + "_opt" + str(opt_level) + "_" + str(num_qubits)
     else:
         filename_mapped = target_filename
 
