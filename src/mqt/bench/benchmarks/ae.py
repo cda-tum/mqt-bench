@@ -47,7 +47,7 @@ def create_circuit(num_qubits: int, probability: float = 0.2) -> QuantumCircuit:
     qc.compose(state_preparation, list(range(num_eval_qubits, qc.num_qubits)), inplace=True)
 
     # Compose the phase estimation component.
-    qc.compose(pe, inplace=True)
+    qc.compose(pe.decompose(reps=2), inplace=True)
 
     # Name the circuit and add measurements to all evaluation qubits.
     qc.name = "ae"
