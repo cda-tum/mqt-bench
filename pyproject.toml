@@ -23,8 +23,8 @@ dependencies = [
     "pytket-qiskit>=0.53.0",
     # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
     "pytket>=1.29.0",
-    # there is a bug in 1.2.0 that causes an error some benchmarks, see https://github.com/Qiskit/qiskit/issues/12969
-    "qiskit!=1.2.0",
+    # Qiskit 1.2.1 contains some fixes for importing OpenQASM 3 files
+    "qiskit>=1.2.1",
     "qiskit_ibm_runtime<0.37.0", # FakeBackends have been removed with 0.37.0
     "qiskit-aer!=0.16.1", # excludig 0.16.1 due to an CI error for linux arm64 runners
     "qiskit_qasm3_import>=0.5.0",

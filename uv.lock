@@ -1167,7 +1167,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'coverage'", specifier = ">=4" },
     { name = "pytket", specifier = ">=1.29.0" },
     { name = "pytket-qiskit", specifier = ">=0.53.0" },
-    { name = "qiskit", specifier = "!=1.2.0" },
+    { name = "qiskit", specifier = ">=1.2.1" },
     { name = "qiskit", extras = ["visualization"], marker = "extra == 'docs'" },
     { name = "qiskit-aer", specifier = "!=0.16.1" },
     { name = "qiskit-ibm-runtime", specifier = "<0.37.0" },
