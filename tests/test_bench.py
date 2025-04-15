@@ -14,6 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 import pytest
 from pytket.extensions.qiskit import tk_to_qiskit
 from qiskit import QuantumCircuit
+from qiskit.qasm3 import load as load_qasm3
 
 from mqt.bench import utils
 from mqt.bench.benchmark_generator import (
@@ -74,6 +75,71 @@ def sample_filenames() -> list[str]:
         "qaoa_mapped_quantinuum_h2_tket_graph_2.qasm",
         "dj_mapped_quantinuum_h2_qiskit_opt3_23.qasm",
     ]
+
+
+@pytest.mark.parametrize(
+    ("benchmark", "input_value", "scalable"),
+    [
+        (ae, 3, True),
+        (bv, 3, True),
+        (ghz, 2, True),
+        (dj, 3, True),
+        (graphstate, 3, True),
+        (grover, 3, False),
+        (qaoa, 3, True),
+        (qft, 3, True),
+        (qftentangled, 3, True),
+        (qnn, 3, True),
+        (qpeexact, 3, True),
+        (qpeinexact, 3, True),
+        (qwalk, 3, False),
+        (randomcircuit, 3, True),
+        (vqerealamprandom, 3, True),
+        (vqesu2random, 3, True),
+        (vqetwolocalrandom, 3, True),
+        (wstate, 3, True),
+        # (shor, 3, False),
+    ],
+)
+def test_quantumcircuit_alg_level(
+    benchmark: types.ModuleType, input_value: int, scalable: bool, output_path: str
+) -> None:
+    """Test the creation of the algorithm level benchmarks for the benchmarks."""
+    qc = benchmark.create_circuit(input_value)
+    if scalable:
+        assert qc.num_qubits == input_value
+    assert benchmark.__name__.split(".")[-1] in qc.name
+    filename = "testfile"
+    filepath = Path(output_path) / (filename + ".qasm")
+    res = qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
+    assert res
+    assert load_qasm3(filepath)
+
+    res = qiskit_helper.get_alg_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=False,
+        target_directory=output_path,
+        target_filename=filename,
+        qasm_format="qasm3",
+    )
+    assert res
+    assert load_qasm3(filepath)
+    filepath.unlink()
+
+    res = qiskit_helper.get_alg_level(
+        qc,
+        input_value,
+        file_precheck=True,
+        return_qc=True,
+    )
+    assert res.num_qubits >= input_value
+
+    with pytest.raises(
+        ValueError, match=r"'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+    ):
+        qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
 
 
 @pytest.mark.parametrize(
@@ -903,6 +969,7 @@ def test_oqc_benchmarks() -> None:
         return_qc=False,
         target_directory=directory,
         target_filename=filename,
+        qasm_format="qasm2",
     )
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
@@ -918,6 +985,7 @@ def test_oqc_benchmarks() -> None:
         return_qc=False,
         target_directory=directory,
         target_filename=filename,
+        qasm_format="qasm2",
     )
 
     assert QuantumCircuit.from_qasm_file(str(path))

@@ -21,5 +21,4 @@ def create_circuit(num_qubits: int, degree: int = 2) -> QuantumCircuit:
     a = nx.convert_matrix.to_numpy_array(g)
     qc.compose(GraphState(a), inplace=True)
     qc.measure_all()
-
-    return qc
+    return qc.decompose(gates_to_decompose="graph_state")
