@@ -7,7 +7,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
+from typing import TYPE_CHECKING, Any, TypedDict
 from warnings import warn
 
 from joblib import Parallel, delayed
@@ -180,7 +180,6 @@ class BenchmarkGenerator:
                             else:
                                 break
 
-
     def generate_native_gates_levels(
         self,
         file_precheck: bool,
@@ -212,7 +211,6 @@ class BenchmarkGenerator:
                         )
                         if not res:
                             break
-
 
     def generate_alg_levels(
         self,

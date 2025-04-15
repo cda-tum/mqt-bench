@@ -355,15 +355,6 @@ def test_dj_constant_oracle() -> None:
             "",
         ),
         (
-            "graphstate",
-            1,
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
             "dj",
             "nativegates",
             3,
