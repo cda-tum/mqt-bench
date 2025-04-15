@@ -315,7 +315,7 @@ def test_unidirectional_coupling_map() -> None:
         device_name="oqc_lucy",
     )
     # check that all gates in the circuit are in the coupling map
-    cmap = utils.convert_cmap_to_tuple_list(OQCProvider.get_device("oqc_lucy").coupling_map)
+    cmap = [(c[0], c[1]) for c in OQCProvider.get_device("oqc_lucy").coupling_map]
     assert qc.valid_connectivity(arch=pytket.architecture.Architecture(cmap), directed=True)
 
 
