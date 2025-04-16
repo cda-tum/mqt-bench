@@ -79,7 +79,7 @@ class BenchmarkGenerator:
         """Initialize the BenchmarkGenerator."""
         if cfg_path is None:
             cfg_path = get_default_config_path()
-        with Path(cfg_path).open(encoding="locale") as jsonfile:
+        with Path(cfg_path).open(encoding="utf-8") as jsonfile:
             self.cfg = json.load(jsonfile)
             print("Read config successful")
         self.timeout = self.cfg["timeout"]
@@ -660,7 +660,7 @@ def timeout_watcher(
     """Function to handle timeouts for the benchmark generation."""
     if sys.platform == "win32":
         warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
-        return func(*args) if isinstance(args, tuple | list) else func(args)
+        return func(*args) if isinstance(args, (tuple, list)) else func(args)
 
     class TimeoutExceptionError(Exception):  # Custom exception class
         """Custom exception class for timeout."""
@@ -673,7 +673,7 @@ def timeout_watcher(
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(timeout)
     try:
-        res = func(*args) if isinstance(args, tuple | list) else func(args)
+        res = func(*args) if isinstance(args, (tuple, list)) else func(args)
     except TimeoutExceptionError:
         print(
             "Calculation/Generation exceeded timeout limit for ",
