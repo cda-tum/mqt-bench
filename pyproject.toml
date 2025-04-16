@@ -96,8 +96,6 @@ filterwarnings = [
     'ignore:.*Values in x.*:RuntimeWarning:',
     'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
     'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
-    'ignore::DeprecationWarning:.*(docplex).*',
-    'ignore::SyntaxWarning:.*(docplex).*',
     # Qiskit 1.2 deprecations
     'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
     'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
