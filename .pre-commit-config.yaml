@@ -91,7 +91,6 @@ repos:
           - types-setuptools
           - types-requests
           - types-tqdm
-          - types-flask
 
   # Check for spelling
   - repo: https://github.com/crate-ci/typos
