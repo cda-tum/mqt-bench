@@ -85,13 +85,12 @@ repos:
         files: ^(src/mqt|test/python)
         args: []
         additional_dependencies:
-          - pytket_qiskit
           - importlib_resources
+          - numpy
           - pytest
           - types-setuptools
           - types-requests
           - types-tqdm
-          - types-flask
 
   # Check for spelling
   - repo: https://github.com/crate-ci/typos

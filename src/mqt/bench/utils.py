@@ -10,10 +10,6 @@ from typing import TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
-from pytket import Circuit
-from pytket import __version__ as __tket_version__
-from pytket.extensions.qiskit import tk_to_qiskit
-from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
@@ -65,11 +61,6 @@ def get_supported_benchmarks() -> list[str]:
 def get_supported_levels() -> list[str | int]:
     """Returns a list of all supported benchmark levels."""
     return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
-
-
-def get_supported_compilers() -> list[str]:
-    """Returns a list of all supported compilers."""
-    return ["qiskit", "tket"]
 
 
 def get_default_config_path() -> str:
@@ -142,14 +133,13 @@ def get_openqasm_gates() -> list[str]:
 
 
 def save_as_qasm(
-    qc: QuantumCircuit | Circuit,
+    qc: QuantumCircuit,
     filename: str,
     qasm_format: str = "qasm2",
     gate_set: list[str] | None = None,
     mapped: bool = False,
     c_map: list[list[int]] | None = None,
     target_directory: str = "",
-    initial_qubits: int = 32,
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
@@ -161,7 +151,6 @@ def save_as_qasm(
         mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
         c_map: coupling map of used hardware layout
         target_directory: directory where the qasm file is stored
-        initial_qubits: number of qubits of the original quantum circuit (only need for mapped TKET circuits)
     """
     if c_map is None:
         c_map = []
@@ -169,15 +158,9 @@ def save_as_qasm(
     file = Path(target_directory, filename + ".qasm")
 
     if qasm_format == "qasm2":
-        if isinstance(qc, QuantumCircuit):
-            qc_str = dumps2(qc)
-        elif isinstance(qc, Circuit):
-            qc_str = circuit_to_qasm_str(qc, maxwidth=initial_qubits)
+        qc_str = dumps2(qc)
     elif qasm_format == "qasm3":
-        if isinstance(qc, QuantumCircuit):
-            qc_str = dumps3(qc)
-        elif isinstance(qc, Circuit):
-            qc_str = dumps3(tk_to_qiskit(qc))  # pytket does not support qasm3 export at the moment
+        qc_str = dumps3(qc)
     else:
         msg = f"Unknown qasm format: {qasm_format}"
         raise ValueError(msg)
@@ -192,10 +175,7 @@ def save_as_qasm(
         f.write("// Benchmark was created by MQT Bench on " + str(date.today()) + "\n")
         f.write("// For more information about MQT Bench, please visit https://www.cda.cit.tum.de/mqtbench/\n")
         f.write("// MQT Bench version: " + mqtbench_module_version + "\n")
-        if "qiskit" in filename:
-            f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
-        elif "tket" in filename:
-            f.write("// TKET version: " + str(__tket_version__) + "\n")
+        f.write("// Qiskit version: " + str(__qiskit_version__) + "\n")
         if gate_set:
             f.write("// Used Gate Set: " + str(gate_set) + "\n")
         if mapped:

@@ -6,7 +6,7 @@ See README.md or go to https://github.com/cda-tum/mqt-bench for more information
 
 from __future__ import annotations
 
-from mqt.bench.benchmark_generator import (
+from mqt.bench.benchmark_generation import (
     CompilerSettings,
     QiskitSettings,
     get_benchmark,

@@ -11,9 +11,8 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
 from warnings import warn
 
 from joblib import Parallel, delayed
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 
-from . import qiskit_helper, tket_helper
 from .devices import (
     get_available_device_names,
     get_available_provider_names,
@@ -24,16 +23,17 @@ from .devices import (
 from .utils import (
     get_default_config_path,
     get_module_for_benchmark,
+    get_openqasm_gates,
     get_supported_benchmarks,
-    get_supported_compilers,
     get_supported_levels,
+    save_as_qasm,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from types import ModuleType
 
-    from pytket.circuit import Circuit
+    from .devices import Device, Provider
 
 from dataclasses import dataclass
 from importlib import resources
@@ -165,7 +165,7 @@ class BenchmarkGenerator:
                             assert isinstance(qc, QuantumCircuit)
                             if qc.num_qubits <= device.num_qubits:
                                 res = timeout_watcher(
-                                    qiskit_helper.get_mapped_level,
+                                    get_mapped_level,
                                     self.timeout,
                                     [
                                         qc,
@@ -183,22 +183,6 @@ class BenchmarkGenerator:
                             else:
                                 break
 
-                    for parameter_instance in parameter_space:
-                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                        if not qc:
-                            break
-                        assert isinstance(qc, QuantumCircuit)
-                        if qc.num_qubits <= device.num_qubits:
-                            res = timeout_watcher(
-                                tket_helper.get_mapped_level,
-                                self.timeout,
-                                [qc, qc.num_qubits, device, file_precheck, False, self.qasm_output_path, qasm_format],
-                            )
-                            if not res:
-                                break
-                        else:
-                            break
-
     def generate_native_gates_levels(
         self,
         file_precheck: bool,
@@ -215,7 +199,7 @@ class BenchmarkGenerator:
                             break
                         assert isinstance(qc, QuantumCircuit)
                         res = timeout_watcher(
-                            qiskit_helper.get_native_gates_level,
+                            get_native_gates_level,
                             self.timeout,
                             [
                                 qc,
@@ -231,27 +215,6 @@ class BenchmarkGenerator:
                         if not res:
                             break
 
-                for parameter_instance in parameter_space:
-                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                    if not qc:
-                        break
-                    assert isinstance(qc, QuantumCircuit)
-                    res = timeout_watcher(
-                        tket_helper.get_native_gates_level,
-                        self.timeout,
-                        [
-                            qc,
-                            provider,
-                            qc.num_qubits,
-                            file_precheck,
-                            False,
-                            self.qasm_output_path,
-                            qasm_format,
-                        ],
-                    )
-                    if not res:
-                        break
-
     def generate_alg_levels(
         self,
         file_precheck: bool,
@@ -259,20 +222,19 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate algorithm level benchmarks for a given benchmark."""
-        for function in [qiskit_helper.get_alg_level]:
-            for parameter_instance in parameter_space:
-                for qasm_format in ["qasm3"]:
-                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                    if not qc:
-                        break
-                    assert isinstance(qc, QuantumCircuit)
-                    res = timeout_watcher(
-                        function,
-                        self.timeout,
-                        [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
-                    )
-                    if not res:
-                        break
+        for parameter_instance in parameter_space:
+            for qasm_format in ["qasm3"]:
+                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                if not qc:
+                    break
+                assert isinstance(qc, QuantumCircuit)
+                res = timeout_watcher(
+                    get_alg_level,
+                    self.timeout,
+                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
+                )
+                if not res:
+                    break
 
     def generate_indep_levels(
         self,
@@ -281,62 +243,295 @@ class BenchmarkGenerator:
         parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
     ) -> None:
         """Generate independent level benchmarks for a given benchmark."""
-        for function in [qiskit_helper.get_indep_level, tket_helper.get_indep_level]:
-            for parameter_instance in parameter_space:
-                for qasm_format in ["qasm2", "qasm3"]:
-                    qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                    if not qc:
-                        break
-                    assert isinstance(qc, QuantumCircuit)
-                    res = timeout_watcher(
-                        function,
-                        self.timeout,
-                        [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
-                    )
-                    if not res:
-                        break
+        for parameter_instance in parameter_space:
+            for qasm_format in ["qasm2", "qasm3"]:
+                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
+                if not qc:
+                    break
+                assert isinstance(qc, QuantumCircuit)
+                res = timeout_watcher(
+                    get_indep_level,
+                    self.timeout,
+                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
+                )
+                if not res:
+                    break
+
+
+def get_alg_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: bool = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool | QuantumCircuit:
+    """Handles the creation of the benchmark on the algorithm level.
+
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
+
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
+    """
+    if return_qc:
+        return qc
+
+    if qasm_format == "qasm2":
+        msg = "'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+        raise ValueError(msg)
+    filename_alg = target_filename or qc.name + "_alg_" + str(num_qubits) + "_" + qasm_format
+
+    path = Path(target_directory, filename_alg + ".qasm")
+
+    if file_precheck and path.is_file():
+        return True
+
+    return save_as_qasm(qc=qc, filename=filename_alg, qasm_format="qasm3", target_directory=target_directory)
 
 
 @overload
-def get_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int | None = None,
-    benchmark_instance_name: str | None = None,
-    compiler: Literal["qiskit"] = "qiskit",
-    compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
-    device_name: str = "ibm_washington",
-    **kwargs: str,
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
 ) -> QuantumCircuit: ...
 
 
 @overload
-def get_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int | None = None,
-    benchmark_instance_name: str | None = None,
-    compiler: Literal["tket"] = "tket",
-    compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
-    device_name: str = "ibm_washington",
-    **kwargs: str,
-) -> Circuit: ...
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool: ...
+
+
+def get_indep_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    file_precheck: bool,
+    return_qc: bool = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool | QuantumCircuit:
+    """Handles the creation of the benchmark on the target-independent level.
+
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
+
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
+    """
+    filename_indep = target_filename or qc.name + "_indep_" + str(num_qubits) + "_" + qasm_format
+
+    path = Path(target_directory, filename_indep + ".qasm")
+    if file_precheck and path.is_file():
+        return True
+    openqasm_gates = get_openqasm_gates()
+    target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10)
+
+    if return_qc:
+        return target_independent
+
+    return save_as_qasm(
+        qc=target_independent, filename=filename_indep, qasm_format=qasm_format, target_directory=target_directory
+    )
 
 
 @overload
-def get_benchmark(
-    benchmark_name: str,
-    level: str | int,
-    circuit_size: int | None = None,
-    benchmark_instance_name: str | None = None,
-    compiler: str = "qiskit",
-    compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
-    device_name: str = "ibm_washington",
-    **kwargs: str,
-) -> QuantumCircuit | Circuit: ...
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    provider: Provider,
+    num_qubits: int | None,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> QuantumCircuit: ...
+
+
+@overload
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    provider: Provider,
+    num_qubits: int | None,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool: ...
+
+
+def get_native_gates_level(
+    qc: QuantumCircuit,
+    provider: Provider,
+    num_qubits: int | None,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: bool = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool | QuantumCircuit:
+    """Handles the creation of the benchmark on the target-dependent native gates level.
+
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        provider: determines the native gate set
+        num_qubits: number of qubits
+        opt_level: optimization level
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
+    """
+    if not target_filename:
+        filename_native = (
+            qc.name + "_nativegates_" + provider.provider_name + "_opt" + str(opt_level) + "_" + str(num_qubits)
+        )
+    else:
+        filename_native = target_filename
+
+    path = Path(target_directory, filename_native + ".qasm")
+    if file_precheck and path.is_file():
+        return True
+
+    gate_set = provider.get_native_gates()
+    compiled_without_architecture = transpile(
+        qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
+    )
+    if return_qc:
+        return compiled_without_architecture
+
+    return save_as_qasm(
+        qc=compiled_without_architecture,
+        filename=filename_native,
+        qasm_format=qasm_format,
+        gate_set=gate_set,
+        target_directory=target_directory,
+    )
+
+
+@overload
+def get_mapped_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    device: Device,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: Literal[True],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> QuantumCircuit: ...
+
+
+@overload
+def get_mapped_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    device: Device,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: Literal[False],
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool: ...
+
+
+def get_mapped_level(
+    qc: QuantumCircuit,
+    num_qubits: int | None,
+    device: Device,
+    opt_level: int,
+    file_precheck: bool,
+    return_qc: bool = False,
+    target_directory: str = "./",
+    target_filename: str = "",
+    qasm_format: str = "qasm3",
+) -> bool | QuantumCircuit:
+    """Handles the creation of the benchmark on the target-dependent mapped level.
+
+    Arguments:
+        qc: quantum circuit which the to be created benchmark circuit is based on
+        num_qubits: number of qubits
+        device: target device
+        opt_level: optimization level
+        file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
+        return_qc: flag if the actual circuit shall be returned
+        target_directory: alternative directory to the default one to store the created circuit
+        target_filename: alternative filename to the default one
+        qasm_format: qasm format (qasm2 or qasm3)
+
+    Returns:
+        if return_qc == True: quantum circuit object
+        else: True/False indicating whether the function call was successful or not
+    """
+    if not target_filename:
+        filename_mapped = qc.name + "_mapped_" + device.name + "_opt" + str(opt_level) + "_" + str(num_qubits)
+    else:
+        filename_mapped = target_filename
+
+    path = Path(target_directory, filename_mapped + ".qasm")
+    if file_precheck and path.is_file():
+        return True
+
+    c_map = device.coupling_map
+    compiled_with_architecture = transpile(
+        qc,
+        optimization_level=opt_level,
+        basis_gates=device.basis_gates,
+        coupling_map=c_map,
+        seed_transpiler=10,
+    )
+    if return_qc:
+        return compiled_with_architecture
+
+    return save_as_qasm(
+        qc=compiled_with_architecture,
+        filename=filename_mapped,
+        qasm_format=qasm_format,
+        gate_set=device.basis_gates,
+        mapped=True,
+        c_map=c_map,
+        target_directory=target_directory,
+    )
 
 
 def get_benchmark(
@@ -344,27 +539,25 @@ def get_benchmark(
     level: str | int,
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
-    compiler: str = "qiskit",
     compiler_settings: CompilerSettings | None = None,
     provider_name: str = "ibm",
     device_name: str = "ibm_washington",
     **kwargs: str,
-) -> QuantumCircuit | Circuit:
-    """Returns one benchmark as a qiskit.QuantumCircuit Object or a pytket.Circuit object.
+) -> QuantumCircuit:
+    """Returns one benchmark as a qiskit.QuantumCircuit object.
 
     Arguments:
         benchmark_name: name of the to be generated benchmark
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
         benchmark_instance_name: Input selection for some benchmarks, namely and "shor"
-        compiler: "qiskit" or "tket"
         compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit)
         provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
         kwargs: Additional arguments for the benchmark generation
 
     Returns:
-        Quantum Circuit Object representing the benchmark with the selected options, either as Qiskit::QuantumCircuit or Pytket::Circuit object (depending on the chosen compiler---while the algorithm level is always provided using Qiskit)
+        Qiskit::QuantumCircuit object representing the benchmark with the selected options
     """
     if benchmark_name not in get_supported_benchmarks():
         msg = f"Selected benchmark is not supported. Valid benchmarks are {get_supported_benchmarks()}."
@@ -407,12 +600,6 @@ def get_benchmark(
     if level in ("alg", 0):
         return qc
 
-    compiler = compiler.lower()
-
-    if compiler.lower() not in get_supported_compilers():
-        msg = f"Selected compiler must be in {get_supported_compilers()}."
-        raise ValueError(msg)
-
     if compiler_settings is None:
         compiler_settings = CompilerSettings(QiskitSettings())
     elif not isinstance(compiler_settings, CompilerSettings):
@@ -421,10 +608,7 @@ def get_benchmark(
 
     independent_level = 1
     if level in ("indep", independent_level):
-        if compiler == "qiskit":
-            return qiskit_helper.get_indep_level(qc, circuit_size, False, True)
-        if compiler == "tket":
-            return tket_helper.get_indep_level(qc, circuit_size, False, True)
+        return get_indep_level(qc, circuit_size, False, True)
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
@@ -432,12 +616,9 @@ def get_benchmark(
             msg = f"Selected provider_name must be in {get_available_provider_names()}."
             raise ValueError(msg)
         provider = get_provider_by_name(provider_name)
-        if compiler == "qiskit":
-            assert compiler_settings.qiskit is not None
-            opt_level = compiler_settings.qiskit.optimization_level
-            return qiskit_helper.get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
-        if compiler == "tket":
-            return tket_helper.get_native_gates_level(qc, provider, circuit_size, False, True)
+        assert compiler_settings.qiskit is not None
+        opt_level = compiler_settings.qiskit.optimization_level
+        return get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
 
     if device_name not in get_available_device_names():
         msg = f"Selected device_name must be in {get_available_device_names()}."
@@ -446,26 +627,17 @@ def get_benchmark(
     mapped_level = 3
     if level in ("mapped", mapped_level):
         device = get_device_by_name(device_name)
-        if compiler == "qiskit":
-            assert compiler_settings.qiskit is not None
-            opt_level = compiler_settings.qiskit.optimization_level
-            assert isinstance(opt_level, int)
-            return qiskit_helper.get_mapped_level(
-                qc,
-                circuit_size,
-                device,
-                opt_level,
-                False,
-                True,
-            )
-        if compiler == "tket":
-            return tket_helper.get_mapped_level(
-                qc,
-                circuit_size,
-                device,
-                False,
-                True,
-            )
+        assert compiler_settings.qiskit is not None
+        opt_level = compiler_settings.qiskit.optimization_level
+        assert isinstance(opt_level, int)
+        return get_mapped_level(
+            qc,
+            circuit_size,
+            device,
+            opt_level,
+            False,
+            True,
+        )
 
     msg = f"Invalid level specified. Must be in {get_supported_levels()}."
     raise ValueError(msg)
@@ -484,7 +656,7 @@ def timeout_watcher(
     func: Callable[..., bool | QuantumCircuit],
     timeout: int,
     args: list[Any] | int | tuple[int, str] | str,
-) -> bool | QuantumCircuit | Circuit:
+) -> bool | QuantumCircuit:
     """Function to handle timeouts for the benchmark generation."""
     if sys.platform == "win32":
         warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
