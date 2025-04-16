@@ -50,7 +50,11 @@ classifiers = [
 ]
 
 [dependency-groups]
-test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
+test = [
+    "pytest>=7.2",
+    "pytest-console-scripts>=1.4",
+    "pytest-cov>=6.1.1",
+]
 docs = [
     "furo>=2023.9.10",
     "qiskit[visualization]>=1.2.1,<2",
