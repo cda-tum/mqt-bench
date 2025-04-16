@@ -91,6 +91,10 @@ Research = "https://www.cda.cit.tum.de/research/quantum/"
 [tool.hatch.build.targets.wheel]
 packages = ["src/mqt"]
 
+[tool.hatch.version]
+source = "vcs"
+
+
 [tool.pytest.ini_options]
 minversion = "7.2"
 testpaths = ["tests"]
