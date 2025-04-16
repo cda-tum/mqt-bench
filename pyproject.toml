@@ -49,7 +49,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
 coverage = ["mqt.bench[test]", "pytest-cov>=4"]
 docs = [
@@ -67,7 +67,10 @@ docs = [
     "nbsphinx",
     "sphinx-autodoc-typehints",
 ]
-dev = ["mqt.bench[coverage, docs]"]
+dev = [
+  {include-group = "coverage"},
+  {include-group = "docs"},
+]
 
 [project.scripts]
 "create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
@@ -80,7 +83,8 @@ Homepage = "https://github.com/cda-tum/mqtbench"
 Discussions = "https://github.com/cda-tum/mqtbench/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum/"
 
-[tool.setuptools_scm]
+[tool.hatch.build.targets.wheel]
+packages = ["src/mqt"]
 
 [tool.pytest.ini_options]
 minversion = "7.2"
