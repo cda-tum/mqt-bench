@@ -19,7 +19,8 @@ class CustomArgumentParser(argparse.ArgumentParser):
         """Include version information in the help message."""
         help_message = super().format_help()
         version_info = (
-            f"\nMQT Bench version: {metadata.version('mqt.bench')}\nQiskit version: {metadata.version('qiskit')}\n"
+            f"\nMQT Bench version: {metadata.version('mqt.bench')}\n"
+            f"Qiskit version: {metadata.version('qiskit')}\n"
         )
         return help_message + version_info
 
