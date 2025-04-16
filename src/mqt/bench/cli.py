@@ -6,7 +6,6 @@ import argparse
 from importlib import metadata
 from typing import cast
 
-from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
 
 from . import CompilerSettings, QiskitSettings, get_benchmark
@@ -65,10 +64,8 @@ def main() -> None:
         provider_name=args.native_gate_set,
         device_name=args.device,
     )
-
-    if isinstance(result, QuantumCircuit):
-        print(qiskit_circuit_to_str(result))
-        return
+    print(qiskit_circuit_to_str(result))
+    return
 
 
 def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
