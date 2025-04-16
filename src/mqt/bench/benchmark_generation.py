@@ -35,7 +35,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from .devices import Device, Provider
 
-import locale
 from dataclasses import dataclass
 from importlib import resources
 
