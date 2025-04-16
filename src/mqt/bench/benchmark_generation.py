@@ -7,7 +7,7 @@ import json
 import signal
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypedDict, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
 from warnings import warn
 
 from joblib import Parallel, delayed
@@ -32,6 +32,7 @@ from .utils import (
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
     from types import ModuleType
+
     from .devices import Device, Provider
 
 from dataclasses import dataclass

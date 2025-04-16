@@ -20,9 +20,9 @@ from mqt.bench.benchmark_generation import (
     QiskitSettings,
     get_alg_level,
     get_benchmark,
-    get_native_gates_level,
-    get_mapped_level,
     get_indep_level,
+    get_mapped_level,
+    get_native_gates_level,
     timeout_watcher,
 )
 from mqt.bench.benchmarks import (
