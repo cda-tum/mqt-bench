@@ -75,6 +75,7 @@ docs = [
 dev = [
   {include-group = "test"},
   {include-group = "docs"},
+  {include-group = "coverage"},
 ]
 
 [project.scripts]
