@@ -82,15 +82,13 @@ repos:
     rev: v1.15.0
     hooks:
       - id: mypy
-        files: ^(src/mqt|test/python)
+        files: ^(src/mqt|test/python|noxfile.py)
         args: []
         additional_dependencies:
           - importlib_resources
           - numpy
+          - nox
           - pytest
-          - types-setuptools
-          - types-requests
-          - types-tqdm
 
   # Check for spelling
   - repo: https://github.com/crate-ci/typos
