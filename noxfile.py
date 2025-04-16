@@ -100,8 +100,6 @@ def docs(session: nox.Session) -> None:
         "uv",
         "run",
         "--no-dev",
-        "--group",
-        "docs",
         "--frozen",
         "sphinx-autobuild" if serve else "sphinx-build",
         *shared_args,
