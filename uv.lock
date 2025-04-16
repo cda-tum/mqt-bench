@@ -1148,7 +1148,7 @@ requires-dist = [
     { name = "qiskit", specifier = ">=1.2.1,<2" },
     { name = "qiskit", extras = ["visualization"], marker = "extra == 'docs'" },
     { name = "qiskit-aer", specifier = "!=0.16.1" },
-    { name = "qiskit-ibm-runtime", specifier = "<0.37.0" },
+    { name = "qiskit-ibm-runtime", specifier = ">=0.19.0,<0.37.0" },
     { name = "qiskit-qasm3-import", specifier = ">=0.5.0" },
     { name = "scikit-learn", specifier = ">=1.5.2" },
     { name = "setuptools-scm", marker = "extra == 'docs'", specifier = ">=8.1" },
@@ -1160,7 +1160,7 @@ requires-dist = [
     { name = "sphinxcontrib-svg2pdfconverter", marker = "extra == 'docs'", specifier = ">=1.2" },
     { name = "sphinxext-opengraph", marker = "extra == 'docs'", specifier = ">=0.9" },
 ]
-provides-extras = ["test", "coverage", "docs", "dev"]
+provides-extras = ["coverage", "dev", "docs", "test"]
 
 [[package]]
 name = "nbclient"
