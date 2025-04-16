@@ -86,6 +86,7 @@ repos:
         args: []
         additional_dependencies:
           - importlib_resources
+          - numpy
           - pytest
           - types-setuptools
           - types-requests
