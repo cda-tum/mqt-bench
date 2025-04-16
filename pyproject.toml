@@ -68,7 +68,7 @@ docs = [
     "sphinx-autodoc-typehints",
 ]
 dev = [
-  {include-group = "coverage"},
+  {include-group = "tests"},
   {include-group = "docs"},
 ]
 
