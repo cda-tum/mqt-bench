@@ -14,12 +14,15 @@ from qiskit import QuantumCircuit
 from qiskit.qasm3 import load as load_qasm3
 
 from mqt.bench import utils
-from mqt.bench.benchmark_generator import (
+from mqt.bench.benchmark_generation import (
     BenchmarkGenerator,
     CompilerSettings,
     QiskitSettings,
+    get_alg_level,
     get_benchmark,
-    qiskit_helper,
+    get_native_gates_level,
+    get_mapped_level,
+    get_indep_level,
     timeout_watcher,
 )
 from mqt.bench.benchmarks import (
@@ -107,11 +110,11 @@ def test_quantumcircuit_alg_level(
     assert benchmark.__name__.split(".")[-1] in qc.name
     filename = "testfile"
     filepath = Path(output_path) / (filename + ".qasm")
-    res = qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename)
+    res = get_alg_level(qc, input_value, False, False, output_path, filename)
     assert res
     assert load_qasm3(filepath)
 
-    res = qiskit_helper.get_alg_level(
+    res = get_alg_level(
         qc,
         input_value,
         file_precheck=True,
@@ -124,7 +127,7 @@ def test_quantumcircuit_alg_level(
     assert load_qasm3(filepath)
     filepath.unlink()
 
-    res = qiskit_helper.get_alg_level(
+    res = get_alg_level(
         qc,
         input_value,
         file_precheck=True,
@@ -135,7 +138,7 @@ def test_quantumcircuit_alg_level(
     with pytest.raises(
         ValueError, match=r"'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
     ):
-        qiskit_helper.get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
+        get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
 
 
 @pytest.mark.parametrize(
@@ -174,7 +177,7 @@ def test_quantumcircuit_indep_level(
     if scalable:
         assert qc.num_qubits == input_value
     assert benchmark.__name__.split(".")[-1] in qc.name
-    res = qiskit_helper.get_indep_level(
+    res = get_indep_level(
         qc,
         input_value,
         file_precheck=False,
@@ -182,7 +185,7 @@ def test_quantumcircuit_indep_level(
         target_directory=output_path,
     )
     assert res
-    res = qiskit_helper.get_indep_level(
+    res = get_indep_level(
         qc,
         input_value,
         file_precheck=True,
@@ -231,7 +234,7 @@ def test_quantumcircuit_native_and_mapped_levels(
     providers = get_available_providers()
     for provider in providers:
         opt_level = 1
-        res = qiskit_helper.get_native_gates_level(
+        res = get_native_gates_level(
             qc,
             provider,
             qc.num_qubits,
@@ -241,7 +244,7 @@ def test_quantumcircuit_native_and_mapped_levels(
             target_directory=output_path,
         )
         assert res
-        res = qiskit_helper.get_native_gates_level(
+        res = get_native_gates_level(
             qc,
             provider,
             qc.num_qubits,
@@ -256,7 +259,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         for device in provider.get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
-                res = qiskit_helper.get_mapped_level(
+                res = get_mapped_level(
                     qc,
                     qc.num_qubits,
                     device,
@@ -266,7 +269,7 @@ def test_quantumcircuit_native_and_mapped_levels(
                     target_directory=output_path,
                 )
                 assert res
-                res = qiskit_helper.get_mapped_level(
+                res = get_mapped_level(
                     qc,
                     qc.num_qubits,
                     device,
@@ -701,7 +704,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     filename = "ae_test_qiskit"
     qc = get_benchmark("ae", abstraction_level, 5)
     assert qc
-    res = qiskit_helper.get_mapped_level(
+    res = get_mapped_level(
         qc,
         qc.num_qubits,
         IBMProvider.get_device("ibm_washington"),
@@ -724,7 +727,7 @@ def test_oqc_benchmarks() -> None:
     filename = "ghz_oqc"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
 
-    qiskit_helper.get_native_gates_level(
+    get_native_gates_level(
         qc,
         OQCProvider(),
         qc.num_qubits,
@@ -740,7 +743,7 @@ def test_oqc_benchmarks() -> None:
     directory = "."
     filename = "ghz_oqc2"
     path = Path(directory) / Path(filename).with_suffix(".qasm")
-    qiskit_helper.get_mapped_level(
+    get_mapped_level(
         qc,
         qc.num_qubits,
         OQCProvider().get_device("oqc_lucy"),
