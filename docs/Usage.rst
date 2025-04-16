@@ -37,26 +37,6 @@ For example, in order to obtain the *5*\ -qubit Deutsch-Josza benchmark on algor
 
 Examples can be found in the `docs/Quickstart.ipynb <docs/Quickstart.ipynb>`_ jupyter notebook.
 
-Locally hosting the MQT Bench Viewer
-------------------------------------
-
-Additionally, this python package includes the same webserver used for the hosting of the
-`MQT Bench webpage <https://www.cda.cit.tum.de/mqtbench>`_.
-
-After the ``mqt.bench`` Python package is installed via
-
-.. code-block:: console
-
-   (venv) $ pip install mqt.bench
-
-the MQT Bench Viewer can be started from the terminal via
-
-.. code-block:: console
-
-   (venv) $ mqt.bench
-
-This first searches for the most recent version of the benchmark files on GitHub and offers to download them.
-Afterwards, the webserver is started locally.
 
 Usage directly via this repository
 ----------------------------------

@@ -10,15 +10,18 @@ from typing import TYPE_CHECKING
 
 import networkx as nx
 import numpy as np
+from pytket import Circuit
 from pytket import __version__ as __tket_version__
+from pytket.extensions.qiskit import tk_to_qiskit
+from pytket.qasm import circuit_to_qasm_str
 from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
 from qiskit.converters import circuit_to_dag
+from qiskit.qasm2 import dumps as dumps2
+from qiskit.qasm3 import dumps as dumps3
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
-
-    from qiskit_optimization import QuadraticProgram
 
 
 @dataclass
@@ -36,13 +39,12 @@ def get_supported_benchmarks() -> list[str]:
     """Returns a list of all supported benchmarks."""
     return [
         "ae",
+        "bv",
         "dj",
         "grover-noancilla",
         "grover-v-chain",
         "ghz",
         "graphstate",
-        "portfolioqaoa",
-        "portfoliovqe",
         "qaoa",
         "qft",
         "qftentangled",
@@ -51,18 +53,12 @@ def get_supported_benchmarks() -> list[str]:
         "qpeinexact",
         "qwalk-noancilla",
         "qwalk-v-chain",
-        "random",
-        "realamprandom",
-        "su2random",
-        "twolocalrandom",
-        "vqe",
+        "randomcircuit",
+        "vqerealamprandom",
+        "vqesu2random",
+        "vqetwolocalrandom",
         "wstate",
         "shor",
-        "pricingcall",
-        "pricingput",
-        "groundstate",
-        "routing",
-        "tsp",
     ]
 
 
@@ -94,20 +90,6 @@ def get_default_evaluation_output_path() -> str:
 def get_zip_folder_path() -> str:
     """Returns the path where the zip file is stored."""
     return str(resources.files("mqt.bench") / "viewer" / "static" / "files")
-
-
-def get_examplary_max_cut_qp(n_nodes: int, degree: int = 2) -> QuadraticProgram:
-    """Returns a quadratic problem formulation of a max cut problem of a random graph.
-
-    Arguments:
-        n_nodes: number of graph nodes (and also number of qubits)
-        degree: edges per node
-    """
-    from qiskit_optimization.applications import Maxcut  # noqa: PLC0415 lazy import to reduce import cost
-
-    graph = nx.random_regular_graph(d=degree, n=n_nodes, seed=111)
-    maxcut = Maxcut(graph)
-    return maxcut.to_quadratic_program()
 
 
 def get_openqasm_gates() -> list[str]:
@@ -160,27 +142,45 @@ def get_openqasm_gates() -> list[str]:
 
 
 def save_as_qasm(
-    qc_str: str,
+    qc: QuantumCircuit | Circuit,
     filename: str,
+    qasm_format: str = "qasm2",
     gate_set: list[str] | None = None,
     mapped: bool = False,
     c_map: list[list[int]] | None = None,
     target_directory: str = "",
+    initial_qubits: int = 32,
 ) -> bool:
     """Saves a quantum circuit as a qasm file.
 
     Arguments:
-        qc_str: Quantum circuit to be stored as a string
+        qc: Quantum circuit to be stored as a string
         filename: filename
+        qasm_format: qasm format (qasm2 or qasm3)
         gate_set: set of used gates
         mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
         c_map: coupling map of used hardware layout
         target_directory: directory where the qasm file is stored
+        initial_qubits: number of qubits of the original quantum circuit (only need for mapped TKET circuits)
     """
     if c_map is None:
         c_map = []
 
     file = Path(target_directory, filename + ".qasm")
+
+    if qasm_format == "qasm2":
+        if isinstance(qc, QuantumCircuit):
+            qc_str = dumps2(qc)
+        elif isinstance(qc, Circuit):
+            qc_str = circuit_to_qasm_str(qc, maxwidth=initial_qubits)
+    elif qasm_format == "qasm3":
+        if isinstance(qc, QuantumCircuit):
+            qc_str = dumps3(qc)
+        elif isinstance(qc, Circuit):
+            qc_str = dumps3(tk_to_qiskit(qc))  # pytket does not support qasm3 export at the moment
+    else:
+        msg = f"Unknown qasm format: {qasm_format}"
+        raise ValueError(msg)
 
     try:
         mqtbench_module_version = metadata.version("mqt.bench")
@@ -264,19 +264,4 @@ def calc_supermarq_features(
 
 def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
     """Returns the module for a specific benchmark."""
-    if benchmark_name in ["portfolioqaoa", "portfoliovqe", "pricingcall", "pricingput"]:
-        return import_module("mqt.bench.benchmarks.qiskit_application_finance." + benchmark_name)
-    if benchmark_name == "qnn":
-        return import_module("mqt.bench.benchmarks.qiskit_application_ml.qnn")
-    if benchmark_name == "groundstate":
-        return import_module("mqt.bench.benchmarks.qiskit_application_nature.groundstate")
-    if benchmark_name == "routing":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.routing")
-    if benchmark_name == "tsp":
-        return import_module("mqt.bench.benchmarks.qiskit_application_optimization.tsp")
     return import_module("mqt.bench.benchmarks." + benchmark_name)
-
-
-def convert_cmap_to_tuple_list(c_map: list[list[int]]) -> list[tuple[int, int]]:
-    """Converts a coupling map to a list of tuples."""
-    return [(c[0], c[1]) for c in c_map]
