@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 nox.needs_version = ">=2024.3.2"
 nox.options.default_venv_backend = "uv"
 
+nox.options.sessions = ["lint", "tests", "minimums"]
 
 PYTHON_ALL_VERSIONS = ["3.10", "3.11", "3.12"]
 
