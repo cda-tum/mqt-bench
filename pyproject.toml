@@ -67,7 +67,7 @@ docs = [
     "sphinxcontrib-bibtex>=2.4.2",
     "sphinxcontrib-svg2pdfconverter>=1.2",
     "sphinxext-opengraph>=0.9",
-    "ipython>=9.0",
+    "ipython>=8.0",
     "ipykernel",
     "nbsphinx",
     "sphinx-autodoc-typehints",
