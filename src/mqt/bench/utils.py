@@ -158,11 +158,9 @@ def save_as_qasm(
     file = Path(target_directory, filename + ".qasm")
 
     if qasm_format == "qasm2":
-        if isinstance(qc, QuantumCircuit):
-            qc_str = dumps2(qc)
+        qc_str = dumps2(qc)
     elif qasm_format == "qasm3":
-        if isinstance(qc, QuantumCircuit):
-            qc_str = dumps3(qc)
+        qc_str = dumps3(qc)
     else:
         msg = f"Unknown qasm format: {qasm_format}"
         raise ValueError(msg)
