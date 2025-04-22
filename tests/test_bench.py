@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import builtins
+import io
+from datetime import date
+from importlib import metadata
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NoReturn
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
 import pytest
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, qpy
 from qiskit.qasm3 import load as load_qasm3
 
 from mqt.bench.benchmark_generation import (
@@ -46,6 +50,14 @@ from mqt.bench.benchmarks import (
     wstate,
 )
 from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
+from mqt.bench.output import (
+    MQTBenchExporterError,
+    OutputFormat,
+    __qiskit_version__,
+    generate_header,
+    save_circuit,
+    write_circuit,
+)
 
 
 @pytest.fixture
@@ -135,7 +147,7 @@ def test_quantumcircuit_alg_level(
     assert res.num_qubits >= input_value
 
     with pytest.raises(
-        ValueError, match=r"'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+        ValueError, match=r"'qasm2' is not supported for the algorithm level; please use 'qasm3' or 'qpy'."
     ):
         get_alg_level(qc, input_value, False, False, output_path, filename, output_format="qasm2")
 
@@ -805,3 +817,148 @@ def test_create_ae_circuit_with_invalid_qubit_number() -> None:
     """Testing the minimum number of qubits in the amplitude estimation circuit."""
     with pytest.raises(ValueError, match=r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."):
         get_benchmark("ae", 1, 1)
+
+
+@pytest.fixture(autouse=True)
+def temp_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Ensure all files go into a temporary directory."""
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
+
+
+def test_generate_header_minimal(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the generation of a minimal header."""
+    # stub out metadata.version
+    monkeypatch.setattr(metadata, "version", lambda _: "9.9.9")
+    hdr = generate_header(OutputFormat.QASM3)
+    lines = hdr.splitlines()
+    # first line has today's date
+    assert lines[0] == f"// Benchmark created by MQT Bench on {date.today()}"
+    # contains the fixed info lines
+    assert "// For more info: https://www.cda.cit.tum.de/mqtbench/" in hdr
+    assert "// MQT Bench version: 9.9.9" in hdr
+    assert f"// Qiskit version: {__qiskit_version__}" in hdr
+    assert f"// Output format: {OutputFormat.QASM3.value}" in hdr
+    # no gate_set or mapping lines when omitted
+    assert "// Used gate set:" not in hdr
+    assert "// Coupling map:" not in hdr
+
+
+def test_generate_header_with_options(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the generation of a header with options."""
+    monkeypatch.setattr(metadata, "version", lambda _: "0.1.0")
+    gates = ["x", "cx", "h"]
+    cmap = [[0, 1], [1, 2]]
+    hdr = generate_header(OutputFormat.QASM2, gate_set=gates, mapped=True, c_map=cmap)
+    assert f"// Used gate set: {gates}" in hdr
+    assert f"// Coupling map: {cmap}" in hdr
+
+
+def test_generate_header_metadata_fail(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the generation of a header when metadata.version raises."""
+
+    # make metadata.version raise
+    def boom(_pkg: str) -> NoReturn:
+        msg = "nope"
+        raise ValueError(msg)
+
+    monkeypatch.setattr(metadata, "version", boom)
+    with pytest.raises(MQTBenchExporterError) as exc:
+        generate_header(OutputFormat.QASM2)
+    assert "Could not retrieve 'mqt.bench' version" in str(exc.value)
+
+
+@pytest.mark.parametrize("fmt", [OutputFormat.QASM2, OutputFormat.QASM3])
+def test_write_circuit_qasm(tmp_path: Path, fmt: OutputFormat) -> None:
+    """Test the writing of a QASM circuit."""
+    qc = QuantumCircuit(2)
+    qc.h(0)
+    qc.cx(0, 1)
+
+    out = tmp_path / "test.qasm"
+    write_circuit(qc, out, fmt=fmt)
+
+    text = out.read_text().splitlines()
+    # header lines at top
+    assert text[0].startswith("// Benchmark created by MQT Bench on")
+    # after a blank line there should be the QASM
+    assert any(line.startswith("h ") for line in text), "H gate should appear"
+    assert any(line.startswith("cx ") for line in text), "CX gate should appear"
+
+
+def test_write_circuit_qpy(tmp_path: Path) -> None:
+    """Test the writing of a QPY circuit."""
+    qc = QuantumCircuit(1)
+    qc.x(0)
+    out = tmp_path / "test.qpy"
+    write_circuit(qc, out, fmt=OutputFormat.QPY)
+
+    data = out.read_bytes()
+    # header bytes at start
+    header = f"// Benchmark created by MQT Bench on {date.today()}".encode()
+    assert data.startswith(header)
+    # after header we expect a valid QPY stream
+    # skip header + two newlines, then load via qpy
+    # find the start of b"\x0a\x0a" (two newlines)
+    idx = data.find(b"\n\n") + 2
+    buf = io.BytesIO(data[idx:])
+    loaded = list(qpy.load(buf))
+    assert len(loaded) == 1
+    assert isinstance(loaded[0], QuantumCircuit)
+
+
+def test_write_circuit_io_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the writing of a QASM circuit."""
+    qc = QuantumCircuit(1)
+    qc.h(0)
+    out = tmp_path / "readonly.qasm"
+
+    # Monkey-patch builtins.open to throw OSError on any attempt to open for writing
+    def fake_open(*args: str, **kwargs: str) -> NoReturn:
+        msg = "disk full"
+        raise OSError(msg)
+
+    monkeypatch.setattr(Path, "open", fake_open)
+    monkeypatch.setattr(metadata, "version", lambda _: "0.1.0")
+    with pytest.raises(MQTBenchExporterError) as exc:
+        write_circuit(qc, out, fmt=OutputFormat.QASM2)
+    assert "Failed to write QASM file: disk full" in str(exc.value)
+
+    # restore open so other tests aren't broken
+    monkeypatch.setattr(Path, "open", builtins.open)
+
+
+def test_save_circuit_success(tmp_path: Path) -> None:
+    """Test the successful saving of a circuit."""
+    qc = QuantumCircuit(1)
+    qc.h(0)
+    # should default to QASM2 → .qasm
+    res = save_circuit(qc, "foo", output_format="qasm2", target_directory=str(tmp_path))
+    assert res is True
+    assert (tmp_path / "foo.qasm").exists()
+
+    # explicit QPY
+    res2 = save_circuit(qc, "bar", output_format="qpy", target_directory=str(tmp_path))
+    assert res2 is True
+    assert (tmp_path / "bar.qpy").exists()
+
+
+def test_save_circuit_unknown_format() -> None:
+    """Test the saving of a circuit with an unknown format."""
+    qc = QuantumCircuit(1)
+    with pytest.raises(ValueError, match="Unknown output format: monkey") as exc:
+        save_circuit(qc, "bad", output_format="monkey")
+    assert "Unknown output format: monkey" in str(exc.value)
+
+
+def test_save_circuit_write_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test the saving of a circuit with an unknown format."""
+    qc = QuantumCircuit(1)
+    qc.h(0)
+    # force write_circuit to raise
+    monkeypatch.setattr(
+        "mqt.bench.output.write_circuit", lambda *args, **kwargs: (_ for _ in ()).throw(MQTBenchExporterError("boom"))
+    )
+    # should catch and return False (and print)
+    res = save_circuit(qc, "baz", output_format="qasm3", target_directory=str(tmp_path))
+    assert res is False
