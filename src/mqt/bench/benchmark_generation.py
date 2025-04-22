@@ -2,26 +2,21 @@
 
 from __future__ import annotations
 
-import argparse
-import json
 import signal
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
 from warnings import warn
 
-from joblib import Parallel, delayed
 from qiskit import QuantumCircuit, transpile
 
 from .devices import (
     get_available_device_names,
     get_available_provider_names,
-    get_available_providers,
     get_device_by_name,
     get_provider_by_name,
 )
 from .utils import (
-    get_default_config_path,
     get_module_for_benchmark,
     get_openqasm_gates,
     get_supported_benchmarks,
@@ -31,12 +26,10 @@ from .utils import (
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
-    from types import ModuleType
 
     from .devices import Device, Provider
 
 from dataclasses import dataclass
-from importlib import resources
 
 
 class Benchmark(TypedDict, total=False):
@@ -70,192 +63,6 @@ class CompilerSettings:
     """Data class for the compiler settings."""
 
     qiskit: QiskitSettings | None = None
-
-
-class BenchmarkGenerator:
-    """Class to generate benchmarks based on a configuration file."""
-
-    def __init__(self, cfg_path: str | None = None, qasm_output_path: str | None = None) -> None:
-        """Initialize the BenchmarkGenerator."""
-        if cfg_path is None:
-            cfg_path = get_default_config_path()
-        with Path(cfg_path).open(encoding="utf-8") as jsonfile:
-            self.cfg = json.load(jsonfile)
-            print("Read config successful")
-        self.timeout = self.cfg["timeout"]
-        if qasm_output_path is None:
-            self.qasm_output_path = str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
-        else:
-            self.qasm_output_path = qasm_output_path
-
-        Path(self.qasm_output_path).mkdir(exist_ok=True, parents=True)
-
-    def create_benchmarks_from_config(self, num_jobs: int) -> bool:
-        """Create benchmarks based on the configuration file.
-
-        Arguments:
-            num_jobs: number of parallel jobs to run
-
-        Returns:
-            True if successful
-        """
-        benchmarks = [Benchmark(benchmark) for benchmark in self.cfg["benchmarks"]]  # type: ignore[misc]
-        Parallel(n_jobs=num_jobs, verbose=100)(
-            delayed(self.define_benchmark_instances)(benchmark) for benchmark in benchmarks
-        )
-        return True
-
-    def define_benchmark_instances(self, benchmark: Benchmark) -> None:
-        """Define the instances for a benchmark."""
-        lib = get_module_for_benchmark(benchmark["name"])
-        file_precheck = benchmark["precheck_possible"]
-        instances: list[tuple[int, str]] | list[int] | list[str] | range
-        if benchmark["include"]:
-            if benchmark["name"] in ("grover", "qwalk"):
-                instances_without_anc_mode = range(
-                    benchmark["min_qubits"],
-                    benchmark["max_qubits"],
-                    benchmark["stepsize"],
-                )
-                instances = [
-                    (instance, anc_mode)
-                    for instance in instances_without_anc_mode
-                    for anc_mode in benchmark["ancillary_mode"]
-                ]
-
-            elif benchmark["name"] == "shor":
-                instances = [lib.get_instance(choice) for choice in benchmark["instances"]]
-
-            else:
-                instances = range(
-                    benchmark["min_qubits"],
-                    benchmark["max_qubits"],
-                    benchmark["stepsize"],
-                )
-
-            self.generate_all_benchmarks(lib, instances, file_precheck)
-
-    def generate_all_benchmarks(
-        self,
-        lib: ModuleType,
-        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
-        file_precheck: bool,
-    ) -> None:
-        """Generate all benchmarks for a given benchmark."""
-        self.generate_alg_levels(file_precheck, lib, parameter_space)
-        self.generate_indep_levels(file_precheck, lib, parameter_space)
-        self.generate_native_gates_levels(file_precheck, lib, parameter_space)
-        self.generate_mapped_levels(file_precheck, lib, parameter_space)
-
-    def generate_mapped_levels(
-        self,
-        file_precheck: bool,
-        lib: ModuleType,
-        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
-    ) -> None:
-        """Generate mapped level benchmarks for a given benchmark."""
-        for provider in get_available_providers():
-            for qasm_format in ["qasm2", "qasm3"]:
-                for device in provider.get_available_devices():
-                    for opt_level in [0, 1, 2, 3]:
-                        for parameter_instance in parameter_space:
-                            qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                            if not qc:
-                                break
-                            assert isinstance(qc, QuantumCircuit)
-                            if qc.num_qubits <= device.num_qubits:
-                                res = timeout_watcher(
-                                    get_mapped_level,
-                                    self.timeout,
-                                    [
-                                        qc,
-                                        qc.num_qubits,
-                                        device,
-                                        opt_level,
-                                        file_precheck,
-                                        False,
-                                        self.qasm_output_path,
-                                        qasm_format,
-                                    ],
-                                )
-                                if not res:
-                                    break
-                            else:
-                                break
-
-    def generate_native_gates_levels(
-        self,
-        file_precheck: bool,
-        lib: ModuleType,
-        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
-    ) -> None:
-        """Generate native gates level benchmarks for a given benchmark."""
-        for provider in get_available_providers():
-            for qasm_format in ["qasm2", "qasm3"]:
-                for opt_level in [0, 1, 2, 3]:
-                    for parameter_instance in parameter_space:
-                        qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                        if not qc:
-                            break
-                        assert isinstance(qc, QuantumCircuit)
-                        res = timeout_watcher(
-                            get_native_gates_level,
-                            self.timeout,
-                            [
-                                qc,
-                                provider,
-                                qc.num_qubits,
-                                opt_level,
-                                file_precheck,
-                                False,
-                                self.qasm_output_path,
-                                qasm_format,
-                            ],
-                        )
-                        if not res:
-                            break
-
-    def generate_alg_levels(
-        self,
-        file_precheck: bool,
-        lib: ModuleType,
-        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
-    ) -> None:
-        """Generate algorithm level benchmarks for a given benchmark."""
-        for parameter_instance in parameter_space:
-            for qasm_format in ["qasm3"]:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                res = timeout_watcher(
-                    get_alg_level,
-                    self.timeout,
-                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
-                )
-                if not res:
-                    break
-
-    def generate_indep_levels(
-        self,
-        file_precheck: bool,
-        lib: ModuleType,
-        parameter_space: list[tuple[int, str]] | list[int] | list[str] | range,
-    ) -> None:
-        """Generate independent level benchmarks for a given benchmark."""
-        for parameter_instance in parameter_space:
-            for qasm_format in ["qasm2", "qasm3"]:
-                qc = timeout_watcher(lib.create_circuit, self.timeout, parameter_instance)
-                if not qc:
-                    break
-                assert isinstance(qc, QuantumCircuit)
-                res = timeout_watcher(
-                    get_indep_level,
-                    self.timeout,
-                    [qc, qc.num_qubits, file_precheck, False, self.qasm_output_path, qasm_format],
-                )
-                if not res:
-                    break
 
 
 def get_alg_level(
@@ -641,15 +448,6 @@ def get_benchmark(
 
     msg = f"Invalid level specified. Must be in {get_supported_levels()}."
     raise ValueError(msg)
-
-
-def generate(num_jobs: int = -1) -> None:
-    """Generate benchmarks based on the configuration file."""
-    parser = argparse.ArgumentParser(description="Create Configuration")
-    parser.add_argument("--file-name", type=str, help="optional filename", default=None)
-    args = parser.parse_args()
-    benchmark_generator = BenchmarkGenerator(args.file_name)
-    benchmark_generator.create_benchmarks_from_config(num_jobs)
 
 
 def timeout_watcher(

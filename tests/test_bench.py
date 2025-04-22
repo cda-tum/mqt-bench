@@ -15,7 +15,6 @@ from qiskit.qasm3 import load as load_qasm3
 
 from mqt.bench import utils
 from mqt.bench.benchmark_generation import (
-    BenchmarkGenerator,
     CompilerSettings,
     QiskitSettings,
     get_alg_level,
@@ -782,14 +781,6 @@ def test_calc_supermarq_features() -> None:
     assert dense_features.entanglement_ratio == 0.0
     assert dense_features.critical_depth == 0.0
     assert dense_features.program_communication == 0.0
-
-
-def test_benchmark_generator() -> None:
-    """Test the BenchmarkGenerator class."""
-    generator = BenchmarkGenerator(qasm_output_path="test")
-    assert generator.qasm_output_path == "test"
-    assert generator.timeout > 0
-    assert generator.cfg is not None
 
 
 # This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
