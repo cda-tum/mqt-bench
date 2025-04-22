@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -10,8 +11,6 @@ from qiskit.qasm2 import dumps
 from mqt.bench import CompilerSettings, QiskitSettings, get_benchmark
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from pytest_console_scripts import ScriptRunner
 
 
@@ -136,7 +135,7 @@ def test_cli_output_formats_and_save(tmp_path: Path, script_runner: ScriptRunner
     # File should exist
     assert ret_qpy.success
     # Should output the path to the saved file
-    expected_path = f"{target_dir}/{target_file}.qpy"
+    expected_path = str(Path(target_dir) / f"{target_file}.qpy")
     assert expected_path in ret_qpy.stdout
     # File should exist
     assert (tmp_path / f"{target_file}.qpy").is_file()
