@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import mqt.bench.benchmark_generation
-
 if TYPE_CHECKING:  # pragma: no cover
     import types
 
@@ -21,7 +19,10 @@ from mqt.bench.benchmark_generation import (
     get_benchmark,
     get_indep_level,
     get_mapped_level,
+    get_module_for_benchmark,
     get_native_gates_level,
+    get_openqasm_gates,
+    get_supported_benchmarks,
 )
 from mqt.bench.benchmarks import (
     ae,
@@ -281,7 +282,7 @@ def test_quantumcircuit_native_and_mapped_levels(
 
 def test_openqasm_gates() -> None:
     """Test the openqasm gates."""
-    openqasm_gates = mqt.bench.benchmark_generation.get_openqasm_gates()
+    openqasm_gates = get_openqasm_gates()
     num_openqasm_gates = 42
     assert len(openqasm_gates) == num_openqasm_gates
 
@@ -759,8 +760,8 @@ def test_oqc_benchmarks() -> None:
 
 def test_get_module_for_benchmark() -> None:
     """Test the get_module_for_benchmark function."""
-    for benchmark in mqt.bench.benchmark_generation.get_supported_benchmarks():
-        assert mqt.bench.benchmark_generation.get_module_for_benchmark(benchmark.split("-")[0]) is not None
+    for benchmark in get_supported_benchmarks():
+        assert get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
 def test_benchmark_helper_shor() -> None:
