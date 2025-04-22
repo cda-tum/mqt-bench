@@ -106,7 +106,6 @@ xfail_strict = true
 filterwarnings = [
     "error",
     'ignore:.*pkg_resources.*:DeprecationWarning:',
-    'ignore:.*sre_.*:DeprecationWarning:',
     'ignore:.*Rigetti.*:UserWarning:',
     'ignore:.*Values in x.*:RuntimeWarning:',
     'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
