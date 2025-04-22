@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=66.1",
-    "setuptools_scm>=8.1",
+  "hatchling>=1.27.0",
+  "hatch-vcs>=0.4.0"
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
 
 [project]
 name = "mqt.bench"
@@ -15,21 +15,15 @@ authors = [
 ]
 keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
 license = { file = "LICENSE" }
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
-    #  manages the dependencies for qiskit and tket in a combined fashion
-    "pytket-qiskit>=0.53.0",
-    # lowest version that supports the used pytket AutoRebase pass instead of auto_rebase
-    "pytket>=1.29.0",
     # Qiskit 1.2.1 contains some fixes for importing OpenQASM 3 files
-    "qiskit>=1.2.1",
-    "qiskit_ibm_runtime<0.37.0", # FakeBackends have been removed with 0.37.0
-    "qiskit-aer!=0.16.1", # excludig 0.16.1 due to an CI error for linux arm64 runners
-    "qiskit_qasm3_import>=0.5.0",
+    "qiskit[qasm3-import]>=1.2.1,<2",
+    "qiskit_ibm_runtime>=0.19.0,<0.37.0", # FakeBackends have been removed with 0.37.0
     "networkx>=2.8.8",
-    "joblib>=1.3.0",
+    "numpy>=2.1; python_version >= '3.13'",
     "numpy>=1.26; python_version >= '3.12'",
     "numpy>=1.24; python_version >= '3.11'",
     "numpy>=1.22",
@@ -45,6 +39,7 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -54,25 +49,32 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
 ]
 
-[project.optional-dependencies]
-test = ["pytest>=7.2", "pytest-console-scripts>=1.4"]
-coverage = ["mqt.bench[test]", "pytest-cov>=4"]
-docs = [
-    "furo>=2023.9.10",
-    "qiskit[visualization]",
-    "setuptools-scm>=8.1",
-    "sphinx_design>=0.6",
-    "sphinx-autoapi>=3",
-    "sphinx-copybutton>=0.5",
-    "sphinxcontrib-bibtex>=2.4.2",
-    "sphinxcontrib-svg2pdfconverter>=1.2",
-    "sphinxext-opengraph>=0.9",
-    "ipython",
-    "ipykernel",
-    "nbsphinx",
-    "sphinx-autodoc-typehints",
+[dependency-groups]
+test = [
+    "pytest>=8.3.5",
+    "pytest-console-scripts>=1.4.1",
+    "pytest-cov>=6.1.1",
 ]
-dev = ["mqt.bench[coverage, docs]"]
+docs = [
+    "furo>=2024.8.6",
+    "qiskit[visualization]>=1.2.1",
+    "setuptools-scm>=8.2",
+    "sphinx_design>=0.6.1",
+    "sphinx-autoapi>=3.6.0",
+    "sphinx-copybutton>=0.5.2",
+    "sphinxcontrib-bibtex>=2.6.3",
+    "sphinxcontrib-svg2pdfconverter>=1.3.0",
+    "sphinxext-opengraph>=0.10.0",
+    "sphinx>=8.1.3; python_version >= '3.10'",
+    "sphinx>=8.2.3; python_version >= '3.11'",
+    "ipykernel>=6.29.5",
+    "nbsphinx>=0.9.6",
+    "sphinx-autodoc-typehints>=2.3.0",
+]
+dev = [
+  {include-group = "test"},
+  {include-group = "docs"},
+]
 
 [project.scripts]
 "create_mqt_bench_zip" = "mqt.bench.utils:create_zip_file"
@@ -85,7 +87,14 @@ Homepage = "https://github.com/cda-tum/mqtbench"
 Discussions = "https://github.com/cda-tum/mqtbench/discussions"
 Research = "https://www.cda.cit.tum.de/research/quantum/"
 
-[tool.setuptools_scm]
+[tool.hatch.build.targets.wheel]
+packages = ["src/mqt"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/mqt/bench/_version.py"
 
 [tool.pytest.ini_options]
 minversion = "7.2"
@@ -96,24 +105,12 @@ xfail_strict = true
 filterwarnings = [
     "error",
     'ignore:.*pkg_resources.*:DeprecationWarning:',
-    'ignore:.*sre_.*:DeprecationWarning:',
     'ignore:.*Rigetti.*:UserWarning:',
     'ignore:.*Values in x.*:RuntimeWarning:',
     'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
     'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
-    'ignore::DeprecationWarning:.*(docplex).*',
-    'ignore::SyntaxWarning:.*(docplex).*',
     # Qiskit 1.2 deprecations
-    'ignore:.*The abstract Provider and ProviderV1 classes are deprecated.*:DeprecationWarning:qiskit.*',
-    'ignore:.*qiskit.providers.models is deprecated since Qiskit 1.2*:DeprecationWarning:',
-    'ignore:.*Treating CircuitInstruction as an iterable is deprecated legacy behavior since Qiskit 1.2*:DeprecationWarning:pytket.*',
-    'ignore:.*qiskit.providers.models.* is deprecated since qiskit 1.2*:DeprecationWarning:qiskit.*',
-    'ignore:.*qiskit.primitives.* is deprecated as of qiskit 1.2*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
-    'ignore:.*The class ``qiskit.primitives.sampler.Sampler`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
-    'ignore:.*The class ``qiskit.primitives.estimator.Estimator`` is deprecated as of qiskit 1.2*:DeprecationWarning:mqt.*',
-    # TKET Warnings
-    'ignore:.*The pytket Circuit contains implicit qubit permutations*.:UserWarning:pytket.extensions.qiskit.qiskit_convert',
     # Qiskit 1.3 deprecations
     'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.pulse.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
@@ -142,7 +139,7 @@ precision = 1
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 files = ["src", "tests"]
-python_version = "3.10"
+python_version = "3.9"
 strict = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 warn_unreachable = true
@@ -150,11 +147,7 @@ explicit_package_bases = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pytket.*", "qiskit_finance.*"]
-implicit_reexport = true
-
-[[tool.mypy.overrides]]
-module = ["qiskit.*", "qiskit_finance.*", "joblib.*", "networkx.*", "pandas.*", "qiskit_algorithms.*", "qiskit_ibm_runtime.*", "pytest_console_scripts.*"]
+module = ["qiskit.*", "networkx.*", "pandas.*", "qiskit_ibm_runtime.*", "pytest_console_scripts.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

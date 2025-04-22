@@ -6,8 +6,6 @@ import argparse
 from importlib import metadata
 from typing import cast
 
-from pytket.qasm import circuit_to_qasm_str
-from qiskit import QuantumCircuit
 from qiskit.qasm2 import dumps as qiskit_circuit_to_str
 
 from . import CompilerSettings, QiskitSettings, get_benchmark
@@ -20,9 +18,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
         """Include version information in the help message."""
         help_message = super().format_help()
         version_info = (
-            f"\nMQT Bench version: {metadata.version('mqt.bench')}\n"
-            f"Qiskit version: {metadata.version('qiskit')}\n"
-            f"TKET version: {metadata.version('pytket')}\n"
+            f"\nMQT Bench version: {metadata.version('mqt.bench')}\nQiskit version: {metadata.version('qiskit')}\n"
         )
         return help_message + version_info
 
@@ -42,7 +38,6 @@ def main() -> None:
     )
     parser.add_argument("--algorithm", type=str, help="Name of the benchmark", required=True)
     parser.add_argument("--num-qubits", type=int, help="Number of Qubits", required=True)
-    parser.add_argument("--compiler", type=str, help="Name of the compiler")
     parser.add_argument("--qiskit-optimization-level", type=int, help="Qiskit compiler optimization level")
     parser.add_argument("--native-gate-set", type=str, help="Name of the provider")
     parser.add_argument("--device", type=str, help="Name of the device")
@@ -63,19 +58,14 @@ def main() -> None:
         benchmark_instance_name=benchmark_instance,
         level=args.level,
         circuit_size=args.num_qubits,
-        compiler=args.compiler,
         compiler_settings=CompilerSettings(
             qiskit=qiskit_settings,
         ),
         provider_name=args.native_gate_set,
         device_name=args.device,
     )
-
-    if isinstance(result, QuantumCircuit):
-        print(qiskit_circuit_to_str(result))
-        return
-
-    print(circuit_to_qasm_str(result))
+    print(qiskit_circuit_to_str(result))
+    return
 
 
 def parse_benchmark_name_and_instance(algorithm: str) -> tuple[str, str | None]:
