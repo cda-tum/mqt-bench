@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-import mqt.bench.benchmark_generation
 
 if TYPE_CHECKING:  # pragma: no cover
     import types
@@ -14,6 +13,7 @@ import pytest
 from qiskit import QuantumCircuit
 from qiskit.qasm3 import load as load_qasm3
 
+from mqt.bench import utils
 from mqt.bench.benchmark_generation import (
     CompilerSettings,
     QiskitSettings,
@@ -22,6 +22,7 @@ from mqt.bench.benchmark_generation import (
     get_indep_level,
     get_mapped_level,
     get_native_gates_level,
+    timeout_watcher,
 )
 from mqt.bench.benchmarks import (
     ae,
@@ -119,7 +120,7 @@ def test_quantumcircuit_alg_level(
         return_qc=False,
         target_directory=output_path,
         target_filename=filename,
-        output_format="qasm3",
+        qasm_format="qasm3",
     )
     assert res
     assert load_qasm3(filepath)
@@ -136,7 +137,7 @@ def test_quantumcircuit_alg_level(
     with pytest.raises(
         ValueError, match=r"'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
     ):
-        get_alg_level(qc, input_value, False, False, output_path, filename, output_format="qasm2")
+        get_alg_level(qc, input_value, False, False, output_path, filename, qasm_format="qasm2")
 
 
 @pytest.mark.parametrize(
@@ -281,7 +282,7 @@ def test_quantumcircuit_native_and_mapped_levels(
 
 def test_openqasm_gates() -> None:
     """Test the openqasm gates."""
-    openqasm_gates = mqt.bench.benchmark_generation.get_openqasm_gates()
+    openqasm_gates = utils.get_openqasm_gates()
     num_openqasm_gates = 42
     assert len(openqasm_gates) == num_openqasm_gates
 
@@ -734,7 +735,7 @@ def test_oqc_benchmarks() -> None:
         return_qc=False,
         target_directory=directory,
         target_filename=filename,
-        output_format="qasm2",
+        qasm_format="qasm2",
     )
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
@@ -750,17 +751,69 @@ def test_oqc_benchmarks() -> None:
         return_qc=False,
         target_directory=directory,
         target_filename=filename,
-        output_format="qasm2",
+        qasm_format="qasm2",
     )
 
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
 
 
+def test_calc_supermarq_features() -> None:
+    """Test the calculation of the supermarq features."""
+    ghz_qc = get_benchmark("ghz", 1, 5)
+    ghz_features = utils.calc_supermarq_features(ghz_qc)
+    assert ghz_features.program_communication == 0.4
+    assert ghz_features.entanglement_ratio == 0.8
+    assert ghz_features.critical_depth == 1.0
+    assert ghz_features.parallelism == 0.0
+
+    empty_qc = QuantumCircuit(2)
+    empty_features = utils.calc_supermarq_features(empty_qc)
+    assert empty_features.parallelism == 0.0
+    assert empty_features.entanglement_ratio == 0.0
+    assert empty_features.critical_depth == 0.0
+    assert empty_features.program_communication == 0.0
+
+    dense_qc = QuantumCircuit(2)
+    dense_qc.h([0, 1])
+    dense_features = utils.calc_supermarq_features(dense_qc)
+    assert dense_features.parallelism == 1.0
+    assert dense_features.entanglement_ratio == 0.0
+    assert dense_features.critical_depth == 0.0
+    assert dense_features.program_communication == 0.0
+
+
+# This function is used to test the timeout watchers and needs two parameters since those values are logged when a timeout occurs.
+def endless_loop(arg1: SampleObject, run_forever: bool) -> bool:  # noqa: ARG001
+    """Endless loop necessary for testing the timeout watcher."""
+    while run_forever:
+        pass
+    return True
+
+
+class SampleObject:
+    """Sample object for testing the timeout watcher."""
+
+    def __init__(self, name: str) -> None:
+        """Initialize the sample object."""
+        self.name = name
+
+
+def test_timeout_watchers() -> None:
+    """Test the timeout watcher."""
+    timeout = 1
+    if sys.platform == "win32":
+        with pytest.warns(RuntimeWarning, match="Timeout is not supported on Windows."):
+            timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
+    else:
+        assert not timeout_watcher(endless_loop, timeout, [SampleObject("test"), True])
+        assert timeout_watcher(endless_loop, timeout, [SampleObject("test"), False])
+
+
 def test_get_module_for_benchmark() -> None:
     """Test the get_module_for_benchmark function."""
-    for benchmark in mqt.bench.benchmark_generation.get_supported_benchmarks():
-        assert mqt.bench.benchmark_generation.get_module_for_benchmark(benchmark.split("-")[0]) is not None
+    for benchmark in utils.get_supported_benchmarks():
+        assert utils.get_module_for_benchmark(benchmark.split("-")[0]) is not None
 
 
 def test_benchmark_helper_shor() -> None:
