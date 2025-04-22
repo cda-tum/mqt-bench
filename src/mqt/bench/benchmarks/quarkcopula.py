@@ -1,3 +1,5 @@
+"""Copula circuit from the generative modeling application in QUARK framework. https://github.com/QUARK-framework/QUARK."""
+
 from __future__ import annotations
 
 from math import comb
