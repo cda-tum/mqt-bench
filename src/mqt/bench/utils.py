@@ -47,6 +47,8 @@ def get_supported_benchmarks() -> list[str]:
         "qnn",
         "qpeexact",
         "qpeinexact",
+        "quarkcardinality",
+        "quarkcopula",
         "qwalk-noancilla",
         "qwalk-v-chain",
         "randomcircuit",
