@@ -63,11 +63,6 @@ def get_supported_levels() -> list[str | int]:
     return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
 
 
-def get_default_config_path() -> str:
-    """Returns the path to the default configuration file."""
-    return str(resources.files("mqt.bench") / "config.json")
-
-
 def get_default_qasm_output_path() -> str:
     """Returns the path where all .qasm files are stored."""
     return str(resources.files("mqt.bench") / "viewer" / "static" / "files" / "qasm_output")
