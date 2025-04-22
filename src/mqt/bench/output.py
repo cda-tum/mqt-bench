@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import date
-from importlib import import_module, metadata, resources
+from importlib import metadata
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-import networkx as nx
-import numpy as np
 from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
-from qiskit.converters import circuit_to_dag
 from qiskit.qasm2 import dumps as dumps2
 from qiskit.qasm3 import dumps as dumps3
 
@@ -130,7 +125,7 @@ def get_openqasm_gates() -> list[str]:
 def save_as_qasm(
     qc: QuantumCircuit,
     filename: str,
-    qasm_format: str = "qasm2",
+    output_format: str = "qasm2",
     gate_set: list[str] | None = None,
     mapped: bool = False,
     c_map: list[list[int]] | None = None,
@@ -141,7 +136,7 @@ def save_as_qasm(
     Arguments:
         qc: Quantum circuit to be stored as a string
         filename: filename
-        qasm_format: qasm format (qasm2 or qasm3)
+        output_format: qasm format (qasm2 or qasm3)
         gate_set: set of used gates
         mapped: boolean indicating whether the quantum circuit is mapped to a specific hardware layout
         c_map: coupling map of used hardware layout
@@ -152,12 +147,12 @@ def save_as_qasm(
 
     file = Path(target_directory, filename + ".qasm")
 
-    if qasm_format == "qasm2":
+    if output_format == "qasm2":
         qc_str = dumps2(qc)
-    elif qasm_format == "qasm3":
+    elif output_format == "qasm3":
         qc_str = dumps3(qc)
     else:
-        msg = f"Unknown qasm format: {qasm_format}"
+        msg = f"Unknown qasm format: {output_format}"
         raise ValueError(msg)
 
     try:
