@@ -5,13 +5,18 @@ from __future__ import annotations
 from datetime import date
 from enum import Enum
 from importlib import metadata
+from io import TextIOBase
 from pathlib import Path
+from typing import TYPE_CHECKING, TextIO, overload
 
 from qiskit import QuantumCircuit
 from qiskit import __version__ as __qiskit_version__
-from qiskit.qasm2 import dumps as dumps2
-from qiskit.qasm3 import dumps as dumps3
+from qiskit.qasm2 import dump as dump2
+from qiskit.qasm3 import dump as dump3
 from qiskit.qpy import dump as dump_qpy
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import BinaryIO
 
 
 class OutputFormat(str, Enum):
@@ -21,32 +26,46 @@ class OutputFormat(str, Enum):
     QASM3 = "qasm3"
     QPY = "qpy"
 
+    def extension(self) -> str:
+        """Return the canonical filename extension for this format."""
+        return "qasm" if self in (OutputFormat.QASM2, OutputFormat.QASM3) else self.value
+
 
 class MQTBenchExporterError(Exception):
     """Custom exception for errors arising during MQT Bench exporting operations."""
 
 
+def _attach_metadata(qc: QuantumCircuit, header: str) -> QuantumCircuit:
+    """Return *a shallow copy* whose ``metadata`` carries the MQT-Bench header."""
+    clone = qc.copy()
+    clone.metadata = (clone.metadata or {}) | {"mqt_bench": header}
+    return clone
+
+
 def generate_header(
     fmt: OutputFormat,
     gate_set: list[str] | None = None,
-    mapped: bool = False,
     c_map: list[list[int]] | None = None,
 ) -> str:
     """Generate a standardized header for MQT Bench outputs.
 
     Arguments:
-        fmt: The chosen output format enum member.
-        gate_set: Optional list of gate names used in the circuit.
-        mapped: Whether the circuit was mapped to hardware.
-        c_map: Optional coupling map of the hardware layout.
+        fmt: The chosen output format enum member
+        gate_set: Optional list of gate names used in the circuit
+        c_map: Optional coupling map of the hardware layout
 
     Returns:
         A string containing the formatted header.
     """
     try:
         version = metadata.version("mqt.bench")
-    except Exception:
-        msg = "Could not retrieve 'mqt.bench' version. Is the package installed?"
+    except Exception as exc:
+        msg = (
+            "The Python package `mqt.bench` is not installed in the current "
+            "environment. Install it with\n\n"
+            "    pip install mqt.bench\n\n"
+            f"and try again. (Original error: {exc})"
+        )
         raise MQTBenchExporterError(msg) from None
 
     lines: list[str] = []
@@ -60,93 +79,131 @@ def generate_header(
 
     if gate_set:
         lines.append(f"// Used gate set: {gate_set}")
-    if mapped:
-        lines.append(f"// Coupling map: {c_map or []}")
+    if c_map:
+        lines.append(f"// Coupling map: {c_map}")
 
     return "\n".join(lines) + "\n\n"
 
 
+@overload
 def write_circuit(
     qc: QuantumCircuit,
-    file_path: Path,
-    fmt: OutputFormat = OutputFormat.QASM2,
+    destination: Path,
+    fmt: OutputFormat = OutputFormat.QASM3,
     gate_set: list[str] | None = None,
-    mapped: bool = False,
+    c_map: list[list[int]] | None = None,
+) -> None:  # pragma: no cover - typing overload only
+    ...
+
+
+@overload
+def write_circuit(
+    qc: QuantumCircuit,
+    destination: TextIO | BinaryIO,
+    fmt: OutputFormat = OutputFormat.QASM3,
+    gate_set: list[str] | None = None,
+    c_map: list[list[int]] | None = None,
+) -> None:  # pragma: no cover - typing overload only
+    ...
+
+
+def write_circuit(
+    qc: QuantumCircuit,
+    destination: Path | TextIO | BinaryIO,
+    fmt: OutputFormat = OutputFormat.QASM3,
+    gate_set: list[str] | None = None,
     c_map: list[list[int]] | None = None,
 ) -> None:
     """Write the given quantum circuit to disk in the specified format, preceded by an MQT Bench header.
 
-    Args:
-        qc: The QuantumCircuit to export.
-        file_path: Destination file path (including extension).
-        fmt: Desired output format.
-        gate_set: Optional gate set list.
-        mapped: Whether the circuit is hardware-mapped.
-        c_map: Optional coupling map.
+    Arguments:
+        qc: The QuantumCircuit to export
+        destination: Destination file path or stream (including extension)
+        fmt: Desired output format
+        gate_set: Optional gate set list
+        c_map: Optional coupling map
 
     Raises:
         MQTBenchExporterError: On unsupported format or I/O errors.
     """
-    header = generate_header(fmt, gate_set, mapped, c_map)
+    header = generate_header(fmt, gate_set, c_map)
 
-    # Choose write mode and serialization
+    if not isinstance(destination, Path):
+        is_text = isinstance(destination, TextIOBase)
+
+        if fmt in (OutputFormat.QASM2, OutputFormat.QASM3):
+            if not is_text:
+                msg = "QASM output requires a *text* stream."
+                raise MQTBenchExporterError(msg)
+            try:
+                assert isinstance(destination, TextIOBase)
+                destination.write(header)
+                (dump2 if fmt is OutputFormat.QASM2 else dump3)(qc, destination)
+            except Exception as exc:  # pragma: no cover - unforeseen I/O
+                msg = f"Failed to write QASM stream. (Original error: {exc})"
+                raise MQTBenchExporterError(msg) from None
+            return
+
+        if fmt is OutputFormat.QPY:
+            if is_text:
+                msg = "QPY output requires a *binary* stream."
+                raise MQTBenchExporterError(msg)
+            try:
+                dump_qpy(_attach_metadata(qc, header), destination)
+            except Exception as exc:
+                msg = f"Failed to write QPY stream. (Original error: {exc})"
+                raise MQTBenchExporterError(msg) from None
+            return
+
+        msg = f"Unsupported output format {fmt}. Supported formats are {[m.value for m in OutputFormat]}."
+        raise MQTBenchExporterError(msg)
+
     if fmt in (OutputFormat.QASM2, OutputFormat.QASM3):
-        serial = dumps2(qc) if fmt == OutputFormat.QASM2 else dumps3(qc)
         try:
-            with Path.open(file_path, "w", encoding="utf-8") as f:
+            with destination.open("w", encoding="utf-8") as f:
                 f.write(header)
-                f.write(serial)
-        except Exception as e:
-            msg = f"Failed to write QASM file: {e}"
+                (dump2 if fmt is OutputFormat.QASM2 else dump3)(qc, f)
+        except Exception as exc:
+            msg = f"Failed to write {fmt.value.upper()} file to {destination}. (Original error: {exc})"
             raise MQTBenchExporterError(msg) from None
 
-    elif fmt == OutputFormat.QPY:
+    elif fmt is OutputFormat.QPY:
         try:
-            with Path.open(file_path, "wb") as f:
-                f.write(header.encode("utf-8"))
-                dump_qpy(qc, f)
-        except Exception as e:
-            msg = f"Failed to write QPY file: {e}"
+            with destination.open("wb") as f:
+                dump_qpy(_attach_metadata(qc, header), f)
+        except Exception as exc:
+            msg = f"Failed to write QPY file to {destination}. (Original error: {exc})"
             raise MQTBenchExporterError(msg) from None
 
     else:
-        msg = f"Unsupported output format: {fmt}"
-        raise MQTBenchExporterError(msg) from None
+        msg = f"Unsupported output format {fmt}. Supported formats are {[m.value for m in OutputFormat]}."
+        raise MQTBenchExporterError(msg)
 
 
 def save_circuit(
     qc: QuantumCircuit,
     filename: str,
-    output_format: str = OutputFormat.QASM2.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
     gate_set: list[str] | None = None,
-    mapped: bool = False,
     c_map: list[list[int]] | None = None,
     target_directory: str = "",
 ) -> bool:
     """Public API to save a quantum circuit in various formats with MQT Bench header.
 
-    Args:
-        qc: Circuit to export.
-        filename: Base filename without extension.
-        output_format: One of the supported format values ('qasm2', 'qasm3', 'qpy').
-        gate_set: Optional list of gate names.
-        mapped: Hardware mapping flag.
-        c_map: Optional coupling map.
-        target_directory: Directory to place the output file.
+    Arguments:
+        qc: Circuit to export
+        filename: Base filename without extension
+        output_format: One of the supported format values, as defined in `OutputFormat`
+        gate_set: Optional list of gate names
+        c_map: Optional coupling map
+        target_directory: Directory to place the output file
 
     Returns:
         True on success, False otherwise.
     """
+    path = Path(target_directory) / f"{filename}.{output_format.extension()}"
     try:
-        fmt = OutputFormat(output_format)
-    except ValueError:
-        msg = f"Unknown output format: {output_format}"
-        raise ValueError(msg) from None
-
-    file_ext = "qasm" if fmt.value in (OutputFormat.QASM2.value, OutputFormat.QASM3.value) else fmt.value
-    path = Path(target_directory) / f"{filename}.{file_ext}"
-    try:
-        write_circuit(qc, path, fmt, gate_set, mapped, c_map)
+        write_circuit(qc, path, output_format, gate_set, c_map)
     except MQTBenchExporterError as e:
         print(e)
         return False

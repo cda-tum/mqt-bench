@@ -60,6 +60,39 @@ class CompilerSettings:
     qiskit: QiskitSettings | None = None
 
 
+def generate_filename(
+    benchmark_name: str,
+    level: str,
+    num_qubits: int | None,
+    provider_name: str | None = None,
+    device_name: str | None = None,
+    opt_level: int | None = None,
+) -> str:
+    """Generate a benchmark filename based on the abstraction level and context.
+
+    Arguments:
+        benchmark_name: The name of the benchmark
+        level: The abstraction level
+        num_qubits: Number of qubits in the benchmark circuit
+        provider_name: Optional name of the gate set provider (used for 'nativegates')
+        device_name: Optional name of the device (used for 'mapped')
+        opt_level: Optional optimization level (used for 'nativegates' and 'mapped')
+
+    Returns:
+        A string representing a filename (excluding extension) that encodes
+        all relevant metadata for reproducibility and clarity.
+    """
+    base = f"{benchmark_name}_{level}"
+
+    if level == "nativegates" and provider_name is not None and opt_level is not None:
+        return f"{base}_{provider_name}_opt{opt_level}_{num_qubits}"
+
+    if level == "mapped" and device_name is not None and opt_level is not None:
+        return f"{base}_{device_name}_opt{opt_level}_{num_qubits}"
+
+    return f"{base}_{num_qubits}"
+
+
 def get_alg_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
@@ -67,7 +100,7 @@ def get_alg_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the algorithm level.
 
@@ -78,7 +111,7 @@ def get_alg_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        output_format: one of supported formats ('qasm3', 'qasm2', 'qpy')
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
@@ -87,13 +120,12 @@ def get_alg_level(
     if return_qc:
         return qc
 
-    if output_format == OutputFormat.QASM2.value:
-        msg = "'qasm2' is not supported for the algorithm level; please use 'qasm3' or 'qpy'."
+    if output_format == OutputFormat.QASM2:
+        msg = "'qasm2' is not supported for the algorithm level; please use e.g. 'qasm3' or 'qpy'."
         raise ValueError(msg)
 
-    filename_alg = target_filename or f"{qc.name}_alg_{num_qubits}_{output_format}"
-    file_ext = "qasm" if output_format in (OutputFormat.QASM2.value, OutputFormat.QASM3.value) else output_format
-    path = Path(target_directory, f"{filename_alg}.{file_ext}")
+    filename_alg = target_filename or generate_filename(benchmark_name=qc.name, level="alg", num_qubits=num_qubits)
+    path = Path(target_directory, f"{filename_alg}.{output_format.extension()}")
 
     if file_precheck and path.is_file():
         return True
@@ -114,7 +146,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -126,7 +158,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -137,7 +169,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -148,15 +180,14 @@ def get_indep_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        output_format: one of supported formats ('qasm3', 'qasm2', 'qpy')
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename or f"{qc.name}_indep_{num_qubits}"
-    file_ext = "qasm" if output_format in (OutputFormat.QASM2.value, OutputFormat.QASM3.value) else output_format
-    path = Path(target_directory, f"{filename_indep}.{file_ext}")
+    filename_indep = target_filename or generate_filename(benchmark_name=qc.name, level="indep", num_qubits=num_qubits)
+    path = Path(target_directory, f"{filename_indep}.{output_format.extension()}")
 
     if file_precheck and path.is_file():
         return True
@@ -190,7 +221,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -204,7 +235,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -217,7 +248,7 @@ def get_native_gates_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
@@ -230,15 +261,20 @@ def get_native_gates_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        output_format: one of supported formats ('qasm3', 'qasm2', 'qpy')
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_native = target_filename or f"{qc.name}_nativegates_{provider.provider_name}_opt{opt_level}_{num_qubits}"
-    file_ext = "qasm" if output_format in (OutputFormat.QASM2.value, OutputFormat.QASM3.value) else output_format
-    path = Path(target_directory, f"{filename_native}.{file_ext}")
+    filename_native = target_filename or generate_filename(
+        benchmark_name=qc.name,
+        level="native",
+        num_qubits=num_qubits,
+        provider_name=provider.provider_name,
+        opt_level=opt_level,
+    )
+    path = Path(target_directory, f"{filename_native}.{output_format.extension()}")
 
     if file_precheck and path.is_file():
         return True
@@ -273,7 +309,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -287,7 +323,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -300,7 +336,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    output_format: str = OutputFormat.QASM3.value,
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -313,15 +349,16 @@ def get_mapped_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        output_format: qasm format (qasm2 or qasm3)
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_mapped = target_filename or f"{qc.name}_mapped_{device.name}_opt{opt_level}_{num_qubits}"
-    file_ext = "qasm" if output_format in (OutputFormat.QASM2.value, OutputFormat.QASM3.value) else output_format
-    path = Path(target_directory, f"{filename_mapped}.{file_ext}")
+    filename_mapped = target_filename or generate_filename(
+        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device_name=device.name, opt_level=opt_level
+    )
+    path = Path(target_directory, f"{filename_mapped}.{output_format.extension()}")
 
     if file_precheck and path.is_file():
         return True
@@ -343,7 +380,6 @@ def get_mapped_level(
         filename=filename_mapped,
         output_format=output_format,
         gate_set=device.basis_gates,
-        mapped=True,
         c_map=c_map,
         target_directory=target_directory,
     )
