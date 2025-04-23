@@ -91,4 +91,3 @@ and the State of Upper Austria in the frame of the COMET program (managed by the
     <img src="https://raw.githubusercontent.com/munich-quantum-toolkit/.github/refs/heads/main/docs/_static/mqt-funding-footer-light.svg" width="90%" alt="MQT Funding Footer">
   </picture>
 </p>
-
