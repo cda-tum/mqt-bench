@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import signal
-import sys
+from importlib import import_module
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, overload
-from warnings import warn
+from typing import TYPE_CHECKING, Literal, TypedDict, overload
 
 from qiskit import QuantumCircuit, transpile
 
@@ -16,16 +14,13 @@ from .devices import (
     get_device_by_name,
     get_provider_by_name,
 )
-from .utils import (
-    get_module_for_benchmark,
-    get_openqasm_gates,
-    get_supported_benchmarks,
-    get_supported_levels,
-    save_as_qasm,
+from .output import (
+    OutputFormat,
+    save_circuit,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Callable
+    from types import ModuleType
 
     from .devices import Device, Provider
 
@@ -65,6 +60,39 @@ class CompilerSettings:
     qiskit: QiskitSettings | None = None
 
 
+def generate_filename(
+    benchmark_name: str,
+    level: str,
+    num_qubits: int | None,
+    provider_name: str | None = None,
+    device_name: str | None = None,
+    opt_level: int | None = None,
+) -> str:
+    """Generate a benchmark filename based on the abstraction level and context.
+
+    Arguments:
+        benchmark_name: The name of the benchmark
+        level: The abstraction level
+        num_qubits: Number of qubits in the benchmark circuit
+        provider_name: Optional name of the gate set provider (used for 'nativegates')
+        device_name: Optional name of the device (used for 'mapped')
+        opt_level: Optional optimization level (used for 'nativegates' and 'mapped')
+
+    Returns:
+        A string representing a filename (excluding extension) that encodes
+        all relevant metadata for reproducibility and clarity.
+    """
+    base = f"{benchmark_name}_{level}"
+
+    if level == "nativegates" and provider_name is not None and opt_level is not None:
+        return f"{base}_{provider_name}_opt{opt_level}_{num_qubits}"
+
+    if level == "mapped" and device_name is not None and opt_level is not None:
+        return f"{base}_{device_name}_opt{opt_level}_{num_qubits}"
+
+    return f"{base}_{num_qubits}"
+
+
 def get_alg_level(
     qc: QuantumCircuit,
     num_qubits: int | None,
@@ -72,7 +100,7 @@ def get_alg_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the algorithm level.
 
@@ -83,8 +111,7 @@ def get_alg_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        qasm_format: qasm format (qasm2 or qasm3)
-
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
@@ -93,17 +120,22 @@ def get_alg_level(
     if return_qc:
         return qc
 
-    if qasm_format == "qasm2":
-        msg = "'qasm2' is not supported for the algorithm level, please use 'qasm3' instead."
+    if output_format == OutputFormat.QASM2:
+        msg = "'qasm2' is not supported for the algorithm level; please use e.g. 'qasm3' or 'qpy'."
         raise ValueError(msg)
-    filename_alg = target_filename or qc.name + "_alg_" + str(num_qubits) + "_" + qasm_format
 
-    path = Path(target_directory, filename_alg + ".qasm")
+    filename_alg = target_filename or generate_filename(benchmark_name=qc.name, level="alg", num_qubits=num_qubits)
+    path = Path(target_directory, f"{filename_alg}.{output_format.extension()}")
 
     if file_precheck and path.is_file():
         return True
 
-    return save_as_qasm(qc=qc, filename=filename_alg, qasm_format="qasm3", target_directory=target_directory)
+    return save_circuit(
+        qc=qc,
+        filename=filename_alg,
+        output_format=output_format,
+        target_directory=target_directory,
+    )
 
 
 @overload
@@ -114,7 +146,7 @@ def get_indep_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -126,7 +158,7 @@ def get_indep_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -137,7 +169,7 @@ def get_indep_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-independent level.
 
@@ -148,26 +180,34 @@ def get_indep_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        qasm_format: qasm format (qasm2 or qasm3)
-
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    filename_indep = target_filename or qc.name + "_indep_" + str(num_qubits) + "_" + qasm_format
+    filename_indep = target_filename or generate_filename(benchmark_name=qc.name, level="indep", num_qubits=num_qubits)
+    path = Path(target_directory, f"{filename_indep}.{output_format.extension()}")
 
-    path = Path(target_directory, filename_indep + ".qasm")
     if file_precheck and path.is_file():
         return True
+
     openqasm_gates = get_openqasm_gates()
-    target_independent = transpile(qc, basis_gates=openqasm_gates, optimization_level=1, seed_transpiler=10)
+    target_independent = transpile(
+        qc,
+        basis_gates=openqasm_gates,
+        optimization_level=1,
+        seed_transpiler=10,
+    )
 
     if return_qc:
         return target_independent
 
-    return save_as_qasm(
-        qc=target_independent, filename=filename_indep, qasm_format=qasm_format, target_directory=target_directory
+    return save_circuit(
+        qc=target_independent,
+        filename=filename_indep,
+        output_format=output_format,
+        target_directory=target_directory,
     )
 
 
@@ -181,7 +221,7 @@ def get_native_gates_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -195,7 +235,7 @@ def get_native_gates_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -208,7 +248,7 @@ def get_native_gates_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent native gates level.
 
@@ -221,34 +261,39 @@ def get_native_gates_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        qasm_format: qasm format (qasm2 or qasm3)
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    if not target_filename:
-        filename_native = (
-            qc.name + "_nativegates_" + provider.provider_name + "_opt" + str(opt_level) + "_" + str(num_qubits)
-        )
-    else:
-        filename_native = target_filename
+    filename_native = target_filename or generate_filename(
+        benchmark_name=qc.name,
+        level="native",
+        num_qubits=num_qubits,
+        provider_name=provider.provider_name,
+        opt_level=opt_level,
+    )
+    path = Path(target_directory, f"{filename_native}.{output_format.extension()}")
 
-    path = Path(target_directory, filename_native + ".qasm")
     if file_precheck and path.is_file():
         return True
 
     gate_set = provider.get_native_gates()
-    compiled_without_architecture = transpile(
-        qc, basis_gates=gate_set, optimization_level=opt_level, seed_transpiler=10
+    compiled = transpile(
+        qc,
+        basis_gates=gate_set,
+        optimization_level=opt_level,
+        seed_transpiler=10,
     )
-    if return_qc:
-        return compiled_without_architecture
 
-    return save_as_qasm(
-        qc=compiled_without_architecture,
+    if return_qc:
+        return compiled
+
+    return save_circuit(
+        qc=compiled,
         filename=filename_native,
-        qasm_format=qasm_format,
+        output_format=output_format,
         gate_set=gate_set,
         target_directory=target_directory,
     )
@@ -264,7 +309,7 @@ def get_mapped_level(
     return_qc: Literal[True],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> QuantumCircuit: ...
 
 
@@ -278,7 +323,7 @@ def get_mapped_level(
     return_qc: Literal[False],
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool: ...
 
 
@@ -291,7 +336,7 @@ def get_mapped_level(
     return_qc: bool = False,
     target_directory: str = "./",
     target_filename: str = "",
-    qasm_format: str = "qasm3",
+    output_format: OutputFormat = OutputFormat.QASM3,
 ) -> bool | QuantumCircuit:
     """Handles the creation of the benchmark on the target-dependent mapped level.
 
@@ -304,38 +349,37 @@ def get_mapped_level(
         return_qc: flag if the actual circuit shall be returned
         target_directory: alternative directory to the default one to store the created circuit
         target_filename: alternative filename to the default one
-        qasm_format: qasm format (qasm2 or qasm3)
+        output_format: one of supported formats, as defined in `OutputFormat`
 
     Returns:
         if return_qc == True: quantum circuit object
         else: True/False indicating whether the function call was successful or not
     """
-    if not target_filename:
-        filename_mapped = qc.name + "_mapped_" + device.name + "_opt" + str(opt_level) + "_" + str(num_qubits)
-    else:
-        filename_mapped = target_filename
+    filename_mapped = target_filename or generate_filename(
+        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device_name=device.name, opt_level=opt_level
+    )
+    path = Path(target_directory, f"{filename_mapped}.{output_format.extension()}")
 
-    path = Path(target_directory, filename_mapped + ".qasm")
     if file_precheck and path.is_file():
         return True
 
     c_map = device.coupling_map
-    compiled_with_architecture = transpile(
+    compiled = transpile(
         qc,
         optimization_level=opt_level,
         basis_gates=device.basis_gates,
         coupling_map=c_map,
         seed_transpiler=10,
     )
-    if return_qc:
-        return compiled_with_architecture
 
-    return save_as_qasm(
-        qc=compiled_with_architecture,
+    if return_qc:
+        return compiled
+
+    return save_circuit(
+        qc=compiled,
         filename=filename_mapped,
-        qasm_format=qasm_format,
+        output_format=output_format,
         gate_set=device.basis_gates,
-        mapped=True,
         c_map=c_map,
         target_directory=target_directory,
     )
@@ -450,50 +494,87 @@ def get_benchmark(
     raise ValueError(msg)
 
 
-def timeout_watcher(
-    func: Callable[..., bool | QuantumCircuit],
-    timeout: int,
-    args: list[Any] | int | tuple[int, str] | str,
-) -> bool | QuantumCircuit:
-    """Function to handle timeouts for the benchmark generation."""
-    if sys.platform == "win32":
-        warn("Timeout is not supported on Windows.", category=RuntimeWarning, stacklevel=2)
-        return func(*args) if isinstance(args, (tuple, list)) else func(args)
+def get_supported_benchmarks() -> list[str]:
+    """Returns a list of all supported benchmarks."""
+    return [
+        "ae",
+        "bv",
+        "dj",
+        "grover-noancilla",
+        "grover-v-chain",
+        "ghz",
+        "graphstate",
+        "qaoa",
+        "qft",
+        "qftentangled",
+        "qnn",
+        "qpeexact",
+        "qpeinexact",
+        "qwalk-noancilla",
+        "qwalk-v-chain",
+        "randomcircuit",
+        "vqerealamprandom",
+        "vqesu2random",
+        "vqetwolocalrandom",
+        "wstate",
+        "shor",
+    ]
 
-    class TimeoutExceptionError(Exception):  # Custom exception class
-        """Custom exception class for timeout."""
 
-    def timeout_handler(_signum: int, _frame: Any) -> None:  # noqa: ANN401
-        """Function to handle the timeout."""
-        raise TimeoutExceptionError
+def get_supported_levels() -> list[str | int]:
+    """Returns a list of all supported benchmark levels."""
+    return ["alg", "indep", "nativegates", "mapped", 0, 1, 2, 3]
 
-    # Change the behavior of SIGALRM
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout)
-    try:
-        res = func(*args) if isinstance(args, (tuple, list)) else func(args)
-    except TimeoutExceptionError:
-        print(
-            "Calculation/Generation exceeded timeout limit for ",
-            func.__name__,
-            func.__module__.split(".")[-1],
-        )
-        if isinstance(args, list) and isinstance(args[0], QuantumCircuit):
-            print(args[0].name, args[1:])
-        else:
-            print(args)
-        return False
-    except Exception as e:
-        print(
-            "Exception: ",
-            e,
-            func.__name__,
-            func.__module__.split(".")[-1],
-            args,
-        )
-        return False
-    else:
-        # Reset the alarm
-        signal.alarm(0)
 
-    return res
+def get_openqasm_gates() -> list[str]:
+    """Returns a list of all quantum gates within the openQASM 2.0 standard header."""
+    # according to https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/qasm/libs/qelib1.inc
+    return [
+        "u3",
+        "u2",
+        "u1",
+        "cx",
+        "id",
+        "u0",
+        "u",
+        "p",
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "sx",
+        "sxdg",
+        "cz",
+        "cy",
+        "swap",
+        "ch",
+        "ccx",
+        "cswap",
+        "crx",
+        "cry",
+        "crz",
+        "cu1",
+        "cp",
+        "cu3",
+        "csx",
+        "cu",
+        "rxx",
+        "rzz",
+        "rccx",
+        "rc3x",
+        "c3x",
+        "c3sqrtx",
+        "c4x",
+    ]
+
+
+def get_module_for_benchmark(benchmark_name: str) -> ModuleType:
+    """Returns the module for a specific benchmark."""
+    return import_module("mqt.bench.benchmarks." + benchmark_name)
