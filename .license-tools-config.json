@@ -34,9 +34,6 @@
     ".*build.*",
     ".*\\.rst",
     ".*\\.ipynb",
-    "LICENSE",
-    "Dockerfile",
-    "docs/conf.py",
-    "noxfile.py"
+    "Dockerfile"
   ]
 }
