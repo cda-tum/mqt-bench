@@ -46,8 +46,6 @@ def create_circuit(num_qubits: int, depth: int = 3) -> QuantumCircuit:
                 qc.rx(rng.random() * 2 * np.pi, k)
                 qc.rz(rng.random() * 2 * np.pi, k)
 
-    qc.barrier()
-
     qc.measure_all()
     qc.name = "quarkcardinality"
 
