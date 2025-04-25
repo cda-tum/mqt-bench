@@ -5,7 +5,7 @@ from __future__ import annotations
 from qiskit import QuantumCircuit, transpile
 from qiskit.circuit.random import random_circuit
 
-from mqt.bench import utils
+from mqt.bench.benchmark_generation import get_openqasm_gates
 
 
 def create_circuit(num_qubits: int) -> QuantumCircuit:
@@ -18,7 +18,7 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
         QuantumCircuit: a random quantum circuit twice as deep as wide
     """
     qc = random_circuit(num_qubits, num_qubits * 2, measure=False, seed=10)
-    gates = list(set(utils.get_openqasm_gates()) - {"rccx", "csx", "cu"})
+    gates = list(set(get_openqasm_gates()) - {"rccx", "csx", "cu"})
     qc = transpile(
         qc,
         basis_gates=gates,
