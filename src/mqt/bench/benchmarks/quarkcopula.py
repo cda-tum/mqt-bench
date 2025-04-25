@@ -1,3 +1,11 @@
+# Copyright (c) 2023 - 2025 Chair for Design Automation, TUM
+# Copyright (c) 2025 Munich Quantum Software Company GmbH
+# All rights reserved.
+#
+# SPDX-License-Identifier: MIT
+#
+# Licensed under the MIT License
+
 """Copula circuit from the generative modeling application in QUARK framework. https://github.com/QUARK-framework/QUARK."""
 
 from __future__ import annotations
@@ -49,7 +57,7 @@ def create_circuit(num_qubits: int, depth: int = 2) -> QuantumCircuit:
             k += 1
         shift += 3 * n + comb(n, 2)
 
-    qc.barrier()
+    qc.measure_all()
     qc.name = "quarkcopula"
 
     return qc

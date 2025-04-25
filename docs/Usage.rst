@@ -45,8 +45,8 @@ For that, the repository must be cloned and installed:
 
 .. code-block::
 
-   git clone https://github.com/cda-tum/MQTBench.git
-   cd MQTBench
+   git clone https://github.com/munich-quantum-toolkit/bench.git mqt-bench
+   cd mqt-bench
    pip install .
 
 Afterwards, the package can be used as described :ref:`above <pip_usage>`.

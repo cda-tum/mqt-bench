@@ -1,3 +1,11 @@
+# Copyright (c) 2023 - 2025 Chair for Design Automation, TUM
+# Copyright (c) 2025 Munich Quantum Software Company GmbH
+# All rights reserved.
+#
+# SPDX-License-Identifier: MIT
+#
+# Licensed under the MIT License
+
 """Cardinality circuit from the generative modeling application in QUARK framework. https://github.com/QUARK-framework/QUARK."""
 
 from __future__ import annotations
@@ -37,8 +45,6 @@ def create_circuit(num_qubits: int, depth: int = 3) -> QuantumCircuit:
             for k in range(num_qubits):
                 qc.rx(rng.random() * 2 * np.pi, k)
                 qc.rz(rng.random() * 2 * np.pi, k)
-
-    qc.barrier()
 
     qc.measure_all()
     qc.name = "quarkcardinality"
