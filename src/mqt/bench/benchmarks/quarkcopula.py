@@ -45,7 +45,6 @@ def create_circuit(num_qubits: int, depth: int = 2) -> QuantumCircuit:
             for j in range(i + 1, n):
                 for layer in range(n_registers):
                     qc.rxx(rng.random() * 2 * np.pi, layer * n + i, layer * n + j)
-                    print("FAIL")
 
             k += 1
         shift += 3 * n + comb(n, 2)
