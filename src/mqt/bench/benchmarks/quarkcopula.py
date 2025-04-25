@@ -58,7 +58,7 @@ def create_circuit(num_qubits: int, depth: int = 2) -> QuantumCircuit:
             k += 1
         shift += 3 * n + comb(n, 2)
 
-    qc.barrier()
+    qc.measure_all()
     qc.name = "quarkcopula"
 
     return qc
