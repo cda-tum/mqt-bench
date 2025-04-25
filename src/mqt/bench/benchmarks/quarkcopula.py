@@ -8,7 +8,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 
 
-def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
+def create_circuit(num_qubits: int, depth: int = 2) -> QuantumCircuit:
     """Returns a Qiskit circuit based on the copula circuit architecture from the QUARK framework.
 
     Arguments:
@@ -45,6 +45,7 @@ def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
             for j in range(i + 1, n):
                 for layer in range(n_registers):
                     qc.rxx(rng.random() * 2 * np.pi, layer * n + i, layer * n + j)
+                    print("FAIL")
 
             k += 1
         shift += 3 * n + comb(n, 2)

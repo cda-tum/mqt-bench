@@ -7,7 +7,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import RXXGate
 
 
-def create_circuit(num_qubits: int = 10, depth: int = 2) -> QuantumCircuit:
+def create_circuit(num_qubits: int, depth: int = 3) -> QuantumCircuit:
     """Returns a Qiskit circuit based on the cardinality circuit architecture from the QUARK framework.
 
     Arguments:

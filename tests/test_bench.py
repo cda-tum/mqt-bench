@@ -108,7 +108,7 @@ def sample_filenames() -> list[str]:
         (qpeexact, 3, True),
         (qpeinexact, 3, True),
         (quarkcardinality, 3, True),
-        (quarkcopula, 3, True),
+        (quarkcopula, 4, True),
         (qwalk, 3, False),
         (randomcircuit, 3, True),
         (vqerealamprandom, 3, True),
