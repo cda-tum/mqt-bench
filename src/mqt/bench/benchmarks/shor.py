@@ -104,23 +104,23 @@ class Shor:
         cc_phi_add_a = self._phi_add_gate(angles).control(2)
         cc_iphi_add_a = cc_phi_add_a.inverse()
 
-        circuit = circuit.compose(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit.compose(cc_phi_add_a, [*ctrl_qreg, *b_qreg], inplace=True)
 
-        circuit = circuit.compose(iphi_add_n, b_qreg)
+        circuit.compose(iphi_add_n, b_qreg, inplace=True)
 
-        circuit = circuit.compose(iqft, b_qreg)
+        circuit.compose(iqft, b_qreg, inplace=True)
         circuit.cx(b_qreg[-1], flag_qreg[0])
-        circuit = circuit.compose(qft, b_qreg)
+        circuit.compose(qft, b_qreg, inplace=True)
 
-        circuit = circuit.compose(c_phi_add_n, [*flag_qreg, *b_qreg])
+        circuit.compose(c_phi_add_n, [*flag_qreg, *b_qreg], inplace=True)
 
-        circuit = circuit.compose(cc_iphi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit.compose(cc_iphi_add_a, [*ctrl_qreg, *b_qreg], inplace=True)
 
-        circuit = circuit.compose(iqft, b_qreg)
+        circuit.compose(iqft, b_qreg, inplace=True)
         circuit.x(b_qreg[-1])
         circuit.cx(b_qreg[-1], flag_qreg[0])
         circuit.x(b_qreg[-1])
-        circuit = circuit.compose(qft, b_qreg)
+        circuit.compose(qft, b_qreg, inplace=True)
 
         return circuit.compose(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
 
@@ -151,19 +151,19 @@ class Shor:
             bound = adder.assign_parameters({angle_params: angles})
             circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
 
-        circuit = circuit.compose(qft, b_qreg)
+        circuit.compose(qft, b_qreg, inplace=True)
 
         # perform controlled addition by a on the aux register in Fourier space
         for i in range(num_bits_necessary):
             append_adder(modulo_adder, a, i)
 
-        circuit = circuit.compose(iqft, b_qreg)
+        circuit.compose(iqft, b_qreg, inplace=True)
 
         # perform controlled subtraction by a in Fourier space on both the aux and down register
         for i in range(num_bits_necessary):
             circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
 
-        circuit = circuit.compose(qft, b_qreg)
+        circuit.compose(qft, b_qreg, inplace=True)
 
         a_inv = pow(a, -1, mod=to_be_factored_number)
 
@@ -196,7 +196,7 @@ class Shor:
             modulo_multiplier = self._controlled_multiple_mod_n(
                 num_bits_necessary, to_be_factored_number, partial_a, c_phi_add_n, iphi_add_n, qft, iqft
             )
-            circuit = circuit.compose(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
+            circuit.compose(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg], inplace=True)
 
         return circuit
 
@@ -260,7 +260,7 @@ class Shor:
 
         # Apply modulo exponentiation
         modulo_power = self._power_mod_n(num_bits_necessary, to_be_factored_number, a)
-        circuit = circuit.compose(modulo_power.decompose(reps=4), circuit.qubits)
+        circuit.compose(modulo_power.decompose(reps=4), circuit.qubits, inplace=True)
 
         # Apply inverse QFT
         iqft = QFT(len(up_qreg)).inverse()
