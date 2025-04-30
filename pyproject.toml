@@ -68,6 +68,7 @@ docs = [
     "sphinxext-opengraph>=0.10.0",
     "sphinx>=8.1.3; python_version >= '3.10'",
     "sphinx>=8.2.3; python_version >= '3.11'",
+    "jupyter_sphinx",
     "ipykernel>=6.29.5",
     "nbsphinx>=0.9.6",
     "sphinx-autodoc-typehints>=2.3.0",
