@@ -68,9 +68,9 @@ def main() -> None:
         help="Qiskit compiler optimization level (0-3).",
     )
     parser.add_argument(
-        "--native-gate-set",
+        "--gateset",
         type=str,
-        help="Provider name for native gate set (e.g., 'ibm', 'rigetti').",
+        help="Used gate set (e.g., 'ibm', 'rigetti').",
     )
     parser.add_argument(
         "--device",
@@ -113,7 +113,7 @@ def main() -> None:
         level=args.level,
         circuit_size=args.num_qubits,
         compiler_settings=CompilerSettings(qiskit=qiskit_settings),
-        provider_name=args.native_gate_set or "ibm",
+        gateset=args.gateset or "ibm",
         device_name=args.device or "ibm_washington",
     )
 
@@ -133,7 +133,7 @@ def main() -> None:
         benchmark_name=benchmark_name,
         level=args.level,
         num_qubits=args.num_qubits,
-        provider_name=args.native_gate_set,
+        gateset_name=args.gateset,
         device_name=args.device,
         opt_level=args.qiskit_optimization_level,
     )

@@ -37,37 +37,36 @@ with
 Quantum Circuit Compiler Support
 --------------------------------
 
-At the moment, two compilers are supported:
+At the moment, one compiler is supported:
 
 
 #. `Qiskit <https://qiskit.org/documentation/>`_ with the compiler settings: Optimization level 0 to 3
-#. `TKET <https://cqcl.github.io/tket/pytket/api/>`_ with the compiler settings: Line placement and graph placement
 
 Native Gate-Set Support
 -----------------------
 
 So far, MQT Bench supports the following native gate-sets:
 
+.. jupyter-execute::
+   :hide-code:
 
-#. IBMQ gate-set: *['rz', 'sx', 'x', 'cx', 'measure']*
-#. Rigetti gate-set: *['rx', 'rz', 'cz', 'measure']*
-#. IonQ gate-set: *['rxx', 'rz', 'ry', 'rx', 'measure']*
-#. OQC gate-set: *['rz', 'sx', 'x', 'ecr', 'measure']*
-#. Quantinuum gate-set: *['rzz', 'rz', 'ry', 'rx', 'measure']*
+    from mqt.bench.devices import get_available_native_gatesets
+
+    for num, gateset in enumerate(get_available_native_gatesets()):
+        print(str(num + 1) + ":", gateset.gateset_name, ": ", gateset.gates)
 
 Device Support
 --------------
 
 So far, MQT Bench supports the following devices:
 
+.. jupyter-execute::
+   :hide-code:
 
-#. IBMQ Washington with 127 qubits
-#. IBMQ Montreal with 27 qubits
-#. Rigetti Aspen-M3 with 79 qubits
-#. IonQ Harmony with 11 qubits
-#. IonQ Aria 1 with 25 qubits
-#. OQC Lucy with 8 qubits
-#. Quantinuum H2 with 32 qubits
+    from mqt.bench.devices import get_available_devices
+
+    for num, device in enumerate(get_available_devices()):
+        print(str(num + 1) + ":", device.name, "with", device.num_qubits, "qubits")
 
 
 Examples how to use the ``get_benchmark`` method for all four abstraction levels can be found on the :doc:`Quickstart jupyter notebook <Quickstart>`.
