@@ -802,7 +802,7 @@ def test_benchmark_helper_shor() -> None:
 def test_validate_input() -> None:
     """Test the _validate_input() method for various edge cases."""
     # Case 1: to_be_factored_number (N) < 3.
-    with pytest.raises(ValueError, match=r"N must have value >= 3, was 2"):
+    with pytest.raises(ValueError, match=r"The input needs to be an odd integer greater than 3, was 2"):
         shor.create_circuit(2, 2)
 
     # Case 2: a < 2.
@@ -810,15 +810,19 @@ def test_validate_input() -> None:
         shor.create_circuit(15, 1)
 
     # Case 3: N is even (and thus not odd).
-    with pytest.raises(ValueError, match=r"The input needs to be an odd integer greater than 1."):
+    with pytest.raises(ValueError, match=r"The input needs to be an odd integer greater than 3, was 4."):
         shor.create_circuit(4, 3)
 
     # Case 4: a >= N.
-    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
+    with pytest.raises(
+        ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1, was a = 15 and N = 15."
+    ):
         shor.create_circuit(15, 15)
 
     # Case 5: gcd(a, N) != 1 (for example, N=15 and a=6, since gcd(15,6)=3).
-    with pytest.raises(ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1."):
+    with pytest.raises(
+        ValueError, match=r"The integer a needs to satisfy a < N and gcd\(a, N\) = 1, was a = 6 and N = 15."
+    ):
         shor.create_circuit(15, 6)
 
     # Case 6: Valid input (should not raise any exception).
