@@ -111,6 +111,8 @@ filterwarnings = [
     'ignore:.*Values in x.*:RuntimeWarning:',
     'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
     'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
+    'ignore:.*invalid value encountered in divide.*:RuntimeWarning:',
+    'ignore:.*The iteration is not making good progress.*:RuntimeWarning:',
     # Qiskit 1.2 deprecations
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     # Qiskit 1.3 deprecations
@@ -123,6 +125,7 @@ filterwarnings = [
     'ignore:.*Providing non-standard gates.*is deprecated for both ``transpile`` and ``generate_preset_pass_manager`` as of Qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
     'ignore:.*is pending deprecation as of qiskit 1.3..*:PendingDeprecationWarning:',
     'ignore:.*The class ``qiskit.providers.exceptions.BackendPropertyError`` is deprecated as of qiskit 1.4.*:DeprecationWarning:',
+    'ignore:.*he SolovayKitaev algorithm relies *.:RuntimeWarning:qiskit.synthesis.discrete_basis.generate_basis_approximations',
 ]
 
 [tool.coverage]

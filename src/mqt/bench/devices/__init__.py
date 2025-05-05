@@ -88,6 +88,33 @@ def get_available_native_gatesets() -> list[Gateset]:
     for device in get_available_devices():
         if device.gateset not in available_gatesets:
             available_gatesets.append(device.gateset)
+    available_gatesets.append(
+        Gateset(
+            "clifford+t",
+            [
+                "i",
+                "x",
+                "y",
+                "z",
+                "h",
+                "s",
+                "sdg",
+                "t",
+                "tdg",
+                "sx",
+                "sxdg",
+                "cx",
+                "cy",
+                "cz",
+                "swap",
+                "iswap",
+                "dcx",
+                "ecr",
+                "measure",
+                "barrier",
+            ],
+        )
+    )
     return available_gatesets
 
 
