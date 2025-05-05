@@ -283,7 +283,7 @@ def get_native_gates_level(
         return True
 
     if gateset.name == "clifford+t":
-        from qiskit.converters import circuit_to_dag, dag_to_circuit  # noqa: PLC0415
+        from qiskit.transpiler import PassManager  # noqa: PLC0415
         from qiskit.transpiler.passes.synthesis import SolovayKitaev  # noqa: PLC0415
 
         # Transpile the circuit to single- and two-qubit gates including rotations
@@ -295,8 +295,8 @@ def get_native_gates_level(
         )
         # Synthesize the rotations to Clifford+T gates
         # Measurements are removed and added back after the synthesis to avoid errors in the Solovay-Kitaev pass
-        pass_ = SolovayKitaev()
-        new_qc = dag_to_circuit(pass_.run(circuit_to_dag(compiled_for_sk.remove_final_measurements(inplace=False))))
+        pm = PassManager(SolovayKitaev())
+        new_qc = pm.run(compiled_for_sk.remove_final_measurements(inplace=False))
         new_qc.measure_all()
         # Transpile once more to remove unnecessary gates and optimize the circuit
         compiled = transpile(
