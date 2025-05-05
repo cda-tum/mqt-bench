@@ -282,7 +282,31 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
 
-    compiled = transpile(qc, basis_gates=gateset.gates, optimization_level=opt_level, seed_transpiler=10)
+    if gateset.name == "clifford+t":
+        from qiskit.transpiler import PassManager  # noqa: PLC0415
+        from qiskit.transpiler.passes.synthesis import SolovayKitaev  # noqa: PLC0415
+
+        # Transpile the circuit to single- and two-qubit gates including rotations
+        compiled_for_sk = transpile(
+            qc,
+            basis_gates=[*gateset.gates, "rx", "ry", "rz"],
+            optimization_level=opt_level,
+            seed_transpiler=10,
+        )
+        # Synthesize the rotations to Clifford+T gates
+        # Measurements are removed and added back after the synthesis to avoid errors in the Solovay-Kitaev pass
+        pm = PassManager(SolovayKitaev())
+        new_qc = pm.run(compiled_for_sk.remove_final_measurements(inplace=False))
+        new_qc.measure_all()
+        # Transpile once more to remove unnecessary gates and optimize the circuit
+        compiled = transpile(
+            new_qc,
+            basis_gates=gateset.gates,
+            optimization_level=opt_level,
+            seed_transpiler=10,
+        )
+    else:
+        compiled = transpile(qc, basis_gates=gateset.gates, optimization_level=opt_level, seed_transpiler=10)
 
     if return_qc:
         return compiled

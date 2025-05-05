@@ -128,7 +128,7 @@ def sample_filenames() -> list[str]:
         (vqesu2random, 3, True),
         (vqetwolocalrandom, 3, True),
         (wstate, 3, True),
-        # (shor, 3, False),
+        (shor, 3, False),
     ],
 )
 def test_quantumcircuit_alg_level(
@@ -566,6 +566,19 @@ def test_oqc_benchmarks() -> None:
 
     assert QuantumCircuit.from_qasm_file(str(path))
     path.unlink()
+
+
+def test_clifford_t() -> None:
+    """Test the Clifford+T gateset."""
+    qc = get_benchmark(
+        benchmark_name="qft",
+        level="nativegates",
+        circuit_size=4,
+        gateset="clifford+t",
+    )
+
+    for gate_type in qc.count_ops():
+        assert gate_type in get_native_gateset_by_name("clifford+t").gates
 
 
 def test_get_module_for_benchmark() -> None:
