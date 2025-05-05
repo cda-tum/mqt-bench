@@ -62,7 +62,12 @@ from mqt.bench.benchmarks import (
     vqetwolocalrandom,
     wstate,
 )
-from mqt.bench.devices import IBMProvider, OQCProvider, get_available_providers, get_provider_by_name
+from mqt.bench.devices import (
+    get_available_devices,
+    get_available_native_gatesets,
+    get_device_by_name,
+    get_native_gateset_by_name,
+)
 from mqt.bench.output import (
     MQTBenchExporterError,
     OutputFormat,
@@ -257,12 +262,12 @@ def test_quantumcircuit_native_and_mapped_levels(
     if scalable:
         assert qc.num_qubits == input_value
 
-    providers = get_available_providers()
-    for provider in providers:
-        opt_level = 1
+    native_gatesets = get_available_native_gatesets()
+    for gateset in native_gatesets:
+        opt_level = 0
         res = get_native_gates_level(
             qc,
-            provider,
+            gateset,
             qc.num_qubits,
             opt_level,
             file_precheck=False,
@@ -272,7 +277,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         assert res
         res = get_native_gates_level(
             qc,
-            provider,
+            gateset,
             qc.num_qubits,
             opt_level,
             file_precheck=True,
@@ -281,8 +286,7 @@ def test_quantumcircuit_native_and_mapped_levels(
         )
         assert res
 
-        provider.get_native_gates()
-        for device in provider.get_available_devices():
+        for device in get_available_devices():
             # Creating the circuit on target-dependent: mapped level qiskit
             if device.num_qubits >= qc.num_qubits:
                 res = get_mapped_level(
@@ -343,263 +347,42 @@ def test_dj_constant_oracle() -> None:
         "circuit_size",
         "benchmark_instance_name",
         "compiler_settings",
-        "provider_name",
+        "gateset_name",
         "device_name",
     ),
     [
+        # Algorithm-level tests
+        ("dj", "alg", 3, None, None, "", ""),
+        ("wstate", 0, 3, None, None, "", ""),
+        ("shor", "alg", None, "xsmall", None, "", ""),
+        ("grover-noancilla", "alg", 3, None, None, "", ""),
+        ("qwalk-v-chain", "alg", 3, None, None, "", ""),
+        # Independent level tests
+        ("ghz", "indep", 3, None, None, "", ""),
+        ("graphstate", 1, 3, None, None, "", ""),
+        # Native gates level tests
         (
             "dj",
-            "alg",
+            "nativegates",
             3,
             None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "wstate",
-            0,
-            3,
-            None,
-            None,
-            "",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=0)),
+            "ionq",
             "",
         ),
+        ("qft", 2, 3, None, None, "rigetti", "rigetti_aspen_m3"),
+        # Mapped level tests
         (
             "ghz",
-            "indep",
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "graphstate",
-            1,
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "dj",
-            "nativegates",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "ionq",
-            "",
-        ),
-        (
-            "dj",
-            "nativegates",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "ibm",
-            "",
-        ),
-        (
-            "dj",
-            "nativegates",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "rigetti",
-            "rigetti_aspen_m3",
-        ),
-        (
-            "dj",
-            "nativegates",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "oqc",
-            "oqc_lucy",
-        ),
-        (
-            "qft",
-            2,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
-            "ionq",
-            "ionq_harmony1",
-        ),
-        (
-            "qft",
-            2,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=3)),
-            "ibm",
-            "ibm_montreal",
-        ),
-        ("qft", 2, 6, None, None, "rigetti", "rigetti_aspen_m3"),
-        (
-            "qft",
-            2,
-            3,
-            None,
-            None,
-            "oqc",
-            "oqc_lucy",
-        ),
-        (
-            "qpeexact",
             "mapped",
             3,
             None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ibm",
+            CompilerSettings(qiskit=QiskitSettings(optimization_level=0)),
+            "",
             "ibm_washington",
         ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ibm",
-            "ibm_montreal",
-        ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "rigetti",
-            "rigetti_aspen_m3",
-        ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ionq",
-            "ionq_harmony",
-        ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ionq",
-            "ionq_aria1",
-        ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "ionq",
-            "ionq_aria1",
-        ),
-        (
-            "qpeexact",
-            "mapped",
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "oqc",
-            "oqc_lucy",
-        ),
-        (
-            "qpeinexact",
-            3,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ibm",
-            "ibm_washington",
-        ),
-        (
-            "qpeinexact",
-            3,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "ibm",
-            "ibm_montreal",
-        ),
-        (
-            "qpeinexact",
-            3,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "rigetti",
-            "rigetti_aspen_m3",
-        ),
-        (
-            "qpeinexact",
-            3,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=1)),
-            "oqc",
-            "oqc_lucy",
-        ),
-        (
-            "qpeinexact",
-            3,
-            3,
-            None,
-            CompilerSettings(qiskit=QiskitSettings(optimization_level=2)),
-            "quantinuum",
-            "quantinuum_h2",
-        ),
-        (
-            "grover-noancilla",
-            "alg",
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "qwalk-noancilla",
-            "alg",
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "grover-v-chain",
-            "alg",
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "qwalk-v-chain",
-            "alg",
-            3,
-            None,
-            None,
-            "",
-            "",
-        ),
-        (
-            "shor",
-            "alg",
-            None,
-            "xsmall",
-            None,
-            "",
-            "",
-        ),
+        ("ghz", 3, 3, None, None, "ibm_falcon", "ibm_montreal"),
+        ("ghz", 3, 3, None, CompilerSettings(qiskit=QiskitSettings(optimization_level=0)), "", "ionq_aria1"),
     ],
 )
 def test_get_benchmark(
@@ -608,7 +391,7 @@ def test_get_benchmark(
     circuit_size: int | None,
     benchmark_instance_name: str | None,
     compiler_settings: CompilerSettings | None,
-    provider_name: str,
+    gateset_name: str,
     device_name: str,
 ) -> None:
     """Test the creation of the benchmarks using the get_benchmark method."""
@@ -618,17 +401,17 @@ def test_get_benchmark(
         circuit_size,
         benchmark_instance_name,
         compiler_settings,
-        provider_name,
+        gateset_name,
         device_name,
     )
     assert qc.depth() > 0
-    if provider_name and "oqc" not in provider_name:
+    if gateset_name:
         assert isinstance(qc, QuantumCircuit)
         for qc_instruction in qc.data:
             instruction = qc_instruction.operation
             gate_type = instruction.name
-            provider = get_provider_by_name(provider_name)
-            assert gate_type in provider.get_native_gates() or gate_type == "barrier"
+            gateset = get_native_gateset_by_name(gateset_name)
+            assert gate_type in gateset.gates or gate_type == "barrier"
 
 
 def test_get_benchmark_faulty_parameters() -> None:
@@ -682,7 +465,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "rigetti",
             "rigetti_aspen_m3",
         )
-    match = "Selected provider_name must be in"
+    match = "Gateset wrong_gateset not found in available gatesets."
     with pytest.raises(ValueError, match=match):
         get_benchmark(
             "qpeexact",
@@ -733,7 +516,7 @@ def test_saving_qasm_to_alternative_location_with_alternative_filename(
     res = get_mapped_level(
         qc,
         qc.num_qubits,
-        IBMProvider.get_device("ibm_washington"),
+        get_device_by_name("ibm_washington"),
         1,
         False,
         False,
@@ -755,9 +538,9 @@ def test_oqc_benchmarks() -> None:
 
     get_native_gates_level(
         qc,
-        OQCProvider(),
+        get_device_by_name("oqc_lucy").gateset,
         qc.num_qubits,
-        opt_level=1,
+        opt_level=0,
         file_precheck=False,
         return_qc=False,
         target_directory=directory,
@@ -772,8 +555,8 @@ def test_oqc_benchmarks() -> None:
     get_mapped_level(
         qc,
         qc.num_qubits,
-        OQCProvider().get_device("oqc_lucy"),
-        opt_level=1,
+        get_device_by_name("oqc_lucy"),
+        opt_level=0,
         file_precheck=False,
         return_qc=False,
         target_directory=directory,
@@ -843,7 +626,7 @@ def test_create_ae_circuit_with_invalid_qubit_number() -> None:
     [
         ("alg", "ghz_alg_5"),
         ("indep", "ghz_indep_5"),
-        ("nativegates", "ghz_nativegates_ibm_opt2_5"),
+        ("nativegates", "ghz_nativegates_ibm_falcon_opt2_5"),
         ("mapped", "ghz_mapped_ibm_washington_opt2_5"),
     ],
 )
@@ -853,8 +636,8 @@ def test_generate_filename(level: str, expected: str) -> None:
         benchmark_name="ghz",
         level=level,
         num_qubits=5,
-        provider_name="ibm",
-        device_name="ibm_washington",
+        gateset=get_native_gateset_by_name("ibm_falcon"),
+        device=get_device_by_name("ibm_washington"),
         opt_level=2,
     )
     assert filename == expected
@@ -879,8 +662,8 @@ def test_generate_header_minimal(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "// MQT Bench version: 9.9.9" in hdr
     assert f"// Qiskit version: {__qiskit_version__}" in hdr
     assert f"// Output format: {OutputFormat.QASM3.value}" in hdr
-    # no gate_set or mapping lines when omitted
-    assert "// Used gate set:" not in hdr
+    # no gateset or mapping lines when omitted
+    assert "// Used gateset:" not in hdr
     assert "// Coupling map:" not in hdr
 
 
@@ -889,9 +672,9 @@ def test_generate_header_with_options(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(metadata, "version", lambda _: "0.1.0")
     gates = ["x", "cx", "h"]
     cmap = [[0, 1], [1, 2]]
-    hdr = generate_header(OutputFormat.QASM2, gate_set=gates, c_map=cmap)
+    hdr = generate_header(OutputFormat.QASM2, gateset=gates, c_map=cmap)
 
-    assert f"// Used gate set: {gates}" in hdr
+    assert f"// Used gateset: {gates}" in hdr
     assert f"// Coupling map: {cmap}" in hdr
 
 

@@ -14,20 +14,12 @@ import re
 
 import pytest
 
-from mqt.bench.devices import QuantinuumProvider
-
-
-def test_quantinuum_provider_methods() -> None:
-    """Test the methods of the QuantinuumProvider class."""
-    assert QuantinuumProvider.get_available_device_names() == ["quantinuum_h2"]
-    assert QuantinuumProvider.get_available_basis_gates() == [["rzz", "rz", "ry", "rx", "measure", "barrier"]]
-    assert QuantinuumProvider.get_native_gates() == ["rzz", "rz", "ry", "rx", "measure", "barrier"]
-    assert QuantinuumProvider.get_max_qubits() == 32
+from mqt.bench.devices import get_device_by_name
 
 
 def test_quantinuum_h2_device() -> None:
     """Test the import of the Quantinuum H2 quantum computer."""
-    device = QuantinuumProvider.get_device("quantinuum_h2")
+    device = get_device_by_name("quantinuum_h2")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 

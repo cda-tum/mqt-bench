@@ -14,20 +14,12 @@ import re
 
 import pytest
 
-from mqt.bench.devices import OQCProvider
-
-
-def test_oqc_provider_methods() -> None:
-    """Test the methods of the OQCrovider class."""
-    assert OQCProvider.get_available_device_names() == ["oqc_lucy"]
-    assert OQCProvider.get_available_basis_gates() == [["rz", "sx", "x", "ecr", "measure", "barrier"]]
-    assert OQCProvider.get_native_gates() == ["rz", "sx", "x", "ecr", "measure", "barrier"]
-    assert OQCProvider.get_max_qubits() == 8
+from mqt.bench.devices import get_device_by_name
 
 
 def test_oqc_lucy_device() -> None:
     """Test the import of the OQC Lucy quantum computer."""
-    device = OQCProvider.get_device("oqc_lucy")
+    device = get_device_by_name("oqc_lucy")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 

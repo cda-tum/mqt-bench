@@ -16,12 +16,7 @@ from typing import TYPE_CHECKING, Literal, TypedDict, overload
 
 from qiskit import QuantumCircuit, transpile
 
-from .devices import (
-    get_available_device_names,
-    get_available_provider_names,
-    get_device_by_name,
-    get_provider_by_name,
-)
+from .devices import get_available_device_names, get_device_by_name, get_native_gateset_by_name
 from .output import (
     OutputFormat,
     save_circuit,
@@ -30,7 +25,7 @@ from .output import (
 if TYPE_CHECKING:  # pragma: no cover
     from types import ModuleType
 
-    from .devices import Device, Provider
+    from .devices import Device, Gateset
 
 from dataclasses import dataclass
 
@@ -72,19 +67,19 @@ def generate_filename(
     benchmark_name: str,
     level: str,
     num_qubits: int | None,
-    provider_name: str | None = None,
-    device_name: str | None = None,
+    gateset: Gateset | None = None,
+    device: Device | None = None,
     opt_level: int | None = None,
 ) -> str:
     """Generate a benchmark filename based on the abstraction level and context.
 
     Arguments:
-        benchmark_name: The name of the benchmark
-        level: The abstraction level
-        num_qubits: Number of qubits in the benchmark circuit
-        provider_name: Optional name of the gate set provider (used for 'nativegates')
-        device_name: Optional name of the device (used for 'mapped')
-        opt_level: Optional optimization level (used for 'nativegates' and 'mapped')
+        benchmark_name: name of the quantum circuit
+        level: abstraction level
+        num_qubits: number of qubits in the benchmark circuit
+        gateset: optional gateset (used for 'nativegates')
+        device: optional device (used for 'mapped')
+        opt_level: optional optimization level (used for 'nativegates' and 'mapped')
 
     Returns:
         A string representing a filename (excluding extension) that encodes
@@ -92,11 +87,11 @@ def generate_filename(
     """
     base = f"{benchmark_name}_{level}"
 
-    if level == "nativegates" and provider_name is not None and opt_level is not None:
-        return f"{base}_{provider_name}_opt{opt_level}_{num_qubits}"
+    if level == "nativegates" and gateset is not None and opt_level is not None:
+        return f"{base}_{gateset.name}_opt{opt_level}_{num_qubits}"
 
-    if level == "mapped" and device_name is not None and opt_level is not None:
-        return f"{base}_{device_name}_opt{opt_level}_{num_qubits}"
+    if level == "mapped" and device is not None and opt_level is not None:
+        return f"{base}_{device.name}_opt{opt_level}_{num_qubits}"
 
     return f"{base}_{num_qubits}"
 
@@ -222,7 +217,7 @@ def get_indep_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -236,7 +231,7 @@ def get_native_gates_level(
 @overload
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -249,7 +244,7 @@ def get_native_gates_level(
 
 def get_native_gates_level(
     qc: QuantumCircuit,
-    provider: Provider,
+    gateset: Gateset,
     num_qubits: int | None,
     opt_level: int,
     file_precheck: bool,
@@ -262,7 +257,7 @@ def get_native_gates_level(
 
     Arguments:
         qc: quantum circuit which the to be created benchmark circuit is based on
-        provider: determines the native gate set
+        gateset: contains the name of the gateset and a list of native gates
         num_qubits: number of qubits
         opt_level: optimization level
         file_precheck: flag indicating whether to check whether the file already exists before creating it (again)
@@ -279,7 +274,7 @@ def get_native_gates_level(
         benchmark_name=qc.name,
         level="native",
         num_qubits=num_qubits,
-        provider_name=provider.provider_name,
+        gateset=gateset,
         opt_level=opt_level,
     )
     path = Path(target_directory, f"{filename_native}.{output_format.extension()}")
@@ -287,13 +282,7 @@ def get_native_gates_level(
     if file_precheck and path.is_file():
         return True
 
-    gate_set = provider.get_native_gates()
-    compiled = transpile(
-        qc,
-        basis_gates=gate_set,
-        optimization_level=opt_level,
-        seed_transpiler=10,
-    )
+    compiled = transpile(qc, basis_gates=gateset.gates, optimization_level=opt_level, seed_transpiler=10)
 
     if return_qc:
         return compiled
@@ -302,7 +291,7 @@ def get_native_gates_level(
         qc=compiled,
         filename=filename_native,
         output_format=output_format,
-        gate_set=gate_set,
+        gateset=gateset.gates,
         target_directory=target_directory,
     )
 
@@ -364,7 +353,7 @@ def get_mapped_level(
         else: True/False indicating whether the function call was successful or not
     """
     filename_mapped = target_filename or generate_filename(
-        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device_name=device.name, opt_level=opt_level
+        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device=device, opt_level=opt_level
     )
     path = Path(target_directory, f"{filename_mapped}.{output_format.extension()}")
 
@@ -375,7 +364,7 @@ def get_mapped_level(
     compiled = transpile(
         qc,
         optimization_level=opt_level,
-        basis_gates=device.basis_gates,
+        basis_gates=device.gateset.gates,
         coupling_map=c_map,
         seed_transpiler=10,
     )
@@ -387,7 +376,7 @@ def get_mapped_level(
         qc=compiled,
         filename=filename_mapped,
         output_format=output_format,
-        gate_set=device.basis_gates,
+        gateset=device.gateset.gates,
         c_map=c_map,
         target_directory=target_directory,
     )
@@ -399,7 +388,7 @@ def get_benchmark(
     circuit_size: int | None = None,
     benchmark_instance_name: str | None = None,
     compiler_settings: CompilerSettings | None = None,
-    provider_name: str = "ibm",
+    gateset: str | Gateset = "ibm_falcon",
     device_name: str = "ibm_washington",
     **kwargs: str,
 ) -> QuantumCircuit:
@@ -409,9 +398,9 @@ def get_benchmark(
         benchmark_name: name of the to be generated benchmark
         level: Choice of level, either as a string ("alg", "indep", "nativegates" or "mapped") or as a number between 0-3 where 0 corresponds to "alg" level and 3 to "mapped" level
         circuit_size: Input for the benchmark creation, in most cases this is equal to the qubit number
-        benchmark_instance_name: Input selection for some benchmarks, namely and "shor"
+        benchmark_instance_name: Input selection for some benchmarks, namely "shor"
         compiler_settings: Data class containing the respective compiler settings for the specified compiler (e.g., optimization level for Qiskit)
-        provider_name: "ibm", "rigetti", "ionq", "oqc", or "quantinuum" (required for "nativegates" level)
+        gateset: Name of the gateset or tuple containing the name of the gateset and the gateset itself (required for "nativegates" level)
         device_name: "ibm_washington", "ibm_montreal", "rigetti_aspen_m3", "ionq_harmony", "ionq_aria1", "oqc_lucy", "quantinuum_h2" (required for "mapped" level)
         kwargs: Additional arguments for the benchmark generation
 
@@ -471,13 +460,11 @@ def get_benchmark(
 
     native_gates_level = 2
     if level in ("nativegates", native_gates_level):
-        if provider_name not in get_available_provider_names():
-            msg = f"Selected provider_name must be in {get_available_provider_names()}."
-            raise ValueError(msg)
-        provider = get_provider_by_name(provider_name)
+        if isinstance(gateset, str):
+            gateset = get_native_gateset_by_name(gateset)
         assert compiler_settings.qiskit is not None
         opt_level = compiler_settings.qiskit.optimization_level
-        return get_native_gates_level(qc, provider, circuit_size, opt_level, False, True)
+        return get_native_gates_level(qc, gateset, circuit_size, opt_level, False, True)
 
     if device_name not in get_available_device_names():
         msg = f"Selected device_name must be in {get_available_device_names()}."

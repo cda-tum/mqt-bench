@@ -14,66 +14,48 @@ See README.md or go to https://github.com/cda-tum/mqt-bench for more information
 
 from __future__ import annotations
 
-# ruff: noqa: I001
+from functools import cache
+
 from .calibration import DeviceCalibration
-from .device import Device
-from .provider import Provider
-
-from .ibm import IBMProvider
-from .ionq import IonQProvider
-from .iqm import IQMProvider
-from .oqc import OQCProvider
-from .quantinuum import QuantinuumProvider
-from .rigetti import RigettiProvider
+from .device import Device, Gateset
+from .ibm import IBMMontreal, IBMTorino, IBMWashington
+from .ionq import IonQAria1, IonQHarmony
+from .iqm import IQMAdonis, IQMApollo
+from .oqc import OQCLucy
+from .quantinuum import QuantinuumH2
+from .rigetti import RigettiAspenM3
 
 
-class NotFoundError(Exception):
-    """Raised when a device or provider is not found within the available ones."""
-
-
-def get_available_providers() -> list[Provider]:
-    """Get a list of all available providers."""
-    return [IBMProvider(), IonQProvider(), OQCProvider(), RigettiProvider(), QuantinuumProvider(), IQMProvider()]
-
-
-def get_available_provider_names() -> list[str]:
-    """Get a list of all available provider names."""
-    return [prov.provider_name for prov in get_available_providers()]
-
-
-def get_provider_by_name(provider_name: str) -> Provider:
-    """Get a provider by its name.
-
-    Arguments:
-        provider_name: the name of the provider
-    """
-    provider = None
-    for prov in get_available_providers():
-        if prov.provider_name == provider_name:
-            provider = prov
-            break
-
-    if provider is None:
-        msg = f"Provider '{provider_name}' not found among available providers."
-        raise NotFoundError(msg)
-
-    return provider
-
-
-def get_available_devices(sanitize_device: bool = False) -> list[Device]:
-    """Get a list of all available devices.
-
-    Arguments:
-        sanitize_device: whether to sanitize the device calibration data
-    """
+@cache
+def get_available_devices() -> list[Device]:
+    """Get a list of all available devices."""
     return [
-        dev for prov in get_available_providers() for dev in prov.get_available_devices(sanitize_device=sanitize_device)
+        IBMTorino(),
+        IBMMontreal(),
+        IBMWashington(),
+        IonQAria1(),
+        IonQHarmony(),
+        IQMAdonis(),
+        IQMApollo(),
+        OQCLucy(),
+        QuantinuumH2(),
+        RigettiAspenM3(),
     ]
 
 
+@cache
 def get_available_device_names() -> list[str]:
     """Get a list of all available device names."""
-    return [name for prov in get_available_providers() for name in prov.get_available_device_names()]
+    return [device.name for device in get_available_devices()]
+
+
+@cache
+def _device_map() -> dict[str, Device]:
+    """One-time build of name → Device map.
+
+    Cached forever by functools.cache.
+    """
+    return {d.name: d for d in get_available_devices()}
 
 
 def get_device_by_name(device_name: str) -> Device:
@@ -82,35 +64,50 @@ def get_device_by_name(device_name: str) -> Device:
     Arguments:
         device_name: the name of the device
     """
-    device = None
-    for provider in get_available_providers():
-        try:
-            device = provider.get_device(device_name)
-            break
-        except ValueError:
-            continue
-
-    if device is None:
-        msg = f"Device '{device_name}' not found among available providers."
-        raise NotFoundError(msg)
-
-    return device
+    try:
+        return _device_map()[device_name]
+    except KeyError:
+        msg = f"Device {device_name} not found in available devices."
+        raise ValueError(msg) from None
 
 
 __all__ = [
     "Device",
     "DeviceCalibration",
-    "IBMProvider",
-    "IQMProvider",
-    "IonQProvider",
-    "OQCProvider",
-    "Provider",
-    "QuantinuumProvider",
-    "RigettiProvider",
+    "Gateset",
     "get_available_device_names",
     "get_available_devices",
-    "get_available_provider_names",
-    "get_available_providers",
     "get_device_by_name",
-    "get_provider_by_name",
 ]
+
+
+@cache
+def get_available_native_gatesets() -> list[Gateset]:
+    """Get a list of all available native gatesets."""
+    available_gatesets = []
+    for device in get_available_devices():
+        if device.gateset not in available_gatesets:
+            available_gatesets.append(device.gateset)
+    return available_gatesets
+
+
+@cache
+def _native_gateset_map() -> dict[str, Gateset]:
+    """One-time build of name → Gateset map.
+
+    Cached forever by functools.cache.
+    """
+    return {g.name: g for g in get_available_native_gatesets()}
+
+
+def get_native_gateset_by_name(gateset_name: str) -> Gateset:
+    """Get a native gateset by its name.
+
+    Arguments:
+        gateset_name: the name of the gateset
+    """
+    try:
+        return _native_gateset_map()[gateset_name]
+    except KeyError:
+        msg = f"Gateset {gateset_name} not found in available gatesets."
+        raise ValueError(msg) from None

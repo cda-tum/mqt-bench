@@ -66,6 +66,7 @@ extensions = [
     "nbsphinx",
     "sphinxext.opengraph",
     "sphinx_autodoc_typehints",
+    "jupyter_sphinx",
 ]
 
 pygments_style = "colorful"
