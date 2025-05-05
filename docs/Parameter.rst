@@ -28,7 +28,7 @@ with
     .. automodule:: mqt.bench.benchmark_generator
         :members: CompilerSettings, QiskitSettings
 
-* ``gateset``\ : ``"ibm"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"oqc"``\ , or ``"quantinuum"`` (required for "nativegates" level)
+* ``gateset``\ : ``"ibm_falcon"``\ , ``"ibm_heron_r1"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"iqm"``\ , ``"oqc"``\ , or ``"quantinuum"`` (required for "nativegates" level)
 * ``device_name``\ : ``"ibm_washington"``\ , ``"ibm_montreal"``\ , ``"rigetti_aspen_m3"``\ , ``"ionq_harmony"``\ , ``"ionq_aria1"``\ , ``"oqc_lucy"``\ , or ``"quantinuum_h2"`` (required for "mapped" level)
 
 Quantum Circuit Compiler Support
