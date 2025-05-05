@@ -67,19 +67,19 @@ def generate_filename(
     benchmark_name: str,
     level: str,
     num_qubits: int | None,
-    gateset_name: str | None = None,
-    device_name: str | None = None,
+    gateset: Gateset | None = None,
+    device: Device | None = None,
     opt_level: int | None = None,
 ) -> str:
     """Generate a benchmark filename based on the abstraction level and context.
 
     Arguments:
-        benchmark_name: The name of the benchmark
-        level: The abstraction level
-        num_qubits: Number of qubits in the benchmark circuit
-        gateset_name: Optional name of the gate set (used for 'nativegates')
-        device_name: Optional name of the device (used for 'mapped')
-        opt_level: Optional optimization level (used for 'nativegates' and 'mapped')
+        benchmark_name: name of the quantum circuit
+        level: abstraction level
+        num_qubits: number of qubits in the benchmark circuit
+        gateset: optional gateset (used for 'nativegates')
+        device: optional device (used for 'mapped')
+        opt_level: optional optimization level (used for 'nativegates' and 'mapped')
 
     Returns:
         A string representing a filename (excluding extension) that encodes
@@ -87,11 +87,11 @@ def generate_filename(
     """
     base = f"{benchmark_name}_{level}"
 
-    if level == "nativegates" and gateset_name is not None and opt_level is not None:
-        return f"{base}_{gateset_name}_opt{opt_level}_{num_qubits}"
+    if level == "nativegates" and gateset is not None and opt_level is not None:
+        return f"{base}_{gateset.name}_opt{opt_level}_{num_qubits}"
 
-    if level == "mapped" and device_name is not None and opt_level is not None:
-        return f"{base}_{device_name}_opt{opt_level}_{num_qubits}"
+    if level == "mapped" and device is not None and opt_level is not None:
+        return f"{base}_{device.name}_opt{opt_level}_{num_qubits}"
 
     return f"{base}_{num_qubits}"
 
@@ -274,7 +274,7 @@ def get_native_gates_level(
         benchmark_name=qc.name,
         level="native",
         num_qubits=num_qubits,
-        gateset_name=gateset.gateset_name,
+        gateset=gateset,
         opt_level=opt_level,
     )
     path = Path(target_directory, f"{filename_native}.{output_format.extension()}")
@@ -353,7 +353,7 @@ def get_mapped_level(
         else: True/False indicating whether the function call was successful or not
     """
     filename_mapped = target_filename or generate_filename(
-        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device_name=device.name, opt_level=opt_level
+        benchmark_name=qc.name, level="mapped", num_qubits=num_qubits, device=device, opt_level=opt_level
     )
     path = Path(target_directory, f"{filename_mapped}.{output_format.extension()}")
 

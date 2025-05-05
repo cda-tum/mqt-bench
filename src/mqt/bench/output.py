@@ -86,7 +86,7 @@ def generate_header(
     ))
 
     if gateset:
-        lines.append(f"// Used gate set: {gateset}")
+        lines.append(f"// Used gateset: {gateset}")
     if c_map:
         lines.append(f"// Coupling map: {c_map}")
 

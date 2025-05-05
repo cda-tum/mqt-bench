@@ -17,6 +17,10 @@ from pathlib import Path
 
 from . import CompilerSettings, QiskitSettings, get_benchmark
 from .benchmark_generation import generate_filename
+from .devices import (
+    get_device_by_name,
+    get_native_gateset_by_name,
+)
 from .output import OutputFormat, save_circuit, write_circuit
 
 
@@ -70,7 +74,7 @@ def main() -> None:
     parser.add_argument(
         "--gateset",
         type=str,
-        help="Used gate set (e.g., 'ibm', 'rigetti').",
+        help="Used gateset (e.g., 'iqm', 'rigetti').",
     )
     parser.add_argument(
         "--device",
@@ -113,7 +117,7 @@ def main() -> None:
         level=args.level,
         circuit_size=args.num_qubits,
         compiler_settings=CompilerSettings(qiskit=qiskit_settings),
-        gateset=args.gateset or "ibm",
+        gateset=args.gateset or "ibm_falcon",
         device_name=args.device or "ibm_washington",
     )
 
@@ -133,8 +137,8 @@ def main() -> None:
         benchmark_name=benchmark_name,
         level=args.level,
         num_qubits=args.num_qubits,
-        gateset_name=args.gateset,
-        device_name=args.device,
+        gateset=get_native_gateset_by_name(args.gateset) if args.gateset else None,
+        device=get_device_by_name(args.device) if args.device else None,
         opt_level=args.qiskit_optimization_level,
     )
     success = save_circuit(

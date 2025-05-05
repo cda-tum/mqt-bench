@@ -7,31 +7,28 @@ The ``mqt.bench.get_benchmark`` method has the following signature:
         :no-index:
         :members: get_benchmark
 
-* ``benchmark_name`` (see :doc:`details <Benchmark_selection>`) \ : ``"ae"``\ , ``"dj"``\ , ``"grover-noancilla"``\ , ``"grover-v-chain"``\ , ``"ghz"``\ , ``"graphstate"``\ , ``"portfolioqaoa"``\ ,
-  ``"portfoliovqe"``\ , ``"qaoa"``\ , ``"qft"``\ , ``"qftentangled"``\ , ``"qnn"``\ , ``"qpeexact"``\ , ``"qpeinexact"``\ ,
-  ``"qwalk-noancilla"``\ , ``"qwalk-v-chain"``\ , ``"random"``\ , ``"realamprandom"``\ , ``"su2random"``\ , ``"twolocalrandom"``\ , ``"vqe"``\ ,
-  ``"wstate"``\ , ``"shor"``\ , ``"pricingcall"``\ , ``"pricingput"``\ , ``"groundstate"``\ , ``"routing"``\ ,
-  ``"tsp"``
+* ``benchmark_name`` (see :doc:`details <Benchmark_selection>`) \ : ``"ae"``\ , ``"bv"``\ , ``"dj"``\ , ``"grover-noancilla"``\ , ``"grover-v-chain"``\ , ``"ghz"``\ , ``"graphstate"``\ ,
+  ``"qaoa"``\ , ``"qft"``\ , ``"qftentangled"``\ , ``"qnn"``\ , ``"qpeexact"``\ , ``"qpeinexact"``\ ,
+  ``"qwalk-noancilla"``\ , ``"qwalk-v-chain"``\ , ``"randomcircuit"``\ , ``"vqerealamprandom"``\ , ``"vqesu2random"``\ , ``"vqetwolocalrandom"``\ ,
+  ``"wstate"``\ , ``"shor"``\
 * ``level``\ : ``0`` or ``"alg"``\ , ``1`` or ``"indep"``\ , ``2`` or ``"nativegates"``\ , ``3`` or ``"mapped"``
 * ``circuit_size``\ : for most of the cases this is equal to number of qubits
   (all scalable benchmarks except ``"qwalk-v-chain"`` and ``"grover-v-chain"``\ ) while for all other the qubit number is higher
-* ``compiler``\ : ``"qiskit"`` or ``"tket"``
-* ``compiler_settings``: Optimization level for ``"qiskit"`` (``0``-``3``), placement for ``"tket"`` (``lineplacement`` or ``graphplacement``), exemplary shown:
+* ``compiler_settings``: Optimization level for ``"qiskit"`` (``0``-``3``), exemplary shown:
 
 .. code-block:: python
 
-   from mqt.bench import CompilerSettings, QiskitSettings, TKETSettings
+   from mqt.bench import CompilerSettings, QiskitSettings
 
    compiler_settings = CompilerSettings(
        qiskit=QiskitSettings(optimization_level=1),
-       tket=TKETSettings(placement="lineplacement"),
    )
 
 with
     .. automodule:: mqt.bench.benchmark_generator
-        :members: CompilerSettings, QiskitSettings, TKETSettings
+        :members: CompilerSettings, QiskitSettings
 
-* ``provider_name``\ : ``"ibm"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"oqc"``\ , or ``"quantinuum"`` (required for "nativegates" level)
+* ``gateset``\ : ``"ibm"``\ , ``"rigetti"``\ , ``"ionq"``\ , ``"oqc"``\ , or ``"quantinuum"`` (required for "nativegates" level)
 * ``device_name``\ : ``"ibm_washington"``\ , ``"ibm_montreal"``\ , ``"rigetti_aspen_m3"``\ , ``"ionq_harmony"``\ , ``"ionq_aria1"``\ , ``"oqc_lucy"``\ , or ``"quantinuum_h2"`` (required for "mapped" level)
 
 Quantum Circuit Compiler Support
@@ -45,7 +42,7 @@ At the moment, one compiler is supported:
 Native Gate-Set Support
 -----------------------
 
-So far, MQT Bench supports the following native gate-sets:
+So far, MQT Bench supports the following native gatesets:
 
 .. jupyter-execute::
    :hide-code:
@@ -53,7 +50,7 @@ So far, MQT Bench supports the following native gate-sets:
     from mqt.bench.devices import get_available_native_gatesets
 
     for num, gateset in enumerate(get_available_native_gatesets()):
-        print(str(num + 1) + ":", gateset.gateset_name, ": ", gateset.gates)
+        print(str(num + 1) + ":", gateset.name, ": ", gateset.gates)
 
 Device Support
 --------------

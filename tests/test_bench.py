@@ -626,7 +626,7 @@ def test_create_ae_circuit_with_invalid_qubit_number() -> None:
     [
         ("alg", "ghz_alg_5"),
         ("indep", "ghz_indep_5"),
-        ("nativegates", "ghz_nativegates_ibm_opt2_5"),
+        ("nativegates", "ghz_nativegates_ibm_falcon_opt2_5"),
         ("mapped", "ghz_mapped_ibm_washington_opt2_5"),
     ],
 )
@@ -636,8 +636,8 @@ def test_generate_filename(level: str, expected: str) -> None:
         benchmark_name="ghz",
         level=level,
         num_qubits=5,
-        gateset_name="ibm",
-        device_name="ibm_washington",
+        gateset=get_native_gateset_by_name("ibm_falcon"),
+        device=get_device_by_name("ibm_washington"),
         opt_level=2,
     )
     assert filename == expected
@@ -662,8 +662,8 @@ def test_generate_header_minimal(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "// MQT Bench version: 9.9.9" in hdr
     assert f"// Qiskit version: {__qiskit_version__}" in hdr
     assert f"// Output format: {OutputFormat.QASM3.value}" in hdr
-    # no gate_set or mapping lines when omitted
-    assert "// Used gate set:" not in hdr
+    # no gateset or mapping lines when omitted
+    assert "// Used gateset:" not in hdr
     assert "// Coupling map:" not in hdr
 
 
@@ -674,7 +674,7 @@ def test_generate_header_with_options(monkeypatch: pytest.MonkeyPatch) -> None:
     cmap = [[0, 1], [1, 2]]
     hdr = generate_header(OutputFormat.QASM2, gateset=gates, c_map=cmap)
 
-    assert f"// Used gate set: {gates}" in hdr
+    assert f"// Used gateset: {gates}" in hdr
     assert f"// Coupling map: {cmap}" in hdr
 
 

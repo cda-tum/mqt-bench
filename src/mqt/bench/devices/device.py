@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class Gateset:
     """A class to represent a set of native gates."""
 
-    gateset_name: str
+    name: str
     gates: list[str]
 
 
