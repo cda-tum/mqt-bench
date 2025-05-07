@@ -10,7 +10,6 @@
 
 from __future__ import annotations
 
-
 from mqt.bench.devices import get_device_by_name
 
 
