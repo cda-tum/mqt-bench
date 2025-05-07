@@ -1,3 +1,11 @@
+# Copyright (c) 2023 - 2025 Chair for Design Automation, TUM
+# Copyright (c) 2025 Munich Quantum Software Company GmbH
+# All rights reserved.
+#
+# SPDX-License-Identifier: MIT
+#
+# Licensed under the MIT License
+
 """Test the RigettiProvider class and the Rigetti Aspen-M3 device."""
 
 from __future__ import annotations
@@ -6,20 +14,12 @@ import re
 
 import pytest
 
-from mqt.bench.devices import RigettiProvider
-
-
-def test_rigetti_provider_methods() -> None:
-    """Test the methods of the RigettiProvider class."""
-    assert RigettiProvider.get_available_device_names() == ["rigetti_aspen_m3"]
-    assert RigettiProvider.get_available_basis_gates() == [["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]]
-    assert RigettiProvider.get_native_gates() == ["rx", "rz", "cz", "cp", "xx_plus_yy", "measure", "barrier"]
-    assert RigettiProvider.get_max_qubits() == 79
+from mqt.bench.devices import get_device_by_name
 
 
 def test_rigetti_aspen_m3_device() -> None:
     """Test the import of the Rigetti Aspen-M3 quantum computer."""
-    device = RigettiProvider.get_device("rigetti_aspen_m3")
+    device = get_device_by_name("rigetti_aspen_m3")
     single_qubit_gates = device.get_single_qubit_gates()
     two_qubit_gates = device.get_two_qubit_gates()
 

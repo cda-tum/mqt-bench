@@ -5,16 +5,12 @@ So far, the following benchmarks are implemented and provided:
 
 
 * Amplitude Estimation
+* Bernstein-Vazirani
 * Deutsch-Jozsa
 * GHZ State
 * Graph State
-* Ground State
 * Grover's (no ancilla)
 * Grover's (v-chain)
-* Portfolio Optimization with QAOA
-* Portfolio Optimization with VQE
-* Pricing Call Option
-* Pricing Put Option
 * Quantum Fourier Transformation (QFT)
 * QFT Entangled
 * Quantum Neural Network (QNN)
@@ -23,10 +19,7 @@ So far, the following benchmarks are implemented and provided:
 * Quantum Walk (no ancilla)
 * Quantum Walk (-chain)
 * Random Circuit
-* Routing
 * Shor's
-* Travelling Salesman
-* Variational Quantum Eigensolver (VQE)
 * VQE-ansätze with random values:
   * Efficient SU2 ansatz with Random Parameters
   * Real Amplitudes ansatz with Random Parameters
@@ -42,6 +35,8 @@ The attached mappings between shortened ``benchmark_name`` parameter and actual 
      - Actual Benchmark
    * - ``"ae"``
      - Amplitude Estimation (AE)
+   * - ``"bv"``
+     - Bernstein-Vazirani
    * - ``"dj"``
      - Deutsch-Jozsa
    * - ``"grover-noancilla"``
@@ -52,10 +47,6 @@ The attached mappings between shortened ``benchmark_name`` parameter and actual 
      - GHZ State
    * - ``"graphstate"``
      - Graph State
-   * - ``"portfolioqaoa"``
-     - Portfolio Optimization with QAOA
-   * - ``"portfoliovqe"``
-     - Portfolio Optimization with VQE
    * - ``"qaoa"``
      - Quantum Approximation Optimization Algorithm (QAOA)
    * - ``"qft"``
@@ -72,29 +63,16 @@ The attached mappings between shortened ``benchmark_name`` parameter and actual 
      - Quantum Walk (no ancilla)
    * - ``"qwalk-v-chain"``
      - Quantum Walk (v-chain)
-   * - ``"random"``
+   * - ``"randomcircuit"``
      - Random Quantum Circuit
-   * - ``"realamprandom"``
+   * - ``"vqerealamprandom"``
      - Real Amplitudes ansatz with Random Parameters
-   * - ``"su2random"``
+   * - ``"vqesu2random"``
      - Efficient SU2 ansatz with Random Parameters
-   * - ``"twolocalrandom"``
-     - Two Local ansatz with Random Parameters
-   * - ``"vqe"``
-     - Variational Quantum Eigensolver (VQE)
+   * - ``"vqetwolocalrandom"``
    * - ``"wstate"``
      - W-State
    * - ``"shor"``
      - Shor's
-   * - ``"pricingcall"``
-     - Pricing Call Option
-   * - ``"pricingput"``
-     - Pricing Put Option
-   * - ``"groundstate"``
-     - Ground State
-   * - ``"routing"``
-     - Routing
-   * - ``"tsp"``
-     - Travelling Salesman
 
 See the `benchmark description <https://www.cda.cit.tum.de/mqtbench/benchmark_description>`_ for further details on the individual benchmarks.

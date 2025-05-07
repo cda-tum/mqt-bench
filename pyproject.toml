@@ -14,7 +14,8 @@ authors = [
     { name = "Lukas Burgholzer", email = "lukas.burgholzer@tum.de"},
 ]
 keywords = ["MQT",  "quantum computing", "benchmarking", "performance", "testing"]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE.md"]
 requires-python = ">=3.9"
 dynamic = ["version"]
 
@@ -66,6 +67,7 @@ docs = [
     "sphinxext-opengraph>=0.10.0",
     "sphinx>=8.1.3; python_version >= '3.10'",
     "sphinx>=8.2.3; python_version >= '3.11'",
+    "jupyter_sphinx",
     "ipykernel>=6.29.5",
     "nbsphinx>=0.9.6",
     "sphinx-autodoc-typehints>=2.3.0",
@@ -108,10 +110,12 @@ filterwarnings = [
     'ignore:.*Values in x.*:RuntimeWarning:',
     'ignore:.*divide by zero encountered in det.*:RuntimeWarning:',
     'ignore:.*invalid value encountered in det.*:RuntimeWarning:',
+    'ignore:.*invalid value encountered in divide.*:RuntimeWarning:',
+    'ignore:.*The iteration is not making good progress.*:RuntimeWarning:',
     # Qiskit 1.2 deprecations
     'ignore:.*The class ``qiskit.qobj.pulse_qobj.Pulse.*`` is deprecated as of qiskit 1.2.*:DeprecationWarning:qiskit.*',
     # Qiskit 1.3 deprecations
-    'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
+    'ignore:.*The property ``qiskit.dagcircuit.dagcircuit.DAGCircuit.*`` is deprecated as of qiskit 1.3.0.*:DeprecationWarning:',
     'ignore:.*The class ``qiskit.pulse.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
     'ignore:.*The class ``qiskit.qobj.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
     'ignore:.*The property ``qiskit.transpiler.target.*`` is deprecated as of Qiskit 1.3.*:DeprecationWarning:qiskit.*',
@@ -120,6 +124,7 @@ filterwarnings = [
     'ignore:.*Providing non-standard gates.*is deprecated for both ``transpile`` and ``generate_preset_pass_manager`` as of Qiskit 1.3.0.*:DeprecationWarning:qiskit.*',
     'ignore:.*is pending deprecation as of qiskit 1.3..*:PendingDeprecationWarning:',
     'ignore:.*The class ``qiskit.providers.exceptions.BackendPropertyError`` is deprecated as of qiskit 1.4.*:DeprecationWarning:',
+    'ignore:.*he SolovayKitaev algorithm relies *.:RuntimeWarning:qiskit.synthesis.discrete_basis.generate_basis_approximations',
 ]
 
 [tool.coverage]
