@@ -16,6 +16,8 @@ that minor releases may include breaking changes.
 
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
+- Add the 120-qubit Nighthawk model with IBM's grid topology and CZ gate set.
+  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
 - Add fractional Heron models with arbitrary RX and bounded RZZ gates, including
   numeric angle folding in both compilers. Requires Qiskit 2.2 or newer.
   ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
