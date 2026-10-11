@@ -27,8 +27,8 @@ from qiskit.circuit import ClassicalRegister, ForLoopOp, IfElseOp, Parameter
 from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
 from qiskit.primitives import StatevectorSampler
-from qiskit.quantum_info import Statevector
 from qiskit.providers.basic_provider import BasicSimulator
+from qiskit.quantum_info import Statevector
 from qiskit.transpiler import (
     InstructionProperties,
     Layout,
@@ -432,6 +432,8 @@ def test_teleportation_correctness(num_qubits: int) -> None:
     qc = create_circuit("teleportation", num_qubits, state_preparation=prep)
     outcomes = {_run_with_control_flow(qc, seed=seed) for seed in range(20)}
     assert outcomes == {"1" * (num_qubits // 3)}
+
+
 def _success_rates(qc: QuantumCircuit, shots: int = 500) -> list[float]:
     """Run the circuit on the BasicSimulator and return, for every round k, the fraction of shots with c[k] = 1."""
     backend = BasicSimulator()
