@@ -385,6 +385,14 @@ def test_teleportation_state_preparation() -> None:
         create_circuit("teleportation", 3, state_preparation=QuantumCircuit(2))
 
 
+def test_teleportation_state_preparation_rejects_classical_bits() -> None:
+    """State preparation must not contain classical bits."""
+    prep = QuantumCircuit(1, 1)
+
+    with pytest.raises(ValueError, match="classical bits"):
+        create_circuit("teleportation", 3, state_preparation=prep)
+
+
 def _run_with_control_flow(qc: QuantumCircuit, *, seed: int) -> str:
     """Execute a circuit that contains ``if_else`` blocks, one clbit condition at a time.
 
