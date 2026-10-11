@@ -518,6 +518,20 @@ def test_mlqae_invalid_parameters() -> None:
         create_circuit("mlqae", 3, b_max=float("nan"))
 
 
+def test_teleportation_preserves_phase() -> None:
+    """Teleporting |+⟩ must yield 0 when Bob measures in the X basis."""
+    prep = QuantumCircuit(1)
+    prep.h(0)
+
+    qc = create_circuit("teleportation", 3, state_preparation=prep)
+    final_measurement = qc.data.pop()
+    qc.h(2)
+    qc.append(final_measurement.operation, final_measurement.qubits, final_measurement.clbits)
+
+    outcomes = {_run_with_control_flow(qc, seed=seed) for seed in range(20)}
+    assert outcomes == {"0"}
+
+
 def test_dj_constant_oracle() -> None:
     """Test the creation of the DJ benchmark constant oracle."""
     qc = create_circuit("dj", 5, False)
