@@ -31,8 +31,8 @@ def create_circuit(num_qubits: int, state_preparation: QuantumCircuit | None = N
 
     Arguments:
         num_qubits: Number of qubits of the returned quantum circuit. Must be a positive multiple of 3.
-        state_preparation: Optional 1-qubit circuit applied to each source qubit
-            to prepare the state to be teleported. If None, |0⟩ is teleported.
+        state_preparation: Optional 1-qubit circuit with no classical bits, applied
+            to each source qubit to prepare the state to be teleported. If None, |0⟩ is teleported.
 
     Returns:
         QuantumCircuit: A quantum circuit implementing the quantum teleportation protocol.
@@ -45,6 +45,9 @@ def create_circuit(num_qubits: int, state_preparation: QuantumCircuit | None = N
         raise ValueError(msg)
     if state_preparation is not None and state_preparation.num_qubits != 1:
         msg = "state_preparation must be a 1-qubit circuit."
+        raise ValueError(msg)
+    if state_preparation is not None and state_preparation.num_clbits != 0:
+        msg = "state_preparation cannot contain classical bits."
         raise ValueError(msg)
 
     num_blocks = num_qubits // 3
