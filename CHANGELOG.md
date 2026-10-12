@@ -29,7 +29,7 @@ that minor releases may include breaking changes.
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
-- 🐛 Restore final measurements on all qubits in QAOA benchmarks
+- 🐛 Restore final measurements on all qubits in QAOA benchmarks ([#1059])
   ([**@flowerthrower**])
 - 🐛 Report unsupported mirror circuits with a clear error and retain final
   measurements when inversion fails ([#1052]) ([**@simon1hofmann**])
@@ -224,6 +224,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
+[#1059]: https://github.com/munich-quantum-toolkit/bench/pull/1059
 [#1054]: https://github.com/munich-quantum-toolkit/bench/pull/1054
 [#1052]: https://github.com/munich-quantum-toolkit/bench/pull/1052
 [#1047]: https://github.com/munich-quantum-toolkit/bench/pull/1047
