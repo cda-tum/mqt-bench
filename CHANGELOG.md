@@ -29,6 +29,8 @@ that minor releases may include breaking changes.
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
+- 🐛 Restore final measurements on all qubits in QAOA benchmarks
+  ([**@flowerthrower**])
 - 🐛 Report unsupported mirror circuits with a clear error and retain final
   measurements when inversion fails ([#1052]) ([**@simon1hofmann**])
 - 🐛 Support two-qubit quantum walks with and without structured loops ([#1052])
