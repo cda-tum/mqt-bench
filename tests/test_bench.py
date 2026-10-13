@@ -409,8 +409,7 @@ def _run_with_control_flow(qc: QuantumCircuit, *, seed: int) -> str:
     state = Statevector.from_label("0" * qc.num_qubits)
     state.seed(rng)
 
-    def run_block(instructions: QuantumCircuitData, qubit_map: dict) -> None:
-        nonlocal state
+    def run_block(instructions: QuantumCircuitData, qubit_map: dict, state: Statevector) -> Statevector:
         for instruction in instructions:
             op = instruction.operation
             qubits = [qubit_map[q] for q in instruction.qubits]
@@ -422,11 +421,12 @@ def _run_with_control_flow(qc: QuantumCircuit, *, seed: int) -> str:
                 if clbits[bit_index[condition_bit]] == condition_value:
                     block = op.blocks[0]
                     inner_map = dict(zip(block.qubits, qubits, strict=True))
-                    run_block(block.data, inner_map)
+                    state = run_block(block.data, inner_map, state)
             else:
                 state = state.evolve(op, qubits)
+        return state
 
-    run_block(qc.data, {q: i for i, q in enumerate(qc.qubits)})
+    state = run_block(qc.data, {q: i for i, q in enumerate(qc.qubits)}, state)
     final_bits = [clbits[bit_index[bit]] for bit in qc.cregs[-1]]
     return "".join(str(bit) for bit in reversed(final_bits))
 
