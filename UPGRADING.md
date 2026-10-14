@@ -23,11 +23,11 @@ angles; Core also supports unbound inputs through a fixed-gate fallback.
 ### Optional MQT Core compiler
 
 Use `pip install "mqt-bench[mqt]"` and select `compiler="mqt"` in the Python API
-or `--compiler mqt` in the CLI. The extra pins the Core development revision
-listed in `pyproject.toml` and requires Qiskit 2.5.x. Core builds from source;
-install LLVM/MLIR 23.1 or newer and set `MLIR_DIR` first. Qiskit remains the
-default compiler; existing Python calls keep their behavior. The CLI now
-defaults to optimization level 2 when the option is omitted.
+or `--compiler mqt` in the CLI. The extra installs Core 4.1.1 from PyPI and
+requires Qiskit 2.5.x. Core wheels include the compiler runtime, so no separate
+LLVM installation is needed with a wheel. Qiskit remains the default compiler;
+existing Python calls keep their behavior. The CLI now defaults to optimization
+level 2 when the option is omitted.
 
 The Core compiler uses a fixed optimization pipeline. Leave `opt_level` at its
 default of 2. Native results retain layout metadata for logical wire order; use

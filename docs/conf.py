@@ -84,6 +84,9 @@ myst_heading_anchors = 3
 nb_execution_mode = "cache"
 nb_execution_raise_on_error = True
 
+# Reuse executed notebooks instead of running file-writing examples concurrently.
+llms_txt_build_parallel = False
+
 autosectionlabel_prefix_document = True
 
 exclude_patterns = [

@@ -88,7 +88,7 @@ def test_ibm_device_compilation(name: str) -> None:
 def test_qir_export(fmt: OutputFormat, profile: Literal["base", "adaptive"], tmp_path: Path) -> None:
     """Text and bitcode preserve classical measurement order through streams and files."""
     from mqt.core.qdmi import ProgramFormat  # ruff:ignore[import-outside-top-level]
-    from mqt.core.qdmi.driver import open_device  # ruff:ignore[import-outside-top-level]
+    from mqt.core.qdmi.builtin_driver import open_device  # ruff:ignore[import-outside-top-level]
 
     circuit = QuantumCircuit(2, 2, metadata={"user": 42})
     circuit.x(0)
@@ -120,7 +120,7 @@ def test_qir_export(fmt: OutputFormat, profile: Literal["base", "adaptive"], tmp
 def test_qir_feedback_and_export_errors(tmp_path: Path) -> None:
     """Adaptive export handles feedback; failed lowering leaves an existing file intact."""
     from mqt.core.qdmi import ProgramFormat  # ruff:ignore[import-outside-top-level]
-    from mqt.core.qdmi.driver import open_device  # ruff:ignore[import-outside-top-level]
+    from mqt.core.qdmi.builtin_driver import open_device  # ruff:ignore[import-outside-top-level]
 
     circuit = QuantumCircuit(2, 2)
     circuit.x(0)

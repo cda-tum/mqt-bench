@@ -26,7 +26,8 @@ that minor releases may include breaking changes.
   `--compiler mqt`, with native gate synthesis, device mapping, mirror circuits,
   compiler options with reproducible seed and trial defaults, strict target
   import, runtime Pauli rotations, and compiler provenance in exported files.
-  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
+  The `mqt` extra installs Core 4.1.1 from PyPI. ([#1027])
+  ([**@simon1hofmann**], [**@burgholzer**])
 - Add QIR export as LLVM text (`qir`/`llvm`) or bitcode (`qir-bitcode`), with
   Base and Adaptive profile selection in Python and the CLI. Requires the `mqt`
   extra. ([#1027]) ([**@simon1hofmann**])
@@ -47,6 +48,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- Preserve angle bounds when lowering native gate aliases for Qiskit
+  compilation. ([#1027]) ([**@simon1hofmann**])
 - 🐛 Report unsupported mirror circuits with a clear error and retain final
   measurements when inversion fails ([#1052]) ([**@simon1hofmann**])
 - 🐛 Support two-qubit quantum walks with and without structured loops ([#1052])

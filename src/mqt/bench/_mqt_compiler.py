@@ -33,7 +33,7 @@ try:
 except ModuleNotFoundError as exc:
     if exc.name not in {"mqt.core", "mqt.core.mlir"}:
         raise
-    msg = 'MQT compilation and QIR export require the pinned MQT Core development version. Install it with: pip install "mqt-bench[mqt]"'
+    msg = 'MQT compilation and QIR export require MQT Core. Install it with: pip install "mqt-bench[mqt]"'
     raise ImportError(msg) from exc
 
 if TYPE_CHECKING:

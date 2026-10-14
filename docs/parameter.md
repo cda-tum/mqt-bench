@@ -68,10 +68,9 @@ print(get_available_device_names())
 ## MQT Core compiler
 
 Install the optional compiler with `pip install "mqt-bench[mqt]"`. The extra
-pins a tested Core development revision and requires Qiskit 2.5.x. Core builds
-from source and requires a C++20 compiler and LLVM/MLIR 23.1 or newer; follow
-[Core's build instructions][core-build] and set `MLIR_DIR` before installing.
-The base installation supports Qiskit 2.1.2 or newer, below version 3.
+installs MQT Core 4.1.1 from PyPI and requires Qiskit 2.5.x. Core provides
+wheels for supported platforms; no separate LLVM installation is needed with a
+wheel. The base installation supports Qiskit 2.1.2 or newer, below version 3.
 
 ```python
 from mqt.bench import BenchmarkLevel, get_benchmark
@@ -108,8 +107,10 @@ Clifford+T+rotations gate sets. Target conversion uses Core's Qiskit importer,
 which preserves instruction aliases, fixed parameters, and ordered placements.
 Multi-qubit compilation requires a target with an entangling gate. Mapped
 targets must specify a positive qubit count. Unrepresentable constraints,
-including open controls and angle bounds, raise an error before compilation.
-Symbolic target parameter slots are independent wildcards, as in Qiskit.
+including open controls and unsupported angle bounds, raise an error before
+compilation. Core folds numeric RZZ angles into supported intervals and uses a
+fixed entangler for unbound RZZ angles. Symbolic target parameter slots are
+independent wildcards, as in Qiskit.
 
 All Bench gate parameters use radians. IonQ targets include GPI, GPI2, RZZ, and
 arbitrary virtual RZ. Virtual RZ represents a phase-frame update; a provider
@@ -157,8 +158,6 @@ controls. `compiler_options` is rejected with the Qiskit compiler or at the
 algorithm level, where no compilation runs. Benchmark-generation `seed` remains
 separate from the compilation seed. Fixed options do not promise identical
 results across Core versions or platforms.
-
-[core-build]: https://mqt.readthedocs.io/projects/core/en/latest/installation.html#setting-up-mlir
 
 The CLI accepts the same selection:
 

@@ -48,10 +48,6 @@ jobs:
         with:
           persist-credentials: false
       - run: python -m pip install uv==0.12.10
-      - name: Set up MLIR
-        uses: munich-quantum-software/setup-mlir@3f32263ce571a8b745068980f30f188b6e800763 # v1.4.2
-        with:
-          llvm-version: "23.1.1"
       - run: uvx nox -s mqt -- --cov --cov-report=xml:coverage-mqt.xml
       - name: Check Python types
         run: uvx prek run -a ty

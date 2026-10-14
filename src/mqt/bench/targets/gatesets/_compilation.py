@@ -51,6 +51,19 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
     if not standard_gates:
         return target, None
 
+    angle_bounds = {}
+    if hasattr(target, "has_angle_bounds") and target.has_angle_bounds():
+        # Qiskit exposes bounds only through its serialized target state.
+        state = target.__getstate__()["base"]
+        if "angle_bounds" in state:
+            angle_bounds = state["angle_bounds"]
+        else:
+            angle_bounds = {
+                name: entry["angle_bounds"]
+                for name, entry in state["gate_map"].items()
+                if target.gate_has_angle_bounds(name)
+            }
+
     compilation_target = Target(
         num_qubits=target.num_qubits,
         description=target.description,
@@ -67,7 +80,8 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
         operation = target.operation_from_name(name)
         properties = None if native or isinstance(operation, type) else deepcopy(target[name])
         if name not in standard_gates:
-            compilation_target.add_instruction(operation, properties, name=name)
+            bounds = {"angle_bounds": angle_bounds[name]} if name in angle_bounds else {}
+            compilation_target.add_instruction(operation, properties, name=name, **bounds)
             continue
         standard_gate, angle, phase = standard_gates[name]
         if standard_gate.name in compilation_target.operation_names:

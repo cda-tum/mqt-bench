@@ -1374,7 +1374,7 @@ def test_dynamic_ghz_mirror_rejected(level: BenchmarkLevel) -> None:
     """Every level rejects a dynamic GHZ mirror without changing the input circuit."""
     circuit = get_benchmark_alg("ghz_dynamic", 5)
     original = circuit.copy()
-    target = get_target_for_gateset("ibm_falcon", num_qubits=5)
+    target = get_target_for_gateset("ibm_heron", num_qubits=5)
     with pytest.raises(ValueError, match=r"Cannot mirror this circuit.*generate_mirror_circuit=False"):
         get_benchmark(circuit, level, target=target, generate_mirror_circuit=True)
     assert circuit == original
