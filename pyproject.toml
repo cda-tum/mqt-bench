@@ -2,6 +2,7 @@
 build-backend = "hatchling.build"
 requires = [ "hatch-vcs>=0.4", "hatchling>=1.27" ]
 
+
 [project]
 name = "mqt-bench"
 description = "MQT Bench - A MQT tool for Benchmarking Quantum Software Tools"
@@ -47,6 +48,7 @@ dependencies = [
   "scikit-learn>=1.7.2; python_version>='3.14'",
   "scikit-learn>=1.9.1; python_version>='3.15'",
 ]
+
 [[project.authors]]
 name = "Nils Quetschlich"
 email = "nils.quetschlich@tum.de"
@@ -93,6 +95,7 @@ docs = [
   "sphinxext-opengraph>=0.13",
 ]
 
+
 [tool.hatch.version]
 source = "vcs"
 
@@ -105,6 +108,7 @@ packages = [ "src/mqt" ]
 
 [tool.uv.sources]
 mqt-bench = { workspace = true }
+
 
 [tool.ruff]
 line-length = 120
@@ -186,14 +190,17 @@ GH200 = "We use Renovate instead of Dependabot"
 PC160 = "We use a mirror of crate-ci/typos"
 PC170 = "We do not use rST files anymore"
 
+
 [tool.check-sdist]
 sdist-only = [ "src/mqt/bench/_version.py" ]
+
 
 [tool.pyproject-fmt]
 generate_python_version_classifiers = false
 table_format = "long"
 sub_table_spacing = "\n"
 separate_root_table = "\n\n"
+
 
 [tool.typos]
 
@@ -212,6 +219,7 @@ fom = "fom"
 bench = "bench"
 benchs = "benchs"
 
+
 [tool.ty.src]
 exclude = [
   "docs/**",
@@ -220,6 +228,7 @@ exclude = [
 [tool.ty.terminal]
 # Error if ty emits any warning-level diagnostics.
 error-on-warning = true
+
 
 [tool.pytest]
 addopts = [
