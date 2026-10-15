@@ -32,7 +32,11 @@ def create_circuit(num_qubits: int, state_preparation: QuantumCircuit | None = N
     Arguments:
         num_qubits: Number of qubits of the returned quantum circuit. Must be a positive multiple of 3.
         state_preparation: Optional 1-qubit circuit with no classical bits, applied
-            to each source qubit to prepare the state to be teleported. If None, |0⟩ is teleported.
+            to each source qubit to prepare the state to be teleported. If None, the zero state is teleported:
+
+            .. math::
+
+                \\lvert 0 \\rangle
 
     Returns:
         QuantumCircuit: A quantum circuit implementing the quantum teleportation protocol.
