@@ -17,7 +17,7 @@ from ._registry import register_benchmark
 
 @register_benchmark("teleportation", description="Quantum Teleportation")
 def create_circuit(num_qubits: int, state_preparation: QuantumCircuit | None = None) -> QuantumCircuit:
-    """Returns a quantum circuit implementing the quantum teleportation protocol.
+    r"""Returns a quantum circuit implementing the quantum teleportation protocol.
 
     Each group of 3 qubits forms one independent teleportation:
         - qubit ``3k`` is the source qubit (the state to be teleported)
