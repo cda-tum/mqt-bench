@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from enum import StrEnum
 from importlib import metadata
 from io import TextIOBase
@@ -82,7 +82,7 @@ def generate_header(
 
     lines: list[str] = []
     lines.extend((
-        f"// Benchmark created by MQT Bench on {datetime.datetime.now(tz=datetime.UTC).date()}",
+        f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}",
         "// For more info: https://mqt-bench.app/",
         f"// MQT Bench version: {version}",
         f"// Qiskit version: {__qiskit_version__}",
