@@ -100,7 +100,7 @@ class ECTranspiler(ABC):
         Returns:
              The transpiled fault-tolerant circuit.
         """
-        #reset before each transpilation
+        # reset before each transpilation
         self.logical_qubits: list[LogicalQubit] = []
         self.transpiled_qc = QuantumCircuit()
         self.encoded_qubits = [False for _ in range(self.num_logical_qubits)]
