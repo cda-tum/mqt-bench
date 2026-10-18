@@ -100,6 +100,11 @@ class ECTranspiler(ABC):
         Returns:
              The transpiled fault-tolerant circuit.
         """
+        #reset before each transpilation
+        self.logical_qubits: list[LogicalQubit] = []
+        self.transpiled_qc = QuantumCircuit()
+        self.encoded_qubits = [False for _ in range(self.num_logical_qubits)]
+
         for instruction in self.original_qc.data:
             if instruction.is_control_flow():
                 msg = f"Error-correction transpilation currently does not support control-flow operations such as {instruction.operation.name}."

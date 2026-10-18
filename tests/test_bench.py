@@ -845,7 +845,12 @@ def test_error_correction_transpiler_circuit_structure(
     # add error correction to the logical circuit
     transpiler = get_transpiler(code)(log_qc.copy())
     qc = transpiler.transpile()
-    qc = transpiler.transpiled_qc
+    qc = transpiler.transpiled_qc.copy()
+
+    # make structural regression test for repeated call
+    qc_double_transpiled = transpiler.transpile()
+    qc_double_transpiled = transpiler.transpiled_qc.copy()
+    assert qc_double_transpiled == qc
 
     qubit_code_factor = -1
     classical_code_factor = -1
