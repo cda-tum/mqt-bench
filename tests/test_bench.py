@@ -880,7 +880,6 @@ def test_error_correction_transpiler_circuit_structure(
         # Check classical register sizes: 6n (bit-flip) + 2n (phase-flip) + 1 for each original clbit
         expected_creg_sizes = sorted([6] * logical_qubits + [2] * logical_qubits + [1] * log_qc.num_clbits)
 
-
     expected_qubits = qubit_code_factor * log_qc.num_qubits
     found_qubits = qc.num_qubits
     assert found_qubits == expected_qubits, f"Expected {expected_qubits} qubits, found {found_qubits} for {test_id}"
