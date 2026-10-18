@@ -880,27 +880,26 @@ def test_error_correction_transpiler_circuit_structure(
         # Check classical register sizes: 6n (bit-flip) + 2n (phase-flip) + 1 for each original clbit
         expected_creg_sizes = sorted([6] * logical_qubits + [2] * logical_qubits + [1] * log_qc.num_clbits)
 
-    # QFT creates qubits scaling with the number of t-gates -> non-trivial scaling not covered by these simple tests
-    if alg != "qft":
-        expected_qubits = qubit_code_factor * log_qc.num_qubits
-        found_qubits = qc.num_qubits
-        assert found_qubits == expected_qubits, f"Expected {expected_qubits} qubits, found {found_qubits} for {test_id}"
 
-        expected_clbits = classical_code_factor * log_qc.num_qubits + log_qc.num_clbits
-        found_clbits = qc.num_clbits
-        assert found_clbits == expected_clbits, (
-            f"Expected {expected_clbits} classical bits, found {found_clbits} for {test_id}"
-        )
+    expected_qubits = qubit_code_factor * log_qc.num_qubits
+    found_qubits = qc.num_qubits
+    assert found_qubits == expected_qubits, f"Expected {expected_qubits} qubits, found {found_qubits} for {test_id}"
 
-        qreg_sizes = sorted(qreg.size for qreg in qc.qregs)
-        assert qreg_sizes == expected_qreg_sizes, (
-            f"Expected qreg sizes {expected_qreg_sizes}, found {qreg_sizes} for {test_id}"
-        )
+    expected_clbits = classical_code_factor * log_qc.num_qubits + log_qc.num_clbits
+    found_clbits = qc.num_clbits
+    assert found_clbits == expected_clbits, (
+        f"Expected {expected_clbits} classical bits, found {found_clbits} for {test_id}"
+    )
 
-        creg_sizes = sorted(creg.size for creg in qc.cregs)
-        assert creg_sizes == expected_creg_sizes, (
-            f"Expected creg sizes {expected_creg_sizes}, found {creg_sizes} for {test_id}"
-        )
+    qreg_sizes = sorted(qreg.size for qreg in qc.qregs)
+    assert qreg_sizes == expected_qreg_sizes, (
+        f"Expected qreg sizes {expected_qreg_sizes}, found {qreg_sizes} for {test_id}"
+    )
+
+    creg_sizes = sorted(creg.size for creg in qc.cregs)
+    assert creg_sizes == expected_creg_sizes, (
+        f"Expected creg sizes {expected_creg_sizes}, found {creg_sizes} for {test_id}"
+    )
 
     # Counts the occurrence of every gate in the created circuit
     created_gates = qc.count_ops()
