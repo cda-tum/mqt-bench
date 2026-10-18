@@ -6,10 +6,12 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
-### Platform note
+## [2.3.0]
 
-Starting with this release, x86 macOS is no longer tested in CI; we cannot
-guarantee that MQT Bench installs and runs correctly on those systems.
+### Qiskit 2.1 minimum
+
+The minimum Qiskit version increases from **2.0.0 to 2.1.0**, dropping support
+for Qiskit 2.0. Upgrade Qiskit to 2.1.0 or newer.
 
 ### End of support for Python 3.10
 
@@ -17,9 +19,10 @@ Starting with this release, MQT Bench no longer supports Python 3.10. As a
 result, MQT Bench is no longer tested under Python 3.10 and requires Python 3.11
 or later.
 
-### Changed
+### macOS support
 
-- ⬆️ Increase minimum Qiskit version to 2.4.0 ([#930]) ([**@Felix-Gundlach**]),
+Starting with this release, x86 macOS is no longer tested in CI; we cannot
+guarantee that MQT Bench installs and runs correctly on those systems.
 
 ## [2.2.0]
 
@@ -129,7 +132,7 @@ other Qiskit components.
 The `get_benchmark` function has been redesigned to provide a more modular and
 extensible way to retrieve benchmarks. As a consequence, the function signature
 has changed. Please see the
-[API documentation](https://mqt.readthedocs.io/projects/bench/en/latest/parameter.html)
+[API documentation](https://mqt.readthedocs.io/projects/bench/en/stable/parameter.html)
 for the updated function signature and the examples provided below.
 
 ```python
@@ -205,7 +208,8 @@ accordingly.
 
 <!-- Version links -->
 
-[unreleased]: https://github.com/munich-quantum-toolkit/bench/compare/v2.2.1...HEAD
+[unreleased]: https://github.com/munich-quantum-toolkit/bench/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/munich-quantum-toolkit/bench/compare/v2.2.3...v2.3.0
 [2.2.0]: https://github.com/munich-quantum-toolkit/bench/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/munich-quantum-toolkit/bench/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/munich-quantum-toolkit/bench/compare/v2.0.0...v2.0.1
