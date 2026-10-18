@@ -19,6 +19,11 @@ that minor releases may include breaking changes.
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
 - ✨ Add Superdense Coding benchmark ([#1037]) ([**@Anshu666666**])
 
+### Changed
+
+- ✨ Measure arithmetic sums and products in a `result` register, excluding
+  input and helper qubits ([**@simon1hofmann**])
+
 ### Fixed
 
 - 🐛 Compile native gates without device connectivity or simulated calibration,

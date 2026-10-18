@@ -55,3 +55,20 @@ HTML(html)
 See the
 [benchmark description](https://www.cda.cit.tum.de/mqtbench/benchmark_description)
 for further details on the individual benchmarks.
+
+## Arithmetic results
+
+Adder and multiplier benchmarks measure only the arithmetic output into a
+classical register named `result`. Bit `result[0]` is the least-significant bit.
+
+| Benchmarks                                                              | Measured output                                                         |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `full_adder`, `half_adder`                                              | Sum, with carry-out as the most-significant bit                         |
+| `modular_adder`                                                         | Sum modulo $2^n$, where $n$ is the input register width                 |
+| `cdkm_ripple_carry_adder`, `vbe_ripple_carry_adder`, `draper_qft_adder` | Sum including carry-out for `full`/`half`; sum modulo $2^n$ for `fixed` |
+| `multiplier`, `rg_qft_multiplier`, `hrs_cumulative_multiplier`          | Full $2n$-bit product                                                   |
+
+Input registers, carry-in, and helper qubits are not measured. The benchmarks
+leave inputs in their default zero state; prepare inputs before the arithmetic
+operations to obtain nonzero results. Mirror benchmarks continue to measure all
+active qubits to check that the circuit and its inverse return them to zero.
