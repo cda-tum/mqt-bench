@@ -182,20 +182,20 @@ def test_arithmetic_circuits(benchmark_name: str, input_value: int) -> None:
 @pytest.mark.parametrize(
     ("benchmark", "size", "kind", "result_qubits", "input_qubits", "expected"),
     [
-        ("full_adder", 6, None, (3, 4, 5), [0, 1, 2, 3], "101"),
-        ("half_adder", 5, None, (2, 3, 4), [0, 1, 2], "100"),
-        ("modular_adder", 4, None, (2, 3), [0, 1, 2, 3], "10"),
-        ("cdkm_ripple_carry_adder", 6, "full", (3, 4, 5), [0, 1, 2, 3], "101"),
-        ("cdkm_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),
-        ("cdkm_ripple_carry_adder", 5, "fixed", (2, 3), [0, 1, 2, 3], "10"),
-        ("vbe_ripple_carry_adder", 7, "full", (3, 4, 5), [0, 1, 2, 3], "101"),
-        ("vbe_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),
-        ("vbe_ripple_carry_adder", 5, "fixed", (2, 3), [0, 2], "10"),
-        ("draper_qft_adder", 5, "half", (2, 3, 4), [0, 1, 2], "100"),
-        ("draper_qft_adder", 4, "fixed", (2, 3), [0, 1, 2, 3], "10"),
-        ("multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),
-        ("rg_qft_multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),
-        ("hrs_cumulative_multiplier", 9, None, (4, 5, 6, 7), [1, 3], "0100"),
+        ("full_adder", 6, None, (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("half_adder", 5, None, (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("modular_adder", 4, None, (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("cdkm_ripple_carry_adder", 6, "full", (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("cdkm_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("cdkm_ripple_carry_adder", 5, "fixed", (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("vbe_ripple_carry_adder", 7, "full", (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("vbe_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("vbe_ripple_carry_adder", 5, "fixed", (2, 3), [0, 2], "10"),  # (1 + 1) mod 4 = 2
+        ("draper_qft_adder", 5, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("draper_qft_adder", 4, "fixed", (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
+        ("rg_qft_multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
+        ("hrs_cumulative_multiplier", 9, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
     ],
 )
 @pytest.mark.parametrize("level", list(BenchmarkLevel))
