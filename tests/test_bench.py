@@ -931,6 +931,26 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
 
+@pytest.mark.parametrize("opt_level", [2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool) -> None:
+    """Preserve SWAP semantics through Clifford+T synthesis and mirror generation."""
+    qc = QuantumCircuit(3)
+    qc.h(0)
+    qc.t(1)
+    qc.cx(1, 2)
+    qc.swap(0, 1)
+    qc.swap(1, 2)
+
+    compiled = get_benchmark_native_gates(
+        qc, None, get_target_for_gateset("clifford+t", 3), opt_level, generate_mirror_circuit=mirror
+    )
+
+    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    compiled.remove_final_measurements()
+    assert Operator.from_circuit(compiled).equiv(expected)
+
+
 def test_benchmark_helper_shor() -> None:
     """Testing the Shor benchmarks."""
     shor_instances = ["xsmall", "small", "medium", "large", "xlarge"]
