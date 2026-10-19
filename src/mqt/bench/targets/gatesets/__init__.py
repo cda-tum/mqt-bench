@@ -15,13 +15,12 @@ from __future__ import annotations
 import copy
 import importlib
 import importlib.resources as ir
-import inspect
 from functools import cache
 from typing import TYPE_CHECKING
 
-from qiskit.circuit import Parameter
+from qiskit.circuit import BreakLoopOp, ContinueLoopOp, Parameter, get_control_flow_name_mapping
 from qiskit.circuit.library.standard_gates import get_standard_gate_name_mapping
-from qiskit.providers.fake_provider import GenericBackendV2
+from qiskit.transpiler import Target
 
 from ._registry import gateset_names, get_gateset_by_name, register_gateset
 
@@ -29,7 +28,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from qiskit.circuit import Gate, Instruction
-    from qiskit.transpiler import Target
 
 _DISCOVERED_MODULES: set[str] = {
     entry.name.removesuffix(".py")
@@ -120,32 +118,28 @@ def _lazy_custom_gates() -> dict[str, Callable[[], Gate | type[Instruction]]]:
 
 @cache
 def _get_target_for_gateset(gateset_name: str, num_qubits: int) -> Target:
-    """Return the Target object for a given native gateset name."""
-    gates = get_gateset(gateset_name)
-
-    standard_gates = []
-    other_gates = []
-    for gate in gates:
-        if gate in get_standard_gate_name_mapping():
-            standard_gates.append(gate)
-        else:
-            other_gates.append(gate)
-    backend = GenericBackendV2(num_qubits=num_qubits, basis_gates=standard_gates, control_flow=True, seed=10)
-    target = backend.target
-    target.description = gateset_name
-
+    """Return a native gate-set target without hardware constraints."""
+    target = Target(description=gateset_name, num_qubits=num_qubits)
+    standard_gates = get_standard_gate_name_mapping()
     custom_factory = _lazy_custom_gates()
-    for gate_name in other_gates:
-        if gate_name not in custom_factory:
+    for gate_name in dict.fromkeys([*get_gateset(gateset_name), "reset", "delay", "measure"]):
+        if gate_name in standard_gates:
+            instruction = standard_gates[gate_name]
+        elif gate_name in custom_factory:
+            instruction = custom_factory[gate_name]()
+        else:
             msg = f"Gate '{gate_name}' not found in available custom gates."
             raise ValueError(msg)
-        # Classes (like control-flow operations) must have their name manually specified; instances derive their name automatically
-        instruction = custom_factory[gate_name]()
-        target.add_instruction(instruction, name=gate_name if inspect.isclass(instruction) else None)
+        target.add_instruction(instruction, name=gate_name)
+
+    for name, instruction_class in get_control_flow_name_mapping().items():
+        target.add_instruction(instruction_class, name=name)
+    target.add_instruction(BreakLoopOp, name="break_loop")
+    target.add_instruction(ContinueLoopOp, name="continue_loop")
 
     return target
 
 
 def get_target_for_gateset(name: str, num_qubits: int) -> Target:
-    """Return a deepcopy of a Target object for a given native gateset name."""
+    """Return a copy of a native gate-set target with globally available instructions."""
     return copy.deepcopy(_get_target_for_gateset(name, num_qubits))

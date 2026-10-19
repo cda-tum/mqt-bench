@@ -14,7 +14,6 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING, Unpack, assert_never, overload
 
 import numpy as np
-from qiskit import generate_preset_pass_manager
 from qiskit.circuit import CircuitError, ClassicalRegister, QuantumCircuit, SessionEquivalenceLibrary
 from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
@@ -363,6 +362,12 @@ def get_benchmark_native_gates(
 
     circuit = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
 
+    # Native compilation uses the instructions, not the target's physical constraints.
+    native_target = Target(description=target.description, num_qubits=target.num_qubits)
+    for name in target.operation_names:
+        native_target.add_instruction(target.operation_from_name(name), name=name)
+    target = native_target
+
     if target.description == "clifford+t":
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
@@ -374,7 +379,6 @@ def get_benchmark_native_gates(
             target=clifford_t_rotations,
             optimization_level=opt_level,
             seed_transpiler=10,
-            layout_method="trivial",
         )
         # Synthesize the rotations to Clifford+T gates
         pm = PassManager(SolovayKitaev())
@@ -384,15 +388,7 @@ def get_benchmark_native_gates(
         rigetti.add_equivalences(SessionEquivalenceLibrary)
     elif "ionq" in target.description:
         ionq.add_equivalences(SessionEquivalenceLibrary)
-    # Disable post-layout search as well as the layout stage for native compilation.
-    pm = generate_preset_pass_manager(
-        optimization_level=opt_level, target=target, seed_transpiler=10, layout_method="trivial"
-    )
-    pm.layout = None
-    pm.routing = None
-    pm.scheduling = None
-
-    compiled_circuit = pm.run(circuit)
+    compiled_circuit = transpile(circuit, optimization_level=opt_level, target=target, seed_transpiler=10)
     if generate_mirror_circuit:
         return _create_mirror_circuit(compiled_circuit, inplace=True, target=target, optimization_level=opt_level)
     return compiled_circuit
