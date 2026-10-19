@@ -28,7 +28,7 @@ from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
 from qiskit.primitives import StatevectorSampler
 from qiskit.providers.basic_provider import BasicSimulator
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Operator, Statevector
 from qiskit.transpiler import (
     InstructionProperties,
     Layout,
@@ -918,12 +918,15 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
 
     compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset("clifford+t", 2), opt_level)
 
+    assert compiled.layout is None
     assert compiled.cregs == qc.cregs
     assert compiled.clbits == qc.clbits
     assert sorted(
         compiled.find_bit(inst.clbits[0]).index for inst in compiled.data if inst.operation.name == "measure"
     ) == ([] if measurement_case == "none" else [0, 2])
-    if measurement_case != "none":
+    if measurement_case == "none":
+        assert Operator(compiled).equiv(Operator(qc))
+    else:
         expected_result = "10 1" if measurement_case == "repeated" else "00 1"
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
@@ -1261,6 +1264,48 @@ def test_custom_target() -> None:
     qc_mapped = get_benchmark_mapped(qc, None, target, 0)
     assert qc_mapped.depth() > 0
     assert qc_mapped.layout is not None
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
+    """Compile logical gates on disconnected target sites without mapping or ancillas."""
+    target = Target(num_qubits=5, description="custom_target")
+    target.add_instruction(HGate(), {(q,): None for q in range(5)})
+    target.add_instruction(XGate(), {(q,): None for q in range(5)})
+    target.add_instruction(CXGate(), {(0, 1): None, (1, 2): None})
+
+    qc = QuantumCircuit(3)
+    qc.h(2)
+    qc.cx(2, 0)
+    qc.x(1)
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
+
+    assert compiled.num_qubits == qc.num_qubits
+    assert compiled.layout is None
+    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(expected)
+    assert set(target["cx"]) == {(0, 1), (1, 2)}
+
+
+@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_falcon"])
+@pytest.mark.parametrize("jump", ["break_loop", "continue_loop"])
+def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str) -> None:
+    """Compile loop exits using Qiskit's instruction names."""
+    body = QuantumCircuit(2)
+    body.x(0)
+    getattr(body, jump)()
+    body.x(1)
+    qc = QuantumCircuit(2)
+    qc.append(ForLoopOp(range(2), None, body), qc.qubits)
+
+    compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset(gateset_name, 2), 0)
+
+    assert compiled.layout is None
+    loop = compiled.data[0].operation
+    assert isinstance(loop, ForLoopOp)
+    assert loop.blocks[0].count_ops()[jump] == 1
 
 
 @pytest.mark.parametrize(("benchmark", "size"), [("qft", 4), ("bv", 6)])

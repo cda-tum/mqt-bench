@@ -6,6 +6,17 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Native gate-set targets
+
+`get_target_for_gateset` returns globally available instructions without
+simulated error rates, durations, or a coupling map. Native compilation also
+ignores connectivity and calibration in caller-supplied targets, including when
+generating mirror circuits. Use `get_device` and the mapped level when device
+constraints are required.
+
+Native targets register loop jumps under Qiskit's instruction names `break_loop`
+and `continue_loop` instead of `break` and `continue`.
+
 ## [2.3.0]
 
 ### Qiskit 2.1 minimum
