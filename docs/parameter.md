@@ -28,7 +28,7 @@ print(get_available_benchmark_names())
   BenchmarkLevel.MAPPED
 - `circuit_size`: Define the number of qubits in the circuit.
 - `target`: Target, which can also be instantiated based on gatesets using
-  `get_target_for_gateset(gateset_name)` or based on a device using
+  `get_target_for_gateset(gateset_name, num_qubits)` or based on a device using
   `get_device(device_name)`. Possible values for `gateset_name`:
 
 ```{code-cell} ipython3
@@ -39,6 +39,11 @@ print(get_available_gateset_names())
 ```
 
 (required for "nativegates" level)
+
+Native gate-set targets make instructions available on all qubits without device
+connectivity or calibration data. Native compilation uses only a target's
+instructions, including when the caller supplies a device target. The mapped
+level applies the device constraints.
 
 Possible values for `device_name`:
 

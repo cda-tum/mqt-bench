@@ -381,18 +381,28 @@ def test_mirror_without_qiskit_transpilation(level: BenchmarkLevel, monkeypatch:
 
 @pytest.mark.parametrize(
     "benchmark",
-    ["ghz", "qft", "grover", "qwalk", "dynamic_qft", "ghz_dynamic", "modular_adder", "hrs_cumulative_multiplier"],
+    [
+        "ghz",
+        "qft",
+        "grover",
+        "qwalk",
+        "dynamic_qft",
+        "ghz_dynamic",
+        "teleportation",
+        "modular_adder",
+        "hrs_cumulative_multiplier",
+    ],
 )
 @pytest.mark.parametrize("level", [BenchmarkLevel.INDEP, BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 def test_benchmark_levels(benchmark: str, level: BenchmarkLevel) -> None:
     """Static and structured Bench circuits pass through every Core compilation level."""
     target = get_device("iqm_crystal_5") if level == BenchmarkLevel.MAPPED else get_target_for_gateset("ibm_heron", 3)
-    circuit = get_benchmark(
-        benchmark,
-        BenchmarkLevel.ALG,
-        {"modular_adder": 4, "hrs_cumulative_multiplier": 5}.get(benchmark, 3),
-        **({"for_loop": True} if benchmark in {"grover", "qwalk"} else {}),
-    )
+    if benchmark in {"grover", "qwalk"}:
+        circuit = get_benchmark(benchmark, BenchmarkLevel.ALG, 3, for_loop=True)
+    else:
+        circuit = get_benchmark(
+            benchmark, BenchmarkLevel.ALG, {"modular_adder": 4, "hrs_cumulative_multiplier": 5}.get(benchmark, 3)
+        )
     result = get_benchmark(circuit, level, target=target, compiler="mqt")
     assert isinstance(result, QuantumCircuit)
     assert result.name == benchmark

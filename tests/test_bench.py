@@ -11,7 +11,7 @@
 from __future__ import annotations
 
 import builtins
-import datetime
+import datetime as dt
 import functools
 import io
 import re
@@ -29,7 +29,7 @@ from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
 from qiskit.primitives import StatevectorSampler
 from qiskit.providers.basic_provider import BasicSimulator
-from qiskit.quantum_info import Operator
+from qiskit.quantum_info import Operator, Statevector
 from qiskit.transpiler import (
     InstructionProperties,
     Layout,
@@ -42,6 +42,8 @@ from qiskit.transpiler.passes import GatesInBasis, RemoveBarriers, UnrollForLoop
 if TYPE_CHECKING:  # pragma: no cover
     from collections import OrderedDict
     from collections.abc import Callable
+
+    from qiskit.circuit.quantumcircuitdata import QuantumCircuitData
 
     from mqt.bench.configuration_options import ConfigurationOptions
 
@@ -92,6 +94,7 @@ SPECIAL_QUBIT_COUNTS: dict[str, int] = {
     "shors_nine_qubit_code": 17,
     "seven_qubit_steane_code": 13,
     "iqpe": 2,
+    "teleportation": 3,
 }
 
 
@@ -224,6 +227,8 @@ def test_arithmetic_circuits(benchmark_name: str, input_value: int) -> None:
         ("ae", 1, None, r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."),
         ("shors_nine_qubit_code", 9, None, "num_qubits must be divisible by 17."),
         ("seven_qubit_steane_code", 9, None, "num_qubits must be divisible by 13."),
+        ("teleportation", 1, None, "num_qubits must be at least 3."),
+        ("teleportation", 4, None, "num_qubits must be divisible by 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
     ],
 )
@@ -354,6 +359,95 @@ def test_iqpe() -> None:
     assert "iqpe" in qc.name
 
 
+def test_teleportation() -> None:
+    """Test the creation of the teleportation benchmark."""
+    qc = create_circuit("teleportation", 3)
+    assert qc.num_qubits == 3
+    assert qc.num_clbits == 3  # 2 mid-circuit bits + 1 final measurement bit
+    assert "teleportation" in qc.name
+    assert qc.count_ops()["if_else"] == 2
+
+    # Multi-block: 2 corrections and 3 classical bits per block
+    qc6 = create_circuit("teleportation", 6)
+    assert qc6.num_qubits == 6
+    assert qc6.num_clbits == 6
+    assert qc6.count_ops()["if_else"] == 4
+
+    # Test through pipeline
+    res = get_benchmark_alg("teleportation", 3)
+    assert res.num_qubits == 3
+
+
+def test_teleportation_state_preparation() -> None:
+    """The state preparation is applied to the source qubit of every block."""
+    prep = QuantumCircuit(1, name="prep")
+    prep.h(0)
+
+    qc = create_circuit("teleportation", 6, state_preparation=prep)
+    prep_qubits = [qc.find_bit(inst.qubits[0]).index for inst in qc.data if inst.operation.name == "prep"]
+    assert prep_qubits == [0, 3]
+
+    with pytest.raises(ValueError, match=r"state_preparation must be a 1-qubit circuit\."):
+        create_circuit("teleportation", 3, state_preparation=QuantumCircuit(2))
+
+
+def test_teleportation_state_preparation_rejects_classical_bits() -> None:
+    """State preparation must not contain classical bits."""
+    prep = QuantumCircuit(1, 1)
+
+    with pytest.raises(ValueError, match="classical bits"):
+        create_circuit("teleportation", 3, state_preparation=prep)
+
+
+def _run_with_control_flow(qc: QuantumCircuit, *, seed: int) -> str:
+    """Execute a circuit that contains ``if_else`` blocks, one clbit condition at a time.
+
+    ``StatevectorSampler`` cannot run circuits with ``ControlFlowOp`` instructions
+    (Qiskit 2.5.2 raises ``QiskitError: StatevectorSampler cannot handle ControlFlowOp``),
+    and no control-flow-capable simulator is installed in this project. This helper
+    plays each instruction against a :class:`~qiskit.quantum_info.Statevector`,
+    sampling ``measure`` outcomes and evaluating ``if_else`` conditions directly,
+    so the real circuit (including its classical corrections) is exercised.
+    """
+    rng = np.random.default_rng(seed)
+    bit_index = {bit: i for i, bit in enumerate(qc.clbits)}
+    clbits = [0] * qc.num_clbits
+    state = Statevector.from_label("0" * qc.num_qubits)
+    state.seed(rng)
+
+    def run_block(instructions: QuantumCircuitData, qubit_map: dict, state: Statevector) -> Statevector:
+        for instruction in instructions:
+            op = instruction.operation
+            qubits = [qubit_map[q] for q in instruction.qubits]
+            if op.name == "measure":
+                outcome, state = state.measure(qubits)
+                clbits[bit_index[instruction.clbits[0]]] = int(outcome)
+            elif isinstance(op, IfElseOp):
+                condition_bit, condition_value = op.condition
+                if clbits[bit_index[condition_bit]] == condition_value:
+                    block = op.blocks[0]
+                    inner_map = dict(zip(block.qubits, qubits, strict=True))
+                    state = run_block(block.data, inner_map, state)
+            else:
+                state = state.evolve(op, qubits)
+        return state
+
+    state = run_block(qc.data, {q: i for i, q in enumerate(qc.qubits)}, state)
+    final_bits = [clbits[bit_index[bit]] for bit in qc.cregs[-1]]
+    return "".join(str(bit) for bit in reversed(final_bits))
+
+
+@pytest.mark.parametrize("num_qubits", [3, 6, 9])
+def test_teleportation_correctness(num_qubits: int) -> None:
+    """Teleporting |1⟩ must always yield 1 on every destination qubit."""
+    prep = QuantumCircuit(1)
+    prep.x(0)
+
+    qc = create_circuit("teleportation", num_qubits, state_preparation=prep)
+    outcomes = {_run_with_control_flow(qc, seed=seed) for seed in range(20)}
+    assert outcomes == {"1" * (num_qubits // 3)}
+
+
 def _success_rates(qc: QuantumCircuit, shots: int = 500) -> list[float]:
     """Run the circuit on the BasicSimulator and return, for every round k, the fraction of shots with c[k] = 1."""
     backend = BasicSimulator()
@@ -428,6 +522,20 @@ def test_mlqae_invalid_parameters() -> None:
 
     with pytest.raises(ValueError, match=r"b_max must be positive and finite."):
         create_circuit("mlqae", 3, b_max=float("nan"))
+
+
+def test_teleportation_preserves_phase() -> None:
+    """Teleporting |+⟩ must yield 0 when Bob measures in the X basis."""
+    prep = QuantumCircuit(1)
+    prep.h(0)
+
+    qc = create_circuit("teleportation", 3, state_preparation=prep)
+    final_measurement = qc.data.pop()
+    qc.h(2)
+    qc.append(final_measurement.operation, final_measurement.qubits, final_measurement.clbits)
+
+    outcomes = {_run_with_control_flow(qc, seed=seed) for seed in range(20)}
+    assert outcomes == {"0"}
 
 
 def test_dj_constant_oracle() -> None:
@@ -816,12 +924,15 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
 
     compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset("clifford+t", 2), opt_level)
 
+    assert compiled.layout is None
     assert compiled.cregs == qc.cregs
     assert compiled.clbits == qc.clbits
     assert sorted(
         compiled.find_bit(inst.clbits[0]).index for inst in compiled.data if inst.operation.name == "measure"
     ) == ([] if measurement_case == "none" else [0, 2])
-    if measurement_case != "none":
+    if measurement_case == "none":
+        assert Operator(compiled).equiv(Operator(qc))
+    else:
         expected_result = "10 1" if measurement_case == "repeated" else "00 1"
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
@@ -924,7 +1035,7 @@ def test_generate_header_minimal(monkeypatch: pytest.MonkeyPatch) -> None:
     hdr = generate_header(OutputFormat.QASM3, BenchmarkLevel.INDEP)
     lines = hdr.splitlines()
     # first line has today's date
-    assert lines[0] == f"// Benchmark created by MQT Bench on {datetime.datetime.now(tz=datetime.UTC).date()}"
+    assert lines[0] == f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}"
     # contains the fixed info lines
     assert "// For more info: https://mqt-bench.app/" in hdr
     assert "// MQT Bench version: 9.9.9" in hdr
@@ -1012,7 +1123,7 @@ def test_write_circuit_qpy(tmp_path: Path) -> None:
     assert isinstance(circ, QuantumCircuit)
 
     header = circ.metadata["mqt_bench"]
-    assert header.startswith(f"// Benchmark created by MQT Bench on {datetime.datetime.now(tz=datetime.UTC).date()}")
+    assert header.startswith(f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}")
     assert "// MQT Bench version:" in header
     assert "// Output format: qpy" in header
 
@@ -1176,6 +1287,48 @@ def test_custom_target() -> None:
     qc_mapped = get_benchmark_mapped(qc, None, target, 0)
     assert qc_mapped.depth() > 0
     assert qc_mapped.layout is not None
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
+    """Compile logical gates on disconnected target sites without mapping or ancillas."""
+    target = Target(num_qubits=5, description="custom_target")
+    target.add_instruction(HGate(), {(q,): None for q in range(5)})
+    target.add_instruction(XGate(), {(q,): None for q in range(5)})
+    target.add_instruction(CXGate(), {(0, 1): None, (1, 2): None})
+
+    qc = QuantumCircuit(3)
+    qc.h(2)
+    qc.cx(2, 0)
+    qc.x(1)
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
+
+    assert compiled.num_qubits == qc.num_qubits
+    assert compiled.layout is None
+    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(expected)
+    assert set(target["cx"]) == {(0, 1), (1, 2)}
+
+
+@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_heron"])
+@pytest.mark.parametrize("jump", ["break_loop", "continue_loop"])
+def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str) -> None:
+    """Compile loop exits using Qiskit's instruction names."""
+    body = QuantumCircuit(2)
+    body.x(0)
+    getattr(body, jump)()
+    body.x(1)
+    qc = QuantumCircuit(2)
+    qc.append(ForLoopOp(range(2), None, body), qc.qubits)
+
+    compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset(gateset_name, 2), 0)
+
+    assert compiled.layout is None
+    loop = compiled.data[0].operation
+    assert isinstance(loop, ForLoopOp)
+    assert loop.blocks[0].count_ops()[jump] == 1
 
 
 @pytest.mark.parametrize(("benchmark", "size"), [("qft", 4), ("bv", 6)])

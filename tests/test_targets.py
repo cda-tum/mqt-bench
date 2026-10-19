@@ -326,6 +326,17 @@ def test_get_gateset_immutability() -> None:
     assert "dummy_gatesetname" not in gateset_names2
 
 
+@pytest.mark.parametrize("gateset_name", get_available_gateset_names())
+def test_gateset_target_has_no_hardware_constraints(gateset_name: str) -> None:
+    """Native gate sets apply globally without simulated hardware calibration."""
+    target = get_target_for_gateset(gateset_name, 3)
+
+    assert target.num_qubits == 3
+    assert target.description == gateset_name
+    assert target.build_coupling_map() is None
+    assert all(properties == {None: None} for properties in target.values())
+
+
 @pytest.mark.parametrize(
     ("gateset_name", "module_name"),
     [
@@ -476,7 +487,7 @@ def test_native_gate_names_do_not_override_capabilities(name: str, operation: Ga
     target.add_instruction(CZGate())
     target.add_instruction(operation, name=name)
     prepared, lowering = prepare_target(target, native=True)
-    assert prepared is target
+    assert prepared.operation_from_name(name) == operation
     assert lowering is None
 
 

@@ -15,6 +15,7 @@ that minor releases may include breaking changes.
 ### Added
 
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
+- ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
 - Add the 120-qubit Nighthawk model with IBM's grid topology and CZ gate set.
   ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
@@ -50,6 +51,9 @@ that minor releases may include breaking changes.
 
 - Preserve angle bounds when lowering native gate aliases for Qiskit
   compilation. ([#1027]) ([**@simon1hofmann**])
+- 🐛 Compile native gates without device connectivity or simulated calibration,
+  and keep coupling-map headers stable across Qiskit versions ([#1069])
+  ([**@simon1hofmann**], [**@burgholzer**])
 - 🐛 Report unsupported mirror circuits with a clear error and retain final
   measurements when inversion fails ([#1052]) ([**@simon1hofmann**])
 - 🐛 Support two-qubit quantum walks with and without structured loops ([#1052])
@@ -248,10 +252,12 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1054]: https://github.com/munich-quantum-toolkit/bench/pull/1054
-[#1044]: https://github.com/munich-quantum-toolkit/bench/pull/1044
 [#1052]: https://github.com/munich-quantum-toolkit/bench/pull/1052
 [#1047]: https://github.com/munich-quantum-toolkit/bench/pull/1047
+[#1045]: https://github.com/munich-quantum-toolkit/bench/pull/1045
+[#1044]: https://github.com/munich-quantum-toolkit/bench/pull/1044
 [#1037]: https://github.com/munich-quantum-toolkit/bench/pull/1037
 [#1031]: https://github.com/munich-quantum-toolkit/bench/pull/1031
 [#1027]: https://github.com/munich-quantum-toolkit/bench/pull/1027
@@ -320,6 +326,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@cnYui**]: https://github.com/cnYui
 [**@algovista-collab**]: https://github.com/algovista-collab
 [**@Anshu666666**]: https://github.com/Anshu666666
+[**@AsharHusain**]: https://github.com/AsharHusain
 
 <!-- General links -->
 

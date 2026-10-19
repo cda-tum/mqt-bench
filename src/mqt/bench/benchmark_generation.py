@@ -192,17 +192,11 @@ def _update_qiskit_provenance(circuit: QuantumCircuit) -> None:
 def _get_qiskit_pass_manager(target: Target, opt_level: int, *, native: bool) -> StagedPassManager:
     """Build the native or mapped pipeline, including final gate lowering."""
     target, lowering = prepare_target(target, native=native)
-    # An explicit layout method also disables post-layout search for native compilation.
     pm = generate_preset_pass_manager(
         optimization_level=opt_level,
         target=target,
         seed_transpiler=10,
-        layout_method="trivial" if native else None,
     )
-    if native:
-        pm.layout = None
-        pm.routing = None
-        pm.scheduling = None
     pm.post_scheduling = lowering
     configure_fractional_angles(pm, target)
     return pm

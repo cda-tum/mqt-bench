@@ -63,7 +63,17 @@ def _target_environment(target: Target, num_qubits: int, *, mapped: bool) -> Tar
     if mapped and (target.num_qubits is None or target.num_qubits < num_qubits):
         msg = "The MQT mapped target must have at least as many qubits as the circuit."
         raise ValueError(msg)
-    structural = {*_CONTROL_FLOW, "break", "continue", "delay", "barrier", "box", "store"}
+    structural = {
+        *_CONTROL_FLOW,
+        "break",
+        "continue",
+        "break_loop",
+        "continue_loop",
+        "delay",
+        "barrier",
+        "box",
+        "store",
+    }
     names = [
         name
         for name in target.operation_names

@@ -48,7 +48,7 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
             continue
         if target.instruction_supported(operation_name=name, parameters=[angle]):
             standard_gates[name] = (standard_gate, angle, phase)
-    if not standard_gates:
+    if not standard_gates and not native:
         return target, None
 
     angle_bounds = {}
@@ -64,17 +64,20 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
                 if target.gate_has_angle_bounds(name)
             }
 
-    compilation_target = Target(
-        num_qubits=target.num_qubits,
-        description=target.description,
-        dt=target.dt,
-        granularity=target.granularity,
-        min_length=target.min_length,
-        pulse_alignment=target.pulse_alignment,
-        acquire_alignment=target.acquire_alignment,
-        qubit_properties=target.qubit_properties,
-        concurrent_measurements=target.concurrent_measurements,
-    )
+    if native:
+        compilation_target = Target(num_qubits=target.num_qubits, description=target.description)
+    else:
+        compilation_target = Target(
+            num_qubits=target.num_qubits,
+            description=target.description,
+            dt=target.dt,
+            granularity=target.granularity,
+            min_length=target.min_length,
+            pulse_alignment=target.pulse_alignment,
+            acquire_alignment=target.acquire_alignment,
+            qubit_properties=target.qubit_properties,
+            concurrent_measurements=target.concurrent_measurements,
+        )
     library = EquivalenceLibrary(base=StandardEquivalenceLibrary)
     for name in target.operation_names:
         operation = target.operation_from_name(name)
@@ -96,5 +99,9 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
         rule = QuantumCircuit(1, global_phase=phase)
         rule.append(gate, [0])
         library.add_equivalence(standard_gate, rule)
-    lowering = PassManager(BasisTranslator(library, list(target.operation_names), target=None if native else target))
+    lowering = (
+        PassManager(BasisTranslator(library, list(target.operation_names), target=None if native else target))
+        if standard_gates
+        else None
+    )
     return compilation_target, lowering

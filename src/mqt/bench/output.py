@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 from enum import StrEnum
 from importlib import metadata
 from io import TextIOBase
@@ -119,7 +119,7 @@ def generate_header(
 
     lines: list[str] = []
     lines.extend((
-        f"// Benchmark created by MQT Bench on {datetime.datetime.now(tz=datetime.UTC).date()}",
+        f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}",
         "// For more info: https://mqt-bench.app/",
         f"// MQT Bench version: {version}",
         f"// Qiskit version: {__qiskit_version__}",
@@ -135,7 +135,8 @@ def generate_header(
         ))
         if level == BenchmarkLevel.MAPPED:
             c_map = target.build_coupling_map()
-            lines.append(f"// Coupling map: {c_map or 'all-to-all'}")
+            edges = [list(edge) for edge in c_map.get_edges()] if c_map else "all-to-all"
+            lines.append(f"// Coupling map: {edges}")
 
     return "\n".join(lines) + "\n\n"
 
