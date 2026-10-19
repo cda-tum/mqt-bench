@@ -21,6 +21,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 🐛 Preserve logical qubit order in native-gate compilation at optimization
+  levels 2 and 3 ([#1067]) ([**@denialhaag**])
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069])
   ([**@simon1hofmann**], [**@burgholzer**])
@@ -215,6 +217,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 <!-- PR links -->
 
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
+[#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1054]: https://github.com/munich-quantum-toolkit/bench/pull/1054
 [#1052]: https://github.com/munich-quantum-toolkit/bench/pull/1052
 [#1047]: https://github.com/munich-quantum-toolkit/bench/pull/1047

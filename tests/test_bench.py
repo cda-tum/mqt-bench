@@ -1290,6 +1290,27 @@ def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
 
 
 @pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_falcon"])
+@pytest.mark.parametrize("opt_level", [2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_native_gates_preserve_qubit_order(gateset_name: str, opt_level: int, mirror: bool) -> None:
+    """Compile SWAPs to native gates without changing logical qubit order."""
+    qc = QuantumCircuit(3)
+    qc.h(0)
+    qc.t(1)
+    qc.cx(1, 2)
+    qc.swap(0, 2)
+
+    compiled = get_benchmark_native_gates(
+        qc, None, get_target_for_gateset(gateset_name, 3), opt_level, generate_mirror_circuit=mirror
+    )
+
+    assert compiled.layout is None
+    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(expected)
+
+
+@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_falcon"])
 @pytest.mark.parametrize("jump", ["break_loop", "continue_loop"])
 def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str) -> None:
     """Compile loop exits using Qiskit's instruction names."""
