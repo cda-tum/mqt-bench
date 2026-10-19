@@ -133,7 +133,7 @@ def _create_mirror_circuit(
             target=target,
             optimization_level=optimization_level,
             layout_method=None,
-            routing_method="none" if target.qargs is None else None,
+            routing_method=None,
             seed_transpiler=10,
         )
         if target_qc.layout is not None:
@@ -369,21 +369,24 @@ def get_benchmark_native_gates(
     target = native_target
 
     if target.description == "clifford+t":
+        from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
 
-        # Compile to Clifford+T and rotation gates without qubit mapping
+        # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
         compiled_for_sk = transpile(
             circuit,
             target=clifford_t_rotations,
             optimization_level=opt_level,
             seed_transpiler=10,
-            routing_method="none",
         )
         # Synthesize the rotations to Clifford+T gates
         pm = PassManager(SolovayKitaev())
         circuit = pm.run(compiled_for_sk)
+        # Restore the permutation dropped by synthesis
+        if compiled_for_sk.layout is not None:
+            circuit.append(PermutationGate(compiled_for_sk.layout.final_index_layout()), circuit.qubits)
 
     if "rigetti" in target.description:
         rigetti.add_equivalences(SessionEquivalenceLibrary)
@@ -394,7 +397,6 @@ def get_benchmark_native_gates(
         optimization_level=opt_level,
         target=target,
         seed_transpiler=10,
-        routing_method="none",
     )
     if generate_mirror_circuit:
         return _create_mirror_circuit(compiled_circuit, inplace=True, target=target, optimization_level=opt_level)
