@@ -28,7 +28,7 @@ from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
 from qiskit.primitives import StatevectorSampler
 from qiskit.providers.basic_provider import BasicSimulator
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Operator, Statevector
 from qiskit.transpiler import (
     InstructionProperties,
     Layout,
@@ -923,7 +923,9 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
     assert sorted(
         compiled.find_bit(inst.clbits[0]).index for inst in compiled.data if inst.operation.name == "measure"
     ) == ([] if measurement_case == "none" else [0, 2])
-    if measurement_case != "none":
+    if measurement_case == "none":
+        assert Operator.from_circuit(compiled).equiv(Operator(qc))
+    else:
         expected_result = "10 1" if measurement_case == "repeated" else "00 1"
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
