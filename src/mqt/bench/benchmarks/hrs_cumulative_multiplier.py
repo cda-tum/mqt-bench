@@ -24,7 +24,7 @@
 
 from __future__ import annotations
 
-from qiskit.circuit import AncillaRegister, QuantumCircuit, QuantumRegister
+from qiskit.circuit import AncillaRegister, ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.synthesis import adder_ripple_c04
 
 from ._registry import register_benchmark
@@ -33,6 +33,8 @@ from ._registry import register_benchmark
 @register_benchmark("hrs_cumulative_multiplier", description="Häner-Roetteler-Svore (HRS) Cumulative Multiplier")
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Create a hrs cumulative multiplier circuit.
+
+    Measure only the product into ``result``, least-significant bit first.
 
     Arguments:
             num_qubits: Number of qubits of the returned quantum circuit. Must be an integer ≥ 5 and (num_qubits - 1) must be divisible by 4.
@@ -79,7 +81,10 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
             qr_list.extend(qr_helper[:])
         qc.append(controlled_adder, qr_list)
 
-    qc.measure_all()
+    result = ClassicalRegister(num_result_qubits, "result")
+    qc.add_register(result)
+    qc.barrier()
+    qc.measure(qr_out, result)
     qc.name = "hrs_cumulative_multiplier"
 
     return qc

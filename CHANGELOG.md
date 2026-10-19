@@ -19,6 +19,11 @@ that minor releases may include breaking changes.
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
 - ✨ Add Superdense Coding benchmark ([#1037]) ([**@Anshu666666**])
 
+### Changed
+
+- ✨ Measure arithmetic sums and products in a `result` register, excluding
+  input and helper qubits ([#1065]) ([**@simon1hofmann**])
+
 ### Fixed
 
 - 🐛 Compile native gates without device connectivity or simulated calibration,
@@ -216,6 +221,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
+[#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
 [#1054]: https://github.com/munich-quantum-toolkit/bench/pull/1054
 [#1052]: https://github.com/munich-quantum-toolkit/bench/pull/1052
 [#1047]: https://github.com/munich-quantum-toolkit/bench/pull/1047
