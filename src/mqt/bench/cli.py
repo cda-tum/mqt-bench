@@ -115,10 +115,8 @@ def main() -> None:
         parser.error(f"--target is required when --level is '{args.level}'.")
 
     if level == BenchmarkLevel.NATIVEGATES:
-        assert args.target is not None
         target = get_target_for_gateset(args.target, num_qubits=args.num_qubits)
     elif level == BenchmarkLevel.MAPPED:
-        assert args.target is not None
         target = get_device(args.target)
     else:
         target = None
