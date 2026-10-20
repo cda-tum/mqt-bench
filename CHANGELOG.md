@@ -27,6 +27,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 🐛 Default optimization level to 2 and require target for native gates and
+  mapped levels in CLI ([#1076]) ([**@jyothikacodes**])
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
@@ -222,7 +224,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
-[#XXXX]: https://github.com/munich-quantum-toolkit/bench/pull/XXXX
+[#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
@@ -300,6 +302,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@algovista-collab**]: https://github.com/algovista-collab
 [**@Anshu666666**]: https://github.com/Anshu666666
 [**@AsharHusain**]: https://github.com/AsharHusain
+[**@jyothikacodes**]: https://github.com/jyothikacodes
 [**@NiranjanRSoorej06**]: https://github.com/NiranjanRSoorej06
 
 <!-- General links -->
