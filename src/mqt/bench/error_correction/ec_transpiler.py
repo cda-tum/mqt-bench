@@ -215,8 +215,10 @@ class ECTranspiler(ABC):
 
         measurement_register_name = f"meas_{logical_classical_bit_index}"
 
-        #use existing classical register or create one
-        physical_measurement_register = next((reg for reg in self.transpiled_qc.cregs if reg.name == measurement_register_name), None)
+        # use existing classical register or create one
+        physical_measurement_register = next(
+            (reg for reg in self.transpiled_qc.cregs if reg.name == measurement_register_name), None
+        )
 
         if physical_measurement_register is None:
             physical_measurement_register = ClassicalRegister(1, measurement_register_name)
