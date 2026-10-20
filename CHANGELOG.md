@@ -25,9 +25,6 @@ that minor releases may include breaking changes.
 
 - ⬆️ Raise the minimum Qiskit version from 2.1.0 to 2.4.0 ([#930])
   ([**@Felix-Gundlach**], [**@emilkanic0909**], [**@SalehAlsherif**])
-
-### Changed
-
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
