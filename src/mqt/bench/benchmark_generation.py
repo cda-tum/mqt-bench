@@ -60,7 +60,7 @@ def _get_circuit(
         if circuit_size is not None:
             msg = "`circuit_size` must be omitted or None when `benchmark` is a QuantumCircuit."
             raise ValueError(msg)
-        qc = benchmark
+        qc = benchmark.copy()
 
     else:
         if circuit_size is None:
