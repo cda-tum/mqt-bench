@@ -64,12 +64,12 @@ print(get_available_device_names())
 
 Possible values for `encoding`:
 
-```text
-{code-cell} ipython3
+```{code-cell} ipython3
 :tags: [hide-input]
 from mqt.bench.error_correction import get_available_encoding_names
 
-print(get_available_encoding_names())```
+print(get_available_encoding_names())
+```
 
 ## Native Gate-Set Support
 
