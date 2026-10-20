@@ -973,15 +973,19 @@ def test_error_correction_transpiler_circuit_structure(
     else:
         assert expected_gates == created_gates, f"Created circuit does not contain the expected gates for {test_id}"
 
-def test_error_correction_error_on_unsupported_operation() -> None:
-    """This Test is supposed to check that unsupported gates in a circuit would be handled correctly
 
-        Generally, this means the right error message is raised
+def test_error_correction_error_on_unsupported_operation() -> None:
+    """This Test is supposed to check that unsupported gates in a circuit would be handled correctly.
+
+    Generally, this means the right error message is raised
     """
     qc = QuantumCircuit(1, 1)
     qc.delay(0)
     for transpiler in [get_transpiler(name)(qc.copy()) for name in get_available_encoding_names()]:
-        with pytest.raises(ValueError, match=r"^Error-correction transpilation currently does not support arbitrary gates such as \w+\. Currently supported: .+$"):
+        with pytest.raises(
+            ValueError,
+            match=r"^Error-correction transpilation currently does not support arbitrary gates such as \w+\. Currently supported: .+$",
+        ):
             transpiler.transpile()
 
     qc = QuantumCircuit(1, 1)
@@ -989,8 +993,10 @@ def test_error_correction_error_on_unsupported_operation() -> None:
     qc.reset(0)
     qc.measure(0, 0)
     for transpiler in [get_transpiler(name)(qc.copy()) for name in get_available_encoding_names()]:
-        with pytest.raises(ValueError,
-                           match=r"^Error-correction transpilation currently does not support arbitrary gates such as \w+\. Currently supported: .+$"):
+        with pytest.raises(
+            ValueError,
+            match=r"^Error-correction transpilation currently does not support arbitrary gates such as \w+\. Currently supported: .+$",
+        ):
             transpiler.transpile()
 
 
