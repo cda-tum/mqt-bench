@@ -213,9 +213,14 @@ class ECTranspiler(ABC):
         physical_data_register = self.logical_qubits[logical_qubit_index].data
         self._apply_decoding(self.transpiled_qc, physical_data_register)
 
-        measurement_register_name = f"meas_{logical_qubit_index}_{logical_classical_bit_index}"
-        physical_measurement_register = ClassicalRegister(1, measurement_register_name)
-        self.transpiled_qc.add_register(physical_measurement_register)
+        measurement_register_name = f"meas_{logical_classical_bit_index}"
+
+        #use existing classical register or create one
+        physical_measurement_register = next((reg for reg in self.transpiled_qc.cregs if reg.name == measurement_register_name), None)
+
+        if physical_measurement_register is None:
+            physical_measurement_register = ClassicalRegister(1, measurement_register_name)
+            self.transpiled_qc.add_register(physical_measurement_register)
 
         self.transpiled_qc.measure(physical_data_register[0], physical_measurement_register[0])
 

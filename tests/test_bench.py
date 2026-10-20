@@ -973,6 +973,27 @@ def test_error_correction_transpiler_circuit_structure(
     else:
         assert expected_gates == created_gates, f"Created circuit does not contain the expected gates for {test_id}"
 
+@pytest.mark.parametrize(
+    ("code"),
+    [
+        ("shor"),
+        ("steane"),
+    ],
+)
+def test_error_correction_no_additional_classical_registers(code: str):
+    """This Test is supposed to check that measurements on the same classical register will not change behavior of a circuit"""
+    qc = QuantumCircuit(2,1)
+    qc.measure(0,0)
+    qc.measure(1, 0)
+    transpiler = get_transpiler(code)(qc)
+    transpiled_qc = transpiler.transpile()
+
+    # added classical registers
+    measurement_registers = [reg for reg in transpiled_qc.cregs if reg.name.startswith("meas_")]
+
+    # Check that both measurements target the same classical bit
+    assert len(measurement_registers) == 1
+    assert measurement_registers[0].name == "meas_0"
 
 def test_error_correction_error_on_unsupported_operation() -> None:
     """This Test is supposed to check that unsupported gates in a circuit would be handled correctly.
