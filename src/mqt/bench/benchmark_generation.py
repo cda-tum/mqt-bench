@@ -72,10 +72,8 @@ def _get_circuit(
         rng = np.random.default_rng(10)
         param_dict = {param: rng.uniform(0, 2 * np.pi) for param in qc.parameters}
         if qc is benchmark:
-            # Bind out of place so that the caller's circuit stays unchanged.
-            qc = qc.assign_parameters(param_dict)
-        else:
-            qc.assign_parameters(param_dict, inplace=True)
+            qc = qc.copy()
+        qc.assign_parameters(param_dict, inplace=True)
         assert len(qc.parameters) == 0, "All parameters should be assigned."
     return qc
 
