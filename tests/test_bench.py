@@ -93,6 +93,7 @@ SPECIAL_QUBIT_COUNTS: dict[str, int] = {
     "seven_qubit_steane_code": 13,
     "iqpe": 2,
     "teleportation": 3,
+    "bell": 4,
 }
 
 
@@ -288,6 +289,8 @@ def test_arithmetic_mirror_measurements() -> None:
         ("teleportation", 1, None, "num_qubits must be at least 3."),
         ("teleportation", 4, None, "num_qubits must be divisible by 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
+        ("bell", 1, None, "num_qubits must be at least 2."),
+        ("bell", 3, None, "num_qubits must be divisible by 2."),
     ],
 )
 def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | None, msg: str) -> None:

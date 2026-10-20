@@ -14,6 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
 - ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
@@ -227,6 +228,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
+[#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
@@ -306,6 +308,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@AsharHusain**]: https://github.com/AsharHusain
 [**@AthulKampiyil**]: https://github.com/AthulKampiyil
 [**@jyothikacodes**]: https://github.com/jyothikacodes
+[**@NiranjanRSoorej06**]: https://github.com/NiranjanRSoorej06
 
 <!-- General links -->
 
