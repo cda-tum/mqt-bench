@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-nox.needs_version = ">=2026.08.10"
+nox.needs_version = ">=2026.08.17"
 nox.options.default_venv_backend = "uv"
 nox.options.parallel = "auto"
 
@@ -61,6 +61,8 @@ def tests(session: nox.Session) -> None:
         "--group",
         "test",
         "pytest",
+        "-n",
+        "0",
         *session.posargs,
         "--cov-config=pyproject.toml",
         env=_get_session_env(session),
@@ -103,7 +105,7 @@ def minimums(session: nox.Session) -> None:
     _run_tests_without_lockfile(
         session,
         install_args=["--resolution=lowest-direct"],
-        pytest_run_args=["-Wdefault"],
+        pytest_run_args=["-Wdefault", "-n", "0"],
     )
     session.run("uv", "pip", "tree", "--python", session.virtualenv.location)
 
