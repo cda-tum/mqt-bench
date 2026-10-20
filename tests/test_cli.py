@@ -63,6 +63,26 @@ if TYPE_CHECKING:
         (
             [
                 "--level",
+                "indep",
+                "--algorithm",
+                "ghz",
+                "--num-qubits",
+                "20",
+                "--no-random-parameters",
+            ],
+            dumps(
+                get_benchmark(
+                    level=BenchmarkLevel.INDEP,
+                    benchmark="ghz",
+                    circuit_size=20,
+                    opt_level=2,
+                    random_parameters=False,
+                )
+            ),
+        ),
+        (
+            [
+                "--level",
                 "nativegates",
                 "--algorithm",
                 "ghz",
@@ -166,6 +186,14 @@ def test_cli(args: list[str], expected_output: str, script_runner: ScriptRunner)
         (
             ["--level", "alg", "--algorithm", "not-a-valid-benchmark", "--num-qubits", "20"],
             "",
+        ),
+        (
+            ["--level", "nativegates", "--algorithm", "ghz", "--num-qubits", "20"],
+            "--target is required when --level is 'nativegates'",
+        ),
+        (
+            ["--level", "mapped", "--algorithm", "ghz", "--num-qubits", "20"],
+            "--target is required when --level is 'mapped'",
         ),
     ],
 )
