@@ -26,7 +26,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
-- 🐛 Default optimization level to 2 and require target for native gates and mapped levels in CLI ([#1072]) ([**@jyothikacodes**])
+- 🐛 Default optimization level to 2 and require target for native gates and
+  mapped levels in CLI ([#1072]) ([**@jyothikacodes**])
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
