@@ -1711,3 +1711,22 @@ def test_version() -> None:
     """Test that the package version is accessible."""
     assert isinstance(mqt.bench.__version__, str)
     assert isinstance(mqt.bench.__version_tuple__, tuple)
+
+
+@pytest.mark.parametrize("level", [BenchmarkLevel.ALG, BenchmarkLevel.INDEP])
+@pytest.mark.parametrize("mirror", [False, True])
+@pytest.mark.parametrize("parameterized", [False, True])
+def test_get_benchmark_does_not_modify_input_circuit(level: BenchmarkLevel, mirror: bool, parameterized: bool) -> None:
+    """Passing a circuit to `get_benchmark` must leave that circuit untouched."""
+    theta = Parameter("theta")
+    circuit = QuantumCircuit(2)
+    circuit.h(0)
+    circuit.rx(theta if parameterized else 0.5, 1)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+    original = circuit.copy()
+
+    get_benchmark(circuit, level, generate_mirror_circuit=mirror)
+
+    assert circuit == original
+    assert set(circuit.parameters) == set(original.parameters)
