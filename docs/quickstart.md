@@ -18,6 +18,19 @@ from mqt.bench import BenchmarkLevel, get_benchmark
 from mqt.bench.targets import get_device, get_target_for_gateset
 ```
 
+## Minimal Example
+
+The smallest way to get started is to generate a benchmark circuit on the
+algorithmic level. Here, we create a 3-qubit GHZ circuit. A GHZ state is an
+entangled state in which all qubits are in an equal superposition of all-zeros
+and all-ones. The circuit applies a Hadamard gate to one qubit and then spreads
+the superposition to the others with a chain of CNOT gates.
+
+```{code-cell} ipython3
+qc_ghz = get_benchmark(benchmark="ghz", level=BenchmarkLevel.ALG, circuit_size=3)
+qc_ghz.draw(output="mpl")
+```
+
 ## Algorithmic Level
 
 ```{code-cell} ipython3
