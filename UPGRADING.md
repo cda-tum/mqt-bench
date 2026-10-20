@@ -6,6 +6,41 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Native gate-set targets
+
+`get_target_for_gateset` returns globally available instructions without
+simulated error rates, durations, or a coupling map. Native compilation also
+ignores connectivity and calibration in caller-supplied targets, including when
+generating mirror circuits. Use `get_device` and the mapped level when device
+constraints are required.
+
+Native targets register loop jumps under Qiskit's instruction names `break_loop`
+and `continue_loop` instead of `break` and `continue`.
+
+### Arithmetic result measurements
+
+The nine adder and multiplier benchmarks now measure only their sum or product
+into a classical register named `result`, replacing `meas`. Carry-out is the
+most-significant result bit when present. Input and helper qubits are no longer
+measured, so output bitstrings are shorter. With Qiskit's sampler, read
+`pub_result.data.result` instead of `pub_result.data.meas`.
+
+To restore measurements of all qubits, apply this before compilation:
+
+```python
+qc.remove_final_measurements()
+qc.measure_all()
+```
+
+Mirror benchmarks retain their existing measurements of all active qubits.
+
+### QAOA final measurements
+
+QAOA benchmarks now measure all qubits at the end of the circuit. Remove any
+extra `measure_all()` call added as a workaround to avoid duplicate
+measurements. If you need a circuit without measurements, call
+`qc.remove_final_measurements(inplace=True)`.
+
 ### Qiskit 2.4 minimum
 
 The minimum Qiskit version increases from **2.1.0 to 2.4.0**, dropping support

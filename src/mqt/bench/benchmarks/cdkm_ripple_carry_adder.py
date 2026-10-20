@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from qiskit.circuit import ClassicalRegister
 from qiskit.synthesis import adder_ripple_c04
 
 from ._registry import register_benchmark
@@ -23,6 +24,9 @@ if TYPE_CHECKING:
 @register_benchmark("cdkm_ripple_carry_adder", description="Cuccaro-Draper-Kutin-Moulton (CDKM) Ripple-Carry Adder")
 def create_circuit(num_qubits: int, kind: str = "full") -> QuantumCircuit:
     """Create a CDKM ripple-carry adder circuit.
+
+    Measure only the sum into ``result``, least-significant bit first.
+    Carry-out, when present, is the most-significant result bit.
 
     Arguments:
             num_qubits: Number of qubits of the returned quantum circuit. Must be even and ≥ 4 for full and half adders, and odd and ≥ 3 for fixed adders.
@@ -54,7 +58,11 @@ def create_circuit(num_qubits: int, kind: str = "full") -> QuantumCircuit:
         raise ValueError(msg)
 
     qc = adder_ripple_c04(num_state_qubits, kind)
-    qc.measure_all()
+    result = ClassicalRegister(num_state_qubits + (kind != "fixed"), "result")
+    qc.add_register(result)
+    start = num_state_qubits + (kind == "full")
+    qc.barrier()
+    qc.measure(qc.qubits[start : start + len(result)], result)
     qc.name = "cdkm_ripple_carry_adder"
 
     return qc

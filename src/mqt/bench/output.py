@@ -98,7 +98,8 @@ def generate_header(
         ))
         if level == BenchmarkLevel.MAPPED:
             c_map = target.build_coupling_map()
-            lines.append(f"// Coupling map: {c_map or 'all-to-all'}")
+            edges = [list(edge) for edge in c_map.get_edges()] if c_map else "all-to-all"
+            lines.append(f"// Coupling map: {edges}")
 
     return "\n".join(lines) + "\n\n"
 

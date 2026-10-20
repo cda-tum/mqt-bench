@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit, QuantumRegister
+from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.synthesis import synth_qft_full
 
 from ._registry import register_benchmark
@@ -34,6 +34,9 @@ from ._registry import register_benchmark
 @register_benchmark("draper_qft_adder", description="Draper QFT Adder")
 def create_circuit(num_qubits: int, kind: str = "fixed") -> QuantumCircuit:
     """Create a draper QFT adder circuit.
+
+    Measure only the sum into ``result``, least-significant bit first.
+    Carry-out, when present, is the most-significant result bit.
 
     Arguments:
             num_qubits: Number of qubits of the returned quantum circuit. Must be odd and ≥ 3 for half adders, and even and ≥ 2 for fixed adders.
@@ -93,7 +96,10 @@ def create_circuit(num_qubits: int, kind: str = "fixed") -> QuantumCircuit:
 
     qc.append(inv_qft_gate, qr_sum)
 
-    qc.measure_all()
+    result = ClassicalRegister(len(qr_sum), "result")
+    qc.add_register(result)
+    qc.barrier()
+    qc.measure(qr_sum, result)
     qc.name = "draper_qft_adder"
 
     return qc
