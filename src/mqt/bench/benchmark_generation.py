@@ -60,7 +60,7 @@ def _get_circuit(
         if circuit_size is not None:
             msg = "`circuit_size` must be omitted or None when `benchmark` is a QuantumCircuit."
             raise ValueError(msg)
-        qc = benchmark.copy()
+        qc = benchmark
 
     else:
         if circuit_size is None:
@@ -71,7 +71,11 @@ def _get_circuit(
     if len(qc.parameters) > 0 and random_parameters:
         rng = np.random.default_rng(10)
         param_dict = {param: rng.uniform(0, 2 * np.pi) for param in qc.parameters}
-        qc.assign_parameters(param_dict, inplace=True)
+        if qc is benchmark:
+            # Bind out of place so that the caller's circuit stays unchanged.
+            qc = qc.assign_parameters(param_dict)
+        else:
+            qc.assign_parameters(param_dict, inplace=True)
         assert len(qc.parameters) == 0, "All parameters should be assigned."
     return qc
 
@@ -224,7 +228,8 @@ def get_benchmark_alg(
     """
     qc = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
     if generate_mirror_circuit:
-        return _create_mirror_circuit(qc, inplace=True)
+        # Only modify in place if `qc` is not the caller's circuit.
+        return _create_mirror_circuit(qc, inplace=qc is not benchmark)
     return qc
 
 

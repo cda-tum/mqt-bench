@@ -1715,18 +1715,18 @@ def test_version() -> None:
 
 @pytest.mark.parametrize("level", [BenchmarkLevel.ALG, BenchmarkLevel.INDEP])
 @pytest.mark.parametrize("mirror", [False, True])
-def test_get_benchmark_does_not_modify_input_circuit(level: BenchmarkLevel, mirror: bool) -> None:
+@pytest.mark.parametrize("parameterized", [False, True])
+def test_get_benchmark_does_not_modify_input_circuit(level: BenchmarkLevel, mirror: bool, parameterized: bool) -> None:
     """Passing a circuit to `get_benchmark` must leave that circuit untouched."""
     theta = Parameter("theta")
     circuit = QuantumCircuit(2)
     circuit.h(0)
-    circuit.rx(theta, 1)
+    circuit.rx(theta if parameterized else 0.5, 1)
     circuit.cx(0, 1)
     circuit.measure_all()
     original = circuit.copy()
 
-    result = get_benchmark(circuit, level, generate_mirror_circuit=mirror)
+    get_benchmark(circuit, level, generate_mirror_circuit=mirror)
 
-    assert result is not circuit
     assert circuit == original
-    assert set(circuit.parameters) == {theta}
+    assert set(circuit.parameters) == set(original.parameters)
