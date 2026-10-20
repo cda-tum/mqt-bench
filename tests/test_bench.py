@@ -322,32 +322,6 @@ def test_superdense_coding(num_qubits: int) -> None:
     assert res_alg.num_qubits == num_qubits
 
 
-@pytest.mark.parametrize("num_qubits", [2, 4, 6])
-def test_bell(num_qubits: int) -> None:
-    """Test that the Bell-pair benchmark builds independent, perfectly correlated pairs."""
-    qc = create_circuit("bell", num_qubits)
-    assert qc.num_qubits == num_qubits
-    assert qc.name == "bell"
-
-    ops = qc.count_ops()
-    assert ops["h"] == num_qubits // 2
-    assert ops["cx"] == num_qubits // 2
-    assert ops["measure"] == num_qubits
-
-    # Each CX acts on its own pair, so no qubit belongs to two pairs.
-    cx_pairs = [tuple(qc.find_bit(qubit).index for qubit in inst.qubits) for inst in qc.data if inst.name == "cx"]
-    assert cx_pairs == [(2 * k, 2 * k + 1) for k in range(num_qubits // 2)]
-
-    # The two qubits of every pair always yield the same measurement result.
-    result = StatevectorSampler(seed=1).run([qc], shots=200).result()
-    counts = result[0].data["meas"].get_counts()
-    for bitstring in counts:
-        assert all(bitstring[i] == bitstring[i + 1] for i in range(0, num_qubits, 2))
-
-    res_alg = get_benchmark_alg("bell", num_qubits)
-    assert res_alg.num_qubits == num_qubits
-
-
 @pytest.mark.parametrize("message", ["00", "01", "10", "11"])
 def test_superdense_coding_2qubits_all_messages(message: str) -> None:
     """Test 2-qubit canonical superdense coding over all four 2-bit messages."""

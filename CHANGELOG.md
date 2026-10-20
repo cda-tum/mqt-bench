@@ -14,7 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- ✨ Add Bell-pair benchmark ([#XXXX]) ([**@NiranjanRSoorej06**])
+- ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
 - ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
