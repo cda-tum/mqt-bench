@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from qiskit.circuit import QuantumCircuit
+from qiskit.circuit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import ModularAdderGate
 
 from ._registry import register_benchmark
@@ -19,6 +19,8 @@ from ._registry import register_benchmark
 @register_benchmark("modular_adder", description="Modular Adder")
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Create a modular adder circuit.
+
+    Measure only the sum into ``result``, least-significant bit first.
 
     Arguments:
             num_qubits: Number of qubits of the returned quantum circuit. Must be even and ≥ 2
@@ -40,7 +42,10 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qc = QuantumCircuit(gate.num_qubits)
     qc.append(gate, qc.qubits)
-    qc.measure_all()
+    result = ClassicalRegister(num_state_qubits, "result")
+    qc.add_register(result)
+    qc.barrier()
+    qc.measure(qc.qubits[num_state_qubits:], result)
     qc.name = "modular_adder"
 
     return qc

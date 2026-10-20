@@ -14,6 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
 - ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
@@ -46,14 +47,22 @@ that minor releases may include breaking changes.
   the current catalogue, including AQT IBEX Q1 and Rigetti Cepheus. Document
   static device provenance and physical qubit labels. ([#1027])
   ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Measure arithmetic sums and products in a `result` register, excluding
+  input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
 ### Fixed
 
 - Preserve angle bounds when lowering native gate aliases for Qiskit
   compilation. ([#1027]) ([**@simon1hofmann**])
+- 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
+  ([**@AthulKampiyil**])
+- 🐛 Default optimization level to 2 and require target for native gates and
+  mapped levels in CLI ([#1076]) ([**@jyothikacodes**])
 - 🐛 Compile native gates without device connectivity or simulated calibration,
-  and keep coupling-map headers stable across Qiskit versions ([#1069])
-  ([**@simon1hofmann**], [**@burgholzer**])
+  and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
+  ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
+- 🐛 Restore final measurements on all qubits in QAOA benchmarks ([#1059])
+  ([**@flowerthrower**])
 - 🐛 Report unsupported mirror circuits with a clear error and retain final
   measurements when inversion fails ([#1052]) ([**@simon1hofmann**])
 - 🐛 Support two-qubit quantum walks with and without structured loops ([#1052])
@@ -252,7 +261,13 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
+[#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
+[#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
+[#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
+[#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
+[#1059]: https://github.com/munich-quantum-toolkit/bench/pull/1059
 [#1054]: https://github.com/munich-quantum-toolkit/bench/pull/1054
 [#1052]: https://github.com/munich-quantum-toolkit/bench/pull/1052
 [#1047]: https://github.com/munich-quantum-toolkit/bench/pull/1047
@@ -327,6 +342,9 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@algovista-collab**]: https://github.com/algovista-collab
 [**@Anshu666666**]: https://github.com/Anshu666666
 [**@AsharHusain**]: https://github.com/AsharHusain
+[**@AthulKampiyil**]: https://github.com/AthulKampiyil
+[**@jyothikacodes**]: https://github.com/jyothikacodes
+[**@NiranjanRSoorej06**]: https://github.com/NiranjanRSoorej06
 
 <!-- General links -->
 

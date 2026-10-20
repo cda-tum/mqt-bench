@@ -92,6 +92,30 @@ constraints are required.
 Native targets register loop jumps under Qiskit's instruction names `break_loop`
 and `continue_loop` instead of `break` and `continue`.
 
+### Arithmetic result measurements
+
+The nine adder and multiplier benchmarks now measure only their sum or product
+into a classical register named `result`, replacing `meas`. Carry-out is the
+most-significant result bit when present. Input and helper qubits are no longer
+measured, so output bitstrings are shorter. With Qiskit's sampler, read
+`pub_result.data.result` instead of `pub_result.data.meas`.
+
+To restore measurements of all qubits, apply this before compilation:
+
+```python
+qc.remove_final_measurements()
+qc.measure_all()
+```
+
+Mirror benchmarks retain their existing measurements of all active qubits.
+
+### QAOA final measurements
+
+QAOA benchmarks now measure all qubits at the end of the circuit. Remove any
+extra `measure_all()` call added as a workaround to avoid duplicate
+measurements. If you need a circuit without measurements, call
+`qc.remove_final_measurements(inplace=True)`.
+
 ## [2.3.0]
 
 ### Qiskit 2.1 minimum

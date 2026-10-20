@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Literal, NoReturn, cast
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit, qpy
+from qiskit import QuantumCircuit, qasm3, qpy
 from qiskit.circuit import ClassicalRegister, ForLoopOp, IfElseOp, Parameter
 from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
@@ -95,6 +95,7 @@ SPECIAL_QUBIT_COUNTS: dict[str, int] = {
     "seven_qubit_steane_code": 13,
     "iqpe": 2,
     "teleportation": 3,
+    "bell": 4,
 }
 
 
@@ -150,6 +151,12 @@ def test_quantumcircuit_levels(benchmark_name: str) -> None:
             assert res_mapped
 
 
+def test_qaoa() -> None:
+    """Test that the QAOA benchmark includes measurements."""
+    qc = create_circuit("qaoa", 3)
+    assert qc.count_ops().get("measure", 0) == 3
+
+
 @pytest.mark.parametrize(
     ("benchmark_name", "input_value", "kind"),
     [
@@ -183,6 +190,64 @@ def test_arithmetic_circuits(benchmark_name: str, input_value: int) -> None:
     """Arithmetic benchmarks without ``kind``: circuit qubit count matches the requested size."""
     qc = create_circuit(benchmark_name, input_value)
     assert qc.num_qubits == input_value
+
+
+@pytest.mark.parametrize(
+    ("benchmark", "size", "kind", "result_qubits", "input_qubits", "expected"),
+    [
+        ("full_adder", 6, None, (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("half_adder", 5, None, (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("modular_adder", 4, None, (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("cdkm_ripple_carry_adder", 6, "full", (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("cdkm_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("cdkm_ripple_carry_adder", 5, "fixed", (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("vbe_ripple_carry_adder", 7, "full", (3, 4, 5), [0, 1, 2, 3], "101"),  # 3 + 1 + carry-in 1 = 5
+        ("vbe_ripple_carry_adder", 6, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("vbe_ripple_carry_adder", 5, "fixed", (2, 3), [0, 2], "10"),  # (1 + 1) mod 4 = 2
+        ("draper_qft_adder", 5, "half", (2, 3, 4), [0, 1, 2], "100"),  # 3 + 1 = 4 (carry-out 1)
+        ("draper_qft_adder", 4, "fixed", (2, 3), [0, 1, 2, 3], "10"),  # (3 + 3) mod 4 = 2
+        ("multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
+        ("rg_qft_multiplier", 8, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
+        ("hrs_cumulative_multiplier", 9, None, (4, 5, 6, 7), [1, 3], "0100"),  # 2 * 2 = 4
+    ],
+)
+@pytest.mark.parametrize("level", list(BenchmarkLevel))
+def test_arithmetic_results(
+    benchmark: str,
+    size: int,
+    kind: str | None,
+    result_qubits: tuple[int, ...],
+    input_qubits: list[int],
+    expected: str,
+    level: BenchmarkLevel,
+) -> None:
+    """Measure only result wires and calculate carries, modular sums, and products."""
+    arithmetic = create_circuit(benchmark, size) if kind is None else create_circuit(benchmark, size, kind=kind)
+    assert [(reg.name, len(reg)) for reg in arithmetic.cregs] == [("result", len(result_qubits))]
+    assert [
+        (arithmetic.find_bit(item.qubits[0]).index, arithmetic.find_bit(item.clbits[0]).index)
+        for item in arithmetic.data
+        if item.operation.name == "measure"
+    ] == list(zip(result_qubits, range(len(result_qubits)), strict=True))
+
+    qc = arithmetic.copy_empty_like()
+    qc.x(input_qubits)
+    qc.compose(arithmetic, inplace=True)
+    target = get_target_for_gateset("ibm_heron", size)
+    compiled = get_benchmark(qc, level, target=target)
+    restored = qasm3.loads(qasm3.dumps(compiled))
+    counts = StatevectorSampler(seed=10).run([restored], shots=16).result()[0].data["result"].get_counts()
+    if benchmark == "vbe_ripple_carry_adder" and kind == "fixed" and counts == {"00": 16}:
+        pytest.xfail("Qiskit fixed-width carry bug: https://github.com/Qiskit/qiskit/pull/16700")
+    assert counts == {expected: 16}
+
+
+def test_arithmetic_mirror_measurements() -> None:
+    """Mirror benchmarks still measure all active qubits to check the identity."""
+    qc = get_benchmark("full_adder", BenchmarkLevel.ALG, 6, generate_mirror_circuit=True)
+    assert qc.num_clbits == 6
+    result = StatevectorSampler(seed=10).run([qc], shots=16).result()[0]
+    assert result.data["meas"].get_counts() == {"000000": 16}
 
 
 @pytest.mark.parametrize(
@@ -230,6 +295,8 @@ def test_arithmetic_circuits(benchmark_name: str, input_value: int) -> None:
         ("teleportation", 1, None, "num_qubits must be at least 3."),
         ("teleportation", 4, None, "num_qubits must be divisible by 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
+        ("bell", 1, None, "num_qubits must be at least 2."),
+        ("bell", 3, None, "num_qubits must be divisible by 2."),
     ],
 )
 def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | None, msg: str) -> None:
@@ -935,6 +1002,26 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
     else:
         expected_result = "10 1" if measurement_case == "repeated" else "00 1"
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
+
+
+@pytest.mark.parametrize("opt_level", [2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool) -> None:
+    """Preserve SWAP semantics through Clifford+T synthesis and mirror generation."""
+    qc = QuantumCircuit(3)
+    qc.h(0)
+    qc.t(1)
+    qc.cx(1, 2)
+    qc.swap(0, 1)
+    qc.swap(1, 2)
+
+    compiled = get_benchmark_native_gates(
+        qc, None, get_target_for_gateset("clifford+t", 3), opt_level, generate_mirror_circuit=mirror
+    )
+
+    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    compiled.remove_final_measurements()
+    assert Operator.from_circuit(compiled).equiv(expected)
 
 
 def test_benchmark_helper_shor() -> None:
@@ -1711,3 +1798,22 @@ def test_broken_mqt_dependency(monkeypatch: pytest.MonkeyPatch) -> None:
     with pytest.raises(ModuleNotFoundError, match="Missing native dependency") as exc:
         get_benchmark_indep("ghz", 3, compiler="mqt")
     assert exc.value.name == "core_native_dependency"
+
+
+@pytest.mark.parametrize("level", [BenchmarkLevel.ALG, BenchmarkLevel.INDEP])
+@pytest.mark.parametrize("mirror", [False, True])
+@pytest.mark.parametrize("parameterized", [False, True])
+def test_get_benchmark_does_not_modify_input_circuit(level: BenchmarkLevel, mirror: bool, parameterized: bool) -> None:
+    """Passing a circuit to `get_benchmark` must leave that circuit untouched."""
+    theta = Parameter("theta")
+    circuit = QuantumCircuit(2)
+    circuit.h(0)
+    circuit.rx(theta if parameterized else 0.5, 1)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+    original = circuit.copy()
+
+    get_benchmark(circuit, level, generate_mirror_circuit=mirror)
+
+    assert circuit == original
+    assert set(circuit.parameters) == set(original.parameters)

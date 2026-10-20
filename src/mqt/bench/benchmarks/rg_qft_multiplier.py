@@ -25,7 +25,7 @@
 from __future__ import annotations
 
 import numpy as np
-from qiskit.circuit import QuantumCircuit, QuantumRegister
+from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.synthesis import synth_qft_full
 
 from ._registry import register_benchmark
@@ -34,6 +34,8 @@ from ._registry import register_benchmark
 @register_benchmark("rg_qft_multiplier", description="Ruiz-Garcia (RG) QFT Multiplier")
 def create_circuit(num_qubits: int) -> QuantumCircuit:
     """Create a rg qft multiplier circuit.
+
+    Measure only the product into ``result``, least-significant bit first.
 
     Arguments:
             num_qubits: Number of qubits of the returned quantum circuit. Must be an integer ≥ 4 and divisible by 4.
@@ -74,7 +76,10 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     qc.append(inv_qft_gate, qr_out)
 
-    qc.measure_all()
+    result = ClassicalRegister(num_result_qubits, "result")
+    qc.add_register(result)
+    qc.barrier()
+    qc.measure(qr_out, result)
     qc.name = "rg_qft_multiplier"
 
     return qc

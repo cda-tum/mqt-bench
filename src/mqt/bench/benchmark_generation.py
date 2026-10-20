@@ -79,6 +79,8 @@ def _get_circuit(
     if len(qc.parameters) > 0 and random_parameters:
         rng = np.random.default_rng(10)
         param_dict = {param: rng.uniform(0, 2 * np.pi) for param in qc.parameters}
+        if qc is benchmark:
+            qc = qc.copy()
         qc.assign_parameters(param_dict, inplace=True)
         assert len(qc.parameters) == 0, "All parameters should be assigned."
     return qc
@@ -276,7 +278,8 @@ def get_benchmark_alg(
     """
     qc = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
     if generate_mirror_circuit:
-        return _create_mirror_circuit(qc, inplace=True)
+        # Only modify in place if `qc` is not the caller's circuit.
+        return _create_mirror_circuit(qc, inplace=qc is not benchmark)
     return qc
 
 
@@ -444,10 +447,11 @@ def get_benchmark_native_gates(
             circuit, target, compiler_options=compiler_options, generate_mirror_circuit=generate_mirror_circuit
         )
     if target.description == "clifford+t":
+        from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
 
-        # Transpile the circuit to single- and two-qubit gates including rotations
+        # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
         compiled_for_sk = transpile(
             circuit,
@@ -458,6 +462,9 @@ def get_benchmark_native_gates(
         # Synthesize the rotations to Clifford+T gates
         pm = PassManager(SolovayKitaev())
         circuit = pm.run(compiled_for_sk)
+        # Restore the permutation dropped by synthesis
+        if compiled_for_sk.layout is not None:
+            circuit.append(PermutationGate(compiled_for_sk.layout.final_index_layout()), circuit.qubits)
 
     pm = _get_qiskit_pass_manager(target, opt_level, native=True)
     compiled_circuit = pm.run(circuit)
