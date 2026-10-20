@@ -244,6 +244,10 @@ class ECTranspiler(ABC):
         the involved logical qubits' data registers, named
         ``f"{self.CODE_NAME}_ideal_logical_{gate_name}"``.
         """
+        if gate_name not in self.TARGET_GATE_SET:
+            msg = f"Error-correction transpilation currently does not support arbitrary gates such as {gate_name}. Currently supported: {self.TARGET_GATE_SET}"
+            raise ValueError(msg)
+
         physical_data_registers = [self.logical_qubits[idx].data for idx in logical_qubit_indices]
         physical_qubits = [qubit for register in physical_data_registers for qubit in register]
 
