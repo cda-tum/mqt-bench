@@ -18,6 +18,11 @@ that minor releases may include breaking changes.
 - ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
 - ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
 - ✨ Add Superdense Coding benchmark ([#1037]) ([**@Anshu666666**])
+- ✨ Add Steane's and Shor's encoding for benchmarks ([#930]) ([**@Felix-Gundlach**], [**@emilkanic0909**], [**@SalehAlsherif**])
+
+### Changed
+
+- ⬆️ Raise the minimum Qiskit version from 2.1.0 to 2.3.0 ([#930]) ([**@Felix-Gundlach**], [**@emilkanic0909**], [**@SalehAlsherif**])
 
 ### Fixed
 
@@ -35,11 +40,6 @@ that minor releases may include breaking changes.
 ## [2.3.0] - 2026-09-12
 
 _If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md#230)._
-
-### Added
-
-- ✨ Add Steane's and Shor's encoding for benchmarks ([#930])
-  ([**@Felix-Gundlach**], [**@emilkanic0909**], [**@SalehAlsherif**])
 
 ### Changed
 
