@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING, NoReturn, cast
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit, qasm3, qpy
-from qiskit.circuit import Barrier, ClassicalRegister, QuantumRegister, ForLoopOp, IfElseOp, Parameter
+from qiskit.circuit import Barrier, ClassicalRegister, ForLoopOp, IfElseOp, Parameter, QuantumRegister
 from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
 from qiskit.primitives import StatevectorSampler
