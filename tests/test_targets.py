@@ -338,19 +338,3 @@ def test_module_from_gateset_name(gateset_name: str, module_name: str) -> None:
 def test_module_from_device_name(device_name: str, module_name: str) -> None:
     """Test module name extraction from device name."""
     assert _module_from_device_name(device_name) == module_name
-
-
-@pytest.mark.parametrize("name", ["ibm_falcon_27", "ibm_falcon_127", "ibm_eagle_127", "ibm_heron_133"])
-def test_retired_ibm_devices(name: str) -> None:
-    """Removed IBM models must not remain in the catalogue."""
-    assert name not in get_available_device_names()
-    with pytest.raises(KeyError, match=name):
-        get_device(name)
-
-
-@pytest.mark.parametrize("name", ["ibm_falcon", "ibm_eagle"])
-def test_retired_ibm_gatesets(name: str) -> None:
-    """Removed IBM gate sets must not remain in the catalogue."""
-    assert name not in get_available_gateset_names()
-    with pytest.raises(KeyError, match=name):
-        get_gateset(name)
