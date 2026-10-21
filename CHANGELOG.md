@@ -15,7 +15,7 @@ that minor releases may include breaking changes.
 ### Added
 
 - 📝 Fix API documentation markup, heading anchors, and notebook build
-  concurrency ([#1027]) ([**@burgholzer**])
+  concurrency ([#1088]) ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
@@ -321,3 +321,5 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [Common Changelog]: https://common-changelog.org
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
+
+[#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
