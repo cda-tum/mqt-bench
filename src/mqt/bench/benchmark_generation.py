@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 
+import re
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Unpack, assert_never, overload
 
@@ -19,11 +20,14 @@ from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
 from qiskit.transpiler import Layout, Target
 from qiskit.transpiler.passes import RemoveFinalMeasurements
+from qiskit.version import VERSION as QISKIT_VERSION
 
 from .benchmarks import create_circuit
 from .targets.gatesets import get_target_for_gateset, ionq, rigetti
 
 if TYPE_CHECKING:  # pragma: no cover
+    from qiskit.dagcircuit import DAGCircuit
+
     from .configuration_options import ConfigurationOptions
 
 
@@ -374,22 +378,45 @@ def get_benchmark_native_gates(
     if target.description == "clifford+t":
         from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
-        from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
 
         # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
-        compiled_for_sk = transpile(
+        compiled_for_synthesis = transpile(
             circuit,
             target=clifford_t_rotations,
             optimization_level=opt_level,
             seed_transpiler=10,
         )
         # Synthesize the rotations to Clifford+T gates
-        pm = PassManager(SolovayKitaev())
-        circuit = pm.run(compiled_for_sk)
+        if tuple(map(int, re.findall(r"\d+", QISKIT_VERSION)[:3])) >= (2, 4, 2):
+            from qiskit.transpiler.passes import (  # ruff:ignore[import-outside-top-level]
+                BasisTranslator,
+                SynthesizeRZRotations,
+            )
+
+            class RecursiveSynthesizeRZRotations(SynthesizeRZRotations):
+                """Also synthesize rotations in control-flow blocks, which Qiskit's pass skips."""
+
+                def run(self, dag: DAGCircuit) -> DAGCircuit:
+                    for node in dag.control_flow_op_nodes():
+                        op = node.op
+                        dag.substitute_node(node, op.replace_blocks([self(block) for block in op.blocks]))
+                    return super().run(dag)
+
+            pm = PassManager([
+                BasisTranslator(SessionEquivalenceLibrary, sorted(clifford_t_rotations.operation_names - {"rx", "ry"})),
+                RecursiveSynthesizeRZRotations(),
+            ])
+        else:
+            from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
+
+            pm = PassManager(SolovayKitaev())
+        circuit = pm.run(compiled_for_synthesis)
         # Restore the permutation dropped by synthesis
-        if compiled_for_sk.layout is not None:
-            circuit.append(PermutationGate(compiled_for_sk.layout.final_index_layout()), circuit.qubits)
+        if compiled_for_synthesis.layout is not None:
+            circuit.append(PermutationGate(compiled_for_synthesis.layout.final_index_layout()), circuit.qubits)
+        # Continuous-basis optimizations can reintroduce rotations after discrete synthesis.
+        opt_level = 0
 
     if "rigetti" in target.description:
         rigetti.add_equivalences(SessionEquivalenceLibrary)

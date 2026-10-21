@@ -951,20 +951,61 @@ def test_invalid_circuit_size_combinations(getter: Callable[..., QuantumCircuit]
         getter("ae", circuit_size=None)
 
 
-def test_clifford_t() -> None:
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+def test_clifford_t(opt_level: int) -> None:
     """Test the Clifford+T gateset."""
     qc = get_benchmark(
         benchmark="qft",
         level=BenchmarkLevel.NATIVEGATES,
         circuit_size=4,
         target=get_target_for_gateset("clifford+t", 4),
-        opt_level=1,
+        opt_level=opt_level,
     )
 
     clifford_t_target = get_target_for_gateset("clifford+t", num_qubits=4)
     pm = PassManager(GatesInBasis(target=clifford_t_target))
     pm.run(qc)
     assert pm.property_set["all_gates_in_basis"]
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
+    """Approximate rotations about every axis while retaining the Clifford+T basis."""
+    qc = QuantumCircuit(2)
+    qc.rx(0.3, 0)
+    qc.ry(-0.7, 1)
+    qc.cx(0, 1)
+    qc.rz(0.2, 1)
+    target = get_target_for_gateset("clifford+t", 2)
+
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    compiled.remove_final_measurements()
+    expected = Operator(np.eye(4)) if mirror else Operator(qc)
+    assert Operator.from_circuit(compiled).equiv(expected, atol=1e-4)
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+def test_clifford_t_rotations_in_loop(opt_level: int) -> None:
+    """Synthesize rotations inside structured loops without unrolling the loop."""
+    qc = QuantumCircuit(1)
+    with qc.for_loop(range(2)):
+        qc.rx(0.3, 0)
+    target = get_target_for_gateset("clifford+t", 1)
+
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level)
+
+    assert any(isinstance(inst.operation, ForLoopOp) for inst in compiled.data)
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    expected = QuantumCircuit(1)
+    expected.rx(0.6, 0)
+    assert Operator.from_circuit(UnrollForLoops()(compiled)).equiv(Operator(expected), atol=1e-4)
 
 
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])

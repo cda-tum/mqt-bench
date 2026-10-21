@@ -6,6 +6,12 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Clifford+T compilation
+
+Native Clifford+T compilation uses gridsynth on Qiskit 2.4.2 and newer, and
+Solovay-Kitaev on earlier versions. Qiskit 2.1 remains supported. The
+synthesized gate sequences and gate counts can differ between Qiskit versions.
+
 ### Native gate-set targets
 
 `get_target_for_gateset` returns globally available instructions without

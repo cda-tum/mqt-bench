@@ -22,6 +22,9 @@ that minor releases may include breaking changes.
 
 ### Changed
 
+- ✨ Use gridsynth for native Clifford+T compilation on Qiskit 2.4.2 and newer,
+  retaining Solovay-Kitaev on earlier supported versions ([#1081])
+  ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
@@ -226,6 +229,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
