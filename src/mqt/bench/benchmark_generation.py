@@ -241,7 +241,7 @@ def get_benchmark_alg(
     if generate_mirror_circuit:
         # Only modify in place if `qc` is not the caller's circuit.
         return _create_mirror_circuit(qc, inplace=qc is not benchmark)
-      
+
     if encoding:
         transpiler = get_transpiler(encoding)(qc)
         qc = transpiler.transpile()
