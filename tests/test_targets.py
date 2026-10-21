@@ -17,6 +17,8 @@ from typing import TYPE_CHECKING
 import pytest
 from qiskit.transpiler import Target
 
+from mqt.bench import get_benchmark
+from mqt.bench.benchmark_generation import BenchmarkLevel
 from mqt.bench.targets.devices import (
     _module_from_device_name,  # ruff:ignore[import-private-name]
     get_available_device_names,
@@ -354,3 +356,20 @@ def test_module_from_gateset_name(gateset_name: str, module_name: str) -> None:
 def test_module_from_device_name(device_name: str, module_name: str) -> None:
     """Test module name extraction from device name."""
     assert _module_from_device_name(device_name) == module_name
+
+
+def test_nighthawk() -> None:
+    """Nighthawk has 218 bidirectional grid edges and a CZ basis."""
+    target = get_device("ibm_nighthawk_120")
+    assert target.num_qubits == 120
+    assert get_gateset("ibm_nighthawk") == get_gateset("ibm_heron")
+    edges = set(target["cz"])
+    expected = {(q, q + 1) for q in range(120) if q % 10 != 9}
+    expected |= {(q, q + 10) for q in range(110)}
+    expected |= {(b, a) for a, b in list(expected)}
+    assert edges == expected
+    circuit = get_benchmark("ghz", BenchmarkLevel.MAPPED, 3, target=target)
+    assert circuit.num_qubits == 120
+    for item in circuit.data:
+        if item.operation.num_qubits == 2:
+            assert tuple(circuit.find_bit(q).index for q in item.qubits) in edges
