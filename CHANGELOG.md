@@ -15,8 +15,10 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
+
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
   ([**@burgholzer**])
+
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
   ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
@@ -34,12 +36,14 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+
 - 📝 Fix API documentation markup, heading anchors, and notebook build
   concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
   mapped levels in CLI ([#1076]) ([**@jyothikacodes**])
+
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])
@@ -249,6 +253,8 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
+[#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
+[#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
@@ -326,9 +332,6 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@algovista-collab**]: https://github.com/algovista-collab
 [**@Anshu666666**]: https://github.com/Anshu666666
 [**@AsharHusain**]: https://github.com/AsharHusain
-[**@AthulKampiyil**]: https://github.com/AthulKampiyil
-[**@jyothikacodes**]: https://github.com/jyothikacodes
-[**@NiranjanRSoorej06**]: https://github.com/NiranjanRSoorej06
 
 <!-- General links -->
 
