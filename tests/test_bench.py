@@ -984,6 +984,7 @@ def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
     qc.ry(-0.7, 1)
     qc.cx(0, 1)
     qc.rz(0.2, 1)
+    qc.rzz(0.3, 0, 1)
     qc.swap(0, 1)
     target = get_target_for_gateset("clifford+t", 2)
 
