@@ -61,7 +61,8 @@ def main() -> None:
         "--optimization-level",
         type=int,
         choices=range(4),
-        help="Qiskit compiler optimization level (0-3).",
+        default=2,
+        help="Qiskit compiler optimization level (0-3, default: 2).",
     )
     parser.add_argument(
         "--target",
@@ -109,6 +110,9 @@ def main() -> None:
         level = BenchmarkLevel.NATIVEGATES
     else:
         level = BenchmarkLevel.MAPPED
+
+    if level in (BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED) and not args.target:
+        parser.error(f"--target is required when --level is '{args.level}'.")
 
     if level == BenchmarkLevel.NATIVEGATES:
         target = get_target_for_gateset(args.target, num_qubits=args.num_qubits)
