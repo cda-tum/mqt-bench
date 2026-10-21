@@ -111,30 +111,6 @@ def _assert_measure_properties(target: Target, *, vendor: str) -> None:
 DEVICE_SPECS: Sequence[DeviceSpec] = [
     # ─────────────────────────────────────────────────────────────────── IBM ──
     DeviceSpec(
-        name="ibm_falcon_27",
-        num_qubits=27,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_falcon_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_eagle_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"ecr"},
-    ),
-    DeviceSpec(
-        name="ibm_heron_133",
-        num_qubits=133,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cz"},
-    ),
-    DeviceSpec(
         name="ibm_heron_156",
         num_qubits=156,
         single_qubit_gates={"sx", "rz", "x", "measure"},
@@ -320,11 +296,11 @@ def test_get_device_immutability() -> None:
 
 def test_get_gateset_immutability() -> None:
     """Changes to a gateset retrieved by get_gateset should not affect the gateset in the registry. Sames for gateset names."""
-    gateset = get_gateset("ibm_falcon")
+    gateset = get_gateset("ibm_heron")
     gateset.append("dummy_gate")
     assert "dummy_gate" in gateset
 
-    gateset2 = get_gateset("ibm_falcon")
+    gateset2 = get_gateset("ibm_heron")
     assert "dummy_gate" not in gateset2
 
     gateset_names = get_available_gateset_names()

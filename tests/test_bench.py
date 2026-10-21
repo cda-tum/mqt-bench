@@ -26,6 +26,7 @@ from qiskit import QuantumCircuit, qasm3, qpy
 from qiskit.circuit import ClassicalRegister, ForLoopOp, IfElseOp, Parameter
 from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
 from qiskit.compiler import transpile
+from qiskit.converters import circuit_to_dag
 from qiskit.primitives import StatevectorSampler
 from qiskit.providers.basic_provider import BasicSimulator
 from qiskit.quantum_info import Operator, Statevector
@@ -232,7 +233,7 @@ def test_arithmetic_results(
     qc = arithmetic.copy_empty_like()
     qc.x(input_qubits)
     qc.compose(arithmetic, inplace=True)
-    target = get_target_for_gateset("ibm_falcon", size)
+    target = get_target_for_gateset("ibm_heron", size)
     compiled = get_benchmark(qc, level, target=target)
     restored = qasm3.loads(qasm3.dumps(compiled))
     counts = StatevectorSampler(seed=10).run([restored], shots=16).result()[0].data["result"].get_counts()
@@ -795,10 +796,10 @@ def test_seven_qubit_steane_code_circuit_structure(num_qubits: int) -> None:
             "ghz",
             BenchmarkLevel.MAPPED,
             3,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             0,
         ),
-        ("ghz", BenchmarkLevel.MAPPED, 3, get_device("ibm_falcon_27"), 2),
+        ("ghz", BenchmarkLevel.MAPPED, 3, get_device("ibm_heron_156"), 2),
         (
             "ghz",
             BenchmarkLevel.MAPPED,
@@ -1073,27 +1074,27 @@ def test_validate_input() -> None:
         (BenchmarkLevel.INDEP, None, True, "ghz_indep_mirror_opt2_5"),
         (
             BenchmarkLevel.NATIVEGATES,
-            get_target_for_gateset("ibm_falcon", 5),
+            get_target_for_gateset("ibm_heron", 5),
             False,
-            "ghz_nativegates_ibm_falcon_opt2_5",
+            "ghz_nativegates_ibm_heron_opt2_5",
         ),
         (
             BenchmarkLevel.NATIVEGATES,
-            get_target_for_gateset("ibm_falcon", 5),
+            get_target_for_gateset("ibm_heron", 5),
             True,
-            "ghz_nativegates_mirror_ibm_falcon_opt2_5",
+            "ghz_nativegates_mirror_ibm_heron_opt2_5",
         ),
         (
             BenchmarkLevel.MAPPED,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             False,
-            "ghz_mapped_ibm_falcon_127_opt2_5",
+            "ghz_mapped_ibm_heron_156_opt2_5",
         ),
         (
             BenchmarkLevel.MAPPED,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             True,
-            "ghz_mapped_mirror_ibm_falcon_127_opt2_5",
+            "ghz_mapped_mirror_ibm_heron_156_opt2_5",
         ),
     ],
 )
@@ -1384,7 +1385,7 @@ def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
     assert set(target["cx"]) == {(0, 1), (1, 2)}
 
 
-@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_falcon"])
+@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_heron"])
 @pytest.mark.parametrize("jump", ["break_loop", "continue_loop"])
 def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str) -> None:
     """Compile loop exits using Qiskit's instruction names."""
@@ -1442,7 +1443,7 @@ def test_native_gate_parity(benchmark: str, size: int, opt_level: int) -> None:
 @pytest.mark.parametrize(("benchmark", "size", "opt_level"), [("qft", 4, 1)])
 def test_mapped_parity(benchmark: str, size: int, opt_level: int) -> None:
     """Test parity of mapped benchmarks."""
-    target = get_device("ibm_falcon_127")
+    target = get_device("ibm_heron_156")
     qc_wrapper = get_benchmark_mapped(
         benchmark,
         size,
@@ -1470,7 +1471,7 @@ def test_validate_opt_level(benchmark: str, size: int, opt_level: int) -> None:
             opt_level=opt_level,
         )
 
-    target = get_device("ibm_falcon_127")
+    target = get_device("ibm_heron_156")
     with pytest.raises(ValueError, match=match):
         get_benchmark_native_gates(
             benchmark,
@@ -1513,12 +1514,12 @@ def test_get_benchmark_mirror_option(benchmark_name: str, logical_circuit_size: 
         (
             BenchmarkLevel.NATIVEGATES,
             1,
-            get_target_for_gateset("ibm_falcon", num_qubits=logical_circuit_size),
+            get_target_for_gateset("ibm_heron", num_qubits=logical_circuit_size),
         ),
         (
             BenchmarkLevel.MAPPED,
             1,
-            get_device("ibm_falcon_27"),
+            get_device("ibm_heron_156"),
         ),
     ]
 
@@ -1587,16 +1588,11 @@ def test_get_benchmark_mirror_option(benchmark_name: str, logical_circuit_size: 
         qc_mirror.remove_final_measurements(inplace=True)
         qc_mirror = RemoveBarriers()(qc_mirror)
 
-        optimized_circuit = transpile(
-            qc_mirror,
-            optimization_level=2,
-            basis_gates=["u", "cx"],
-        )
-
-        assert len(optimized_circuit.data) == 0, (
-            f"Unitary part of mirror (U@U_inv) for level '{level_enum.name}' ({qc_mirror.num_qubits} qubits) "
-            "did not optimize to an empty circuit. This means it might not represent the identity."
-        )
+        active_qubits = [q for q in qc_mirror.qubits if q not in circuit_to_dag(qc_mirror).idle_wires()]
+        compact = QuantumCircuit(len(active_qubits), global_phase=qc_mirror.global_phase)
+        for instruction in qc_mirror.data:
+            compact.append(instruction.operation, [active_qubits.index(q) for q in instruction.qubits])
+        np.testing.assert_allclose(Operator(compact).data, np.eye(2 ** len(active_qubits)), atol=1e-12)
 
 
 @pytest.mark.parametrize("level", list(BenchmarkLevel))
@@ -1604,7 +1600,7 @@ def test_dynamic_ghz_mirror_rejected(level: BenchmarkLevel) -> None:
     """Every level rejects a dynamic GHZ mirror without changing the input circuit."""
     circuit = get_benchmark_alg("ghz_dynamic", 5)
     original = circuit.copy()
-    target = get_target_for_gateset("ibm_falcon", num_qubits=5)
+    target = get_target_for_gateset("ibm_heron", num_qubits=5)
     with pytest.raises(ValueError, match=r"Cannot mirror this circuit.*generate_mirror_circuit=False"):
         get_benchmark(circuit, level, target=target, generate_mirror_circuit=True)
     assert circuit == original
