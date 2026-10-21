@@ -29,8 +29,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
-- 📝 Fix API documentation markup, heading anchors, and notebook build
-  concurrency ([#1088]) ([**@burgholzer**])
+- 📝 Fix API documentation markup, heading anchors, notebook build concurrency,
+  and Markdown output ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
