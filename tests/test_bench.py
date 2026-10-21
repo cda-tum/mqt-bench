@@ -407,6 +407,42 @@ def test_for_loop_option(benchmark_name: str, num_qubits: int, expected_iteratio
     assert loop.params[0] == range(expected_iterations)
 
 
+@pytest.mark.parametrize("repetitions", [1, 2, 3])
+def test_qaoa_for_loop(repetitions: int) -> None:
+    """Test the structured for-loop variant of the QAOA benchmark."""
+    num_qubits = 4
+
+    qc_flat = create_circuit("qaoa", num_qubits, repetitions=repetitions)
+    assert "for_loop" not in qc_flat.count_ops()
+
+    qc_loop = create_circuit("qaoa", num_qubits, repetitions=repetitions, for_loop=True)
+    assert qc_loop.count_ops()["for_loop"] == 1
+
+    loop = next(inst.operation for inst in qc_loop.data if isinstance(inst.operation, ForLoopOp))
+    assert loop.params[0] == range(repetitions)
+    assert loop.params[1].name == "k"
+
+    body = loop.params[2]
+    assert body.num_qubits == num_qubits
+    gate_names = [inst.operation.name for inst in body.data]
+    assert "rzz" in gate_names
+    assert "rx" in gate_names
+
+    for inst in body.data:
+        if inst.operation.name == "rzz":
+            # Check that the angle expression contains our gamma and loop parameter `k`
+            expression_str = str(inst.operation.params[0])
+            assert "g" in expression_str
+            assert "k" in expression_str
+        elif inst.operation.name == "rx":
+            expression_str = str(inst.operation.params[0])
+            assert "b" in expression_str
+            assert "k" in expression_str
+
+    bound_qc = qc_loop.assign_parameters({"g": 0.5, "b": 0.2})
+    assert bound_qc is not None
+
+
 def test_iqpe() -> None:
     """Test the creation of the IQPE benchmark."""
     qc = create_circuit("iqpe", 4, exact=True, rotation_threshold=1e-10, seed=42)
