@@ -26,6 +26,7 @@ def get_ibm_eagle_gateset() -> list[str]:
 
 
 @register_gateset("ibm_heron")
+@register_gateset("ibm_nighthawk")
 def get_ibm_heron_gateset() -> list[str]:
     """Returns the basis gates of the IBM Heron gateset."""
     return ["id", "x", "sx", "rz", "cz"]
