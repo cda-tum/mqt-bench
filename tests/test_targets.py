@@ -643,7 +643,8 @@ def test_fractional_wrapping_respects_narrower_bounds(level: BenchmarkLevel) -> 
 
 @pytest.mark.parametrize("reverse", [False, True])
 @pytest.mark.parametrize("standard", [False, True])
-def test_mapped_aliases_keep_distinct_physical_sites(*, reverse: bool, standard: bool) -> None:
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
+def test_aliases_keep_physical_sites_for_mapping(level: BenchmarkLevel, *, reverse: bool, standard: bool) -> None:
     """Equivalent RX aliases retain each physical site's native capability."""
     target = Target(num_qubits=2)
     aliases = [("rxpi", pi, 0), ("rxpidg", -pi, 1)]
@@ -658,11 +659,11 @@ def test_mapped_aliases_keep_distinct_physical_sites(*, reverse: bool, standard:
     circuit = QuantumCircuit(2)
     circuit.x(0)
     circuit.x(1)
-    result = get_benchmark(circuit, BenchmarkLevel.MAPPED, target=target)
+    result = get_benchmark(circuit, level, target=target)
     for item in result.data:
         assert target.instruction_supported(
             item.operation.name,
-            tuple(result.find_bit(qubit).index for qubit in item.qubits),
+            tuple(result.find_bit(qubit).index for qubit in item.qubits) if level is BenchmarkLevel.MAPPED else None,
             parameters=item.operation.params,
         )
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
