@@ -997,6 +997,18 @@ def test_error_correction_no_additional_classical_registers(code: str) -> None:
     assert measurement_registers[0].name == "meas_0"
 
 
+@pytest.mark.parametrize(("encoding", "expected_qubits"), [("steane", 26), ("shor", 34)])
+def test_get_benchmark_alg_mirror_circuit_with_encoding(encoding: str, expected_qubits: int) -> None:
+    """This Test is supposed to check that `generate_mirror_circuit=True` does not skip the `encoding` step."""
+    qc = get_benchmark_alg("ghz", 2, encoding, generate_mirror_circuit=True)
+    assert qc.num_qubits == expected_qubits
+
+    # The result is the encoded mirror circuit, not the encoded original circuit.
+    mirror = get_benchmark_alg("ghz", 2, generate_mirror_circuit=True)
+    assert qc == get_transpiler(encoding)(mirror).transpile()
+    assert qc != get_benchmark_alg("ghz", 2, encoding)
+
+
 def test_error_correction_error_on_unsupported_operation() -> None:
     """This Test is supposed to check that unsupported gates in a circuit would be handled correctly.
 
