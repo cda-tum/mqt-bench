@@ -67,7 +67,7 @@ def main() -> None:
     parser.add_argument(
         "--target",
         type=str,
-        help="Target name for native gates and mapped level (e.g., 'ibm_heron' or 'ibm_heron_156').",
+        help=("Gate set name for nativegates (e.g., 'ibm_heron') or device name for mapped (e.g., 'ibm_heron_156')."),
     )
     parser.add_argument(
         "--random-parameters",
