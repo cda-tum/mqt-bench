@@ -117,25 +117,12 @@ def _assert_measure_properties(target: Target, *, vendor: str) -> None:
 
 
 DEVICE_SPECS: Sequence[DeviceSpec] = [
-    DeviceSpec(
-        name="aqt_ibex_12",
-        num_qubits=12,
-        single_qubit_gates={"r", "rz", "measure"},
-        two_qubit_gates={"rxx"},
-        symmetric_connectivity={"rxx": True},
-    ),
+    # ─────────────────────────────────────────────────────────────────── IBM ──
     DeviceSpec(
         name="ibm_heron_156",
         num_qubits=156,
         single_qubit_gates={"sx", "rz", "x", "measure"},
         two_qubit_gates={"cz"},
-    ),
-    DeviceSpec(
-        name="ibm_nighthawk_120",
-        num_qubits=120,
-        single_qubit_gates={"id", "sx", "rz", "x", "measure", "reset"},
-        two_qubit_gates={"cz"},
-        symmetric_connectivity={"cz": True},
     ),
     # ────────────────────────────────────────────────────────────────── IonQ ──
     DeviceSpec(
@@ -360,9 +347,10 @@ def test_module_from_device_name(device_name: str, module_name: str) -> None:
 
 
 @pytest.mark.parametrize("gateset", ["aqt", "ibm_heron", "ionq_forte", "iqm", "quantinuum", "rigetti"])
-@pytest.mark.parametrize("opt_level", [0, 2, 3])
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("symbolic", [False, True])
-def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic: bool) -> None:
+def test_native_compilation_semantics(gateset: str, opt_level: int, level: BenchmarkLevel, *, symbolic: bool) -> None:
     """Each hardware family preserves the complete matrix and target constraints."""
     theta = Parameter("theta")
     circuit = QuantumCircuit(2)
@@ -372,9 +360,7 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
     circuit.cx(0, 1)
     circuit.rz(-0.7, 0)
     target = get_target_for_gateset(gateset, 2)
-    result = get_benchmark(
-        circuit, BenchmarkLevel.NATIVEGATES, target=target, opt_level=opt_level, random_parameters=False
-    )
+    result = get_benchmark(circuit, level, target=target, opt_level=opt_level, random_parameters=False)
     for instruction in result.data:
         assert target.instruction_supported(
             instruction.operation.name,
@@ -385,6 +371,22 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
         circuit = circuit.assign_parameters({theta: 0.37})
         result = result.assign_parameters({theta: 0.37})
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+def test_native_compilation_preserves_session_equivalences() -> None:
+    """Compile arbitrary U/RX gates without adding global equivalence rules."""
+    from qiskit.circuit.equivalence_library import SessionEquivalenceLibrary  # ruff:ignore[import-outside-top-level]
+    from qiskit.circuit.library import UGate  # ruff:ignore[import-outside-top-level]
+
+    theta, phi, lam = (Parameter(name) for name in ("theta", "phi", "lambda"))
+    gates = [UGate(theta, phi, lam), RXGate(theta)]
+    before = [SessionEquivalenceLibrary.get_entry(gate) for gate in gates]
+    circuit = QuantumCircuit(1)
+    circuit.u(0.43, -0.25, 0.16, 0)
+    circuit.rx(0.37, 0)
+    for gateset in ("ionq_forte", "rigetti"):
+        get_benchmark(circuit, BenchmarkLevel.NATIVEGATES, target=get_target_for_gateset(gateset, 1))
+    assert [SessionEquivalenceLibrary.get_entry(gate) for gate in gates] == before
 
 
 @pytest.mark.parametrize(("gate_type", "angle", "phase"), [(GPIGate, pi, pi / 2), (GPI2Gate, pi / 2, 0)])
@@ -489,6 +491,121 @@ def test_native_gate_names_do_not_override_capabilities(name: str, operation: Ga
     prepared, lowering = prepare_target(target, native=True)
     assert prepared.operation_from_name(name) == operation
     assert lowering is None
+
+
+@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
+@pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
+def test_native_aliases_keep_bounded_entanglers(level: BenchmarkLevel, gateset: str) -> None:
+    """Lowering aliases retains angle constraints on other native operations."""
+    from qiskit.circuit.library import RZZGate  # ruff:ignore[import-outside-top-level]
+
+    original = get_target_for_gateset(gateset, 2)
+    target = Target(num_qubits=2)
+    for name in original.operation_names:
+        operation = original.operation_from_name(name)
+        if operation.num_qubits == 1:
+            target.add_instruction(operation, name=name)
+    target.add_instruction(RZZGate(Parameter("theta")), angle_bounds=[(0, pi / 2)])
+    circuit = QuantumCircuit(2)
+    circuit.rzz(0.37, 0, 1)
+    result = get_benchmark(circuit, level, target=target)
+    assert all(
+        target.instruction_supported(item.operation.name, parameters=item.operation.params) for item in result.data
+    )
+    assert target.gate_has_angle_bounds("rzz")
+    np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
+def test_native_target_legacy_angle_bounds() -> None:
+    """Accept bounded targets with the Qiskit 2.2-2.5 serialization schema."""
+
+    class LegacyTarget(Target):
+        def __getstate__(self) -> dict:
+            state = super().__getstate__()
+            base = state["base"]
+            if "angle_bounds" not in base:
+                base["angle_bounds"] = {
+                    name: entry["angle_bounds"]
+                    for name, entry in base["gate_map"].items()
+                    if self.gate_has_angle_bounds(name)
+                }
+            return state
+
+    from qiskit.circuit.library import RZZGate  # ruff:ignore[import-outside-top-level]
+
+    target = LegacyTarget(num_qubits=2)
+    target.add_instruction(RZGate(Parameter("z")))
+    target.add_instruction(RXGate(pi / 2), name="rxpi2")
+    target.add_instruction(RZZGate(Parameter("zz")), angle_bounds=[(0, pi / 2)])
+    circuit = QuantumCircuit(2)
+    circuit.rzz(0.37, 0, 1)
+    result = get_benchmark(circuit, BenchmarkLevel.NATIVEGATES, target=target)
+    assert all(
+        target.instruction_supported(item.operation.name, parameters=item.operation.params) for item in result.data
+    )
+    np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("standard", [False, True])
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
+def test_aliases_keep_physical_sites_for_mapping(level: BenchmarkLevel, *, reverse: bool, standard: bool) -> None:
+    """Equivalent RX aliases retain each physical site's native capability."""
+    target = Target(num_qubits=2)
+    aliases = [("rxpi", pi, 0), ("rxpidg", -pi, 1)]
+    for name, angle, qubit in reversed(aliases) if reverse else aliases:
+        if standard and name == "rxpi":
+            from qiskit.circuit.library import XGate  # ruff:ignore[import-outside-top-level]
+
+            target.add_instruction(XGate(), {(qubit,): None})
+        else:
+            target.add_instruction(RXGate(angle), {(qubit,): None}, name=name)
+    target.add_instruction(RZGate(Parameter("theta")))
+    circuit = QuantumCircuit(2)
+    circuit.x(0)
+    circuit.x(1)
+    result = get_benchmark(circuit, level, target=target)
+    for item in result.data:
+        assert target.instruction_supported(
+            item.operation.name,
+            tuple(result.find_bit(qubit).index for qubit in item.qubits) if level is BenchmarkLevel.MAPPED else None,
+            parameters=item.operation.params,
+        )
+    np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+def test_aqt_target() -> None:
+    """IBEX exposes all ordered RXX pairs and virtual RZ gates."""
+    target = get_device("aqt_ibex_12")
+    assert target.num_qubits == 12
+    assert set(target.operation_names) == {"r", "rz", "rxx", "measure"}
+    assert len(target["rxx"]) == 12 * 11
+    assert all(props.duration == 0 and props.error == 0 for props in target["rz"].values())
+    for level, model in [
+        (BenchmarkLevel.NATIVEGATES, get_target_for_gateset("aqt", 3)),
+        (BenchmarkLevel.MAPPED, target),
+    ]:
+        circuit = get_benchmark("ghz", level, 3, target=model)
+        assert set(circuit.count_ops()) <= set(model.operation_names) | {"barrier"}
+
+
+def test_nighthawk() -> None:
+    """Nighthawk has 218 bidirectional grid edges and a CZ basis."""
+    target = get_device("ibm_nighthawk_120")
+    assert target.num_qubits == 120
+    assert get_gateset("ibm_nighthawk") == get_gateset("ibm_heron")
+    edges = set(target["cz"])
+    expected = {(q, q + 1) for q in range(120) if q % 10 != 9}
+    expected |= {(q, q + 10) for q in range(110)}
+    expected |= {(b, a) for a, b in list(expected)}
+    assert edges == expected
+    circuit = get_benchmark("ghz", BenchmarkLevel.MAPPED, 3, target=target)
+    assert circuit.num_qubits == 120
+    for item in circuit.data:
+        if item.operation.num_qubits == 2:
+            assert tuple(circuit.find_bit(q).index for q in item.qubits) in edges
 
 
 @pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Fractional targets need Qiskit 2.2")

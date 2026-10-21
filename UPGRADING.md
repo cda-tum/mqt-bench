@@ -52,34 +52,26 @@ keyword `qir_profile`. Circuit generation still returns `QuantumCircuit`. See
 [QIR and LLVM output](docs/parameter.md#qir-and-llvm-output) for parameter
 binding, runtime requirements, and target limitations.
 
-### Target catalogue and gate conventions
+### IonQ and Rigetti native gates
 
-GPI and GPI2 phase parameters now use radians. Multiply existing turn-based
-parameters by `2 * pi`. Replace `ZZGate(theta)` with Qiskit's
-`RZZGate(2 * pi * theta)`. The custom `ZZGate` and `MSGate` classes were
-removed. Forte retains arbitrary virtual `rz` rotations. Provider adapters must
-absorb virtual frame changes into GPI/GPI2 gate phases and convert units before
-verbatim submission when required by the provider. Qiskit compiles IonQ and
-Rigetti targets through standard X/SX gates, then emits the native gate names
-without changing the session equivalence library.
+Requires Qiskit 2.1.2 or newer.
 
-Custom Rigetti gate classes were removed. Use standard `RXGate` instances with
-fixed angles and distinct target names: `rxpi`, `rxpidg`, `rxpi2`, and
-`rxpi2dg`. The Rigetti gate set now uses CZ, matching Cepheus, instead of iSWAP.
+IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
+arbitrary virtual `rz`. Provider serializers must convert phase units and track
+virtual Z frames. The Aria model and custom MS/ZZ classes are removed. Rigetti
+uses standard RX gates named `rxpi`, `rxpidg`, `rxpi2`, and `rxpi2dg`. Qiskit
+compilation uses local, phase-correct equivalences. Replace `rigetti_ankaa_84`
+with `rigetti_cepheus_107`. The 2026-10-02 snapshot has 107 active qubits and
+386 directed CZ edges; calibration is unspecified. `CEPHEUS_PHYSICAL_QUBITS`
+maps dense Bench wires to provider labels, excluding physical qubit 8.
 
-The device catalogue no longer includes `ionq_aria_25`, `ibm_falcon_27`,
-`ibm_falcon_127`, `ibm_eagle_127`, `ibm_heron_133`, or `rigetti_ankaa_84`. The
-`ionq_aria`, `ibm_falcon`, and `ibm_eagle` gate sets were also removed. Use
-`ionq_forte_36`, `ibm_heron_156`, or `rigetti_cepheus_107`, or supply your own
-target to retain a historical architecture. AQT's IBEX Q1 is available as
-`aqt_ibex_12`, with the `aqt` gate set.
+### Retired IBM models
 
-Cepheus uses 107 dense circuit wires. Convert them to the provider's sparse
-physical labels with `CEPHEUS_PHYSICAL_QUBITS` before submission. See the
-[target models](docs/targets.md) for provenance, calibration limits, virtual Z,
-and provider naming conventions. Forte and Cepheus device models no longer
-advertise generic classical feedback; their native gate compilation supports
-unitary circuits and measurements.
+The `ibm_falcon` and `ibm_eagle` gate sets and `ibm_falcon_27`,
+`ibm_falcon_127`, `ibm_eagle_127`, and `ibm_heron_133` devices are removed. Use
+`ibm_heron` and `ibm_heron_156`, or supply a custom Qiskit target for an older
+architecture. The Heron replacement has a different width, topology, and CZ
+basis; generated circuits will differ.
 
 ### Native gate-set targets
 

@@ -14,46 +14,44 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
-- 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
-- ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
-- ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
-- Add the 120-qubit Nighthawk model with IBM's grid topology and CZ gate set.
-  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
-- Add fractional Heron models with arbitrary RX and bounded RZZ gates, including
-  numeric angle folding in both compilers. Requires Qiskit 2.2 or newer.
-  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
-- ✨ Add Superdense Coding benchmark ([#1037]) ([**@Anshu666666**])
 - Add optional MQT Core compilation through `compiler="mqt"` and
   `--compiler mqt`, with native gate synthesis, device mapping, mirror circuits,
   compiler options with reproducible seed and trial defaults, strict target
   import, runtime Pauli rotations, and compiler provenance in exported files.
-  The `mqt` extra installs Core 4.1.1 from PyPI. ([#1027])
-  ([**@simon1hofmann**], [**@burgholzer**])
+  The `mqt` extra installs Core 4.1.1 from PyPI and requires Qiskit 2.5.x.
+  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
 - Add QIR export as LLVM text (`qir`/`llvm`) or bitcode (`qir-bitcode`), with
   Base and Adaptive profile selection in Python and the CLI. Requires the `mqt`
   extra. ([#1027]) ([**@simon1hofmann**])
+- Add fractional Heron models with arbitrary RX and bounded RZZ gates, including
+  numeric angle folding in both compilers. Requires Qiskit 2.2 or newer.
+  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
+  ([**@burgholzer**])
+- ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
+  ([**@burgholzer**])
+- ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
+  ([**@simon1hofmann**])
+- ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
+- 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
+- ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
+- ✨ Add ML-QAE benchmark ([#1044]) ([**@algovista-collab**])
+- ✨ Add Superdense Coding benchmark ([#1037]) ([**@Anshu666666**])
 
 ### Changed
 
-- Require Qiskit 2.1.2 or newer to avoid a post-layout failure at optimization
-  level 3. The optional `mqt` extra requires Qiskit 2.5.x. ([#1027])
-  ([**@simon1hofmann**], [**@burgholzer**])
-- Use radians for GPI/GPI2 and standard RZZ for IonQ targets, retaining
-  arbitrary virtual Z rotations. Represent Rigetti's fixed-angle RX gates as
-  standard RX target aliases. ([#1027]) ([**@simon1hofmann**],
-  [**@burgholzer**])
-- Replace obsolete Aria, Falcon, Eagle, Heron-133, and Braket Ankaa models with
-  the current catalogue, including AQT IBEX Q1 and Rigetti Cepheus. Document
-  static device provenance and physical qubit labels. ([#1027])
-  ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
 ### Fixed
 
-- Preserve angle bounds when lowering native gate aliases for Qiskit
-  compilation. ([#1027]) ([**@simon1hofmann**])
+- Retain logical wire layout metadata in Core's native compilation results.
+  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
+- 📝 Fix API documentation markup, heading anchors, and notebook build
+  concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
@@ -71,16 +69,13 @@ that minor releases may include breaking changes.
   ([**@simon1hofmann**])
 - 🐛 Preserve measurements and classical registers when compiling to Clifford+T
   ([#1047]) ([**@simon1hofmann**])
-- Optimize IonQ and Rigetti circuits using standard Qiskit gates, then lower to
-  native gates with exact global phase and local equivalences so results remain
-  reusable. ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
-- Retain logical wire layout metadata in Core's native compilation results and
-  preserve complete Qiskit layouts when compiling mirror circuits. ([#1027])
-  ([**@simon1hofmann**], [**@burgholzer**])
 - 🐛 Expose `__version__` and `__version_tuple__` at the package root ([#1031])
   ([**@algovista-collab**])
-- Default the CLI optimization level to 2 when omitted. ([#1027])
-  ([**@simon1hofmann**])
+
+### Removed
+
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
+  ([**@burgholzer**])
 
 ## [2.3.0] - 2026-09-12
 
@@ -261,6 +256,12 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
+[#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
+[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
+[#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
+[#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071

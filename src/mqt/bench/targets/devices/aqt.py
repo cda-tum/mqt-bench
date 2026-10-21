@@ -6,7 +6,7 @@
 #
 # Licensed under the MIT License
 
-"""AQT IBEX Q1 capabilities and mean calibration from Braket on 2026-10-02."""
+"""AQT IBEX Q1 capabilities and mean calibration from Amazon on 2026-10-02."""
 
 from __future__ import annotations
 

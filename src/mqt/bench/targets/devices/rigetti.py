@@ -6,7 +6,7 @@
 #
 # Licensed under the MIT License
 
-"""Rigetti Cepheus connectivity snapshot from Braket on 2026-10-02."""
+"""Rigetti Cepheus connectivity snapshot from Amazon on 2026-10-02."""
 
 from __future__ import annotations
 
