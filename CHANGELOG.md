@@ -22,7 +22,7 @@ that minor releases may include breaking changes.
   ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
 - Add QIR export as LLVM text (`qir`/`llvm`) or bitcode (`qir-bitcode`), with
   Base and Adaptive profile selection in Python and the CLI. Requires the `mqt`
-  extra. ([#1027]) ([**@simon1hofmann**])
+  extra. ([#1094]) ([**@simon1hofmann**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
@@ -279,6 +279,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1037]: https://github.com/munich-quantum-toolkit/bench/pull/1037
 [#1031]: https://github.com/munich-quantum-toolkit/bench/pull/1031
 [#1027]: https://github.com/munich-quantum-toolkit/bench/pull/1027
+[#1094]: https://github.com/munich-quantum-toolkit/bench/pull/1094
 [#1024]: https://github.com/munich-quantum-toolkit/bench/pull/1024
 [#1011]: https://github.com/munich-quantum-toolkit/bench/pull/1011
 [#999]: https://github.com/munich-quantum-toolkit/bench/pull/999
