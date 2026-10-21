@@ -8,6 +8,8 @@ of changes including minor and patch releases, please refer to the
 
 ### IonQ and Rigetti native gates
 
+Requires Qiskit 2.1.2 or newer.
+
 IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
 arbitrary virtual `rz`. Provider serializers must convert phase units and track
 virtual Z frames. The Aria model and custom MS/ZZ classes are removed. Rigetti

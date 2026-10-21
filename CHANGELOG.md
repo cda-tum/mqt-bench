@@ -29,8 +29,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
-- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering
-  ([#1086]) ([**@burgholzer**])
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
