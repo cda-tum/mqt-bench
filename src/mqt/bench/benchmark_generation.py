@@ -73,6 +73,8 @@ def _get_circuit(
     if len(qc.parameters) > 0 and random_parameters:
         rng = np.random.default_rng(10)
         param_dict = {param: rng.uniform(0, 2 * np.pi) for param in qc.parameters}
+        if qc is benchmark:
+            qc = qc.copy()
         qc.assign_parameters(param_dict, inplace=True)
         assert len(qc.parameters) == 0, "All parameters should be assigned."
     return qc
@@ -237,8 +239,9 @@ def get_benchmark_alg(
     qc = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
 
     if generate_mirror_circuit:
-        qc = _create_mirror_circuit(qc, inplace=True)
-
+        # Only modify in place if `qc` is not the caller's circuit.
+        return _create_mirror_circuit(qc, inplace=qc is not benchmark)
+      
     if encoding:
         transpiler = get_transpiler(encoding)(qc)
         qc = transpiler.transpile()
