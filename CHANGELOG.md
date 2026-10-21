@@ -15,10 +15,8 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
-
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
   ([**@burgholzer**])
-
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
   ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
@@ -36,7 +34,6 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
-
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
   mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
   [**@simon1hofmann**])
@@ -46,7 +43,6 @@ that minor releases may include breaking changes.
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
   mapped levels in CLI ([#1076]) ([**@jyothikacodes**])
-
 - 🐛 Compile native gates without device connectivity or simulated calibration,
   and keep coupling-map headers stable across Qiskit versions ([#1069], [#1067])
   ([**@simon1hofmann**], [**@burgholzer**], [**@denialhaag**])

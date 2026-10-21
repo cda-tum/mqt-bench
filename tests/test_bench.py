@@ -418,11 +418,7 @@ def test_simon_expected_distribution_small_example() -> None:
     observed = {str(outcome): float(probability) for outcome, probability in probabilities.items()}
     assert observed["00"] == pytest.approx(0.5, abs=1e-9)
     assert observed["11"] == pytest.approx(0.5, abs=1e-9)
-    assert all(
-        probability < 1e-9
-        for outcome, probability in observed.items()
-        if outcome not in {"00", "11"}
-    )
+    assert all(probability < 1e-9 for outcome, probability in observed.items() if outcome not in {"00", "11"})
 
 
 def test_simon_default_hidden_string() -> None:
