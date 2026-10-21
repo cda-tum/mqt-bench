@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
+  ([**@burgholzer**])
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
   ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
@@ -239,6 +241,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
