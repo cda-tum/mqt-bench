@@ -409,7 +409,7 @@ def get_benchmark_native_gates(
         # Restore the permutation dropped by synthesis
         if compiled_for_synthesis.layout is not None:
             circuit.append(PermutationGate(compiled_for_synthesis.layout.final_index_layout()), circuit.qubits)
-        pm = PassManager(HighLevelSynthesis())
+        pm = PassManager(HighLevelSynthesis(target=target, equivalence_library=SessionEquivalenceLibrary))
         if opt_level:
             pm.append(RecursiveOptimizeCliffordT())
         pm.append(BasisTranslator(SessionEquivalenceLibrary, sorted(target.operation_names), target))

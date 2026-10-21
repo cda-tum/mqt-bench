@@ -999,6 +999,23 @@ def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
 
 
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("gate_name", ["iswap", "dcx"])
+def test_clifford_t_mirror_inverse_gates(opt_level: int, gate_name: str) -> None:
+    """Lower inverses of native Clifford gates back to the target basis."""
+    circuit = QuantumCircuit(2)
+    getattr(circuit, gate_name)(0, 1)
+    target = get_target_for_gateset("clifford+t", 2)
+
+    compiled = get_benchmark_native_gates(circuit, None, target, opt_level, generate_mirror_circuit=True)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(Operator(np.eye(4)))
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 def test_clifford_t_rotations_in_loop(opt_level: int) -> None:
     """Synthesize rotations inside structured loops without unrolling the loop."""
     qc = QuantumCircuit(1)
