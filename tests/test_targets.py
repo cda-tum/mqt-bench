@@ -493,7 +493,6 @@ def test_native_gate_names_do_not_override_capabilities(name: str, operation: Ga
     assert lowering is None
 
 
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
 def test_native_aliases_keep_bounded_entanglers(level: BenchmarkLevel, gateset: str) -> None:
@@ -517,7 +516,6 @@ def test_native_aliases_keep_bounded_entanglers(level: BenchmarkLevel, gateset: 
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
 
 
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
 def test_native_target_legacy_angle_bounds() -> None:
     """Accept bounded targets with the Qiskit 2.2-2.5 serialization schema."""
 
@@ -548,7 +546,6 @@ def test_native_target_legacy_angle_bounds() -> None:
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
 
 
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Fractional targets need Qiskit 2.2")
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("angle", [-1e8, -2 * pi, -pi, -pi / 2, -0.37, 0.0, 0.37, pi / 2, 2.4, pi, 2 * pi, 1e8])
@@ -565,7 +562,6 @@ def test_fractional_heron_qiskit(level: BenchmarkLevel, angle: float, opt_level:
     assert result.count_ops().get("rzz", 0) <= 1
 
 
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Fractional targets need Qiskit 2.2")
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
 @pytest.mark.parametrize("angle", [-0.37, 2.4])
@@ -593,7 +589,6 @@ def test_native_aliases_preserve_angle_bounds(level: BenchmarkLevel, gateset: st
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
 
 
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Fractional targets need Qiskit 2.2")
 def test_fractional_heron_device() -> None:
     """Fractional gates share the Heron sites and couplings."""
     target = get_device("ibm_heron_156_fractional")
@@ -604,18 +599,6 @@ def test_fractional_heron_device() -> None:
     assert not target.instruction_supported("rzz", (0, 1), parameters=[-0.37])
 
 
-@pytest.mark.skipif(hasattr(Target, "gate_has_angle_bounds"), reason="Needs Qiskit before 2.2")
-def test_fractional_heron_requires_angle_bounds() -> None:
-    """Older Qiskit versions omit fractional targets and report an upgrade hint."""
-    from mqt.bench.targets.gatesets.ibm import add_fractional_gates  # ruff:ignore[import-outside-top-level]
-
-    assert "ibm_heron_fractional" not in get_available_gateset_names()
-    assert "ibm_heron_156_fractional" not in get_available_device_names()
-    with pytest.raises(ValueError, match=r"require Qiskit 2\.2"):
-        add_fractional_gates(Target(num_qubits=2))
-
-
-@pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 def test_fractional_wrapping_respects_narrower_bounds(level: BenchmarkLevel) -> None:
     """Heron wrapping must not override a caller's narrower RZZ interval."""

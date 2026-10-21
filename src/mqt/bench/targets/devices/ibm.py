@@ -16,7 +16,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler import CouplingMap
 
 from ..gatesets import get_gateset
-from ..gatesets.ibm import HAS_ANGLE_BOUNDS, add_fractional_gates
+from ..gatesets.ibm import add_fractional_gates
 from ._registry import register_device
 
 if TYPE_CHECKING:
@@ -413,12 +413,10 @@ def get_ibm_heron_156() -> Target:
     return target
 
 
-if HAS_ANGLE_BOUNDS:
-
-    @register_device("ibm_heron_156_fractional")
-    def get_ibm_heron_156_fractional() -> Target:
-        """Get the Heron architecture with fractional gates and synthetic calibration."""
-        target = get_ibm_heron_156()
-        add_fractional_gates(target)
-        target.description = "ibm_heron_156_fractional"
-        return target
+@register_device("ibm_heron_156_fractional")
+def get_ibm_heron_156_fractional() -> Target:
+    """Get the Heron architecture with fractional gates and synthetic calibration."""
+    target = get_ibm_heron_156()
+    add_fractional_gates(target)
+    target.description = "ibm_heron_156_fractional"
+    return target
