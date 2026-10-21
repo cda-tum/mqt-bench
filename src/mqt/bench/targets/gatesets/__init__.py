@@ -16,10 +16,11 @@ import copy
 import importlib
 import importlib.resources as ir
 from functools import cache
+from math import pi
 from typing import TYPE_CHECKING
 
 from qiskit.circuit import BreakLoopOp, ContinueLoopOp, Parameter, get_control_flow_name_mapping
-from qiskit.circuit.library.standard_gates import get_standard_gate_name_mapping
+from qiskit.circuit.library.standard_gates import RXGate, get_standard_gate_name_mapping
 from qiskit.transpiler import Target
 
 from ._registry import gateset_names, get_gateset_by_name, register_gateset
@@ -27,7 +28,7 @@ from ._registry import gateset_names, get_gateset_by_name, register_gateset
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from qiskit.circuit import Gate, Instruction
+    from qiskit.circuit import Gate
 
 _DISCOVERED_MODULES: set[str] = {
     entry.name.removesuffix(".py")
@@ -100,19 +101,17 @@ def get_gateset(gateset_name: str) -> list[str]:
     return _get_gateset(gateset_name).copy()
 
 
-def _lazy_custom_gates() -> dict[str, Callable[[], Gate | type[Instruction]]]:
+def _lazy_custom_gates() -> dict[str, Callable[[], Gate]]:
     """Import custom gates only when needed."""
-    from .ionq import GPI2Gate, GPIGate, MSGate, ZZGate  # ruff:ignore[import-outside-top-level]
-    from .rigetti import RXPI2DgGate, RXPI2Gate, RXPIGate  # ruff:ignore[import-outside-top-level]
+    from .ionq import GPI2Gate, GPIGate  # ruff:ignore[import-outside-top-level]
 
     return {
         "gpi": lambda: GPIGate(Parameter("alpha")),
         "gpi2": lambda: GPI2Gate(Parameter("alpha")),
-        "ms": lambda: MSGate(Parameter("alpha"), Parameter("beta"), Parameter("gamma")),
-        "zz": lambda: ZZGate(Parameter("alpha")),
-        "rxpi": lambda: RXPIGate,
-        "rxpi2": lambda: RXPI2Gate,
-        "rxpi2dg": lambda: RXPI2DgGate,
+        "rxpi": lambda: RXGate(pi),
+        "rxpidg": lambda: RXGate(-pi),
+        "rxpi2": lambda: RXGate(pi / 2),
+        "rxpi2dg": lambda: RXGate(-pi / 2),
     }
 
 
