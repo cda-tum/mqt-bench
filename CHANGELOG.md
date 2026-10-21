@@ -14,7 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1027])
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
   ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
@@ -321,3 +321,5 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [Common Changelog]: https://common-changelog.org
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
+
+[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
