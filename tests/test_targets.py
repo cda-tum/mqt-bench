@@ -555,3 +555,30 @@ def test_native_target_legacy_angle_bounds() -> None:
         target.instruction_supported(item.operation.name, parameters=item.operation.params) for item in result.data
     )
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("standard", [False, True])
+def test_mapped_aliases_keep_distinct_physical_sites(*, reverse: bool, standard: bool) -> None:
+    """Equivalent RX aliases retain each physical site's native capability."""
+    target = Target(num_qubits=2)
+    aliases = [("rxpi", pi, 0), ("rxpidg", -pi, 1)]
+    for name, angle, qubit in reversed(aliases) if reverse else aliases:
+        if standard and name == "rxpi":
+            from qiskit.circuit.library import XGate  # ruff:ignore[import-outside-top-level]
+
+            target.add_instruction(XGate(), {(qubit,): None})
+        else:
+            target.add_instruction(RXGate(angle), {(qubit,): None}, name=name)
+    target.add_instruction(RZGate(Parameter("theta")))
+    circuit = QuantumCircuit(2)
+    circuit.x(0)
+    circuit.x(1)
+    result = get_benchmark(circuit, BenchmarkLevel.MAPPED, target=target)
+    for item in result.data:
+        assert target.instruction_supported(
+            item.operation.name,
+            tuple(result.find_bit(qubit).index for qubit in item.qubits),
+            parameters=item.operation.params,
+        )
+    np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)

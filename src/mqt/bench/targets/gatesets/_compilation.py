@@ -39,7 +39,11 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
     }
     standard_gates = {}
     for name, (gate_type, standard_gate, angle, phase) in candidates.items():
-        if name not in target.operation_names or standard_gate.name in target.operation_names:
+        if name not in target.operation_names:
+            continue
+        if standard_gate.name in target.operation_names and (
+            native or target.operation_from_name(standard_gate.name) != standard_gate
+        ):
             continue
         operation = target.operation_from_name(name)
         if type(operation) is not gate_type:
@@ -50,6 +54,16 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
             standard_gates[name] = (standard_gate, angle, phase)
     if not standard_gates and not native:
         return target, None
+
+    standard_properties = {}
+    if not native:
+        for alias, (standard_gate, _, _) in standard_gates.items():
+            if standard_gate.name not in standard_properties:
+                standard_properties[standard_gate.name] = (
+                    deepcopy(target[standard_gate.name]) if standard_gate.name in target.operation_names else {}
+                )
+            for qargs, calibration in target[alias].items():
+                standard_properties[standard_gate.name].setdefault(qargs, deepcopy(calibration))
 
     angle_bounds = {}
     if hasattr(target, "has_angle_bounds") and target.has_angle_bounds():
@@ -82,14 +96,17 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
     for name in target.operation_names:
         operation = target.operation_from_name(name)
         properties = None if native or isinstance(operation, type) else deepcopy(target[name])
+        standard_name = standard_gates[name][0].name if name in standard_gates else name
+        if standard_name in standard_properties:
+            properties = None if None in standard_properties[standard_name] else standard_properties[standard_name]
         if name not in standard_gates:
-            bounds = {"angle_bounds": angle_bounds[name]} if name in angle_bounds else {}
-            compilation_target.add_instruction(operation, properties, name=name, **bounds)
+            if name not in compilation_target.operation_names:
+                bounds = {"angle_bounds": angle_bounds[name]} if name in angle_bounds else {}
+                compilation_target.add_instruction(operation, properties, name=name, **bounds)
             continue
         standard_gate, angle, phase = standard_gates[name]
-        if standard_gate.name in compilation_target.operation_names:
-            continue
-        compilation_target.add_instruction(standard_gate, properties)
+        if standard_gate.name not in compilation_target.operation_names:
+            compilation_target.add_instruction(standard_gate, properties)
         if name in {"gpi", "gpi2"}:
             gate = GPIGate(angle) if name == "gpi" else GPI2Gate(angle)
         else:
