@@ -53,7 +53,7 @@ _If you are upgrading: please see [`UPGRADING.md`](UPGRADING.md#230)._
 ### Changed
 
 - ⬆️ Raise the minimum Qiskit version from 2.0.0 to 2.1.0 ([#1024])
-  ([**@denialhaag])
+  ([**@denialhaag**])
 - ✨ Add optional structured loops to Grover's algorithm and quantum walk
   ([#997]) ([**@flowerthrower**])
 - 🔥 Drop support for Python 3.10 ([#999]) ([**@denialhaag**])
