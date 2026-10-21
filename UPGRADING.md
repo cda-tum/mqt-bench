@@ -12,6 +12,13 @@ Native Clifford+T compilation uses gridsynth on Qiskit 2.4.2 and newer, and
 Solovay-Kitaev on earlier versions. Qiskit 2.1 remains supported. The
 synthesized gate sequences and gate counts can differ between Qiskit versions.
 
+The requested optimization level applies before synthesis. For nonzero levels,
+Qiskit's public `OptimizeCliffordT` pass also runs after synthesis, including
+inside control-flow blocks. A final basis translation enforces the target gate
+set. Structured loops and loop jumps remain supported. Mirrors use the exact
+inverse of the synthesized circuit and receive the same optimization without
+another approximate synthesis.
+
 ### Native gate-set targets
 
 `get_target_for_gateset` returns globally available instructions without

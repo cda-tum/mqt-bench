@@ -30,6 +30,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 🐛 Retain post-synthesis Clifford+T optimization and loop-control support
+  across Qiskit versions using public passes ([#1081]) ([**@simon1hofmann**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and

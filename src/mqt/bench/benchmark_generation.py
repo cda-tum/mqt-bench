@@ -19,7 +19,7 @@ from qiskit.circuit import CircuitError, ClassicalRegister, QuantumCircuit, Sess
 from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
 from qiskit.transpiler import Layout, Target
-from qiskit.transpiler.passes import RemoveFinalMeasurements
+from qiskit.transpiler.passes import OptimizeCliffordT, RemoveFinalMeasurements
 from qiskit.version import VERSION as QISKIT_VERSION
 
 from .benchmarks import create_circuit
@@ -38,6 +38,17 @@ class BenchmarkLevel(Enum):
     INDEP = auto()
     NATIVEGATES = auto()
     MAPPED = auto()
+
+
+class RecursiveOptimizeCliffordT(OptimizeCliffordT):
+    """Also optimize control-flow blocks, which Qiskit's pass skips."""
+
+    def run(self, dag: DAGCircuit) -> DAGCircuit:
+        """Optimize each control-flow block and then the enclosing circuit."""
+        for node in dag.control_flow_op_nodes():
+            operation = node.op
+            dag.substitute_node(node, operation.replace_blocks([self(block) for block in operation.blocks]))
+        return super().run(dag)
 
 
 def _get_circuit(
@@ -378,6 +389,7 @@ def get_benchmark_native_gates(
     if target.description == "clifford+t":
         from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
+        from qiskit.transpiler.passes import BasisTranslator, HighLevelSynthesis  # ruff:ignore[import-outside-top-level]
 
         # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
@@ -389,10 +401,7 @@ def get_benchmark_native_gates(
         )
         # Synthesize the rotations to Clifford+T gates
         if Version(QISKIT_VERSION) >= Version("2.4.2"):
-            from qiskit.transpiler.passes import (  # ruff:ignore[import-outside-top-level]
-                BasisTranslator,
-                SynthesizeRZRotations,
-            )
+            from qiskit.transpiler.passes import SynthesizeRZRotations  # ruff:ignore[import-outside-top-level]
 
             class RecursiveSynthesizeRZRotations(SynthesizeRZRotations):
                 """Also synthesize rotations in control-flow blocks, which Qiskit's pass skips."""
@@ -415,8 +424,14 @@ def get_benchmark_native_gates(
         # Restore the permutation dropped by synthesis
         if compiled_for_synthesis.layout is not None:
             circuit.append(PermutationGate(compiled_for_synthesis.layout.final_index_layout()), circuit.qubits)
-        # Continuous-basis optimizations can reintroduce rotations after discrete synthesis.
-        opt_level = 0
+        pm = PassManager(HighLevelSynthesis())
+        if opt_level:
+            pm.append(RecursiveOptimizeCliffordT())
+        pm.append(BasisTranslator(SessionEquivalenceLibrary, sorted(target.operation_names), target))
+        compiled_circuit = pm.run(circuit)
+        if generate_mirror_circuit:
+            return pm.run(_create_mirror_circuit(compiled_circuit, inplace=True))
+        return compiled_circuit
 
     if "rigetti" in target.description:
         rigetti.add_equivalences(SessionEquivalenceLibrary)
