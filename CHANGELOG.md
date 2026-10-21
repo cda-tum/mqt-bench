@@ -33,6 +33,9 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
 - 📝 Fix API documentation markup, heading anchors, and notebook build
   concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
@@ -241,6 +244,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083

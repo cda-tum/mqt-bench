@@ -804,7 +804,7 @@ def test_seven_qubit_steane_code_circuit_structure(num_qubits: int) -> None:
             "ghz",
             BenchmarkLevel.MAPPED,
             3,
-            get_device("ionq_aria_25"),
+            get_device("ionq_forte_36"),
             0,
         ),
     ],
@@ -855,7 +855,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             None,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = "`circuit_size` must be a positive integer when `benchmark` is a str."
@@ -864,7 +864,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             -1,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = "No Shor instance for circuit_size=3. Available: 18, 42, 58, 74."
@@ -873,7 +873,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = re.escape("Invalid `opt_level` '4'. Must be in the range [0, 3].")
@@ -882,7 +882,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qpeexact",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             4,
         )
     match = re.escape(
@@ -1604,6 +1604,24 @@ def test_dynamic_ghz_mirror_rejected(level: BenchmarkLevel) -> None:
     with pytest.raises(ValueError, match=r"Cannot mirror this circuit.*generate_mirror_circuit=False"):
         get_benchmark(circuit, level, target=target, generate_mirror_circuit=True)
     assert circuit == original
+
+
+def test_mapped_mirror_preserves_complete_layout() -> None:
+    """Mirror layout metadata keeps the original logical qubits and ancillas."""
+    source = QuantumCircuit(3)
+    source.h(2)
+    source.cx(2, 1)
+    source.cx(1, 0)
+    original = source.copy()
+    target = get_device("iqm_crystal_5")
+    base = get_benchmark_mapped(source, None, target)
+    mirror = get_benchmark_mapped(source, None, target, generate_mirror_circuit=True)
+    assert source == original
+    assert base.layout is not None
+    assert mirror.layout is not None
+    assert mirror.layout.final_index_layout() == base.layout.initial_index_layout(filter_ancillas=True)
+    mirror.remove_final_measurements(inplace=True)
+    np.testing.assert_allclose(Operator.from_circuit(mirror).data, np.eye(2**mirror.num_qubits), atol=1e-12)
 
 
 def test_dynamic_benchmark_registration() -> None:
