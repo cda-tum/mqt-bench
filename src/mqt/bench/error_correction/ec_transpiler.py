@@ -159,10 +159,12 @@ class ECTranspiler(ABC):
             logical_qubit_indices = [self.original_qc.qubits.index(q) for q in instruction.qubits]
             logical_clbit_indices = [self.original_qc.clbits.index(c) for c in instruction.clbits]
 
-            decoded_qubits = [q for q in logical_qubit_indices if self.encoded_qubits[q] is False]
-            if decoded_qubits:
-                msg = f"Instruction {gate_name} accesses qubits {decoded_qubits} after decoding"
-                raise ValueError(msg)
+            # only check for actual instructions
+            if gate_name != "barrier":
+                decoded_qubits = [q for q in logical_qubit_indices if self.encoded_qubits[q] is False]
+                if decoded_qubits:
+                    msg = f"Instruction {gate_name} accesses qubits {decoded_qubits} after decoding"
+                    raise ValueError(msg)
 
             self._apply_gate(gate_name, logical_qubit_indices, logical_clbit_indices)
 
