@@ -6,6 +6,15 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Clifford+T compilation
+
+The requested optimization level applies before synthesis. For nonzero levels,
+Qiskit's public `OptimizeCliffordT` pass also runs after synthesis, including
+inside control-flow blocks. A final basis translation enforces the target gate
+set. Structured loops and loop jumps remain supported. Mirrors use the exact
+inverse of the synthesized circuit and receive the same optimization without
+another approximate synthesis.
+
 ### Qiskit 2.2.3 minimum
 
 The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
