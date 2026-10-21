@@ -36,6 +36,14 @@ Core compilation defaults to seed `10` and four mapping trials. Pass
 `compiler_options=CompilationOptions(...)` to override those defaults through
 Core's Python API, including during mirror recompilation.
 
+The same extra enables `--output-format qir` (or `llvm`) for LLVM text and
+`--output-format qir-bitcode` for binary output. Use `--qir-profile adaptive`
+for measurement feedback; the default is `base`. Python exports use
+`OutputFormat.QIR`, `OutputFormat.LLVM`, or `OutputFormat.QIR_BITCODE` and the
+keyword `qir_profile`. Circuit generation still returns `QuantumCircuit`. See
+[QIR and LLVM output](docs/parameter.md#qir-and-llvm-output) for parameter
+binding, runtime requirements, and target limitations.
+
 ### Qiskit 2.2.3 minimum
 
 The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
@@ -45,9 +53,9 @@ below 2.2.3 and upgrade Qiskit:
 python -m pip install --upgrade "qiskit[qasm3-import]>=2.2.3,<3"
 ```
 
-The optional MQT Core compiler requires Qiskit 2.5.x. Bind parameters before
-Qiskit compilation to legalize bounded RZZ angles; Core also supports unbound
-inputs through a fixed-gate fallback.
+The optional MQT Core compiler and QIR export require Qiskit 2.5.x. Bind
+parameters before Qiskit compilation to legalize bounded RZZ angles; Core also
+supports unbound inputs through a fixed-gate fallback.
 
 ### IonQ and Rigetti native gates
 
