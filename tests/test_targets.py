@@ -119,30 +119,6 @@ def _assert_measure_properties(target: Target, *, vendor: str) -> None:
 DEVICE_SPECS: Sequence[DeviceSpec] = [
     # ─────────────────────────────────────────────────────────────────── IBM ──
     DeviceSpec(
-        name="ibm_falcon_27",
-        num_qubits=27,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_falcon_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_eagle_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"ecr"},
-    ),
-    DeviceSpec(
-        name="ibm_heron_133",
-        num_qubits=133,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cz"},
-    ),
-    DeviceSpec(
         name="ibm_heron_156",
         num_qubits=156,
         single_qubit_gates={"sx", "rz", "x", "measure"},
@@ -228,7 +204,7 @@ def test_get_unknown_device() -> None:
     """Requesting an unavailable device must raise *ValueError*."""
     unknown_name = "unknown_device"
     pattern = re.escape(
-        f"'{unknown_name}' is not a supported device. Known modules: ['ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        f"'{unknown_name}' is not a supported device. Known modules: ['aqt', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
 
     with pytest.raises(ValueError, match=pattern):
@@ -322,11 +298,11 @@ def test_get_device_immutability() -> None:
 
 def test_get_gateset_immutability() -> None:
     """Changes to a gateset retrieved by get_gateset should not affect the gateset in the registry. Sames for gateset names."""
-    gateset = get_gateset("ibm_falcon")
+    gateset = get_gateset("ibm_heron")
     gateset.append("dummy_gate")
     assert "dummy_gate" in gateset
 
-    gateset2 = get_gateset("ibm_falcon")
+    gateset2 = get_gateset("ibm_heron")
     assert "dummy_gate" not in gateset2
 
     gateset_names = get_available_gateset_names()
@@ -371,9 +347,10 @@ def test_module_from_device_name(device_name: str, module_name: str) -> None:
 
 
 @pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
-@pytest.mark.parametrize("opt_level", [0, 2, 3])
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("symbolic", [False, True])
-def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic: bool) -> None:
+def test_native_compilation_semantics(gateset: str, opt_level: int, level: BenchmarkLevel, *, symbolic: bool) -> None:
     """Each hardware family preserves the complete matrix and target constraints."""
     theta = Parameter("theta")
     circuit = QuantumCircuit(2)
@@ -383,9 +360,7 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
     circuit.cx(0, 1)
     circuit.rz(-0.7, 0)
     target = get_target_for_gateset(gateset, 2)
-    result = get_benchmark(
-        circuit, BenchmarkLevel.NATIVEGATES, target=target, opt_level=opt_level, random_parameters=False
-    )
+    result = get_benchmark(circuit, level, target=target, opt_level=opt_level, random_parameters=False)
     for instruction in result.data:
         assert target.instruction_supported(
             instruction.operation.name,
@@ -396,6 +371,22 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
         circuit = circuit.assign_parameters({theta: 0.37})
         result = result.assign_parameters({theta: 0.37})
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+def test_native_compilation_preserves_session_equivalences() -> None:
+    """Compile arbitrary U/RX gates without adding global equivalence rules."""
+    from qiskit.circuit.equivalence_library import SessionEquivalenceLibrary  # ruff:ignore[import-outside-top-level]
+    from qiskit.circuit.library import UGate  # ruff:ignore[import-outside-top-level]
+
+    theta, phi, lam = (Parameter(name) for name in ("theta", "phi", "lambda"))
+    gates = [UGate(theta, phi, lam), RXGate(theta)]
+    before = [SessionEquivalenceLibrary.get_entry(gate) for gate in gates]
+    circuit = QuantumCircuit(1)
+    circuit.u(0.43, -0.25, 0.16, 0)
+    circuit.rx(0.37, 0)
+    for gateset in ("ionq_forte", "rigetti"):
+        get_benchmark(circuit, BenchmarkLevel.NATIVEGATES, target=get_target_for_gateset(gateset, 1))
+    assert [SessionEquivalenceLibrary.get_entry(gate) for gate in gates] == before
 
 
 @pytest.mark.parametrize(("gate_type", "angle", "phase"), [(GPIGate, pi, pi / 2), (GPI2Gate, pi / 2, 0)])
@@ -670,3 +661,35 @@ def test_aliases_keep_physical_sites_for_mapping(level: BenchmarkLevel, *, rever
             parameters=item.operation.params,
         )
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+def test_aqt_target() -> None:
+    """IBEX exposes all ordered RXX pairs and virtual RZ gates."""
+    target = get_device("aqt_ibex_12")
+    assert target.num_qubits == 12
+    assert set(target.operation_names) == {"r", "rz", "rxx", "measure"}
+    assert len(target["rxx"]) == 12 * 11
+    assert all(props.duration == 0 and props.error == 0 for props in target["rz"].values())
+    for level, model in [
+        (BenchmarkLevel.NATIVEGATES, get_target_for_gateset("aqt", 3)),
+        (BenchmarkLevel.MAPPED, target),
+    ]:
+        circuit = get_benchmark("ghz", level, 3, target=model)
+        assert set(circuit.count_ops()) <= set(model.operation_names) | {"barrier"}
+
+
+def test_nighthawk() -> None:
+    """Nighthawk has 218 bidirectional grid edges and a CZ basis."""
+    target = get_device("ibm_nighthawk_120")
+    assert target.num_qubits == 120
+    assert get_gateset("ibm_nighthawk") == get_gateset("ibm_heron")
+    edges = set(target["cz"])
+    expected = {(q, q + 1) for q in range(120) if q % 10 != 9}
+    expected |= {(q, q + 10) for q in range(110)}
+    expected |= {(b, a) for a, b in list(expected)}
+    assert edges == expected
+    circuit = get_benchmark("ghz", BenchmarkLevel.MAPPED, 3, target=target)
+    assert circuit.num_qubits == 120
+    for item in circuit.data:
+        if item.operation.num_qubits == 2:
+            assert tuple(circuit.find_bit(q).index for q in item.qubits) in edges
