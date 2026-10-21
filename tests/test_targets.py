@@ -109,30 +109,6 @@ def _assert_measure_properties(target: Target, *, vendor: str) -> None:
 DEVICE_SPECS: Sequence[DeviceSpec] = [
     # ─────────────────────────────────────────────────────────────────── IBM ──
     DeviceSpec(
-        name="ibm_falcon_27",
-        num_qubits=27,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_falcon_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cx"},
-    ),
-    DeviceSpec(
-        name="ibm_eagle_127",
-        num_qubits=127,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"ecr"},
-    ),
-    DeviceSpec(
-        name="ibm_heron_133",
-        num_qubits=133,
-        single_qubit_gates={"sx", "rz", "x", "measure"},
-        two_qubit_gates={"cz"},
-    ),
-    DeviceSpec(
         name="ibm_heron_156",
         num_qubits=156,
         single_qubit_gates={"sx", "rz", "x", "measure"},
@@ -231,8 +207,10 @@ def test_get_unknown_device() -> None:
         get_device(unknown_name)
 
 
-def test_dynamic_device_registration() -> None:
+def test_dynamic_device_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """A device registered at runtime should immediately be visible through the public helpers."""
+    get_available_device_names()
+    monkeypatch.setattr("mqt.bench.targets.devices._registry._REGISTRY", {})
 
     @register_device("dummy_device")
     def _dummy_factory() -> Target:
@@ -245,8 +223,10 @@ def test_dynamic_device_registration() -> None:
     assert isinstance(dev, Target)
 
 
-def test_dynamic_gateset_registration() -> None:
+def test_dynamic_gateset_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """A gateset registered at runtime should immediately be visible through the public helpers."""
+    get_available_gateset_names()
+    monkeypatch.setattr("mqt.bench.targets.gatesets._registry._REGISTRY", {})
 
     @register_gateset("dummy_gateset")
     def _dummy_factory() -> list[str]:
@@ -262,8 +242,10 @@ def test_dynamic_gateset_registration() -> None:
         get_target_for_gateset("dummy_gateset", 2)
 
 
-def test_duplicate_device_registration() -> None:
+def test_duplicate_device_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """Registering the same name twice must raise ValueError."""
+    get_available_device_names()
+    monkeypatch.setattr("mqt.bench.targets.devices._registry._REGISTRY", {})
 
     @register_device("dup_device")
     def _factory1() -> Target:
@@ -277,8 +259,10 @@ def test_duplicate_device_registration() -> None:
             return Target(num_qubits=1)
 
 
-def test_duplicate_gateset_registration() -> None:
+def test_duplicate_gateset_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """Registering the same name twice must raise ValueError."""
+    get_available_gateset_names()
+    monkeypatch.setattr("mqt.bench.targets.gatesets._registry._REGISTRY", {})
 
     @register_gateset("dup_device")
     def _factory1() -> list[str]:
@@ -310,11 +294,11 @@ def test_get_device_immutability() -> None:
 
 def test_get_gateset_immutability() -> None:
     """Changes to a gateset retrieved by get_gateset should not affect the gateset in the registry. Sames for gateset names."""
-    gateset = get_gateset("ibm_falcon")
+    gateset = get_gateset("ibm_heron")
     gateset.append("dummy_gate")
     assert "dummy_gate" in gateset
 
-    gateset2 = get_gateset("ibm_falcon")
+    gateset2 = get_gateset("ibm_heron")
     assert "dummy_gate" not in gateset2
 
     gateset_names = get_available_gateset_names()
@@ -354,3 +338,19 @@ def test_module_from_gateset_name(gateset_name: str, module_name: str) -> None:
 def test_module_from_device_name(device_name: str, module_name: str) -> None:
     """Test module name extraction from device name."""
     assert _module_from_device_name(device_name) == module_name
+
+
+@pytest.mark.parametrize("name", ["ibm_falcon_27", "ibm_falcon_127", "ibm_eagle_127", "ibm_heron_133"])
+def test_retired_ibm_devices(name: str) -> None:
+    """Removed IBM models must not remain in the catalogue."""
+    assert name not in get_available_device_names()
+    with pytest.raises(KeyError, match=name):
+        get_device(name)
+
+
+@pytest.mark.parametrize("name", ["ibm_falcon", "ibm_eagle"])
+def test_retired_ibm_gatesets(name: str) -> None:
+    """Removed IBM gate sets must not remain in the catalogue."""
+    assert name not in get_available_gateset_names()
+    with pytest.raises(KeyError, match=name):
+        get_gateset(name)

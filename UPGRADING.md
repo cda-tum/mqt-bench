@@ -6,6 +6,14 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Retired IBM models
+
+The `ibm_falcon` and `ibm_eagle` gate sets and `ibm_falcon_27`,
+`ibm_falcon_127`, `ibm_eagle_127`, and `ibm_heron_133` devices are removed. Use
+`ibm_heron` and `ibm_heron_156`, or supply a custom Qiskit target for an older
+architecture. The Heron replacement has a different width, topology, and CZ
+basis; generated circuits will differ.
+
 ### Native gate-set targets
 
 `get_target_for_gateset` returns globally available instructions without

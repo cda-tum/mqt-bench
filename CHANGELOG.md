@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1027])
+  ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
