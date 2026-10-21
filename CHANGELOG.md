@@ -31,6 +31,8 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 📝 Fix API documentation markup, heading anchors, and notebook build
+  concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
@@ -236,6 +238,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 <!-- PR links -->
 
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
+[#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
