@@ -35,6 +35,7 @@ from qiskit.transpiler import (
     PassManager,
     Target,  # For layout handling
 )
+from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import GatesInBasis, RemoveBarriers, UnrollForLoops
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -135,6 +136,10 @@ def test_quantumcircuit_levels(benchmark_name: str) -> None:
                 continue
             if "reset" in qc.count_ops() and "reset" not in device.operation_names:
                 # This circuit needs reset, which the target does not support.
+                continue
+            if "if_else" in qc.count_ops() and "if_else" not in device.operation_names:
+                with pytest.raises(TranspilerError, match="control-flow construct 'if_else'"):
+                    get_benchmark_mapped(qc, None, device, 0)
                 continue
             res_mapped = get_benchmark_mapped(
                 qc,
@@ -798,7 +803,7 @@ def test_seven_qubit_steane_code_circuit_structure(num_qubits: int) -> None:
             "ghz",
             BenchmarkLevel.MAPPED,
             3,
-            get_device("ionq_aria_25"),
+            get_device("ionq_forte_36"),
             0,
         ),
     ],
@@ -849,7 +854,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             None,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = "`circuit_size` must be a positive integer when `benchmark` is a str."
@@ -858,7 +863,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             -1,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = "No Shor instance for circuit_size=3. Available: 18, 42, 58, 74."
@@ -867,7 +872,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             1,
         )
     match = re.escape("Invalid `opt_level` '4'. Must be in the range [0, 3].")
@@ -876,7 +881,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qpeexact",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_107"),
             4,
         )
     match = re.escape(

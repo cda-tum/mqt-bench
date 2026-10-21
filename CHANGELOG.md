@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering
+  ([#1027]) ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
