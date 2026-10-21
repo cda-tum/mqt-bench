@@ -230,6 +230,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
@@ -321,5 +322,3 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [Common Changelog]: https://common-changelog.org
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
-
-[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085

@@ -6,13 +6,6 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
-### IBM Nighthawk
-
-Use `ibm_nighthawk_120` for mapped compilation or `ibm_nighthawk` for native
-gates. The model follows IBM Runtime’s FakeNighthawk snapshot: a 12-by-10 grid
-with 218 undirected edges and the Heron CZ basis. Calibration is synthetic.
-Fractional gates are not advertised for this model.
-
 ### Native gate-set targets
 
 `get_target_for_gateset` returns globally available instructions without
