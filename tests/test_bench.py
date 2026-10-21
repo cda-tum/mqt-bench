@@ -36,6 +36,7 @@ from qiskit.transpiler import (
     PassManager,
     Target,  # For layout handling
 )
+from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import GatesInBasis, RemoveBarriers, UnrollForLoops
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -136,6 +137,10 @@ def test_quantumcircuit_levels(benchmark_name: str) -> None:
                 continue
             if "reset" in qc.count_ops() and "reset" not in device.operation_names:
                 # This circuit needs reset, which the target does not support.
+                continue
+            if "if_else" in qc.count_ops() and "if_else" not in device.operation_names:
+                with pytest.raises(TranspilerError, match="control-flow construct 'if_else'"):
+                    get_benchmark_mapped(qc, None, device, 0)
                 continue
             res_mapped = get_benchmark_mapped(
                 qc,
@@ -881,7 +886,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             4,
         )
     match = re.escape(
-        "'wrong_gateset' is not a supported gateset. Known modules: ['clifford_t', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        "'wrong_gateset' is not a supported gateset. Known modules: ['aqt', 'clifford_t', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -892,7 +897,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             1,
         )
     match = re.escape(
-        "'wrong_device' is not a supported device. Known modules: ['ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        "'wrong_device' is not a supported device. Known modules: ['aqt', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
     with pytest.raises(ValueError, match=match):
         get_benchmark(

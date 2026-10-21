@@ -17,6 +17,8 @@ from typing import TYPE_CHECKING
 import pytest
 from qiskit.transpiler import Target
 
+from mqt.bench import get_benchmark
+from mqt.bench.benchmark_generation import BenchmarkLevel
 from mqt.bench.targets.devices import (
     _module_from_device_name,  # ruff:ignore[import-private-name]
     get_available_device_names,
@@ -200,7 +202,7 @@ def test_get_unknown_device() -> None:
     """Requesting an unavailable device must raise *ValueError*."""
     unknown_name = "unknown_device"
     pattern = re.escape(
-        f"'{unknown_name}' is not a supported device. Known modules: ['ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        f"'{unknown_name}' is not a supported device. Known modules: ['aqt', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
 
     with pytest.raises(ValueError, match=pattern):
@@ -338,3 +340,18 @@ def test_module_from_gateset_name(gateset_name: str, module_name: str) -> None:
 def test_module_from_device_name(device_name: str, module_name: str) -> None:
     """Test module name extraction from device name."""
     assert _module_from_device_name(device_name) == module_name
+
+
+def test_aqt_target() -> None:
+    """IBEX exposes all ordered RXX pairs and virtual RZ gates."""
+    target = get_device("aqt_ibex_12")
+    assert target.num_qubits == 12
+    assert set(target.operation_names) == {"r", "rz", "rxx", "measure"}
+    assert len(target["rxx"]) == 12 * 11
+    assert all(props.duration == 0 and props.error == 0 for props in target["rz"].values())
+    for level, model in [
+        (BenchmarkLevel.NATIVEGATES, get_target_for_gateset("aqt", 3)),
+        (BenchmarkLevel.MAPPED, target),
+    ]:
+        circuit = get_benchmark("ghz", level, 3, target=model)
+        assert set(circuit.count_ops()) <= set(model.operation_names) | {"barrier"}
