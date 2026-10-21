@@ -612,13 +612,18 @@ def test_fractional_heron_device() -> None:
     assert not target.instruction_supported("rzz", (0, 1), parameters=[-0.37])
 
 
-@pytest.mark.skipif(hasattr(Target, "gate_has_angle_bounds"), reason="Test the Qiskit 2.1 compatibility error")
 def test_fractional_heron_requires_angle_bounds() -> None:
-    """Older Qiskit versions reject fractional targets explicitly."""
+    """Targets without angle-bound support fail with an upgrade hint."""
     from mqt.bench.targets.gatesets.ibm import add_fractional_gates  # ruff:ignore[import-outside-top-level]
 
+    class LegacyTarget(Target):
+        def __getattribute__(self, name: str) -> object:
+            if name == "gate_has_angle_bounds":
+                raise AttributeError(name)
+            return super().__getattribute__(name)
+
     with pytest.raises(ValueError, match=r"require Qiskit 2\.2"):
-        add_fractional_gates(Target(num_qubits=2))
+        add_fractional_gates(LegacyTarget(num_qubits=2))
 
 
 @pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")
