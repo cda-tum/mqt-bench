@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- 📝 Fix API documentation markup, heading anchors, and notebook build
+  concurrency ([#1027]) ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
