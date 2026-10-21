@@ -6,6 +6,13 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### AQT targets
+
+Use `aqt_ibex_12` for mapped compilation or `aqt` for native gates. The
+2026-10-02 Amazon device snapshot has all-to-all RXX connectivity. Provider
+`prx` and `xx` correspond to Qiskit `r` and `rxx`; all angles use radians.
+Calibration values are illustrative averages.
+
 ### Native gate-set targets
 
 `get_target_for_gateset` returns globally available instructions without
