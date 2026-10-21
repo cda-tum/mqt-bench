@@ -34,7 +34,8 @@ that minor releases may include breaking changes.
 ### Fixed
 
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
-  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**])
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
 - 📝 Fix API documentation markup, heading anchors, and notebook build
   concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])

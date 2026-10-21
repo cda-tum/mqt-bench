@@ -347,9 +347,10 @@ def test_module_from_device_name(device_name: str, module_name: str) -> None:
 
 
 @pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
-@pytest.mark.parametrize("opt_level", [0, 2, 3])
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("symbolic", [False, True])
-def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic: bool) -> None:
+def test_native_compilation_semantics(gateset: str, opt_level: int, level: BenchmarkLevel, *, symbolic: bool) -> None:
     """Each hardware family preserves the complete matrix and target constraints."""
     theta = Parameter("theta")
     circuit = QuantumCircuit(2)
@@ -359,9 +360,7 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
     circuit.cx(0, 1)
     circuit.rz(-0.7, 0)
     target = get_target_for_gateset(gateset, 2)
-    result = get_benchmark(
-        circuit, BenchmarkLevel.NATIVEGATES, target=target, opt_level=opt_level, random_parameters=False
-    )
+    result = get_benchmark(circuit, level, target=target, opt_level=opt_level, random_parameters=False)
     for instruction in result.data:
         assert target.instruction_supported(
             instruction.operation.name,
@@ -372,6 +371,22 @@ def test_native_compilation_semantics(gateset: str, opt_level: int, *, symbolic:
         circuit = circuit.assign_parameters({theta: 0.37})
         result = result.assign_parameters({theta: 0.37})
     np.testing.assert_allclose(Operator.from_circuit(result).data, Operator(circuit).data, atol=1e-12)
+
+
+def test_native_compilation_preserves_session_equivalences() -> None:
+    """Compile arbitrary U/RX gates without adding global equivalence rules."""
+    from qiskit.circuit.equivalence_library import SessionEquivalenceLibrary  # ruff:ignore[import-outside-top-level]
+    from qiskit.circuit.library import UGate  # ruff:ignore[import-outside-top-level]
+
+    theta, phi, lam = (Parameter(name) for name in ("theta", "phi", "lambda"))
+    gates = [UGate(theta, phi, lam), RXGate(theta)]
+    before = [SessionEquivalenceLibrary.get_entry(gate) for gate in gates]
+    circuit = QuantumCircuit(1)
+    circuit.u(0.43, -0.25, 0.16, 0)
+    circuit.rx(0.37, 0)
+    for gateset in ("ionq_forte", "rigetti"):
+        get_benchmark(circuit, BenchmarkLevel.NATIVEGATES, target=get_target_for_gateset(gateset, 1))
+    assert [SessionEquivalenceLibrary.get_entry(gate) for gate in gates] == before
 
 
 @pytest.mark.parametrize(("gate_type", "angle", "phase"), [(GPIGate, pi, pi / 2), (GPI2Gate, pi / 2, 0)])

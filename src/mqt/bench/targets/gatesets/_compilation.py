@@ -29,6 +29,7 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
     Local equivalences preserve global phase without changing Qiskit's session
     library. Native compilation ignores physical placement.
     """
+    # Qiskit's preset passes can emit unsupported angles for fixed R/RX targets.
     candidates = {
         "gpi": (GPIGate, XGate(), 0.0, 0.0),
         "gpi2": (GPI2Gate, SXGate(), 0.0, pi / 4),
