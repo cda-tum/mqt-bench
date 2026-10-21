@@ -884,9 +884,6 @@ def test_error_correction_transpiler_circuit_structure(
       ancilla + 2 X-stabiliser ancilla) and 8 classical bits per logical qubit (6
       bit-flip syndrome + 2 phase-flip syndrome), plus one bit per original clbit.
 
-    QFT circuits are excluded from the qubit-count checks because their ancilla
-    qubit count scales with the number of T gates rather than the logical qubit count.
-
     Args:
         logical_qubits: Number of logical qubits in the benchmark circuit.
         code: The error-correction code to use; either ``"steane"`` or ``"shor"``.
