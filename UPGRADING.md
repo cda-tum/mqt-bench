@@ -9,7 +9,7 @@ of changes including minor and patch releases, please refer to the
 ### Clifford+T compilation
 
 Native Clifford+T compilation uses gridsynth on Qiskit 2.4.2 and newer, and
-Solovay-Kitaev on earlier versions. Qiskit 2.1 remains supported. The
+Solovay-Kitaev on earlier versions. Qiskit 2.1.2 remains supported. The
 synthesized gate sequences and gate counts can differ between Qiskit versions.
 
 The requested optimization level applies before synthesis. For nonzero levels,
@@ -18,6 +18,27 @@ inside control-flow blocks. A final basis translation enforces the target gate
 set. Structured loops and loop jumps remain supported. Mirrors use the exact
 inverse of the synthesized circuit and receive the same optimization without
 another approximate synthesis.
+
+### IonQ and Rigetti native gates
+
+Requires Qiskit 2.1.2 or newer.
+
+IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
+arbitrary virtual `rz`. Provider serializers must convert phase units and track
+virtual Z frames. The Aria model and custom MS/ZZ classes are removed. Rigetti
+uses standard RX gates named `rxpi`, `rxpidg`, `rxpi2`, and `rxpi2dg`. Qiskit
+compilation uses local, phase-correct equivalences. Replace `rigetti_ankaa_84`
+with `rigetti_cepheus_107`. The 2026-10-02 snapshot has 107 active qubits and
+386 directed CZ edges; calibration is unspecified. `CEPHEUS_PHYSICAL_QUBITS`
+maps dense Bench wires to provider labels, excluding physical qubit 8.
+
+### Retired IBM models
+
+The `ibm_falcon` and `ibm_eagle` gate sets and `ibm_falcon_27`,
+`ibm_falcon_127`, `ibm_eagle_127`, and `ibm_heron_133` devices are removed. Use
+`ibm_heron` and `ibm_heron_156`, or supply a custom Qiskit target for an older
+architecture. The Heron replacement has a different width, topology, and CZ
+basis; generated circuits will differ.
 
 ### Native gate-set targets
 

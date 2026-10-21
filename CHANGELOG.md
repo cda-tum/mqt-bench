@@ -14,6 +14,12 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
+  ([**@burgholzer**])
+- ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
+  ([**@burgholzer**])
+- ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
+  ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
 - 👷 Enable testing on Python 3.15 ([#1054]) ([**@denialhaag**])
 - ✨ Add quantum teleportation benchmark ([#1045]) ([**@AsharHusain**])
@@ -32,6 +38,11 @@ that minor releases may include breaking changes.
 
 - 🐛 Retain post-synthesis Clifford+T optimization and loop-control support
   across Qiskit versions using public passes ([#1081]) ([**@simon1hofmann**])
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
+- 📝 Fix API documentation markup, heading anchors, and notebook build
+  concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
@@ -51,6 +62,11 @@ that minor releases may include breaking changes.
   ([#1047]) ([**@simon1hofmann**])
 - 🐛 Expose `__version__` and `__version_tuple__` at the package root ([#1031])
   ([**@algovista-collab**])
+
+### Removed
+
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
+  ([**@burgholzer**])
 
 ## [2.3.0] - 2026-09-12
 
@@ -231,6 +247,12 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
+[#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
+[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
+[#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
+[#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
