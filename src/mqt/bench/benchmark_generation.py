@@ -27,6 +27,7 @@ from qiskit.version import VERSION as QISKIT_VERSION
 from .benchmarks import create_circuit
 from .targets.gatesets import get_target_for_gateset
 from .targets.gatesets._compilation import prepare_target
+from .targets.gatesets.ibm import configure_fractional_angles
 
 if TYPE_CHECKING:  # pragma: no cover
     from qiskit.dagcircuit import DAGCircuit
@@ -180,6 +181,7 @@ def _get_qiskit_pass_manager(target: Target, opt_level: int, *, native: bool) ->
         seed_transpiler=10,
     )
     pm.post_scheduling = lowering
+    configure_fractional_angles(pm, target)
     return pm
 
 

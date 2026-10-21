@@ -9,8 +9,8 @@ of changes including minor and patch releases, please refer to the
 ### Clifford+T compilation
 
 Native Clifford+T compilation uses gridsynth on Qiskit 2.4.2 and newer, and
-Solovay-Kitaev on earlier versions. Qiskit 2.1.2 remains supported. The
-synthesized gate sequences and gate counts can differ between Qiskit versions.
+Solovay-Kitaev on earlier supported versions. The synthesized gate sequences and
+gate counts can differ between Qiskit versions.
 
 The requested optimization level applies before synthesis. For nonzero levels,
 Qiskit's public `OptimizeCliffordT` pass also runs after synthesis, including
@@ -19,9 +19,16 @@ set. Structured loops and loop jumps remain supported. Mirrors use the exact
 inverse of the synthesized circuit and receive the same optimization without
 another approximate synthesis.
 
-### IonQ and Rigetti native gates
+### Qiskit 2.2.3 minimum
 
-Requires Qiskit 2.1.2 or newer.
+The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
+below 2.2.3 and upgrade Qiskit:
+
+```console
+python -m pip install --upgrade "qiskit[qasm3-import]>=2.2.3,<3"
+```
+
+### IonQ and Rigetti native gates
 
 IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
 arbitrary virtual `rz`. Provider serializers must convert phase units and track

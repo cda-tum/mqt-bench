@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
+  ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
   ([**@burgholzer**])
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
@@ -30,6 +32,8 @@ that minor releases may include breaking changes.
 
 - ✨ Use gridsynth for native Clifford+T compilation on Qiskit 2.4.2 and newer,
   retaining Solovay-Kitaev on earlier supported versions ([#1081])
+  ([**@simon1hofmann**])
+- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
   ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
@@ -249,6 +253,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
 [#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
