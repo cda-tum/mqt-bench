@@ -1117,6 +1117,7 @@ def test_generate_header_minimal(monkeypatch: pytest.MonkeyPatch) -> None:
     lines = hdr.splitlines()
     # first line has today's date
     assert lines[0] == f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}"
+    assert "// SPDX-License-Identifier: MIT" in lines
     # contains the fixed info lines
     assert "// For more info: https://mqt-bench.app/" in hdr
     assert "// MQT Bench version: 9.9.9" in hdr
@@ -1182,6 +1183,7 @@ def test_write_circuit_qasm(tmp_path: Path, fmt: OutputFormat) -> None:
     text = out.read_text().splitlines()
     # header lines at top
     assert text[0].startswith("// Benchmark created by MQT Bench on")
+    assert "// SPDX-License-Identifier: MIT" in text
     # QASM body present
     assert any(line.startswith("h ") for line in text), "H gate should appear"
     assert any(line.startswith("cx ") for line in text), "CX gate should appear"
@@ -1206,6 +1208,7 @@ def test_write_circuit_qpy(tmp_path: Path) -> None:
     header = circ.metadata["mqt_bench"]
     assert header.startswith(f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}")
     assert "// MQT Bench version:" in header
+    assert "// SPDX-License-Identifier: MIT" in header.splitlines()
     assert "// Output format: qpy" in header
 
 
