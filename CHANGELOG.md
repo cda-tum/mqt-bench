@@ -255,6 +255,9 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
+[#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
+[#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
+[#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
 [#1069]: https://github.com/munich-quantum-toolkit/bench/pull/1069
 [#1067]: https://github.com/munich-quantum-toolkit/bench/pull/1067
 [#1065]: https://github.com/munich-quantum-toolkit/bench/pull/1065
@@ -332,6 +335,9 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [**@algovista-collab**]: https://github.com/algovista-collab
 [**@Anshu666666**]: https://github.com/Anshu666666
 [**@AsharHusain**]: https://github.com/AsharHusain
+[**@AthulKampiyil**]: https://github.com/AthulKampiyil
+[**@jyothikacodes**]: https://github.com/jyothikacodes
+[**@NiranjanRSoorej06**]: https://github.com/NiranjanRSoorej06
 
 <!-- General links -->
 
