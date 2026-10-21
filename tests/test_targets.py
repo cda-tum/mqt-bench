@@ -558,18 +558,19 @@ def test_native_target_legacy_angle_bounds() -> None:
 
 
 @pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Fractional targets need Qiskit 2.2")
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
-@pytest.mark.parametrize("angle", [-100.0, -np.pi, -0.37, 0.37, 2.4, 100.0])
-def test_fractional_heron_qiskit(level: BenchmarkLevel, angle: float) -> None:
+@pytest.mark.parametrize("angle", [-1e8, -2 * pi, -pi, -pi / 2, -0.37, 0.0, 0.37, pi / 2, 2.4, pi, 2 * pi, 1e8])
+def test_fractional_heron_qiskit(level: BenchmarkLevel, angle: float, opt_level: int) -> None:
     """Fractional targets keep native RZZ angles within the hardware interval."""
     target = get_target_for_gateset("ibm_heron_fractional", 2)
     circuit = QuantumCircuit(2)
     circuit.rzz(angle, 0, 1)
-    result = get_benchmark(circuit, level, target=target, random_parameters=False)
+    result = get_benchmark(circuit, level, target=target, random_parameters=False, opt_level=opt_level)
     assert all(
         target.instruction_supported(item.operation.name, parameters=item.operation.params) for item in result.data
     )
-    assert np.allclose(Operator(result).data, Operator(circuit).data)
+    np.testing.assert_allclose(Operator(result).data, Operator(circuit).data, atol=1e-12, rtol=0)
     assert result.count_ops().get("rzz", 0) <= 1
 
 
@@ -612,18 +613,15 @@ def test_fractional_heron_device() -> None:
     assert not target.instruction_supported("rzz", (0, 1), parameters=[-0.37])
 
 
+@pytest.mark.skipif(hasattr(Target, "gate_has_angle_bounds"), reason="Needs Qiskit before 2.2")
 def test_fractional_heron_requires_angle_bounds() -> None:
-    """Targets without angle-bound support fail with an upgrade hint."""
+    """Older Qiskit versions omit fractional targets and report an upgrade hint."""
     from mqt.bench.targets.gatesets.ibm import add_fractional_gates  # ruff:ignore[import-outside-top-level]
 
-    class LegacyTarget(Target):
-        def __getattribute__(self, name: str) -> object:
-            if name == "gate_has_angle_bounds":
-                raise AttributeError(name)
-            return super().__getattribute__(name)
-
+    assert "ibm_heron_fractional" not in get_available_gateset_names()
+    assert "ibm_heron_156_fractional" not in get_available_device_names()
     with pytest.raises(ValueError, match=r"require Qiskit 2\.2"):
-        add_fractional_gates(LegacyTarget(num_qubits=2))
+        add_fractional_gates(Target(num_qubits=2))
 
 
 @pytest.mark.skipif(not hasattr(Target, "gate_has_angle_bounds"), reason="Angle bounds need Qiskit 2.2")

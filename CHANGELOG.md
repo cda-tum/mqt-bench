@@ -15,7 +15,7 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
-  ([**@burgholzer**])
+  ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
