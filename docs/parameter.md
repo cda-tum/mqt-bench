@@ -75,7 +75,7 @@ print(get_available_device_names())
 Install the optional compiler with `pip install "mqt-bench[mqt]"`. The extra
 installs MQT Core 4.1.1 from PyPI and requires Qiskit 2.5.x. Core provides
 wheels for supported platforms; no separate LLVM installation is needed with a
-wheel. The base installation supports Qiskit 2.1.2 or newer, below version 3.
+wheel. The base installation supports Qiskit 2.2.3 or newer, below version 3.
 
 ```python
 from mqt.bench import BenchmarkLevel, get_benchmark

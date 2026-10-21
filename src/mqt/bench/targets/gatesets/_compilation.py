@@ -67,7 +67,7 @@ def prepare_target(target: Target, *, native: bool) -> tuple[Target, PassManager
                 standard_properties[standard_gate.name].setdefault(qargs, deepcopy(calibration))
 
     angle_bounds = {}
-    if hasattr(target, "has_angle_bounds") and target.has_angle_bounds():
+    if target.has_angle_bounds():
         # Qiskit exposes bounds only through its serialized target state.
         state = target.__getstate__()["base"]
         if "angle_bounds" in state:

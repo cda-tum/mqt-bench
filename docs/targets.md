@@ -60,8 +60,8 @@ and RZZ rotations in `[0, pi/2]`. Calibration remains synthetic. Both compilers
 fold numeric RZZ angles into this interval with local corrections. Bind
 parameters before Qiskit compilation to enforce the interval; Core lowers
 unknown runtime angles with two `RZZ(pi/2)` gates and local corrections. These
-models require Qiskit 2.2 or newer; the other models retain the Qiskit 2.1.2
-minimum.
+models are included in the base installation, which requires Qiskit 2.2.3 or
+newer.
 
 ## Physical qubit labels
 

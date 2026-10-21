@@ -12,14 +12,6 @@ Use `ibm_nighthawk_120` for Nighthawk's 120-qubit grid or `ibm_heron_156` for
 Heron's 156-qubit heavy-hex topology. Both use the CZ-based gate set. The
 fractional variant is `ibm_heron_156_fractional`.
 
-### Qiskit 2.1.2 minimum
-
-Upgrade Qiskit to 2.1.2 or newer. Qiskit 2.1.0 and 2.1.1 have a post-layout
-failure at optimization level 3. Only the optional MQT Core compiler and QIR
-export require Qiskit 2.5.x. The new fractional Heron models require Qiskit 2.2
-or newer. Bind parameters before Qiskit compilation to legalize bounded RZZ
-angles; Core also supports unbound inputs through a fixed-gate fallback.
-
 ### Optional MQT Core compiler
 
 Use `pip install "mqt-bench[mqt]"` and select `compiler="mqt"` in the Python API
@@ -52,9 +44,20 @@ keyword `qir_profile`. Circuit generation still returns `QuantumCircuit`. See
 [QIR and LLVM output](docs/parameter.md#qir-and-llvm-output) for parameter
 binding, runtime requirements, and target limitations.
 
-### IonQ and Rigetti native gates
+### Qiskit 2.2.3 minimum
 
-Requires Qiskit 2.1.2 or newer.
+The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
+below 2.2.3 and upgrade Qiskit:
+
+```console
+python -m pip install --upgrade "qiskit[qasm3-import]>=2.2.3,<3"
+```
+
+The optional MQT Core compiler and QIR export require Qiskit 2.5.x. Bind
+parameters before Qiskit compilation to legalize bounded RZZ angles; Core also
+supports unbound inputs through a fixed-gate fallback.
+
+### IonQ and Rigetti native gates
 
 IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
 arbitrary virtual `rz`. Provider serializers must convert phase units and track

@@ -18,13 +18,14 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.circuit.library import RXGate, RZZGate
 from qiskit.converters import circuit_to_dag
-from qiskit.passmanager import ConditionalController, DoWhileController, FlowControllerLinear
-from qiskit.transpiler import PassManager, Target
+from qiskit.transpiler.passes import WrapAngles
 
 from ._registry import register_gateset
 
 if TYPE_CHECKING:
     from qiskit.dagcircuit import DAGCircuit
+    from qiskit.passmanager import Task
+    from qiskit.transpiler import PassManager, Target
 
 
 @register_gateset("ibm_heron")
@@ -34,6 +35,7 @@ def get_ibm_heron_gateset() -> list[str]:
     return ["id", "x", "sx", "rz", "cz"]
 
 
+@register_gateset("ibm_heron_fractional")
 def get_ibm_heron_fractional_gateset() -> list[str]:
     """Heron with arbitrary RX and RZZ angles in [0, pi/2]."""
     return [*get_ibm_heron_gateset(), "rx", "rzz"]
@@ -41,34 +43,26 @@ def get_ibm_heron_fractional_gateset() -> list[str]:
 
 def add_fractional_gates(target: Target) -> None:
     """Add fractional gates on Heron's existing sites and couplings."""
-    if not hasattr(target, "gate_has_angle_bounds"):
-        msg = "Fractional Heron targets require Qiskit 2.2 or newer."
-        raise ValueError(msg)
-    target.add_instruction(RXGate(Parameter("rx")), deepcopy(target["sx"]))
-    target.add_instruction(RZZGate(Parameter("rzz")), deepcopy(target["cz"]), angle_bounds=[(0, pi / 2)])
+    target.add_instruction(RXGate(Parameter("theta")), deepcopy(target["sx"]))
+    target.add_instruction(RZZGate(Parameter("theta")), deepcopy(target["cz"]), angle_bounds=[(0, pi / 2)])
 
 
 def configure_fractional_angles(manager: PassManager, target: Target) -> None:
     """Legalize numeric RZZ angles using Qiskit's local wrapping registry."""
     if (
         not {"x", "rz", "rzz"}.issubset(target.operation_names)
-        or not hasattr(target, "gate_has_angle_bounds")
+        or not isinstance(target.operation_from_name("rzz"), RZZGate)
         or not target.gate_has_angle_bounds("rzz")
+        or not all(target.supported_angle_bound("rzz", [angle]) for angle in (0, pi / 2))
     ):
         return
-    if not isinstance(target.operation_from_name("rzz"), RZZGate) or not all(
-        target.supported_angle_bound("rzz", [angle]) for angle in (0, pi / 2)
-    ):
-        return
-    from qiskit.transpiler.passes import WrapAngles  # ruff:ignore[import-outside-top-level]
 
     def fold(angles: list[float], _qubits: list[int]) -> DAGCircuit:
-        angle = angles[0]
-        if abs(angle) > 2 * pi:
-            angle = 4 * atan(tan(angle / 4))
+        # Reduce modulo 4*pi without losing precision for large angles.
+        angle = 4 * atan(tan(angles[0] / 4))
         folded = remainder(angle, pi)
         turns = round((angle - folded) / pi)
-        circuit = QuantumCircuit(2, global_phase=-turns * pi / 2)
+        circuit = QuantumCircuit(2, global_phase=turns * pi / 2)
         if folded < 0:
             circuit.x(0)
         if folded:
@@ -78,19 +72,13 @@ def configure_fractional_angles(manager: PassManager, target: Target) -> None:
         if turns % 2:
             circuit.rz(pi, 0)
             circuit.rz(pi, 1)
-            circuit.global_phase += pi
         return circuit_to_dag(circuit)
 
-    def configure(controller: FlowControllerLinear | ConditionalController | DoWhileController) -> None:
-        for task in controller.tasks:
-            if isinstance(task, (FlowControllerLinear, ConditionalController, DoWhileController)):
-                configure(task)
-            elif isinstance(task, WrapAngles):
-                task.registry = deepcopy(task.registry)
-                task.registry.add_wrapper("rzz", fold)
+    def configure(task: Task) -> None:
+        if isinstance(task, WrapAngles):
+            task.registry = deepcopy(task.registry)
+            task.registry.add_wrapper("rzz", fold)
+        for child in getattr(task, "tasks", ()):
+            configure(child)
 
     configure(manager.to_flow_controller())
-
-
-if hasattr(Target, "gate_has_angle_bounds"):
-    register_gateset("ibm_heron_fractional")(get_ibm_heron_fractional_gateset)
