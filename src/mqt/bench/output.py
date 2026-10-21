@@ -83,6 +83,7 @@ def generate_header(
     lines: list[str] = []
     lines.extend((
         f"// Benchmark created by MQT Bench on {dt.datetime.now(tz=dt.UTC).date()}",
+        "// SPDX-License-Identifier: MIT",
         "// For more info: https://mqt-bench.app/",
         f"// MQT Bench version: {version}",
         f"// Qiskit version: {__qiskit_version__}",
