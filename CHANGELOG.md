@@ -14,7 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1027])
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**])
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering
   ([#1086]) ([**@burgholzer**])
@@ -325,3 +325,5 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
 
 [#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
+
+[#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
