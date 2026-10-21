@@ -38,7 +38,7 @@ that minor releases may include breaking changes.
 ### Fixed
 
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
-  and mirrors ([#1081]) ([**@simon1hofmann**])
+  and mirrors ([#1093]) ([**@simon1hofmann**])
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
   mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
   [**@simon1hofmann**])
@@ -255,7 +255,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
-[#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
+[#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
