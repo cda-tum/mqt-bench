@@ -51,10 +51,10 @@ _SPECIAL_NAME_TO_MODULE = {
 
 
 def _module_from_gateset_name(gateset_name: str) -> str:
-    """Map a gateset name like ``ibm_falcon`` to the module ``ibm``.
+    """Map a gateset name like ``ibm_heron`` to the module ``ibm``.
 
     The rule is the same as for devices: take everything before the first
-    underscore (``ibm_falcon`` → ``ibm``).  If no underscore is present, the
+    underscore (``ibm_heron`` → ``ibm``).  If no underscore is present, the
     whole name is assumed to be the module.
     """
     if gateset_name in _SPECIAL_NAME_TO_MODULE:

@@ -13,19 +13,8 @@ from __future__ import annotations
 from ._registry import register_gateset
 
 
-@register_gateset("ibm_falcon")
-def get_ibm_falcon_gateset() -> list[str]:
-    """Returns the basis gates of the IBM Falcon gateset."""
-    return ["id", "x", "sx", "rz", "cx"]
-
-
-@register_gateset("ibm_eagle")
-def get_ibm_eagle_gateset() -> list[str]:
-    """Returns the basis gates of the IBM Eagle gateset."""
-    return ["id", "x", "sx", "rz", "ecr"]
-
-
 @register_gateset("ibm_heron")
+@register_gateset("ibm_nighthawk")
 def get_ibm_heron_gateset() -> list[str]:
     """Returns the basis gates of the IBM Heron gateset."""
     return ["id", "x", "sx", "rz", "cz"]
