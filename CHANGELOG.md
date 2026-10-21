@@ -14,7 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1027])
+- ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
   ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
@@ -321,3 +321,5 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [Common Changelog]: https://common-changelog.org
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
+
+[#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
