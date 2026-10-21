@@ -15,6 +15,8 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
+  ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
   ([**@burgholzer**])
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
@@ -29,6 +31,8 @@ that minor releases may include breaking changes.
 
 ### Changed
 
+- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
+  ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
@@ -246,6 +250,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1079]: https://github.com/munich-quantum-toolkit/bench/pull/1079
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
 [#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084

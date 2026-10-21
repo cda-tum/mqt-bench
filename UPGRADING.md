@@ -6,9 +6,16 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
-### IonQ and Rigetti native gates
+### Qiskit 2.2.3 minimum
 
-Requires Qiskit 2.1.2 or newer.
+The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
+below 2.2.3 and upgrade Qiskit:
+
+```console
+python -m pip install --upgrade "qiskit[qasm3-import]>=2.2.3,<3"
+```
+
+### IonQ and Rigetti native gates
 
 IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains
 arbitrary virtual `rz`. Provider serializers must convert phase units and track
