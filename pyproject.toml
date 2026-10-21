@@ -209,6 +209,7 @@ extend-ignore-re = [
 ]
 
 [tool.typos.default.extend-words]
+braket = "braket"
 wille = "wille"
 anc = "anc"
 aer = "aer"

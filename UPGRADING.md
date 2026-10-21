@@ -6,6 +6,12 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### IBM architecture models
+
+Use `ibm_nighthawk_120` for Nighthawk's 120-qubit grid or `ibm_heron_156` for
+Heron's 156-qubit heavy-hex topology. Both use the CZ-based gate set. The
+fractional variant is `ibm_heron_156_fractional`.
+
 ### Qiskit 2.2.3 minimum
 
 The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins
