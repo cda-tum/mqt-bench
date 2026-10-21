@@ -20,9 +20,6 @@ that minor releases may include breaking changes.
   import, runtime Pauli rotations, and compiler provenance in exported files.
   The `mqt` extra installs Core 4.1.1 from PyPI and requires Qiskit 2.5.x.
   ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
-- Add QIR export as LLVM text (`qir`/`llvm`) or bitcode (`qir-bitcode`), with
-  Base and Adaptive profile selection in Python and the CLI. Requires the `mqt`
-  extra. ([#1027]) ([**@simon1hofmann**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])

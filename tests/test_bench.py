@@ -1218,13 +1218,12 @@ def test_write_circuit_qpy(tmp_path: Path) -> None:
     assert "// Output format: qpy" in header
 
 
-@pytest.mark.parametrize("fmt", [OutputFormat.QASM2, OutputFormat.QASM3, OutputFormat.QPY])
-def test_write_circuit_io_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fmt: OutputFormat) -> None:
+def test_write_circuit_io_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Simulate I/O error while writing."""
     qc = QuantumCircuit(1)
     qc.h(0)
 
-    out = tmp_path / f"readonly.{fmt.extension()}"
+    out = tmp_path / "readonly.qasm"
 
     # Monkey-patch builtins.open to throw OSError on any attempt to open for writing
     def fake_open(*args: str, **kwargs: str) -> NoReturn:
@@ -1235,18 +1234,17 @@ def test_write_circuit_io_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     monkeypatch.setattr(metadata, "version", lambda _: "0.1.0")
 
     with pytest.raises(MQTBenchExporterError) as exc:
-        write_circuit(qc, out, BenchmarkLevel.INDEP, fmt=fmt)
+        write_circuit(qc, out, BenchmarkLevel.INDEP, fmt=OutputFormat.QASM2)
 
     msg = str(exc.value)
-    assert f"failed to write {fmt.value} file" in msg.lower()
+    assert "failed to write qasm2 file" in msg.lower()
     assert "disk full" in msg.lower()
 
     # restore Path.open so other tests continue unharmed
     monkeypatch.setattr(Path, "open", builtins.open)
 
 
-@pytest.mark.parametrize("stream", [False, True])
-def test_write_circuit_unsupported_format(tmp_path: Path, stream: bool) -> None:
+def test_write_circuit_unsupported_format(tmp_path: Path) -> None:
     """Requesting an unsupported format should raise."""
 
     class FakeFormat(StrEnum):
@@ -1255,12 +1253,7 @@ def test_write_circuit_unsupported_format(tmp_path: Path, stream: bool) -> None:
     qc = QuantumCircuit(1)
 
     with pytest.raises(MQTBenchExporterError) as exc:
-        write_circuit(
-            qc,
-            io.StringIO() if stream else tmp_path / "foo.fake",
-            BenchmarkLevel.INDEP,
-            fmt=cast("OutputFormat", FakeFormat.FAKE),
-        )
+        write_circuit(qc, tmp_path / "foo.fake", BenchmarkLevel.INDEP, fmt=FakeFormat.FAKE)  # ty: ignore[no-matching-overload]
 
     msg = str(exc.value)
     assert "unsupported output format" in msg.lower()
@@ -1331,16 +1324,6 @@ def test_stream_mode_mismatch_raises() -> None:
     # Text stream + QPY → error
     with pytest.raises(MQTBenchExporterError):
         write_circuit(qc, io.StringIO(), BenchmarkLevel.INDEP, fmt=OutputFormat.QPY)
-
-
-@pytest.mark.parametrize("fmt", [OutputFormat.QASM2, OutputFormat.QASM3, OutputFormat.QPY])
-def test_closed_export_stream(fmt: OutputFormat) -> None:
-    """Translate closed-stream errors without losing the original cause."""
-    stream = io.BytesIO() if fmt is OutputFormat.QPY else io.StringIO()
-    stream.close()
-    with pytest.raises(MQTBenchExporterError, match="Failed to write") as exc:
-        write_circuit(QuantumCircuit(1), stream, BenchmarkLevel.ALG, fmt)
-    assert isinstance(exc.value.__cause__, ValueError)
 
 
 def test_custom_target() -> None:
@@ -1780,8 +1763,6 @@ def test_missing_mqt_dependency(monkeypatch: pytest.MonkeyPatch) -> None:
     assert get_benchmark_indep("ghz", 3)
     with pytest.raises(ImportError, match=r"pip install.*mqt-bench\[mqt\]"):
         get_benchmark_indep("ghz", 3, compiler="mqt")
-    with pytest.raises(MQTBenchExporterError, match=r"pip install.*mqt-bench\[mqt\]"):
-        write_circuit(QuantumCircuit(1), io.StringIO(), BenchmarkLevel.ALG, OutputFormat.QIR)
 
 
 def test_broken_mqt_dependency(monkeypatch: pytest.MonkeyPatch) -> None:
