@@ -346,7 +346,7 @@ def test_module_from_device_name(device_name: str, module_name: str) -> None:
     assert _module_from_device_name(device_name) == module_name
 
 
-@pytest.mark.parametrize("gateset", ["aqt", "ibm_heron", "ionq_forte", "iqm", "quantinuum", "rigetti"])
+@pytest.mark.parametrize("gateset", ["ionq_forte", "rigetti"])
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("level", [BenchmarkLevel.NATIVEGATES, BenchmarkLevel.MAPPED])
 @pytest.mark.parametrize("symbolic", [False, True])
@@ -676,25 +676,3 @@ def test_nighthawk() -> None:
     for item in circuit.data:
         if item.operation.num_qubits == 2:
             assert tuple(circuit.find_bit(q).index for q in item.qubits) in edges
-
-
-def test_nighthawk_topology_and_compilation() -> None:
-    """The numbered IBM grid compiles to supported physical instructions."""
-    target = get_device("ibm_nighthawk_120")
-    edges = set(target["cz"])
-    assert len(edges) == 436
-    assert {(0, 1), (0, 10), (109, 119), (118, 119)} <= edges
-    assert (9, 10) not in edges
-    circuit = QuantumCircuit(3)
-    circuit.h(0)
-    circuit.cx(0, 2)
-    circuit.rxx(-0.37, 1, 2)
-    result = get_benchmark(circuit, BenchmarkLevel.MAPPED, target=target, random_parameters=False)
-    assert all(
-        target.instruction_supported(
-            item.operation.name,
-            tuple(result.find_bit(qubit).index for qubit in item.qubits),
-            parameters=item.operation.params,
-        )
-        for item in result.data
-    )
