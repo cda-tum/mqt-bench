@@ -989,6 +989,19 @@ def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
     assert Operator.from_circuit(compiled).equiv(expected, atol=1e-4)
 
 
+@pytest.mark.parametrize("qiskit_version", ["2.4.2rc1", "2.4.2.dev0"])
+def test_clifford_t_prerelease_fallback(monkeypatch: pytest.MonkeyPatch, qiskit_version: str) -> None:
+    """Versions before 2.4.2 must compile without the newer synthesis pass."""
+    monkeypatch.setattr(mqt.bench.benchmark_generation, "QISKIT_VERSION", qiskit_version)
+    monkeypatch.delattr("qiskit.transpiler.passes.SynthesizeRZRotations", raising=False)
+    qc = QuantumCircuit(1)
+    qc.rx(0.3, 0)
+
+    compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset("clifford+t", 1), 0)
+
+    assert Operator(compiled).equiv(Operator(qc), atol=1e-4)
+
+
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 def test_clifford_t_rotations_in_loop(opt_level: int) -> None:
     """Synthesize rotations inside structured loops without unrolling the loop."""

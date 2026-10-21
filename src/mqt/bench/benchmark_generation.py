@@ -10,11 +10,11 @@
 
 from __future__ import annotations
 
-import re
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Unpack, assert_never, overload
 
 import numpy as np
+from packaging.version import Version
 from qiskit.circuit import CircuitError, ClassicalRegister, QuantumCircuit, SessionEquivalenceLibrary
 from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
@@ -388,7 +388,7 @@ def get_benchmark_native_gates(
             seed_transpiler=10,
         )
         # Synthesize the rotations to Clifford+T gates
-        if tuple(map(int, re.findall(r"\d+", QISKIT_VERSION)[:3])) >= (2, 4, 2):
+        if Version(QISKIT_VERSION) >= Version("2.4.2"):
             from qiskit.transpiler.passes import (  # ruff:ignore[import-outside-top-level]
                 BasisTranslator,
                 SynthesizeRZRotations,
