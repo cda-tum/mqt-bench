@@ -6,6 +6,14 @@ of changes including minor and patch releases, please refer to the
 
 ## [Unreleased]
 
+### Fractional Heron targets
+
+Use `ibm_heron_fractional` or `ibm_heron_156_fractional` with Qiskit 2.2 or
+newer. Existing gate sets retain their dependency minimum. Fractional targets
+add arbitrary RX and RZZ in `[0, pi/2]`. Qiskit compilation folds numeric RZZ
+angles into this interval with exact local and phase corrections. Bind circuit
+parameters before compilation to enforce the interval. Calibration is synthetic.
+
 ### IonQ and Rigetti native gates
 
 IonQ GPI/GPI2 phases now use radians. Forte uses standard `rzz` and retains

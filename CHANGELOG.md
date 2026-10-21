@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1027])
+  ([**@burgholzer**])
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering
   ([#1086]) ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])

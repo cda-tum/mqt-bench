@@ -122,6 +122,8 @@ def _get_target_for_gateset(gateset_name: str, num_qubits: int) -> Target:
     standard_gates = get_standard_gate_name_mapping()
     custom_factory = _lazy_custom_gates()
     for gate_name in dict.fromkeys([*get_gateset(gateset_name), "reset", "delay", "measure"]):
+        if gateset_name == "ibm_heron_fractional" and gate_name in {"rx", "rzz"}:
+            continue
         if gate_name in standard_gates:
             instruction = standard_gates[gate_name]
         elif gate_name in custom_factory:
@@ -130,6 +132,11 @@ def _get_target_for_gateset(gateset_name: str, num_qubits: int) -> Target:
             msg = f"Gate '{gate_name}' not found in available custom gates."
             raise ValueError(msg)
         target.add_instruction(instruction, name=gate_name)
+
+    if gateset_name == "ibm_heron_fractional":
+        from .ibm import add_fractional_gates  # ruff:ignore[import-outside-top-level]
+
+        add_fractional_gates(target)
 
     for name, instruction_class in get_control_flow_name_mapping().items():
         target.add_instruction(instruction_class, name=name)
