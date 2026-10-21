@@ -14,8 +14,6 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
-  ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
@@ -50,6 +48,11 @@ that minor releases may include breaking changes.
   ([#1047]) ([**@simon1hofmann**])
 - 🐛 Expose `__version__` and `__version_tuple__` at the package root ([#1031])
   ([**@algovista-collab**])
+
+### Removed
+
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
+  ([**@burgholzer**])
 
 ## [2.3.0] - 2026-09-12
 
@@ -230,6 +233,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
@@ -321,5 +325,3 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [Common Changelog]: https://common-changelog.org
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [GitHub Release Notes]: https://github.com/munich-quantum-toolkit/bench/releases
-
-[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
