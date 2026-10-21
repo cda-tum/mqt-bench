@@ -233,8 +233,10 @@ def test_get_unknown_device() -> None:
         get_device(unknown_name)
 
 
-def test_dynamic_device_registration() -> None:
+def test_dynamic_device_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """A device registered at runtime should immediately be visible through the public helpers."""
+    get_available_device_names()
+    monkeypatch.setattr("mqt.bench.targets.devices._registry._REGISTRY", {})
 
     @register_device("dummy_device")
     def _dummy_factory() -> Target:
@@ -247,8 +249,10 @@ def test_dynamic_device_registration() -> None:
     assert isinstance(dev, Target)
 
 
-def test_dynamic_gateset_registration() -> None:
+def test_dynamic_gateset_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """A gateset registered at runtime should immediately be visible through the public helpers."""
+    get_available_gateset_names()
+    monkeypatch.setattr("mqt.bench.targets.gatesets._registry._REGISTRY", {})
 
     @register_gateset("dummy_gateset")
     def _dummy_factory() -> list[str]:
@@ -264,8 +268,10 @@ def test_dynamic_gateset_registration() -> None:
         get_target_for_gateset("dummy_gateset", 2)
 
 
-def test_duplicate_device_registration() -> None:
+def test_duplicate_device_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """Registering the same name twice must raise ValueError."""
+    get_available_device_names()
+    monkeypatch.setattr("mqt.bench.targets.devices._registry._REGISTRY", {})
 
     @register_device("dup_device")
     def _factory1() -> Target:
@@ -279,8 +285,10 @@ def test_duplicate_device_registration() -> None:
             return Target(num_qubits=1)
 
 
-def test_duplicate_gateset_registration() -> None:
+def test_duplicate_gateset_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     """Registering the same name twice must raise ValueError."""
+    get_available_gateset_names()
+    monkeypatch.setattr("mqt.bench.targets.gatesets._registry._REGISTRY", {})
 
     @register_gateset("dup_device")
     def _factory1() -> list[str]:
