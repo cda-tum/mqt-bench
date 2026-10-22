@@ -391,20 +391,23 @@ def get_benchmark_native_gates(
     circuit = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
 
     if target.description == "clifford+t":
-        from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler.passes import BasisTranslator, HighLevelSynthesis  # ruff:ignore[import-outside-top-level]
 
         target, _ = prepare_target(target, native=True)
         # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
-        compiled_for_synthesis = transpile(
-            circuit,
+        pm = generate_preset_pass_manager(
             target=clifford_t_rotations,
             optimization_level=opt_level,
             seed_transpiler=10,
+            # Keep permutations in the circuit so QASM export does not depend on layout metadata.
+            routing_method="none",
         )
-        # Synthesize the rotations to Clifford+T gates
+        mirror_pm = PassManager(HighLevelSynthesis(target=target, equivalence_library=SessionEquivalenceLibrary))
+        if opt_level:
+            mirror_pm.append(RecursiveOptimizeCliffordT())
+        mirror_pm.append(BasisTranslator(SessionEquivalenceLibrary, sorted(target.operation_names), target))
         if Version(QISKIT_VERSION) >= Version("2.4.2"):
             from qiskit.transpiler.passes import SynthesizeRZRotations  # ruff:ignore[import-outside-top-level]
 
@@ -417,31 +420,22 @@ def get_benchmark_native_gates(
                         dag.substitute_node(node, op.replace_blocks([self(block) for block in op.blocks]))
                     return super().run(dag)
 
-            pm = PassManager([
+            synthesis_pm = PassManager([
                 BasisTranslator(SessionEquivalenceLibrary, sorted(clifford_t_rotations.operation_names - {"rx", "ry"})),
                 RecursiveSynthesizeRZRotations(),
             ])
         else:
             from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
 
-            pm = PassManager(SolovayKitaev())
-        circuit = pm.run(compiled_for_synthesis)
-        # Restore the permutation dropped by synthesis
-        if compiled_for_synthesis.layout is not None:
-            circuit.append(PermutationGate(compiled_for_synthesis.layout.final_index_layout()), circuit.qubits)
-        pm = PassManager(HighLevelSynthesis())
-        if opt_level:
-            pm.append(RecursiveOptimizeCliffordT())
-        pm.append(BasisTranslator(SessionEquivalenceLibrary, sorted(target.operation_names), target))
-        compiled_circuit = pm.run(circuit)
-        if generate_mirror_circuit:
-            return _create_mirror_circuit(compiled_circuit, inplace=True, pass_manager=pm)
-        return compiled_circuit
+            synthesis_pm = PassManager(SolovayKitaev())
+        pm.post_optimization = synthesis_pm + mirror_pm
+    else:
+        pm = _get_qiskit_pass_manager(target, opt_level, native=True)
+        mirror_pm = pm
 
-    pm = _get_qiskit_pass_manager(target, opt_level, native=True)
     compiled_circuit = pm.run(circuit)
     if generate_mirror_circuit:
-        return _create_mirror_circuit(compiled_circuit, inplace=True, pass_manager=pm)
+        return _create_mirror_circuit(compiled_circuit, inplace=True, pass_manager=mirror_pm)
     return compiled_circuit
 
 

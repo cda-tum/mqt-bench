@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, NoReturn, cast
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit, qasm3, qpy
+from qiskit import QuantumCircuit, qasm2, qasm3, qpy
 from qiskit.circuit import ClassicalRegister, ForLoopOp, IfElseOp, Parameter
 from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, TGate, XGate
 from qiskit.compiler import transpile
@@ -856,7 +856,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             None,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "`circuit_size` must be a positive integer when `benchmark` is a str."
@@ -865,7 +865,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             -1,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "No Shor instance for circuit_size=3. Available: 18, 42, 58, 74."
@@ -874,7 +874,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = re.escape("Invalid `opt_level` '4'. Must be in the range [0, 3].")
@@ -883,7 +883,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qpeexact",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             4,
         )
     match = re.escape(
@@ -999,6 +999,23 @@ def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
 
 
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("gate_name", ["iswap", "dcx"])
+def test_clifford_t_mirror_inverse_gates(opt_level: int, gate_name: str) -> None:
+    """Lower inverses of native Clifford gates back to the target basis."""
+    circuit = QuantumCircuit(2)
+    getattr(circuit, gate_name)(0, 1)
+    target = get_target_for_gateset("clifford+t", 2)
+
+    compiled = get_benchmark_native_gates(circuit, None, target, opt_level, generate_mirror_circuit=True)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(Operator(np.eye(4)))
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 def test_clifford_t_rotations_in_loop(opt_level: int) -> None:
     """Synthesize rotations inside structured loops without unrolling the loop."""
     qc = QuantumCircuit(1)
@@ -1096,20 +1113,20 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
 
-@pytest.mark.parametrize("opt_level", [2, 3])
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("mirror", [False, True])
-def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool) -> None:
-    """Preserve SWAP semantics through Clifford+T synthesis and mirror generation."""
+@pytest.mark.parametrize("fmt", [OutputFormat.QASM2, OutputFormat.QASM3])
+def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool, fmt: OutputFormat) -> None:
+    """Preserve SWAP semantics through Clifford+T synthesis, mirrors, and QASM export."""
     qc = QuantumCircuit(4)
     qc.h(0)
     qc.t(1)
     qc.cx(1, 2)
     qc.swap(0, 1)
     qc.swap(1, 2)
+    target = get_target_for_gateset("clifford+t", 4)
 
-    compiled = get_benchmark_native_gates(
-        qc, None, get_target_for_gateset("clifford+t", 4), opt_level, generate_mirror_circuit=mirror
-    )
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
 
     expected = Operator(np.eye(16)) if mirror else Operator(qc)
     if mirror:
@@ -1118,6 +1135,16 @@ def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool) -> None
         } == {0, 1, 2}
     compiled.remove_final_measurements()
     assert Operator.from_circuit(compiled).equiv(expected)
+    assert Operator(compiled).equiv(expected)
+
+    stream = io.StringIO()
+    write_circuit(compiled, stream, BenchmarkLevel.NATIVEGATES, fmt, target)
+    restored = (
+        qasm2.loads(stream.getvalue(), custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+        if fmt is OutputFormat.QASM2
+        else qasm3.loads(stream.getvalue())
+    )
+    assert Operator(restored).equiv(expected)
 
 
 def test_benchmark_helper_shor() -> None:

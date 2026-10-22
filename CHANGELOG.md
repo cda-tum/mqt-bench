@@ -14,6 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
+  models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
@@ -41,7 +43,8 @@ that minor releases may include breaking changes.
 ### Fixed
 
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
-  and mirrors ([#1093]) ([**@simon1hofmann**])
+  and mirrors, and preserve permutations in QASM exports ([#1093])
+  ([**@simon1hofmann**], [**@burgholzer**])
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
   mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
   [**@simon1hofmann**])
@@ -251,6 +254,8 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1095]: https://github.com/munich-quantum-toolkit/bench/pull/1095
+[#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
 [#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
@@ -258,7 +263,6 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
-[#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
 [#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
