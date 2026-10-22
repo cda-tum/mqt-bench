@@ -73,74 +73,13 @@ print(get_available_device_names())
 ## MQT Core compiler
 
 Install the optional compiler with `pip install "mqt-bench[mqt]"`. The extra
-installs MQT Core 4.1.1 from PyPI and requires Qiskit 2.5.x. Core provides
-wheels for supported platforms; no separate LLVM installation is needed with a
-wheel. The base installation supports Qiskit 2.2.3 or newer, below version 3.
+installs MQT Core 4.1.1 and Qiskit 2.5.x. Core wheels include the compiler
+runtime. Qiskit remains the default compiler, and both compilers return
+`QuantumCircuit`.
 
 ```python
 from mqt.bench import BenchmarkLevel, get_benchmark
 from mqt.bench.targets import get_device
-
-circuit = get_benchmark(
-    "ghz",
-    BenchmarkLevel.MAPPED,
-    3,
-    target=get_device("iqm_crystal_5"),
-    compiler="mqt",
-)
-```
-
-The return type remains `QuantumCircuit`. Circuit generation uses Qiskit;
-import, optimization, native synthesis, and routing use MQT Core. Core handles
-permutation gates and preserves parameter identities and vector membership. The
-level-specific functions also accept `compiler="mqt"`.
-
-- `INDEP` decomposes multi-controlled operations and runs Core's default
-  target-independent optimization pipeline.
-- `NATIVEGATES` uses the target's gate set with all-to-all connectivity and the
-  input circuit's width. Operations wider than the circuit are omitted; physical
-  gate placements are ignored. The result retains layout metadata needed to
-  interpret its logical wire order; use `Operator.from_circuit` for its unitary.
-- `MAPPED` uses the device's width, connectivity, and ordered gate placements.
-  The result uses physical wires; measurements retain their classical
-  destinations. MQT Bench removes layout metadata from its input copy before
-  compilation and from the returned circuit. Recompilation treats the current
-  circuit wires as inputs without applying an earlier layout again.
-
-Core supports the bundled IBM, IQM, Quantinuum, IonQ, AQT, Rigetti, and
-Clifford+T+rotations gate sets. Target conversion uses Core's Qiskit importer,
-which preserves instruction aliases, fixed parameters, and ordered placements.
-Multi-qubit compilation requires a target with an entangling gate. Mapped
-targets must specify a positive qubit count. Unrepresentable constraints,
-including open controls and unsupported angle bounds, raise an error before
-compilation. Core folds numeric RZZ angles into supported intervals and uses a
-fixed entangler for unbound RZZ angles. Symbolic target parameter slots are
-independent wildcards, as in Qiskit.
-
-All MQT Bench gate parameters use radians. IonQ targets include GPI, GPI2, RZZ,
-and arbitrary virtual RZ. Virtual RZ represents a phase-frame update; a provider
-submission layer must absorb it into GPI/GPI2 gate phases when required by the
-provider. MQT Bench returns compiler-level circuits and does not submit them to
-hardware. Native input gates retain their parameters and semantics through
-repeated compilation. Rigetti targets use standard RX gates under distinct
-fixed-angle names, shared by Qiskit and Core.
-
-Synthesis requires a basis that Core recognizes, even when every input gate is
-already native. Fixed-angle gate synthesis supports unrestricted RZ with RX(π/2)
-or RX(-π/2), optionally RX(±π). Other fixed angles can be represented but do not
-supply a synthesis recipe. Core does not provide Qiskit's approximate Clifford+T
-synthesis and never falls back to Qiskit transpilation. Dynamic circuits and
-structured loops use Core's supported translation and target control-flow
-capabilities; Core can unroll loops when required by the target.
-
-Mirrors are formed from the compiled circuit and compiled again with Core when a
-target is supplied. The barrier between both halves prevents cancellation. Core
-uses its own fixed pipeline; `opt_level=0`, `1`, or `3` raises an error.
-
-MQT Bench sets seed `10` and four mapping trials so defaults do not depend on
-the CPU count. To change compiler controls, pass Core's `CompilationOptions`:
-
-```python
 from mqt.core.mlir import CompilationOptions, MappingOptions
 
 circuit = get_benchmark(
@@ -149,31 +88,62 @@ circuit = get_benchmark(
     3,
     target=get_device("iqm_crystal_5"),
     compiler="mqt",
-    compiler_options=CompilationOptions(
-        seed=17,
-        mapping=MappingOptions(trials=8, iterations=2, lookahead=10),
-    ),
+    compiler_options=CompilationOptions(seed=17, mapping=MappingOptions(trials=8)),
 )
 ```
 
-Options also apply to mirror recompilation. Supplied options replace MQT Bench's
-defaults: `CompilationOptions()` uses Core's default seeds and CPU-dependent
-trial count. Core also exposes timing, statistics, and routing search-memory
-controls. `compiler_options` is rejected with the Qiskit compiler or at the
-algorithm level, where no compilation runs. Benchmark-generation `seed` remains
-separate from the compilation seed. Fixed options do not promise identical
-results across Core versions or platforms.
+The level-specific functions also accept `compiler="mqt"`:
 
-The CLI accepts the same selection:
+- `INDEP` decomposes multi-controlled operations and runs Core's default
+  target-independent optimization pipeline.
+- `NATIVEGATES` uses the target's gate set with all-to-all connectivity and the
+  input circuit's width. Operations wider than the circuit are omitted; physical
+  gate placements are ignored. The result retains layout metadata needed to
+  interpret its logical wire order; use `Operator.from_circuit` for its unitary.
+- `MAPPED` uses the device's width, connectivity, and ordered gate placements.
+  The result uses physical wires without layout metadata; measurements retain
+  their classical destinations. Recompilation treats the current wires as
+  inputs.
+
+Core supports the bundled IBM, IQM, Quantinuum, IonQ, AQT, Rigetti, and
+Clifford+T+rotations gate sets. The target must supply a synthesis basis that
+Core supports, including an entangling gate for multi-qubit compilation, even
+for already-native inputs. Unsupported target constraints raise an error. Core
+does not provide Qiskit's approximate Clifford+T synthesis or fall back to
+Qiskit transpilation. See Core's [target compilation guide] for synthesis and
+control-flow support.
+
+All MQT Bench gate parameters use radians. IonQ targets include GPI, GPI2, RZZ,
+and arbitrary virtual RZ. Virtual RZ represents a phase-frame update; a provider
+submission layer must absorb it into GPI/GPI2 gate phases when required by the
+provider. MQT Bench returns compiler-level circuits and does not submit them to
+hardware.
+
+Mirrors are formed from the compiled circuit and compiled again with Core when a
+target is supplied. The barrier between both halves prevents cancellation. Core
+uses its own fixed pipeline; `opt_level=0`, `1`, or `3` raises an error.
+
+MQT Bench sets seed `10` and four mapping trials so defaults do not depend on
+the CPU count. Python `compiler_options` replace these defaults and also apply
+to mirror recompilation. A bare `CompilationOptions()` uses Core's defaults,
+including a CPU-dependent trial count. These options require the MQT compiler at
+a compilation level. The benchmark-generation seed is separate from the
+compilation seed. Fixed options do not guarantee identical results across Core
+versions or platforms.
+
+The CLI exposes `--compiler-seed` and `--mapping-trials`. Omitted values retain
+MQT Bench's defaults:
 
 ```bash
 mqt-bench --compiler mqt --algorithm ghz --num-qubits 3 \
-  --level mapped --target iqm_crystal_5 --save
+  --level mapped --target iqm_crystal_5 --compiler-seed 17 --mapping-trials 8 --save
 ```
 
 Core filenames contain `_mqt_` and omit Qiskit's optimization level. QASM
 headers and QPY metadata record the compiler version. Existing Qiskit filenames
 remain unchanged.
+
+[target compilation guide]: https://github.com/munich-quantum-toolkit/core/blob/v4.1.1/docs/mlir/target_compilation.md
 
 ## QIR and LLVM output
 

@@ -59,7 +59,7 @@ def _physical_circuit(circuit: QuantumCircuit) -> QuantumCircuit:
 
 
 def _target_environment(target: Target, num_qubits: int, *, mapped: bool) -> TargetEnvironment:
-    """Import capabilities strictly; native-gate compilation ignores placement."""
+    """Convert the target, enforcing placement only for mapped compilation."""
     if mapped and (target.num_qubits is None or target.num_qubits < num_qubits):
         msg = "The MQT mapped target must have at least as many qubits as the circuit."
         raise ValueError(msg)
@@ -102,7 +102,7 @@ def _target_environment(target: Target, num_qubits: int, *, mapped: bool) -> Tar
 
 
 def _validate_target(circuit: QuantumCircuit, target: Target, *, mapped: bool, sites: list[int] | None = None) -> None:
-    """Check exported instructions against their enclosing physical qubit sites."""
+    """Check that exported gates satisfy the target, including inside control flow."""
     sites = list(range(circuit.num_qubits)) if sites is None else sites
     for item in circuit.data:
         operation = item.operation
