@@ -15,6 +15,8 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add QAOA Structured Loop ([#1092]) ([**@algovista-collab**])
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
+  ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
   ([**@burgholzer**])
 - ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
@@ -29,11 +31,16 @@ that minor releases may include breaking changes.
 
 ### Changed
 
+- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
+  ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
 ### Fixed
 
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
 - 📝 Fix API documentation markup, heading anchors, and notebook build
   concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
@@ -243,6 +250,8 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1092]: https://github.com/munich-quantum-toolkit/bench/pull/1092
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
+[#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
