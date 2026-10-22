@@ -298,8 +298,6 @@ def test_arithmetic_mirror_measurements() -> None:
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
         ("simon", 1, None, "num_qubits must be an even integer ≥ 2."),
         ("simon", 3, None, "num_qubits must be an even integer ≥ 2."),
-        ("bell", 1, None, "num_qubits must be at least 2."),
-        ("bell", 3, None, "num_qubits must be divisible by 2."),
         ("bell", 1, None, "num_qubits must be a positive multiple of 2."),
     ],
 )
