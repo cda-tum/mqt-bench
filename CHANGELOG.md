@@ -39,6 +39,9 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
+- 🐛 Reject invalid qubit counts in the Shor, Steane, and BMW copula benchmarks;
+  combine size checks for Bell pairs and teleportation ([#1098])
+  ([**@jyothikacodes**], [**@simon1hofmann**])
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
   and mirrors, and preserve permutations in QASM exports ([#1093])
   ([**@simon1hofmann**], [**@burgholzer**])
@@ -251,6 +254,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1098]: https://github.com/munich-quantum-toolkit/bench/pull/1098
 [#1095]: https://github.com/munich-quantum-toolkit/bench/pull/1095
 [#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089

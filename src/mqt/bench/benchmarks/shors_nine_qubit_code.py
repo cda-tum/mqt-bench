@@ -302,13 +302,13 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
             - 1 logical qubit measurement bit (m)
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit (must be divisible by 17)
+        num_qubits: number of qubits of the returned quantum circuit (must be a positive multiple of 17)
 
     Returns:
         QuantumCircuit: a quantum circuit implementing Shor's 9 Qubit Code
     """
-    if num_qubits % 17:
-        msg = "num_qubits must be divisible by 17."
+    if num_qubits < 17 or num_qubits % 17:
+        msg = "num_qubits must be a positive multiple of 17."
         raise ValueError(msg)
 
     num_logical_qubits = num_qubits // 17
