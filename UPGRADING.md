@@ -38,6 +38,18 @@ keyword `qir_profile`. Circuit generation still returns `QuantumCircuit`. See
 [QIR and LLVM output](docs/parameter.md#qir-and-llvm-output) for parameter
 binding, runtime requirements, and target limitations.
 
+### Clifford+T compilation
+
+The requested optimization level applies before synthesis. For nonzero levels,
+Qiskit's public `OptimizeCliffordT` pass also runs after synthesis, including
+inside control-flow blocks. A final basis translation enforces the target gate
+set. Structured loops and loop jumps remain supported. Mirrors use the exact
+inverse of the synthesized circuit and receive the same optimization without
+another approximate synthesis.
+
+Native Clifford+T circuits retain qubit permutations as gates, so QASM exports
+preserve their semantics without relying on Qiskit layout metadata.
+
 ### Qiskit 2.2.3 minimum
 
 MQT Bench requires Qiskit 2.2.3 or newer, up from 2.1.2. Update lower dependency
