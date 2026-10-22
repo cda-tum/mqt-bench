@@ -6,7 +6,7 @@
 #
 # Licensed under the MIT License
 
-"""Rigetti Cepheus connectivity snapshot from Amazon on 2026-10-02."""
+"""Rigetti Cepheus architecture and deployment targets."""
 
 from __future__ import annotations
 
@@ -19,18 +19,25 @@ from qiskit.transpiler import InstructionProperties, Target
 from ._registry import register_device
 
 CEPHEUS_PHYSICAL_QUBITS = (*range(8), *range(9, 108))
-"""Provider qubit label for each dense Bench wire; physical qubit 8 is unavailable."""
+"""Provider qubit label for each MQT Bench wire in the 107-qubit snapshot."""
+
+
+@register_device("rigetti_cepheus_108")
+def get_rigetti_cepheus_108() -> Target:
+    """Get the full 108-qubit Cepheus architecture with a 12-by-9 grid."""
+    return _build_cepheus_target(name="rigetti_cepheus_108", physical_qubits=tuple(range(108)))
 
 
 @register_device("rigetti_cepheus_107")
 def get_rigetti_cepheus_107() -> Target:
-    """Get Cepheus's 107 active qubits with CZ connectivity and no calibration.
+    """Get the 2026-10-02 deployment snapshot, which excludes physical qubit 8."""
+    return _build_cepheus_target(name="rigetti_cepheus_107", physical_qubits=CEPHEUS_PHYSICAL_QUBITS)
 
-    The provider names the device Cepheus-1-108Q. Bench numbers active qubits
-    contiguously; ``CEPHEUS_PHYSICAL_QUBITS`` maps these wires to provider labels.
-    """
-    num_qubits = len(CEPHEUS_PHYSICAL_QUBITS)
-    target = Target(num_qubits=num_qubits, description="rigetti_cepheus_107")
+
+def _build_cepheus_target(*, name: str, physical_qubits: tuple[int, ...]) -> Target:
+    """Build a Cepheus target with bidirectional CZ gates and no calibration."""
+    num_qubits = len(physical_qubits)
+    target = Target(num_qubits=num_qubits, description=name)
     oneq_props = {(q,): InstructionProperties() for q in range(num_qubits)}
     for name, angle in (("rxpi", pi), ("rxpidg", -pi), ("rxpi2", pi / 2), ("rxpi2dg", -pi / 2)):
         target.add_instruction(RXGate(angle), oneq_props, name=name)
@@ -40,8 +47,8 @@ def get_rigetti_cepheus_107() -> Target:
         CZGate(),
         {
             (i, j): InstructionProperties()
-            for i, physical_i in enumerate(CEPHEUS_PHYSICAL_QUBITS)
-            for j, physical_j in enumerate(CEPHEUS_PHYSICAL_QUBITS)
+            for i, physical_i in enumerate(physical_qubits)
+            for j, physical_j in enumerate(physical_qubits)
             if abs(physical_i - physical_j) == 9
             or (abs(physical_i - physical_j) == 1 and physical_i // 9 == physical_j // 9)
         },

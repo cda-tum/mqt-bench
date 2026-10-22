@@ -48,7 +48,7 @@ class MQTBenchExporterError(Exception):
 
 
 def _attach_metadata(qc: QuantumCircuit, header: str) -> QuantumCircuit:
-    """Return *a shallow copy* whose ``metadata`` carries the MQT-Bench header."""
+    """Return *a shallow copy* whose ``metadata`` carries the MQT Bench header."""
     clone = qc.copy()
     clone.metadata = (clone.metadata or {}) | {"mqt_bench": header}
     return clone

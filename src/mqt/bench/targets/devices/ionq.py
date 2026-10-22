@@ -23,7 +23,7 @@ def get_ionq_forte_36() -> Target:
     """Get the Forte architecture, including arbitrary virtual Z rotations.
 
     Provider serializers must absorb virtual Z rotations into GPI/GPI2 gate
-    phases when the provider requires only GPI/GPI2/ZZ. Bench returns circuits;
+    phases when the provider requires only GPI/GPI2/ZZ. MQT Bench returns circuits;
     it does not submit them to a provider.
     """
     num_qubits = 36

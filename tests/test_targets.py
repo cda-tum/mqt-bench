@@ -164,6 +164,13 @@ DEVICE_SPECS: Sequence[DeviceSpec] = [
     ),
     # ─────────────────────────────────────────────────────────────── Rigetti ──
     DeviceSpec(
+        name="rigetti_cepheus_108",
+        num_qubits=108,
+        single_qubit_gates={"rxpi", "rxpidg", "rxpi2", "rxpi2dg", "rz", "measure"},
+        two_qubit_gates={"cz"},
+        symmetric_connectivity={"cz": True},
+    ),
+    DeviceSpec(
         name="rigetti_cepheus_107",
         num_qubits=107,
         single_qubit_gates={"rxpi", "rxpidg", "rxpi2", "rxpi2dg", "rz", "measure"},
@@ -404,13 +411,31 @@ def test_ionq_radian_definition(gate_type: type[GPIGate | GPI2Gate], angle: floa
 
 def test_rigetti_fixed_rx_aliases() -> None:
     """All four fixed gates are standard RX capabilities with distinct names."""
-    for target in (get_target_for_gateset("rigetti", 2), get_device("rigetti_cepheus_107")):
+    for target in (
+        get_target_for_gateset("rigetti", 2),
+        get_device("rigetti_cepheus_108"),
+        get_device("rigetti_cepheus_107"),
+    ):
         for name, angle in (("rxpi", pi), ("rxpidg", -pi), ("rxpi2", pi / 2), ("rxpi2dg", -pi / 2)):
             operation = target.operation_from_name(name)
             assert isinstance(operation, RXGate)
             assert operation.params == [angle]
             assert target.instruction_supported(name, (0,), parameters=[angle])
             assert not target.instruction_supported(name, (0,), parameters=[0.123])
+
+
+def test_cepheus_architecture() -> None:
+    """The full architecture restores qubit 8 and its two bidirectional couplings."""
+    target = get_device("rigetti_cepheus_108")
+    assert target.num_qubits == 108
+    assert set(target["measure"]) == {(q,) for q in range(108)}
+    edges = set(target["cz"])
+    assert len(edges) == 390
+    assert {edge for edge in edges if 8 in edge} == {(7, 8), (8, 7), (8, 17), (17, 8)}
+    snapshot = get_device("rigetti_cepheus_107")
+    assert {edge for edge in edges if 8 not in edge} == {
+        (CEPHEUS_PHYSICAL_QUBITS[i], CEPHEUS_PHYSICAL_QUBITS[j]) for i, j in snapshot["cz"]
+    }
 
 
 def test_cepheus_physical_labels() -> None:

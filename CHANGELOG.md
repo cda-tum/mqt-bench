@@ -14,8 +14,8 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- 📝 Document target models, native gate conventions, and physical qubit labels
-  ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
+  models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
