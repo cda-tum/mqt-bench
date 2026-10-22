@@ -856,7 +856,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             None,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "`circuit_size` must be a positive integer when `benchmark` is a str."
@@ -865,7 +865,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             -1,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "No Shor instance for circuit_size=3. Available: 18, 42, 58, 74."
@@ -874,7 +874,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = re.escape("Invalid `opt_level` '4'. Must be in the range [0, 3].")
@@ -883,7 +883,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qpeexact",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_cepheus_107"),
+            get_device("rigetti_cepheus_108"),
             4,
         )
     match = re.escape(
