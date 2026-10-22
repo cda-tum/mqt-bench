@@ -18,11 +18,8 @@ All gate parameters use radians. All device models include measurement.
 | `iqm_crystal_54`           | `r`, `cz`                                | 54-qubit Crystal (Emerald)                |
 | `quantinuum_h2_56`         | `rx`, `ry`, `rz`, `rzz`                  | 56-qubit H2, all-to-all                   |
 | `rigetti_cepheus_108`      | fixed `rx`, `rz`, `cz`                   | 108-qubit Cepheus, 12-by-9 grid           |
-| `rigetti_cepheus_107`      | fixed `rx`, `rz`, `cz`                   | Deployment snapshot with qubit 8 excluded |
 
-The 108-qubit Cepheus model uses qubits 0 through 107. The 107-qubit snapshot
-uses consecutive wire indices; `CEPHEUS_PHYSICAL_QUBITS` in
-`mqt.bench.targets.devices.rigetti` maps them to physical labels.
+The Cepheus model uses physical qubit labels 0 through 107.
 
 ## Gate parameters
 

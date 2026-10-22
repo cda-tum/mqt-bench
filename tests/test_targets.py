@@ -30,7 +30,6 @@ from mqt.bench.targets.devices import (
     get_device,
     register_device,
 )
-from mqt.bench.targets.devices.rigetti import CEPHEUS_PHYSICAL_QUBITS
 from mqt.bench.targets.gatesets import (
     _module_from_gateset_name,  # ruff:ignore[import-private-name]
     get_available_gateset_names,
@@ -166,13 +165,6 @@ DEVICE_SPECS: Sequence[DeviceSpec] = [
     DeviceSpec(
         name="rigetti_cepheus_108",
         num_qubits=108,
-        single_qubit_gates={"rxpi", "rxpidg", "rxpi2", "rxpi2dg", "rz", "measure"},
-        two_qubit_gates={"cz"},
-        symmetric_connectivity={"cz": True},
-    ),
-    DeviceSpec(
-        name="rigetti_cepheus_107",
-        num_qubits=107,
         single_qubit_gates={"rxpi", "rxpidg", "rxpi2", "rxpi2dg", "rz", "measure"},
         two_qubit_gates={"cz"},
         symmetric_connectivity={"cz": True},
@@ -346,7 +338,7 @@ def test_module_from_gateset_name(gateset_name: str, module_name: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("device_name", "module_name"), [("rigetti_cepheus_107", "rigetti"), ("ionq_forte_36", "ionq")]
+    ("device_name", "module_name"), [("rigetti_cepheus_108", "rigetti"), ("ionq_forte_36", "ionq")]
 )
 def test_module_from_device_name(device_name: str, module_name: str) -> None:
     """Test module name extraction from device name."""
@@ -414,7 +406,6 @@ def test_rigetti_fixed_rx_aliases() -> None:
     for target in (
         get_target_for_gateset("rigetti", 2),
         get_device("rigetti_cepheus_108"),
-        get_device("rigetti_cepheus_107"),
     ):
         for name, angle in (("rxpi", pi), ("rxpidg", -pi), ("rxpi2", pi / 2), ("rxpi2dg", -pi / 2)):
             operation = target.operation_from_name(name)
@@ -425,30 +416,17 @@ def test_rigetti_fixed_rx_aliases() -> None:
 
 
 def test_cepheus_architecture() -> None:
-    """The full architecture restores qubit 8 and its two bidirectional couplings."""
+    """Cepheus includes all 108 qubits and the full grid's bidirectional couplings."""
     target = get_device("rigetti_cepheus_108")
     assert target.num_qubits == 108
     assert set(target["measure"]) == {(q,) for q in range(108)}
     edges = set(target["cz"])
     assert len(edges) == 390
     assert {edge for edge in edges if 8 in edge} == {(7, 8), (8, 7), (8, 17), (17, 8)}
-    snapshot = get_device("rigetti_cepheus_107")
-    assert {edge for edge in edges if 8 not in edge} == {
-        (CEPHEUS_PHYSICAL_QUBITS[i], CEPHEUS_PHYSICAL_QUBITS[j]) for i, j in snapshot["cz"]
-    }
-
-
-def test_cepheus_physical_labels() -> None:
-    """Dense wires preserve the provider's sparse labels and grid edges."""
-    target = get_device("rigetti_cepheus_107")
-    assert len(CEPHEUS_PHYSICAL_QUBITS) == target.num_qubits == 107
-    assert set(CEPHEUS_PHYSICAL_QUBITS) == set(range(108)) - {8}
-    edges = {(CEPHEUS_PHYSICAL_QUBITS[i], CEPHEUS_PHYSICAL_QUBITS[j]) for i, j in target["cz"]}
-    assert len(edges) == 386
     assert (0, 9) in edges
     assert (98, 107) in edges
-    assert (7, 9) not in edges
-    assert (17, 18) not in edges
+    assert (8, 9) not in edges
+    assert all((j, i) in edges for i, j in edges)
 
 
 def test_forte_virtual_z() -> None:

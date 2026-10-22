@@ -18,8 +18,7 @@ python -m pip install --upgrade "qiskit[qasm3-import]>=2.2.3,<3"
 ### Device models
 
 - Replace `rigetti_ankaa_84` with `rigetti_cepheus_108` for the full Cepheus
-  architecture. The 107-qubit deployment snapshot remains available as
-  `rigetti_cepheus_107`.
+  architecture.
 - The `ibm_falcon` and `ibm_eagle` gate sets and `ibm_falcon_27`,
   `ibm_falcon_127`, `ibm_eagle_127`, and `ibm_heron_133` devices are removed.
   Use `ibm_heron` and `ibm_heron_156`, or supply a custom Qiskit target for an
