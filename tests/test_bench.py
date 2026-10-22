@@ -59,6 +59,7 @@ from mqt.bench.benchmark_generation import (
     get_benchmark_native_gates,
 )
 from mqt.bench.benchmarks import (
+    bmw_quark_copula,
     create_circuit,
     get_available_benchmark_names,
     get_benchmark_catalog,
@@ -291,17 +292,18 @@ def test_arithmetic_mirror_measurements() -> None:
         ("hhl", 2, None, "Number of qubits must be at least 3 for HHL."),
         ("qpeexact", 1, None, "Number of qubits must be at least 2 for QPE exact."),
         ("iqpe", 1, None, "Number of qubits must be at least 2 for IQPE."),
-        ("bmw_quark_copula", 3, None, "Number of qubits must be divisible by 2."),
+        ("bmw_quark_copula", 1, None, "num_qubits must be a positive multiple of 2."),
+        ("bmw_quark_copula", 3, None, "num_qubits must be a positive multiple of 2."),
         ("ae", 1, None, r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."),
         ("shors_nine_qubit_code", 1, None, "num_qubits must be a positive multiple of 17."),
         ("shors_nine_qubit_code", 18, None, "num_qubits must be a positive multiple of 17."),
         ("seven_qubit_steane_code", 1, None, "num_qubits must be a positive multiple of 13."),
         ("seven_qubit_steane_code", 14, None, "num_qubits must be a positive multiple of 13."),
-        ("teleportation", 1, None, "num_qubits must be at least 3."),
-        ("teleportation", 4, None, "num_qubits must be divisible by 3."),
+        ("teleportation", 1, None, "num_qubits must be a positive multiple of 3."),
+        ("teleportation", 4, None, "num_qubits must be a positive multiple of 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
-        ("bell", 1, None, "num_qubits must be at least 2."),
-        ("bell", 3, None, "num_qubits must be divisible by 2."),
+        ("bell", 1, None, "num_qubits must be a positive multiple of 2."),
+        ("bell", 3, None, "num_qubits must be a positive multiple of 2."),
     ],
 )
 def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | None, msg: str) -> None:
@@ -768,13 +770,20 @@ def test_seven_qubit_steane_code_circuit_structure(num_qubits: int) -> None:
     )
 
 
-@pytest.mark.parametrize("invalid_size", [0, -1, -13, -17])
-def test_ecc_rejects_non_positive_sizes(invalid_size: int) -> None:
-    """Test that Shor and Steane code benchmarks reject non-positive sizes."""
-    with pytest.raises(ValueError, match=r"num_qubits must be a positive multiple of 17\."):
-        shors_nine_qubit_code.create_circuit(invalid_size)
-    with pytest.raises(ValueError, match=r"num_qubits must be a positive multiple of 13\."):
-        seven_qubit_steane_code.create_circuit(invalid_size)
+@pytest.mark.parametrize(
+    ("factory", "block_size"),
+    [
+        (shors_nine_qubit_code.create_circuit, 17),
+        (seven_qubit_steane_code.create_circuit, 13),
+        (bmw_quark_copula.create_circuit, 2),
+    ],
+    ids=["shor", "steane", "copula"],
+)
+def test_benchmark_rejects_nonpositive_sizes(factory: Callable[[int], QuantumCircuit], block_size: int) -> None:
+    """Direct constructors reject zero and negative multiples of their block size."""
+    for invalid_size in (-block_size, 0):
+        with pytest.raises(ValueError, match=rf"num_qubits must be a positive multiple of {block_size}\."):
+            factory(invalid_size)
 
 
 @pytest.mark.parametrize(
