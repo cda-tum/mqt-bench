@@ -15,7 +15,7 @@ that minor releases may include breaking changes.
 ### Added
 
 - ✨ Add QIR text and bitcode export with Base and Adaptive profiles ([#1094])
-  ([**@simon1hofmann**])
+  ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add optional MQT Core compilation for target-independent, native-gate, and
   mapped circuits via `compiler="mqt"` or `--compiler mqt` ([#1027])
   ([**@simon1hofmann**], [**@burgholzer**])
