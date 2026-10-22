@@ -64,7 +64,9 @@ from mqt.bench.benchmarks import (
     get_benchmark_catalog,
     get_benchmark_description,
     register_benchmark,
+    seven_qubit_steane_code,
     shor,
+    shors_nine_qubit_code,
 )
 from mqt.bench.output import (
     MQTBenchExporterError,
@@ -291,8 +293,10 @@ def test_arithmetic_mirror_measurements() -> None:
         ("iqpe", 1, None, "Number of qubits must be at least 2 for IQPE."),
         ("bmw_quark_copula", 3, None, "Number of qubits must be divisible by 2."),
         ("ae", 1, None, r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."),
-        ("shors_nine_qubit_code", 9, None, "num_qubits must be divisible by 17."),
-        ("seven_qubit_steane_code", 9, None, "num_qubits must be divisible by 13."),
+        ("shors_nine_qubit_code", 1, None, "num_qubits must be at least 17."),
+        ("shors_nine_qubit_code", 18, None, "num_qubits must be divisible by 17."),
+        ("seven_qubit_steane_code", 1, None, "num_qubits must be at least 13."),
+        ("seven_qubit_steane_code", 14, None, "num_qubits must be divisible by 13."),
         ("teleportation", 1, None, "num_qubits must be at least 3."),
         ("teleportation", 4, None, "num_qubits must be divisible by 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
@@ -762,6 +766,15 @@ def test_seven_qubit_steane_code_circuit_structure(num_qubits: int) -> None:
     assert if_else_count == expected_if_else, (
         f"Expected {expected_if_else} conditional operations, found {if_else_count}"
     )
+
+
+@pytest.mark.parametrize("invalid_size", [0, -1, -13, -17])
+def test_ecc_rejects_non_positive_sizes(invalid_size: int) -> None:
+    """Test that Shor and Steane code benchmarks reject non-positive sizes."""
+    with pytest.raises(ValueError, match=r"num_qubits must be at least 17\."):
+        shors_nine_qubit_code.create_circuit(invalid_size)
+    with pytest.raises(ValueError, match=r"num_qubits must be at least 13\."):
+        seven_qubit_steane_code.create_circuit(invalid_size)
 
 
 @pytest.mark.parametrize(
