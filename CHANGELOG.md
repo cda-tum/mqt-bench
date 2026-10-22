@@ -32,10 +32,10 @@ that minor releases may include breaking changes.
 
 ### Changed
 
+- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
+  ([**@simon1hofmann**])
 - ✨ Use gridsynth for native Clifford+T compilation on Qiskit 2.4.2 and newer,
   retaining Solovay-Kitaev on earlier supported versions ([#1081])
-  ([**@simon1hofmann**])
-- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
   ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
