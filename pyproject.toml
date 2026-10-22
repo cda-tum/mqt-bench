@@ -215,6 +215,7 @@ aer = "aer"
 fom = "fom"
 bench = "bench"
 benchs = "benchs"
+comput = "comput"
 
 
 [tool.ty.src]

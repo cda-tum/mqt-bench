@@ -96,6 +96,7 @@ SPECIAL_QUBIT_COUNTS: dict[str, int] = {
     "seven_qubit_steane_code": 13,
     "iqpe": 2,
     "teleportation": 3,
+    "simon": 4,
     "bell": 4,
 }
 
@@ -295,6 +296,7 @@ def test_arithmetic_mirror_measurements() -> None:
         ("seven_qubit_steane_code", 9, None, "num_qubits must be a positive multiple of 13."),
         ("teleportation", 1, None, "num_qubits must be a positive multiple of 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
+        ("simon", 1, None, "num_qubits must be an even integer ≥ 2."),
         ("bell", 1, None, "num_qubits must be a positive multiple of 2."),
     ],
 )
@@ -379,6 +381,47 @@ def test_superdense_coding_indep_compilation(num_qubits: int, message: str) -> N
 
     result = sampler.run([qc_indep], shots=10).result()
     assert result[0].data["c"].get_counts() == {message: 10}
+
+
+@pytest.mark.parametrize(
+    ("num_qubits", "hidden_string"),
+    [(2, "1"), (4, "01"), (4, "11"), (6, "101"), (6, "010"), (8, "1010"), (8, "0001")],
+)
+def test_simon_output_distribution(num_qubits: int, hidden_string: str) -> None:
+    """Test that the measured distribution is uniform over all y with y.s = 0 (mod 2) and zero elsewhere."""
+    n = num_qubits // 2
+    qc = create_circuit("simon", num_qubits, hidden_string=hidden_string)
+    assert qc.num_qubits == num_qubits
+    assert qc.num_clbits == n
+    assert qc.name == "simon"
+
+    # probabilities()[k] is the probability of the input register reading k, with qubit q_i as bit i of k.
+    circuit = qc.remove_final_measurements(inplace=False)
+    assert circuit is not None
+    probabilities = Statevector(circuit).probabilities(qargs=list(range(n)))
+    expected = np.zeros(2**n)
+    for k in range(2**n):
+        dot_product = sum(((k >> i) & 1) * int(hidden_string[i]) for i in range(n)) % 2
+        if dot_product == 0:
+            expected[k] = 1 / 2 ** (n - 1)
+    np.testing.assert_allclose(probabilities, expected, atol=1e-9)
+
+
+@pytest.mark.parametrize(
+    ("hidden_string", "msg"),
+    [
+        ("0", "hidden_string must contain at least one '1'"),
+        ("00", "hidden_string must contain at least one '1'"),
+        ("1", "Invalid hidden_string"),
+        ("101", "Invalid hidden_string"),
+        ("1a", "Invalid hidden_string"),
+    ],
+)
+def test_simon_invalid_hidden_string(hidden_string: str, msg: str) -> None:
+    """Test that invalid hidden strings are rejected."""
+    num_qubits = 2 if hidden_string == "0" else 4
+    with pytest.raises(ValueError, match=msg):
+        create_circuit("simon", num_qubits, hidden_string=hidden_string)
 
 
 def test_bv() -> None:

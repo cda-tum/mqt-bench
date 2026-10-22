@@ -14,6 +14,7 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
 - ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
   models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
@@ -264,6 +265,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
+[#1079]: https://github.com/munich-quantum-toolkit/bench/pull/1079
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
