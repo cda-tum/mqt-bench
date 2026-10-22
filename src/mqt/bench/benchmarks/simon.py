@@ -36,12 +36,12 @@ def create_circuit(num_qubits: int, hidden_string: str | None = None) -> Quantum
     Arguments:
         num_qubits: Total number of qubits of the returned quantum circuit
             (input register plus output register). Must be even and at least 2.
-        hidden_string: Hidden bitstring :math:`s`. Its length must be ``num_qubits // 2`` and it must
+        hidden_string: Hidden bitstring :math:`s`. Its length must be ``num_qubits / 2`` and it must
             contain at least one ``'1'``. The character ``hidden_string[i]`` belongs to input qubit
             :math:`q_i`. If None, defaults to an alternating pattern starting with ``'1'``.
 
     Returns:
-        QuantumCircuit: A quantum circuit implementing Simon's algorithm.
+        A quantum circuit implementing Simon's algorithm.
     """
     if num_qubits < 2 or num_qubits % 2 != 0:
         msg = "num_qubits must be an even integer ≥ 2."
