@@ -15,6 +15,9 @@ set. Structured loops and loop jumps remain supported. Mirrors use the exact
 inverse of the synthesized circuit and receive the same optimization without
 another approximate synthesis.
 
+Native Clifford+T circuits retain qubit permutations as gates, so QASM exports
+preserve their semantics without relying on Qiskit layout metadata.
+
 ### Qiskit 2.2.3 minimum
 
 The minimum Qiskit version is now 2.2.3, up from 2.1.2. Update dependency pins

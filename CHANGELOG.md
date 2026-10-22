@@ -38,7 +38,8 @@ that minor releases may include breaking changes.
 ### Fixed
 
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
-  and mirrors ([#1093]) ([**@simon1hofmann**])
+  and mirrors, and preserve permutations in QASM exports ([#1093])
+  ([**@simon1hofmann**], [**@burgholzer**])
 - 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
   mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
   [**@simon1hofmann**])
