@@ -238,13 +238,13 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
             - 1 logical qubit measurement bit (m)
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit (must be divisible by 13)
+        num_qubits: number of qubits of the returned quantum circuit (must be a positive multiple of 13)
 
     Returns:
         QuantumCircuit: a quantum circuit implementing the 7 Qubit Steane Code
     """
-    if num_qubits % 13:
-        msg = "num_qubits must be divisible by 13."
+    if num_qubits < 13 or num_qubits % 13:
+        msg = "num_qubits must be a positive multiple of 13."
         raise ValueError(msg)
 
     num_logical_qubits = num_qubits // 13
