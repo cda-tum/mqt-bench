@@ -30,6 +30,18 @@ Core compilation defaults to seed `10` and four mapping trials. Pass
 `compiler_options=CompilationOptions(...)` to override those defaults through
 Core's Python API, including during mirror recompilation.
 
+### Clifford+T compilation
+
+The requested optimization level applies before synthesis. For nonzero levels,
+Qiskit's public `OptimizeCliffordT` pass also runs after synthesis, including
+inside control-flow blocks. A final basis translation enforces the target gate
+set. Structured loops and loop jumps remain supported. Mirrors use the exact
+inverse of the synthesized circuit and receive the same optimization without
+another approximate synthesis.
+
+Native Clifford+T circuits retain qubit permutations as gates, so QASM exports
+preserve their semantics without relying on Qiskit layout metadata.
+
 ### Qiskit 2.2.3 minimum
 
 MQT Bench requires Qiskit 2.2.3 or newer, up from 2.1.2. Update lower dependency
