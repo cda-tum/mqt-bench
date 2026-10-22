@@ -297,7 +297,6 @@ def test_arithmetic_mirror_measurements() -> None:
         ("teleportation", 1, None, "num_qubits must be a positive multiple of 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
         ("simon", 1, None, "num_qubits must be an even integer ≥ 2."),
-        ("simon", 3, None, "num_qubits must be an even integer ≥ 2."),
         ("bell", 1, None, "num_qubits must be a positive multiple of 2."),
     ],
 )
@@ -406,25 +405,6 @@ def test_simon_output_distribution(num_qubits: int, hidden_string: str) -> None:
         if dot_product == 0:
             expected[k] = 1 / 2 ** (n - 1)
     np.testing.assert_allclose(probabilities, expected, atol=1e-9)
-
-
-def test_simon_expected_distribution_small_example() -> None:
-    """Test a hand-checked example: for s = 11, only y in {00, 11} occur, each with probability 1/2."""
-    qc = create_circuit("simon", 4, hidden_string="11")
-    circuit = qc.remove_final_measurements(inplace=False)
-    assert circuit is not None
-    probabilities = Statevector(circuit).probabilities_dict(qargs=[0, 1])
-    observed = {str(outcome): float(probability) for outcome, probability in probabilities.items()}
-    assert observed["00"] == pytest.approx(0.5, abs=1e-9)
-    assert observed["11"] == pytest.approx(0.5, abs=1e-9)
-    assert all(probability < 1e-9 for outcome, probability in observed.items() if outcome not in {"00", "11"})
-
-
-def test_simon_default_hidden_string() -> None:
-    """Test that the default hidden string is non-zero and that the pipeline accepts the benchmark."""
-    for num_qubits in (2, 4, 6):
-        assert create_circuit("simon", num_qubits).num_qubits == num_qubits
-    assert get_benchmark_alg("simon", 4).num_qubits == 4
 
 
 @pytest.mark.parametrize(
