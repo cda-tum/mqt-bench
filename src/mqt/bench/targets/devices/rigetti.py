@@ -6,7 +6,7 @@
 #
 # Licensed under the MIT License
 
-"""Rigetti Cepheus connectivity snapshot from Amazon on 2026-10-02."""
+"""Rigetti Cepheus architecture."""
 
 from __future__ import annotations
 
@@ -18,19 +18,12 @@ from qiskit.transpiler import InstructionProperties, Target
 
 from ._registry import register_device
 
-CEPHEUS_PHYSICAL_QUBITS = (*range(8), *range(9, 108))
-"""Provider qubit label for each dense Bench wire; physical qubit 8 is unavailable."""
 
-
-@register_device("rigetti_cepheus_107")
-def get_rigetti_cepheus_107() -> Target:
-    """Get Cepheus's 107 active qubits with CZ connectivity and no calibration.
-
-    The provider names the device Cepheus-1-108Q. Bench numbers active qubits
-    contiguously; ``CEPHEUS_PHYSICAL_QUBITS`` maps these wires to provider labels.
-    """
-    num_qubits = len(CEPHEUS_PHYSICAL_QUBITS)
-    target = Target(num_qubits=num_qubits, description="rigetti_cepheus_107")
+@register_device("rigetti_cepheus_108")
+def get_rigetti_cepheus_108() -> Target:
+    """Get the full 108-qubit Cepheus architecture with a 12-by-9 grid."""
+    num_qubits = 108
+    target = Target(num_qubits=num_qubits, description="rigetti_cepheus_108")
     oneq_props = {(q,): InstructionProperties() for q in range(num_qubits)}
     for name, angle in (("rxpi", pi), ("rxpidg", -pi), ("rxpi2", pi / 2), ("rxpi2dg", -pi / 2)):
         target.add_instruction(RXGate(angle), oneq_props, name=name)
@@ -40,10 +33,9 @@ def get_rigetti_cepheus_107() -> Target:
         CZGate(),
         {
             (i, j): InstructionProperties()
-            for i, physical_i in enumerate(CEPHEUS_PHYSICAL_QUBITS)
-            for j, physical_j in enumerate(CEPHEUS_PHYSICAL_QUBITS)
-            if abs(physical_i - physical_j) == 9
-            or (abs(physical_i - physical_j) == 1 and physical_i // 9 == physical_j // 9)
+            for i in range(num_qubits)
+            for j in range(num_qubits)
+            if abs(i - j) == 9 or (abs(i - j) == 1 and i // 9 == j // 9)
         },
     )
     return target
