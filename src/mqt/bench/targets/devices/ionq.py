@@ -20,12 +20,7 @@ from ._registry import register_device
 
 @register_device("ionq_forte_36")
 def get_ionq_forte_36() -> Target:
-    """Get the Forte architecture, including arbitrary virtual Z rotations.
-
-    Provider serializers must absorb virtual Z rotations into GPI/GPI2 gate
-    phases when the provider requires only GPI/GPI2/ZZ. MQT Bench returns circuits;
-    it does not submit them to a provider.
-    """
+    """Get the 36-qubit Forte target with virtual Z rotations."""
     num_qubits = 36
     target = Target(num_qubits=num_qubits, description="ionq_forte_36")
     theta = Parameter("theta")
