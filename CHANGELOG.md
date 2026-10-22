@@ -14,15 +14,13 @@ that minor releases may include breaking changes.
 
 ### Added
 
-- Add optional MQT Core compilation through `compiler="mqt"` and
-  `--compiler mqt`, with native gate synthesis, device mapping, mirror circuits,
-  compiler options with reproducible seed and trial defaults, strict target
-  import, runtime Pauli rotations, and compiler provenance in exported files.
-  The `mqt` extra installs Core 4.1.1 from PyPI and requires Qiskit 2.5.x.
-  ([#1027]) ([**@simon1hofmann**], [**@burgholzer**])
-- Add QIR export as LLVM text (`qir`/`llvm`) or bitcode (`qir-bitcode`), with
-  Base and Adaptive profile selection in Python and the CLI. Requires the `mqt`
-  extra. ([#1094]) ([**@simon1hofmann**])
+- ✨ Add QIR text and bitcode export with Base and Adaptive profiles ([#1094])
+  ([**@simon1hofmann**])
+- ✨ Add optional MQT Core compilation for target-independent, native-gate, and
+  mapped circuits via `compiler="mqt"` or `--compiler mqt` ([#1027])
+  ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
+  models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
   ([**@burgholzer**], [**@simon1hofmann**])
 - ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
@@ -257,6 +255,8 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1095]: https://github.com/munich-quantum-toolkit/bench/pull/1095
+[#1094]: https://github.com/munich-quantum-toolkit/bench/pull/1094
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
 [#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
 [#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
@@ -279,7 +279,6 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1037]: https://github.com/munich-quantum-toolkit/bench/pull/1037
 [#1031]: https://github.com/munich-quantum-toolkit/bench/pull/1031
 [#1027]: https://github.com/munich-quantum-toolkit/bench/pull/1027
-[#1094]: https://github.com/munich-quantum-toolkit/bench/pull/1094
 [#1024]: https://github.com/munich-quantum-toolkit/bench/pull/1024
 [#1011]: https://github.com/munich-quantum-toolkit/bench/pull/1011
 [#999]: https://github.com/munich-quantum-toolkit/bench/pull/999

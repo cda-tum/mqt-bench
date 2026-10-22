@@ -103,7 +103,7 @@ level-specific functions also accept `compiler="mqt"`.
   interpret its logical wire order; use `Operator.from_circuit` for its unitary.
 - `MAPPED` uses the device's width, connectivity, and ordered gate placements.
   The result uses physical wires; measurements retain their classical
-  destinations. Bench removes layout metadata from its input copy before
+  destinations. MQT Bench removes layout metadata from its input copy before
   compilation and from the returned circuit. Recompilation treats the current
   circuit wires as inputs without applying an earlier layout again.
 
@@ -117,10 +117,10 @@ compilation. Core folds numeric RZZ angles into supported intervals and uses a
 fixed entangler for unbound RZZ angles. Symbolic target parameter slots are
 independent wildcards, as in Qiskit.
 
-All Bench gate parameters use radians. IonQ targets include GPI, GPI2, RZZ, and
-arbitrary virtual RZ. Virtual RZ represents a phase-frame update; a provider
+All MQT Bench gate parameters use radians. IonQ targets include GPI, GPI2, RZZ,
+and arbitrary virtual RZ. Virtual RZ represents a phase-frame update; a provider
 submission layer must absorb it into GPI/GPI2 gate phases when required by the
-provider. Bench returns compiler-level circuits and does not submit them to
+provider. MQT Bench returns compiler-level circuits and does not submit them to
 hardware. Native input gates retain their parameters and semantics through
 repeated compilation. Rigetti targets use standard RX gates under distinct
 fixed-angle names, shared by Qiskit and Core.
@@ -137,8 +137,8 @@ Mirrors are formed from the compiled circuit and compiled again with Core when a
 target is supplied. The barrier between both halves prevents cancellation. Core
 uses its own fixed pipeline; `opt_level=0`, `1`, or `3` raises an error.
 
-Bench sets seed `10` and four mapping trials so defaults do not depend on the
-CPU count. To change compiler controls, pass Core's `CompilationOptions`:
+MQT Bench sets seed `10` and four mapping trials so defaults do not depend on
+the CPU count. To change compiler controls, pass Core's `CompilationOptions`:
 
 ```python
 from mqt.core.mlir import CompilationOptions, MappingOptions
@@ -156,7 +156,7 @@ circuit = get_benchmark(
 )
 ```
 
-Options also apply to mirror recompilation. Supplied options replace Bench's
+Options also apply to mirror recompilation. Supplied options replace MQT Bench's
 defaults: `CompilationOptions()` uses Core's default seeds and CPU-dependent
 trial count. Core also exposes timing, statistics, and routing search-memory
 controls. `compiler_options` is rejected with the Qiskit compiler or at the
@@ -222,14 +222,12 @@ QIR resource identifiers; the output is not a device-native payload guaranteed
 to preserve the target gate set or physical qubit numbering. A runtime must
 support the emitted QIS calls, QIR version, and profile capabilities.
 
-LLVM text uses `;` comments for the Bench header and records the QIR exporter
-version separately from the circuit compiler. Bitcode contains Core's QIR
-metadata but no Bench header. QASM and QPY output remain available without the
-`mqt` extra.
+LLVM text uses `;` comments for the MQT Bench header and records the QIR
+exporter version separately from the circuit compiler. Bitcode contains Core's
+QIR metadata but no MQT Bench header. QASM and QPY output remain available
+without the `mqt` extra.
 
 ## Native Gate-Set Support
-
-So far, MQT Bench supports the following native gatesets:
 
 ```{code-cell} ipython3
 :tags: [hide-input]
@@ -239,18 +237,28 @@ for num, gateset_name in enumerate(get_available_gateset_names()):
     print(f"{num+1}: {gateset_name} → {get_gateset(gateset_name)}")
 ```
 
+Gate angles use radians. Rigetti's `rxpi`, `rxpidg`, `rxpi2`, and `rxpi2dg` fix
+RX angles to pi, -pi, pi/2, and -pi/2. Fractional Heron targets accept RZZ
+angles in `[0, pi/2]`; bind symbolic parameters before compilation so Qiskit can
+fold angles into this interval.
+
 ## Device Support
 
-So far, MQT Bench supports the following devices:
+| Device                     | Architecture                  |
+| -------------------------- | ----------------------------- |
+| `aqt_ibex_12`              | IBEX Q1, all-to-all           |
+| `ibm_heron_156`            | Heron, heavy-hex              |
+| `ibm_heron_156_fractional` | Heron with [fractional gates] |
+| `ibm_nighthawk_120`        | Nighthawk, 12-by-10 grid      |
+| `ionq_forte_36`            | Forte, all-to-all             |
+| `iqm_crystal_5`            | IQM Spark                     |
+| `iqm_crystal_20`           | Garnet                        |
+| `iqm_crystal_54`           | Emerald                       |
+| `quantinuum_h2_56`         | H2, all-to-all                |
+| `rigetti_cepheus_108`      | [Cepheus], 12-by-9 grid       |
 
-```{code-cell} ipython3
-:tags: [hide-input]
-from mqt.bench.targets import get_device, get_available_device_names
+See the {doc}`Quickstart <quickstart>` for examples at all four abstraction
+levels.
 
-for num, device_name in enumerate(get_available_device_names()):
-    print(f"{num+1}: {device_name} with {get_device(device_name).num_qubits} qubits")
-```
-
-Examples how to use the {func}`~.mqt.bench.get_benchmark` method for all four
-abstraction levels can be found on the
-{doc}`Quickstart jupyter notebook <quickstart>`.
+[Cepheus]: https://aws.amazon.com/blogs/quantum-computing/amazon-braket-launches-rigetti-cepheus-1-108q-superconducting-device/
+[fractional gates]: https://quantum.cloud.ibm.com/docs/en/guides/fractional-gates
