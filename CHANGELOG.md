@@ -17,6 +17,7 @@ that minor releases may include breaking changes.
 - ✨ Add optional MQT Core compilation for target-independent, native-gate, and
   mapped circuits via `compiler="mqt"` or `--compiler mqt` ([#1027])
   ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
 - ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
   models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
 - ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
@@ -37,11 +38,17 @@ that minor releases may include breaking changes.
 
 - ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
   ([**@simon1hofmann**])
+- ✨ Use gridsynth for native Clifford+T compilation on Qiskit 2.4.2 and newer,
+  retaining Solovay-Kitaev on earlier supported versions ([#1081])
+  ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
 ### Fixed
 
+- 🐛 Reject invalid qubit counts in the Shor, Steane, and BMW copula benchmarks;
+  combine size checks for Bell pairs and teleportation ([#1098])
+  ([**@jyothikacodes**], [**@simon1hofmann**])
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
   and mirrors, and preserve permutations in QASM exports ([#1093])
   ([**@simon1hofmann**], [**@burgholzer**])
@@ -254,6 +261,7 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1098]: https://github.com/munich-quantum-toolkit/bench/pull/1098
 [#1095]: https://github.com/munich-quantum-toolkit/bench/pull/1095
 [#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
 [#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
@@ -263,6 +271,8 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 [#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
 [#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
+[#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
+[#1079]: https://github.com/munich-quantum-toolkit/bench/pull/1079
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071
