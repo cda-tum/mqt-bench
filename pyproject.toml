@@ -103,6 +103,9 @@ version-file = "src/mqt/bench/_version.py"
 packages = [ "src/mqt" ]
 
 
+[tool.uv]
+required-version = ">=0.13.4"
+
 [tool.uv.sources]
 mqt-bench = { workspace = true }
 
