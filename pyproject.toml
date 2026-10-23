@@ -40,6 +40,7 @@ dependencies = [
   "numpy>=2.1; python_version>='3.13'",
   "numpy>=2.3.2; python_version>='3.14'",
   "numpy>=2.5.2; python_version>='3.15'",
+  "packaging>=25",
   "qiskit[qasm3-import]>=2.2.3,<3",
   "scikit-learn>=1.5.2",
   "scikit-learn>=1.7.2; python_version>='3.14'",
@@ -111,6 +112,7 @@ packages = [ "src/mqt" ]
 
 
 [tool.uv]
+required-version = ">=0.13.4"
 conflicts = [ [ { group = "minimums" }, { extra = "mqt" } ] ]
 
 [tool.uv.sources]
@@ -225,6 +227,7 @@ aer = "aer"
 fom = "fom"
 bench = "bench"
 benchs = "benchs"
+comput = "comput"
 
 
 [tool.ty.src]
