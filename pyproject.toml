@@ -55,6 +55,12 @@ email = "nils.quetschlich@tum.de"
 name = "Lukas Burgholzer"
 email = "burgholzer@me.com"
 
+[project.optional-dependencies]
+mqt = [
+  "mqt-core==4.1.1",
+  "qiskit[qasm3-import]>=2.5,<2.6",
+]
+
 [project.urls]
 Homepage = "https://github.com/munich-quantum-toolkit/bench"
 "Bug Tracker" = "https://github.com/munich-quantum-toolkit/bench/issues"
@@ -92,6 +98,7 @@ docs = [
   "sphinxcontrib-bibtex>=2.7",
   "sphinxext-opengraph>=0.13",
 ]
+minimums = [ "qiskit==2.2.3" ]
 
 
 [tool.hatch.version]
@@ -106,6 +113,7 @@ packages = [ "src/mqt" ]
 
 [tool.uv]
 required-version = ">=0.13.4"
+conflicts = [ [ { group = "minimums" }, { extra = "mqt" } ] ]
 
 [tool.uv.sources]
 mqt-bench = { workspace = true }
