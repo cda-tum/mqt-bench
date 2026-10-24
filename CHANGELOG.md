@@ -43,11 +43,10 @@ that minor releases may include breaking changes.
 
 ### Fixed
 
-- 🐛 Validate qubit counts in benchmarks ([#1106])
-  ([**@NiranjanRSoorej06**])
-- 🐛 Reject invalid qubit counts in the Shor, Steane, and BMW copula benchmarks;
-  combine size checks for Bell pairs and teleportation ([#1098])
-  ([**@jyothikacodes**], [**@simon1hofmann**])
+- 🐛 Validate qubit counts across benchmarks, including the Shor, Steane, and
+  BMW copula benchmarks; combine size checks for Bell pairs and teleportation
+  ([#1098]) ([#1106]) ([**@jyothikacodes**], [**@simon1hofmann**],
+  [**@NiranjanRSoorej06**])
 - 🐛 Keep native Clifford+T optimization in the target basis, including loops
   and mirrors, and preserve permutations in QASM exports ([#1093])
   ([**@simon1hofmann**], [**@burgholzer**])

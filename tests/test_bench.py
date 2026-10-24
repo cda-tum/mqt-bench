@@ -66,7 +66,6 @@ from mqt.bench.benchmarks import (
     register_benchmark,
     shor,
 )
-from mqt.bench.benchmarks.ghz import create_circuit as create_ghz_circuit
 from mqt.bench.output import (
     MQTBenchExporterError,
     OutputFormat,
@@ -309,12 +308,6 @@ def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | N
     else:
         with pytest.raises(ValueError, match=msg):
             create_circuit(benchmark_name, input_value)
-
-
-def test_ghz_rejects_zero_qubits() -> None:
-    """Test that the GHZ benchmark rejects a circuit with no qubits."""
-    with pytest.raises(ValueError, match="num_qubits must be at least 1"):
-        create_ghz_circuit(0)
 
 
 @pytest.mark.parametrize("num_qubits", [2, 3, 4])
