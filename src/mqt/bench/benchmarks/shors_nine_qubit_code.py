@@ -22,62 +22,6 @@ from mqt.bench.components.shor_circuit_components import (
     get_three_qubit_phase_flip_decoding_circuit,
     get_three_qubit_phase_flip_encoding_circuit,
 )
-from ._registry import register_benchmark
-
-
-def _get_three_qubit_bit_flip_encoding_decoding_circuit() -> QuantumCircuit:
-    """Create 3-qubit bit-flip encoding/decoding circuit.
-
-    Encodes ``|0>`` → ``|000>`` and ``|1>`` → ``|111>``. Self-inverse, so used for both encoding and decoding.
-
-    Returns:
-        QuantumCircuit: 3-qubit circuit (qubit 0 is the input/output qubit).
-    """
-    out = QuantumCircuit(3)
-    out.cx(0, 1)
-    out.cx(0, 2)
-    return out
-
-
-def _get_three_qubit_phase_flip_encoding_circuit() -> QuantumCircuit:
-    """Create 3-qubit phase-flip encoding circuit.
-
-    Encodes ``|0>`` → ``|+++>`` and ``|1>`` → ``|--->``
-
-    Returns:
-        QuantumCircuit: 3-qubit encoding circuit (qubit 0 is the input qubit).
-    """
-    out = QuantumCircuit(3)
-    out.cx(0, 1)
-    out.cx(0, 2)
-    out.h(0)
-    out.h(1)
-    out.h(2)
-    return out
-
-
-def _get_three_qubit_phase_flip_decoding_circuit() -> QuantumCircuit:
-    """Create 3-qubit phase-flip decoding circuit.
-
-    Reverses the phase-flip encoding.
-
-    Returns:
-        QuantumCircuit: 3-qubit decoding circuit (qubit 0 is the output qubit).
-    """
-    out = QuantumCircuit(3)
-    out.h(0)
-    out.h(1)
-    out.h(2)
-    out.cx(0, 1)
-    out.cx(0, 2)
-    return out
-
-
-def _get_three_qubit_bit_flip_syndrome_extraction_circuit() -> QuantumCircuit:
-    """Create circuit to extract bit-flip syndrome from a 3-qubit block.
-
-    Uses 2 ancilla qubits to measure parity and identify which qubit (if any) flipped.
-    Syndrome mapping: 01 → qubit 0, 10 → qubit 1, 11 → qubit 2, 00 → no error.
 
 from ._registry import register_benchmark
 

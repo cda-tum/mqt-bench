@@ -1225,8 +1225,8 @@ def test_get_benchmark_alg_encoding_parameters() -> None:
     ("level", "target"),
     [
         (BenchmarkLevel.INDEP, None),
-        (BenchmarkLevel.NATIVEGATES, get_device("rigetti_ankaa_84")),
-        (BenchmarkLevel.MAPPED, get_device("rigetti_ankaa_84")),
+        (BenchmarkLevel.NATIVEGATES, get_device("rigetti_cepheus_108")),
+        (BenchmarkLevel.MAPPED, get_device("rigetti_cepheus_108")),
     ],
 )
 def test_get_benchmark_encoding_ignored_for_non_alg_level(level: BenchmarkLevel, target: Target | None) -> None:
