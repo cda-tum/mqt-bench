@@ -63,6 +63,7 @@ from mqt.bench.benchmarks import (
     get_available_benchmark_names,
     get_benchmark_catalog,
     get_benchmark_description,
+    ghz,
     register_benchmark,
     shor,
 )
@@ -308,6 +309,13 @@ def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | N
     else:
         with pytest.raises(ValueError, match=msg):
             create_circuit(benchmark_name, input_value)
+
+
+@pytest.mark.parametrize("num_qubits", [0, -1])
+def test_ghz_invalid_num_qubits(num_qubits: int) -> None:
+    """Test that the GHZ module raises a descriptive error for invalid sizes."""
+    with pytest.raises(ValueError, match=r"num_qubits must be at least 1\."):
+        ghz.create_circuit(num_qubits)
 
 
 @pytest.mark.parametrize("num_qubits", [2, 3, 4])
