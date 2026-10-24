@@ -27,7 +27,7 @@ from qiskit.version import VERSION as QISKIT_VERSION
 
 from .benchmarks import create_circuit
 from .error_correction import get_available_encoding_names, get_transpiler
-from .targets.gatesets import get_target_for_gateset, ionq, rigetti
+from .targets.gatesets import get_target_for_gateset
 from .targets.gatesets._compilation import prepare_target
 from .targets.gatesets.ibm import configure_fractional_angles
 
