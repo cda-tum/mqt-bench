@@ -21,12 +21,6 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Arguments:
         num_qubits: Number of qubits of the returned quantum circuit. Must be at least 1.
-
-    Returns:
-        QuantumCircuit: A quantum circuit preparing the GHZ state on ``num_qubits`` qubits.
-
-    Raises:
-        ValueError: If ``num_qubits`` is smaller than 1.
     """
     if num_qubits < 1:
         msg = "num_qubits must be at least 1."
