@@ -91,14 +91,14 @@ if TYPE_CHECKING:
                 "--optimization-level",
                 "2",
                 "--target",
-                "ibm_falcon",
+                "ibm_heron",
             ],
             dumps(
                 get_benchmark(
                     level=BenchmarkLevel.NATIVEGATES,
                     benchmark="ghz",
                     circuit_size=20,
-                    target=get_target_for_gateset("ibm_falcon", 20),
+                    target=get_target_for_gateset("ibm_heron", 20),
                     opt_level=2,
                 )
             ),
@@ -114,7 +114,7 @@ if TYPE_CHECKING:
                 "--optimization-level",
                 "2",
                 "--target",
-                "ibm_falcon_27",
+                "ibm_heron_156",
             ],
             dumps(
                 get_benchmark(
@@ -122,7 +122,7 @@ if TYPE_CHECKING:
                     benchmark="ghz",
                     circuit_size=20,
                     opt_level=2,
-                    target=get_device("ibm_falcon_27"),
+                    target=get_device("ibm_heron_156"),
                 )
             ),
         ),
@@ -148,7 +148,7 @@ if TYPE_CHECKING:
                 "--optimization-level",
                 "0",
                 "--target",
-                "ibm_falcon_27",
+                "ibm_heron_156",
                 "--mirror",
             ],
             dumps(
@@ -157,7 +157,7 @@ if TYPE_CHECKING:
                     benchmark="ghz",
                     circuit_size=3,
                     opt_level=0,
-                    target=get_device("ibm_falcon_27"),
+                    target=get_device("ibm_heron_156"),
                     generate_mirror_circuit=True,
                 )
             ),
@@ -253,7 +253,7 @@ def test_cli_nativegates_qasm2_save(tmp_path: Path, script_runner: ScriptRunner)
         "--num-qubits",
         "5",
         "--target",
-        "ibm_falcon",
+        "ibm_heron",
         "--optimization-level",
         "1",
         "--output-format",
@@ -263,7 +263,7 @@ def test_cli_nativegates_qasm2_save(tmp_path: Path, script_runner: ScriptRunner)
         target_dir,
     ])
     assert ret.success
-    expected_path = Path(target_dir) / "ghz_nativegates_ibm_falcon_opt1_5.qasm"
+    expected_path = Path(target_dir) / "ghz_nativegates_ibm_heron_opt1_5.qasm"
     assert str(expected_path) in ret.stdout.strip().splitlines()[-1]
     assert expected_path.is_file()
 
@@ -280,7 +280,7 @@ def test_cli_mapped_qasm2_save(tmp_path: Path, script_runner: ScriptRunner) -> N
         "--num-qubits",
         "5",
         "--target",
-        "ibm_falcon_27",
+        "ibm_heron_156",
         "--optimization-level",
         "1",
         "--output-format",
@@ -290,6 +290,6 @@ def test_cli_mapped_qasm2_save(tmp_path: Path, script_runner: ScriptRunner) -> N
         target_dir,
     ])
     assert ret.success
-    expected_path = Path(target_dir) / "ghz_mapped_ibm_falcon_27_opt1_5.qasm"
+    expected_path = Path(target_dir) / "ghz_mapped_ibm_heron_156_opt1_5.qasm"
     assert str(expected_path) in ret.stdout.strip().splitlines()[-1]
     assert expected_path.is_file()

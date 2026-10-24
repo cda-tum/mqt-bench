@@ -14,6 +14,15 @@ that minor releases may include breaking changes.
 
 ### Added
 
+- ✨ Add Simon's algorithm benchmark ([#1079]) ([**gautham0104-neitizen**])
+- ✨ Add the full 108-qubit Rigetti Cepheus architecture and document target
+  models ([#1095]) ([**@simon1hofmann**], [**@burgholzer**])
+- ✨ Add fractional IBM Heron targets with bounded RZZ angles ([#1087])
+  ([**@burgholzer**], [**@simon1hofmann**])
+- ✨ Add the IBM Nighthawk 120-qubit device and CZ gate set ([#1085])
+  ([**@burgholzer**])
+- ✨ Add the AQT IBEX 12-qubit device and native gate set ([#1084])
+  ([**@burgholzer**])
 - ✨ Add `SPDX-License-Identifier: MIT` to generated circuit headers ([#1083])
   ([**@simon1hofmann**])
 - ✨ Add Bell-pair benchmark ([#1071]) ([**@NiranjanRSoorej06**])
@@ -26,13 +35,27 @@ that minor releases may include breaking changes.
 
 ### Changed
 
-- ⬆️ Raise the minimum Qiskit version from 2.1.0 to 2.4.0 ([#930])
-  ([**@Felix-Gundlach**], [**@emilkanic0909**], [**@SalehAlsherif**])
+- ⬆️ Raise the minimum Qiskit version to 2.2.3 ([#1087])
+  ([**@simon1hofmann**])
+- ✨ Use gridsynth for native Clifford+T compilation on Qiskit 2.4.2 and newer,
+  retaining Solovay-Kitaev on earlier supported versions ([#1081])
+  ([**@simon1hofmann**])
 - ✨ Measure arithmetic sums and products in a `result` register, excluding
   input and helper qubits ([#1065]) ([**@simon1hofmann**])
 
 ### Fixed
 
+- 🐛 Reject invalid qubit counts in the Shor, Steane, and BMW copula benchmarks;
+  combine size checks for Bell pairs and teleportation ([#1098])
+  ([**@jyothikacodes**], [**@simon1hofmann**])
+- 🐛 Keep native Clifford+T optimization in the target basis, including loops
+  and mirrors, and preserve permutations in QASM exports ([#1093])
+  ([**@simon1hofmann**], [**@burgholzer**])
+- 🐛 Preserve native IonQ and Rigetti gate phases with local Qiskit lowering and
+  mirror layouts; require Qiskit 2.1.2 or newer ([#1086]) ([**@burgholzer**],
+  [**@simon1hofmann**])
+- 📝 Fix API documentation markup, heading anchors, and notebook build
+  concurrency ([#1088]) ([**@burgholzer**])
 - 🐛 Preserve caller-provided circuits during benchmark generation ([#1077])
   ([**@AthulKampiyil**])
 - 🐛 Default optimization level to 2 and require target for native gates and
@@ -52,6 +75,11 @@ that minor releases may include breaking changes.
   ([#1047]) ([**@simon1hofmann**])
 - 🐛 Expose `__version__` and `__version_tuple__` at the package root ([#1031])
   ([**@algovista-collab**])
+
+### Removed
+
+- 🔥 Remove retired IBM Falcon, Eagle, and 133-qubit Heron models ([#1089])
+  ([**@burgholzer**])
 
 ## [2.3.0] - 2026-09-12
 
@@ -232,7 +260,18 @@ _📚 Refer to the [GitHub Release Notes] for previous changelogs._
 
 <!-- PR links -->
 
+[#1098]: https://github.com/munich-quantum-toolkit/bench/pull/1098
+[#1095]: https://github.com/munich-quantum-toolkit/bench/pull/1095
+[#1093]: https://github.com/munich-quantum-toolkit/bench/pull/1093
+[#1089]: https://github.com/munich-quantum-toolkit/bench/pull/1089
+[#1088]: https://github.com/munich-quantum-toolkit/bench/pull/1088
+[#1087]: https://github.com/munich-quantum-toolkit/bench/pull/1087
+[#1086]: https://github.com/munich-quantum-toolkit/bench/pull/1086
+[#1085]: https://github.com/munich-quantum-toolkit/bench/pull/1085
+[#1084]: https://github.com/munich-quantum-toolkit/bench/pull/1084
 [#1083]: https://github.com/munich-quantum-toolkit/bench/pull/1083
+[#1081]: https://github.com/munich-quantum-toolkit/bench/pull/1081
+[#1079]: https://github.com/munich-quantum-toolkit/bench/pull/1079
 [#1077]: https://github.com/munich-quantum-toolkit/bench/pull/1077
 [#1076]: https://github.com/munich-quantum-toolkit/bench/pull/1076
 [#1071]: https://github.com/munich-quantum-toolkit/bench/pull/1071

@@ -23,10 +23,11 @@ from typing import TYPE_CHECKING, NoReturn, cast
 
 import numpy as np
 import pytest
-from qiskit import QuantumCircuit, qasm3, qpy
+from qiskit import QuantumCircuit, qasm2, qasm3, qpy
 from qiskit.circuit import Barrier, ClassicalRegister, ForLoopOp, IfElseOp, Parameter, QuantumRegister
-from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, XGate
+from qiskit.circuit.library import CXGate, HGate, RXGate, RZGate, TGate, XGate
 from qiskit.compiler import transpile
+from qiskit.converters import circuit_to_dag
 from qiskit.primitives import StatevectorSampler
 from qiskit.providers.basic_provider import BasicSimulator
 from qiskit.quantum_info import Operator, Statevector
@@ -36,6 +37,7 @@ from qiskit.transpiler import (
     PassManager,
     Target,  # For layout handling
 )
+from qiskit.transpiler.exceptions import TranspilerError
 from qiskit.transpiler.passes import GatesInBasis, RemoveBarriers, UnrollForLoops
 
 from mqt.bench import benchmark_generation
@@ -55,6 +57,7 @@ import mqt.bench
 import mqt.bench.configuration_options
 from mqt.bench.benchmark_generation import (
     BenchmarkLevel,
+    RecursiveOptimizeCliffordT,
     get_benchmark,
     get_benchmark_alg,
     get_benchmark_indep,
@@ -99,6 +102,7 @@ SPECIAL_QUBIT_COUNTS: dict[str, int] = {
     "seven_qubit_steane_code": 13,
     "iqpe": 2,
     "teleportation": 3,
+    "simon": 4,
     "bell": 4,
 }
 
@@ -141,6 +145,10 @@ def test_quantumcircuit_levels(benchmark_name: str) -> None:
                 continue
             if "reset" in qc.count_ops() and "reset" not in device.operation_names:
                 # This circuit needs reset, which the target does not support.
+                continue
+            if "if_else" in qc.count_ops() and "if_else" not in device.operation_names:
+                with pytest.raises(TranspilerError, match="control-flow construct 'if_else'"):
+                    get_benchmark_mapped(qc, None, device, 0)
                 continue
             res_mapped = get_benchmark_mapped(
                 qc,
@@ -233,7 +241,7 @@ def test_arithmetic_results(
     qc = arithmetic.copy_empty_like()
     qc.x(input_qubits)
     qc.compose(arithmetic, inplace=True)
-    target = get_target_for_gateset("ibm_falcon", size)
+    target = get_target_for_gateset("ibm_heron", size)
     compiled = get_benchmark(qc, level, target=target)
     restored = qasm3.loads(qasm3.dumps(compiled))
     counts = StatevectorSampler(seed=10).run([restored], shots=16).result()[0].data["result"].get_counts()
@@ -288,15 +296,14 @@ def test_arithmetic_mirror_measurements() -> None:
         ("hhl", 2, None, "Number of qubits must be at least 3 for HHL."),
         ("qpeexact", 1, None, "Number of qubits must be at least 2 for QPE exact."),
         ("iqpe", 1, None, "Number of qubits must be at least 2 for IQPE."),
-        ("bmw_quark_copula", 3, None, "Number of qubits must be divisible by 2."),
+        ("bmw_quark_copula", 3, None, "num_qubits must be a positive multiple of 2."),
         ("ae", 1, None, r"Number of qubits must be at least 2 \(1 evaluation \+ 1 target\)."),
-        ("shors_nine_qubit_code", 9, None, "num_qubits must be divisible by 17."),
-        ("seven_qubit_steane_code", 9, None, "num_qubits must be divisible by 13."),
-        ("teleportation", 1, None, "num_qubits must be at least 3."),
-        ("teleportation", 4, None, "num_qubits must be divisible by 3."),
+        ("shors_nine_qubit_code", 9, None, "num_qubits must be a positive multiple of 17."),
+        ("seven_qubit_steane_code", 9, None, "num_qubits must be a positive multiple of 13."),
+        ("teleportation", 1, None, "num_qubits must be a positive multiple of 3."),
         ("superdense_coding", 1, None, "num_qubits must be at least 2."),
-        ("bell", 1, None, "num_qubits must be at least 2."),
-        ("bell", 3, None, "num_qubits must be divisible by 2."),
+        ("simon", 1, None, "num_qubits must be an even integer ≥ 2."),
+        ("bell", 1, None, "num_qubits must be a positive multiple of 2."),
     ],
 )
 def test_wrong_circuit_size(benchmark_name: str, input_value: int, kind: str | None, msg: str) -> None:
@@ -380,6 +387,47 @@ def test_superdense_coding_indep_compilation(num_qubits: int, message: str) -> N
 
     result = sampler.run([qc_indep], shots=10).result()
     assert result[0].data["c"].get_counts() == {message: 10}
+
+
+@pytest.mark.parametrize(
+    ("num_qubits", "hidden_string"),
+    [(2, "1"), (4, "01"), (4, "11"), (6, "101"), (6, "010"), (8, "1010"), (8, "0001")],
+)
+def test_simon_output_distribution(num_qubits: int, hidden_string: str) -> None:
+    """Test that the measured distribution is uniform over all y with y.s = 0 (mod 2) and zero elsewhere."""
+    n = num_qubits // 2
+    qc = create_circuit("simon", num_qubits, hidden_string=hidden_string)
+    assert qc.num_qubits == num_qubits
+    assert qc.num_clbits == n
+    assert qc.name == "simon"
+
+    # probabilities()[k] is the probability of the input register reading k, with qubit q_i as bit i of k.
+    circuit = qc.remove_final_measurements(inplace=False)
+    assert circuit is not None
+    probabilities = Statevector(circuit).probabilities(qargs=list(range(n)))
+    expected = np.zeros(2**n)
+    for k in range(2**n):
+        dot_product = sum(((k >> i) & 1) * int(hidden_string[i]) for i in range(n)) % 2
+        if dot_product == 0:
+            expected[k] = 1 / 2 ** (n - 1)
+    np.testing.assert_allclose(probabilities, expected, atol=1e-9)
+
+
+@pytest.mark.parametrize(
+    ("hidden_string", "msg"),
+    [
+        ("0", "hidden_string must contain at least one '1'"),
+        ("00", "hidden_string must contain at least one '1'"),
+        ("1", "Invalid hidden_string"),
+        ("101", "Invalid hidden_string"),
+        ("1a", "Invalid hidden_string"),
+    ],
+)
+def test_simon_invalid_hidden_string(hidden_string: str, msg: str) -> None:
+    """Test that invalid hidden strings are rejected."""
+    num_qubits = 2 if hidden_string == "0" else 4
+    with pytest.raises(ValueError, match=msg):
+        create_circuit("simon", num_qubits, hidden_string=hidden_string)
 
 
 def test_bv() -> None:
@@ -1117,15 +1165,15 @@ def test_available_encodings() -> None:
             "ghz",
             BenchmarkLevel.MAPPED,
             3,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             0,
         ),
-        ("ghz", BenchmarkLevel.MAPPED, 3, get_device("ibm_falcon_27"), 2),
+        ("ghz", BenchmarkLevel.MAPPED, 3, get_device("ibm_heron_156"), 2),
         (
             "ghz",
             BenchmarkLevel.MAPPED,
             3,
-            get_device("ionq_aria_25"),
+            get_device("ionq_forte_36"),
             0,
         ),
     ],
@@ -1211,7 +1259,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             None,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "`circuit_size` must be a positive integer when `benchmark` is a str."
@@ -1220,7 +1268,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "dj",
             BenchmarkLevel.INDEP,
             -1,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = "No Shor instance for circuit_size=3. Available: 18, 42, 58, 74."
@@ -1229,7 +1277,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             "shor",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_108"),
             1,
         )
     match = re.escape("Invalid `opt_level` '4'. Must be in the range [0, 3].")
@@ -1238,11 +1286,11 @@ def test_get_benchmark_faulty_parameters() -> None:
             "qpeexact",
             BenchmarkLevel.INDEP,
             3,
-            get_device("rigetti_ankaa_84"),
+            get_device("rigetti_cepheus_108"),
             4,
         )
     match = re.escape(
-        "'wrong_gateset' is not a supported gateset. Known modules: ['clifford_t', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        "'wrong_gateset' is not a supported gateset. Known modules: ['aqt', 'clifford_t', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -1253,7 +1301,7 @@ def test_get_benchmark_faulty_parameters() -> None:
             1,
         )
     match = re.escape(
-        "'wrong_device' is not a supported device. Known modules: ['ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
+        "'wrong_device' is not a supported device. Known modules: ['aqt', 'ibm', 'ionq', 'iqm', 'quantinuum', 'rigetti']"
     )
     with pytest.raises(ValueError, match=match):
         get_benchmark(
@@ -1313,20 +1361,128 @@ def test_invalid_circuit_size_combinations(getter: Callable[..., QuantumCircuit]
         getter("ae", circuit_size=None)
 
 
-def test_clifford_t() -> None:
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+def test_clifford_t(opt_level: int) -> None:
     """Test the Clifford+T gateset."""
     qc = get_benchmark(
         benchmark="qft",
         level=BenchmarkLevel.NATIVEGATES,
         circuit_size=4,
         target=get_target_for_gateset("clifford+t", 4),
-        opt_level=1,
+        opt_level=opt_level,
     )
 
     clifford_t_target = get_target_for_gateset("clifford+t", num_qubits=4)
     pm = PassManager(GatesInBasis(target=clifford_t_target))
     pm.run(qc)
     assert pm.property_set["all_gates_in_basis"]
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("mirror", [False, True])
+def test_clifford_t_rotations(opt_level: int, mirror: bool) -> None:
+    """Approximate rotations about every axis while retaining the Clifford+T basis."""
+    qc = QuantumCircuit(2)
+    qc.rx(0.3, 0)
+    qc.ry(-0.7, 1)
+    qc.cx(0, 1)
+    qc.rz(0.2, 1)
+    qc.rzz(0.3, 0, 1)
+    qc.swap(0, 1)
+    target = get_target_for_gateset("clifford+t", 2)
+
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    compiled.remove_final_measurements()
+    expected = Operator(np.eye(4)) if mirror else Operator(qc)
+    assert Operator.from_circuit(compiled).equiv(expected, atol=1e-8 if mirror else 1e-4)
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("gate_name", ["iswap", "dcx"])
+def test_clifford_t_mirror_inverse_gates(opt_level: int, gate_name: str) -> None:
+    """Lower inverses of native Clifford gates back to the target basis."""
+    circuit = QuantumCircuit(2)
+    getattr(circuit, gate_name)(0, 1)
+    target = get_target_for_gateset("clifford+t", 2)
+
+    compiled = get_benchmark_native_gates(circuit, None, target, opt_level, generate_mirror_circuit=True)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    compiled.remove_final_measurements()
+    assert Operator(compiled).equiv(Operator(np.eye(4)))
+
+
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+def test_clifford_t_rotations_in_loop(opt_level: int) -> None:
+    """Synthesize rotations inside structured loops without unrolling the loop."""
+    qc = QuantumCircuit(1)
+    with qc.for_loop(range(2)):
+        qc.rx(0.3, 0)
+    target = get_target_for_gateset("clifford+t", 1)
+
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level)
+
+    assert any(isinstance(inst.operation, ForLoopOp) for inst in compiled.data)
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(compiled)
+    assert pm.property_set["all_gates_in_basis"]
+    expected = QuantumCircuit(1)
+    expected.rx(0.6, 0)
+    assert Operator.from_circuit(UnrollForLoops()(compiled)).equiv(Operator(expected), atol=1e-4)
+
+
+@pytest.mark.parametrize("loop_depth", [0, 1, 2])
+def test_clifford_t_post_synthesis_optimization(loop_depth: int) -> None:
+    """Combine synthesized T pairs, including inside nested loops."""
+    circuit = QuantumCircuit(1)
+    circuit.t(0)
+    circuit.t(0)
+    for _ in range(loop_depth):
+        body = circuit
+        circuit = QuantumCircuit(1)
+        circuit.append(ForLoopOp(range(2), None, body), circuit.qubits)
+    original = circuit.copy()
+    optimized = RecursiveOptimizeCliffordT()(circuit)
+
+    assert circuit == original
+    assert circuit_to_dag(optimized).count_ops(recurse=True).get("t", 0) == 0
+    expected = QuantumCircuit(1)
+    for _ in range(2**loop_depth):
+        expected.s(0)
+    assert Operator(UnrollForLoops()(optimized)).equiv(Operator(expected))
+
+
+@pytest.mark.parametrize("mirror", [False, True])
+def test_clifford_t_optimization_preserves_target_basis(mirror: bool) -> None:
+    """Translate optimized loops and mirrors back to a basis without S or Sdg."""
+    circuit = QuantumCircuit(1)
+    circuit.t(0)
+    circuit.t(0)
+    if not mirror:
+        body = circuit
+        circuit = QuantumCircuit(1)
+        circuit.append(ForLoopOp(range(2), None, body), circuit.qubits)
+    native_target = get_target_for_gateset("clifford+t", 1)
+    target = Target(description="clifford+t", num_qubits=1)
+    for name in ("h", "t", "for_loop", "measure"):
+        target.add_instruction(native_target.operation_from_name(name), name=name)
+
+    optimized = get_benchmark_native_gates(circuit, None, target, 2, generate_mirror_circuit=mirror)
+
+    pm = PassManager(GatesInBasis(target=target))
+    pm.run(optimized)
+    assert pm.property_set["all_gates_in_basis"]
+    if not mirror:
+        assert isinstance(optimized.data[0].operation, ForLoopOp)
+    optimized.remove_final_measurements()
+    expected = Operator(np.eye(2)) if mirror else Operator(UnrollForLoops()(circuit))
+    assert Operator(UnrollForLoops()(optimized)).equiv(expected)
 
 
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
@@ -1360,24 +1516,38 @@ def test_clifford_t_preserves_measurements(opt_level: int, measurement_case: str
         assert BasicSimulator().run(compiled, shots=16).result().get_counts() == {expected_result: 16}
 
 
-@pytest.mark.parametrize("opt_level", [2, 3])
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("mirror", [False, True])
-def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool) -> None:
-    """Preserve SWAP semantics through Clifford+T synthesis and mirror generation."""
-    qc = QuantumCircuit(3)
+@pytest.mark.parametrize("fmt", [OutputFormat.QASM2, OutputFormat.QASM3])
+def test_clifford_t_preserves_permutations(opt_level: int, mirror: bool, fmt: OutputFormat) -> None:
+    """Preserve SWAP semantics through Clifford+T synthesis, mirrors, and QASM export."""
+    qc = QuantumCircuit(4)
     qc.h(0)
     qc.t(1)
     qc.cx(1, 2)
     qc.swap(0, 1)
     qc.swap(1, 2)
+    target = get_target_for_gateset("clifford+t", 4)
 
-    compiled = get_benchmark_native_gates(
-        qc, None, get_target_for_gateset("clifford+t", 3), opt_level, generate_mirror_circuit=mirror
-    )
+    compiled = get_benchmark_native_gates(qc, None, target, opt_level, generate_mirror_circuit=mirror)
 
-    expected = Operator(np.eye(8)) if mirror else Operator(qc)
+    expected = Operator(np.eye(16)) if mirror else Operator(qc)
+    if mirror:
+        assert {
+            compiled.find_bit(inst.qubits[0]).index for inst in compiled.data if inst.operation.name == "measure"
+        } == {0, 1, 2}
     compiled.remove_final_measurements()
     assert Operator.from_circuit(compiled).equiv(expected)
+    assert Operator(compiled).equiv(expected)
+
+    stream = io.StringIO()
+    write_circuit(compiled, stream, BenchmarkLevel.NATIVEGATES, fmt, target)
+    restored = (
+        qasm2.loads(stream.getvalue(), custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+        if fmt is OutputFormat.QASM2
+        else qasm3.loads(stream.getvalue())
+    )
+    assert Operator(restored).equiv(expected)
 
 
 def test_benchmark_helper_shor() -> None:
@@ -1430,27 +1600,27 @@ def test_validate_input() -> None:
         (BenchmarkLevel.INDEP, None, True, "ghz_indep_mirror_opt2_5"),
         (
             BenchmarkLevel.NATIVEGATES,
-            get_target_for_gateset("ibm_falcon", 5),
+            get_target_for_gateset("ibm_heron", 5),
             False,
-            "ghz_nativegates_ibm_falcon_opt2_5",
+            "ghz_nativegates_ibm_heron_opt2_5",
         ),
         (
             BenchmarkLevel.NATIVEGATES,
-            get_target_for_gateset("ibm_falcon", 5),
+            get_target_for_gateset("ibm_heron", 5),
             True,
-            "ghz_nativegates_mirror_ibm_falcon_opt2_5",
+            "ghz_nativegates_mirror_ibm_heron_opt2_5",
         ),
         (
             BenchmarkLevel.MAPPED,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             False,
-            "ghz_mapped_ibm_falcon_127_opt2_5",
+            "ghz_mapped_ibm_heron_156_opt2_5",
         ),
         (
             BenchmarkLevel.MAPPED,
-            get_device("ibm_falcon_127"),
+            get_device("ibm_heron_156"),
             True,
-            "ghz_mapped_mirror_ibm_falcon_127_opt2_5",
+            "ghz_mapped_mirror_ibm_heron_156_opt2_5",
         ),
     ],
 )
@@ -1720,10 +1890,12 @@ def test_custom_target() -> None:
 
 @pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
 @pytest.mark.parametrize("mirror", [False, True])
-def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
+@pytest.mark.parametrize("description", ["custom_target", "clifford+t"])
+def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool, description: str) -> None:
     """Compile logical gates on disconnected target sites without mapping or ancillas."""
-    target = Target(num_qubits=5, description="custom_target")
-    target.add_instruction(HGate(), {(q,): None for q in range(5)})
+    target = Target(num_qubits=5, description=description)
+    target.add_instruction(HGate(), {(0,): None})
+    target.add_instruction(TGate(), {(0,): None})
     target.add_instruction(XGate(), {(q,): None for q in range(5)})
     target.add_instruction(CXGate(), {(0, 1): None, (1, 2): None})
 
@@ -1741,23 +1913,28 @@ def test_native_gates_ignore_connectivity(opt_level: int, mirror: bool) -> None:
     assert set(target["cx"]) == {(0, 1), (1, 2)}
 
 
-@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_falcon"])
+@pytest.mark.parametrize("gateset_name", ["clifford+t", "ibm_heron"])
 @pytest.mark.parametrize("jump", ["break_loop", "continue_loop"])
-def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str) -> None:
+@pytest.mark.parametrize("opt_level", [0, 1, 2, 3])
+@pytest.mark.parametrize("conditional", [False, True])
+def test_native_gates_preserve_loop_jumps(gateset_name: str, jump: str, opt_level: int, conditional: bool) -> None:
     """Compile loop exits using Qiskit's instruction names."""
-    body = QuantumCircuit(2)
-    body.x(0)
-    getattr(body, jump)()
-    body.x(1)
-    qc = QuantumCircuit(2)
-    qc.append(ForLoopOp(range(2), None, body), qc.qubits)
+    qc = QuantumCircuit(2, 1)
+    with qc.for_loop(range(2)):
+        qc.x(0)
+        if conditional:
+            with qc.if_test((qc.clbits[0], 0)):
+                getattr(qc, jump)()
+        else:
+            getattr(qc, jump)()
+        qc.x(1)
 
-    compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset(gateset_name, 2), 0)
+    compiled = get_benchmark_native_gates(qc, None, get_target_for_gateset(gateset_name, 2), opt_level)
 
     assert compiled.layout is None
     loop = compiled.data[0].operation
     assert isinstance(loop, ForLoopOp)
-    assert loop.blocks[0].count_ops()[jump] == 1
+    assert circuit_to_dag(loop.blocks[0]).count_ops(recurse=True)[jump] == 1
 
 
 @pytest.mark.parametrize(("benchmark", "size"), [("qft", 4), ("bv", 6)])
@@ -1799,7 +1976,7 @@ def test_native_gate_parity(benchmark: str, size: int, opt_level: int) -> None:
 @pytest.mark.parametrize(("benchmark", "size", "opt_level"), [("qft", 4, 1)])
 def test_mapped_parity(benchmark: str, size: int, opt_level: int) -> None:
     """Test parity of mapped benchmarks."""
-    target = get_device("ibm_falcon_127")
+    target = get_device("ibm_heron_156")
     qc_wrapper = get_benchmark_mapped(
         benchmark,
         size,
@@ -1827,7 +2004,7 @@ def test_validate_opt_level(benchmark: str, size: int, opt_level: int) -> None:
             opt_level=opt_level,
         )
 
-    target = get_device("ibm_falcon_127")
+    target = get_device("ibm_heron_156")
     with pytest.raises(ValueError, match=match):
         get_benchmark_native_gates(
             benchmark,
@@ -1870,12 +2047,12 @@ def test_get_benchmark_mirror_option(benchmark_name: str, logical_circuit_size: 
         (
             BenchmarkLevel.NATIVEGATES,
             1,
-            get_target_for_gateset("ibm_falcon", num_qubits=logical_circuit_size),
+            get_target_for_gateset("ibm_heron", num_qubits=logical_circuit_size),
         ),
         (
             BenchmarkLevel.MAPPED,
             1,
-            get_device("ibm_falcon_27"),
+            get_device("ibm_heron_156"),
         ),
     ]
 
@@ -1944,16 +2121,11 @@ def test_get_benchmark_mirror_option(benchmark_name: str, logical_circuit_size: 
         qc_mirror.remove_final_measurements(inplace=True)
         qc_mirror = RemoveBarriers()(qc_mirror)
 
-        optimized_circuit = transpile(
-            qc_mirror,
-            optimization_level=2,
-            basis_gates=["u", "cx"],
-        )
-
-        assert len(optimized_circuit.data) == 0, (
-            f"Unitary part of mirror (U@U_inv) for level '{level_enum.name}' ({qc_mirror.num_qubits} qubits) "
-            "did not optimize to an empty circuit. This means it might not represent the identity."
-        )
+        active_qubits = [q for q in qc_mirror.qubits if q not in circuit_to_dag(qc_mirror).idle_wires()]
+        compact = QuantumCircuit(len(active_qubits), global_phase=qc_mirror.global_phase)
+        for instruction in qc_mirror.data:
+            compact.append(instruction.operation, [active_qubits.index(q) for q in instruction.qubits])
+        np.testing.assert_allclose(Operator(compact).data, np.eye(2 ** len(active_qubits)), atol=1e-12)
 
 
 @pytest.mark.parametrize("level", list(BenchmarkLevel))
@@ -1961,10 +2133,28 @@ def test_dynamic_ghz_mirror_rejected(level: BenchmarkLevel) -> None:
     """Every level rejects a dynamic GHZ mirror without changing the input circuit."""
     circuit = get_benchmark_alg("ghz_dynamic", 5)
     original = circuit.copy()
-    target = get_target_for_gateset("ibm_falcon", num_qubits=5)
+    target = get_target_for_gateset("ibm_heron", num_qubits=5)
     with pytest.raises(ValueError, match=r"Cannot mirror this circuit.*generate_mirror_circuit=False"):
         get_benchmark(circuit, level, target=target, generate_mirror_circuit=True)
     assert circuit == original
+
+
+def test_mapped_mirror_preserves_complete_layout() -> None:
+    """Mirror layout metadata keeps the original logical qubits and ancillas."""
+    source = QuantumCircuit(3)
+    source.h(2)
+    source.cx(2, 1)
+    source.cx(1, 0)
+    original = source.copy()
+    target = get_device("iqm_crystal_5")
+    base = get_benchmark_mapped(source, None, target)
+    mirror = get_benchmark_mapped(source, None, target, generate_mirror_circuit=True)
+    assert source == original
+    assert base.layout is not None
+    assert mirror.layout is not None
+    assert mirror.layout.final_index_layout() == base.layout.initial_index_layout(filter_ancillas=True)
+    mirror.remove_final_measurements(inplace=True)
+    np.testing.assert_allclose(Operator.from_circuit(mirror).data, np.eye(2**mirror.num_qubits), atol=1e-12)
 
 
 def test_dynamic_benchmark_registration() -> None:

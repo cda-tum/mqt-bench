@@ -11,21 +11,30 @@
 from __future__ import annotations
 
 import warnings
+from copy import deepcopy
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Unpack, assert_never, overload
 
 import numpy as np
+from packaging.version import Version
+from qiskit import generate_preset_pass_manager
 from qiskit.circuit import CircuitError, ClassicalRegister, QuantumCircuit, SessionEquivalenceLibrary
 from qiskit.compiler import transpile
 from qiskit.converters import circuit_to_dag
 from qiskit.transpiler import Layout, Target
-from qiskit.transpiler.passes import RemoveFinalMeasurements
+from qiskit.transpiler.passes import OptimizeCliffordT, RemoveFinalMeasurements
+from qiskit.version import VERSION as QISKIT_VERSION
 
 from .benchmarks import create_circuit
 from .error_correction import get_available_encoding_names, get_transpiler
 from .targets.gatesets import get_target_for_gateset, ionq, rigetti
+from .targets.gatesets._compilation import prepare_target
+from .targets.gatesets.ibm import configure_fractional_angles
 
 if TYPE_CHECKING:  # pragma: no cover
+    from qiskit.dagcircuit import DAGCircuit
+    from qiskit.transpiler import PassManager, StagedPassManager
+
     from .configuration_options import ConfigurationOptions
 
 
@@ -36,6 +45,17 @@ class BenchmarkLevel(Enum):
     INDEP = auto()
     NATIVEGATES = auto()
     MAPPED = auto()
+
+
+class RecursiveOptimizeCliffordT(OptimizeCliffordT):
+    """Also optimize control-flow blocks, which Qiskit's pass skips."""
+
+    def run(self, dag: DAGCircuit) -> DAGCircuit:
+        """Optimize each control-flow block and then the enclosing circuit."""
+        for node in dag.control_flow_op_nodes():
+            operation = node.op
+            dag.substitute_node(node, operation.replace_blocks([self(block) for block in operation.blocks]))
+        return super().run(dag)
 
 
 def _get_circuit(
@@ -81,7 +101,7 @@ def _get_circuit(
 
 
 def _create_mirror_circuit(
-    qc_original: QuantumCircuit, *, inplace: bool = False, target: Target | None = None, optimization_level: int = 2
+    qc_original: QuantumCircuit, *, inplace: bool = False, pass_manager: PassManager | None = None
 ) -> QuantumCircuit:
     """Generates the mirror version (qc @ qc.inverse()) of a given quantum circuit.
 
@@ -91,15 +111,14 @@ def _create_mirror_circuit(
     the permutation of qubits, this benchmark requires that the final qubit permutation
     is identical to the initial one, requiring the explicit layout handling herein.
     Also ensures that the mirrored circuit respects the native gate set of the target device
-    if a target is provided.
+    if a pass manager is provided.
 
     All qubits are measured at the end of the mirror circuit.
 
     Args:
         qc_original: The quantum circuit to mirror.
         inplace: If True, modifies the circuit in place. Otherwise, returns a new circuit.
-        target: Target device for transpilation. If provided, ensures native gate set compliance.
-        optimization_level: Optimization level of the transpilation.
+        pass_manager: Compiler pipeline to reuse for the mirror.
 
     Returns:
         The mirrored quantum circuit.
@@ -130,21 +149,14 @@ def _create_mirror_circuit(
     target_qc.compose(qc_inv, inplace=True)
 
     # Transpile to ensure the final circuit uses only native gates while preserving the initial layout.
-    if target is not None:
-        layout = target_qc.layout.initial_layout if target_qc.layout is not None else None
-        target_qc = transpile(
-            target_qc,
-            target=target,
-            optimization_level=optimization_level,
-            layout_method=None,
-            routing_method=None,
-            seed_transpiler=10,
-        )
+    if pass_manager is not None:
+        layout = deepcopy(target_qc.layout)
+        target_qc = pass_manager.run(target_qc)
         if target_qc.layout is not None:
             final_indices = target_qc.layout.final_index_layout()
             active_qubits = [final_indices[index] for index in active_qubits]
         if layout is not None and target_qc.layout is not None:
-            target_qc.layout.initial_layout = layout
+            target_qc._layout = layout  # ruff:ignore[private-member-access]
 
     # Add final measurements to all active qubits
     target_qc.barrier(active_qubits)
@@ -160,6 +172,19 @@ def _create_mirror_circuit(
         target_qc.layout.final_layout = Layout.generate_trivial_layout(*target_qc.qregs)
 
     return target_qc
+
+
+def _get_qiskit_pass_manager(target: Target, opt_level: int, *, native: bool) -> StagedPassManager:
+    """Build the native or mapped pipeline, including final gate lowering."""
+    target, lowering = prepare_target(target, native=native)
+    pm = generate_preset_pass_manager(
+        optimization_level=opt_level,
+        target=target,
+        seed_transpiler=10,
+    )
+    pm.post_scheduling = lowering
+    configure_fractional_angles(pm, target)
+    return pm
 
 
 def _validate_opt_level(opt_level: int) -> None:
@@ -383,44 +408,52 @@ def get_benchmark_native_gates(
 
     circuit = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
 
-    # Native compilation uses the instructions, not the target's physical constraints.
-    native_target = Target(description=target.description, num_qubits=target.num_qubits)
-    for name in target.operation_names:
-        native_target.add_instruction(target.operation_from_name(name), name=name)
-    target = native_target
-
     if target.description == "clifford+t":
-        from qiskit.circuit.library import PermutationGate  # ruff:ignore[import-outside-top-level]
         from qiskit.transpiler import PassManager  # ruff:ignore[import-outside-top-level]
-        from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
+        from qiskit.transpiler.passes import BasisTranslator, HighLevelSynthesis  # ruff:ignore[import-outside-top-level]
 
+        target, _ = prepare_target(target, native=True)
         # Compile to Clifford+T and rotation gates
         clifford_t_rotations = get_target_for_gateset("clifford+t+rotations", num_qubits=circuit.num_qubits)
-        compiled_for_sk = transpile(
-            circuit,
+        pm = generate_preset_pass_manager(
             target=clifford_t_rotations,
             optimization_level=opt_level,
             seed_transpiler=10,
+            # Keep permutations in the circuit so QASM export does not depend on layout metadata.
+            routing_method="none",
         )
-        # Synthesize the rotations to Clifford+T gates
-        pm = PassManager(SolovayKitaev())
-        circuit = pm.run(compiled_for_sk)
-        # Restore the permutation dropped by synthesis
-        if compiled_for_sk.layout is not None:
-            circuit.append(PermutationGate(compiled_for_sk.layout.final_index_layout()), circuit.qubits)
+        mirror_pm = PassManager(HighLevelSynthesis(target=target, equivalence_library=SessionEquivalenceLibrary))
+        if opt_level:
+            mirror_pm.append(RecursiveOptimizeCliffordT())
+        mirror_pm.append(BasisTranslator(SessionEquivalenceLibrary, sorted(target.operation_names), target))
+        if Version(QISKIT_VERSION) >= Version("2.4.2"):
+            from qiskit.transpiler.passes import SynthesizeRZRotations  # ruff:ignore[import-outside-top-level]
 
-    if "rigetti" in target.description:
-        rigetti.add_equivalences(SessionEquivalenceLibrary)
-    elif "ionq" in target.description:
-        ionq.add_equivalences(SessionEquivalenceLibrary)
-    compiled_circuit = transpile(
-        circuit,
-        optimization_level=opt_level,
-        target=target,
-        seed_transpiler=10,
-    )
+            class RecursiveSynthesizeRZRotations(SynthesizeRZRotations):
+                """Also synthesize rotations in control-flow blocks, which Qiskit's pass skips."""
+
+                def run(self, dag: DAGCircuit) -> DAGCircuit:
+                    for node in dag.control_flow_op_nodes():
+                        op = node.op
+                        dag.substitute_node(node, op.replace_blocks([self(block) for block in op.blocks]))
+                    return super().run(dag)
+
+            synthesis_pm = PassManager([
+                BasisTranslator(SessionEquivalenceLibrary, sorted(clifford_t_rotations.operation_names - {"rx", "ry"})),
+                RecursiveSynthesizeRZRotations(),
+            ])
+        else:
+            from qiskit.transpiler.passes.synthesis import SolovayKitaev  # ruff:ignore[import-outside-top-level]
+
+            synthesis_pm = PassManager(SolovayKitaev())
+        pm.post_optimization = synthesis_pm + mirror_pm
+    else:
+        pm = _get_qiskit_pass_manager(target, opt_level, native=True)
+        mirror_pm = pm
+
+    compiled_circuit = pm.run(circuit)
     if generate_mirror_circuit:
-        return _create_mirror_circuit(compiled_circuit, inplace=True, target=target, optimization_level=opt_level)
+        return _create_mirror_circuit(compiled_circuit, inplace=True, pass_manager=mirror_pm)
     return compiled_circuit
 
 
@@ -491,19 +524,10 @@ def get_benchmark_mapped(
 
     circuit = _get_circuit(benchmark, circuit_size, random_parameters, **kwargs)
 
-    if "rigetti" in target.description:
-        rigetti.add_equivalences(SessionEquivalenceLibrary)
-    elif "ionq" in target.description:
-        ionq.add_equivalences(SessionEquivalenceLibrary)
-
-    mapped_circuit = transpile(
-        circuit,
-        target=target,
-        optimization_level=opt_level,
-        seed_transpiler=10,
-    )
+    pm = _get_qiskit_pass_manager(target, opt_level, native=False)
+    mapped_circuit = pm.run(circuit)
     if generate_mirror_circuit:
-        return _create_mirror_circuit(mapped_circuit, inplace=True, target=target, optimization_level=opt_level)
+        return _create_mirror_circuit(mapped_circuit, inplace=True, pass_manager=pm)
     return mapped_circuit
 
 

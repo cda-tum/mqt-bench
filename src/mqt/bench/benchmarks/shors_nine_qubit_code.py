@@ -22,6 +22,62 @@ from mqt.bench.components.shor_circuit_components import (
     get_three_qubit_phase_flip_decoding_circuit,
     get_three_qubit_phase_flip_encoding_circuit,
 )
+from ._registry import register_benchmark
+
+
+def _get_three_qubit_bit_flip_encoding_decoding_circuit() -> QuantumCircuit:
+    """Create 3-qubit bit-flip encoding/decoding circuit.
+
+    Encodes ``|0>`` → ``|000>`` and ``|1>`` → ``|111>``. Self-inverse, so used for both encoding and decoding.
+
+    Returns:
+        QuantumCircuit: 3-qubit circuit (qubit 0 is the input/output qubit).
+    """
+    out = QuantumCircuit(3)
+    out.cx(0, 1)
+    out.cx(0, 2)
+    return out
+
+
+def _get_three_qubit_phase_flip_encoding_circuit() -> QuantumCircuit:
+    """Create 3-qubit phase-flip encoding circuit.
+
+    Encodes ``|0>`` → ``|+++>`` and ``|1>`` → ``|--->``
+
+    Returns:
+        QuantumCircuit: 3-qubit encoding circuit (qubit 0 is the input qubit).
+    """
+    out = QuantumCircuit(3)
+    out.cx(0, 1)
+    out.cx(0, 2)
+    out.h(0)
+    out.h(1)
+    out.h(2)
+    return out
+
+
+def _get_three_qubit_phase_flip_decoding_circuit() -> QuantumCircuit:
+    """Create 3-qubit phase-flip decoding circuit.
+
+    Reverses the phase-flip encoding.
+
+    Returns:
+        QuantumCircuit: 3-qubit decoding circuit (qubit 0 is the output qubit).
+    """
+    out = QuantumCircuit(3)
+    out.h(0)
+    out.h(1)
+    out.h(2)
+    out.cx(0, 1)
+    out.cx(0, 2)
+    return out
+
+
+def _get_three_qubit_bit_flip_syndrome_extraction_circuit() -> QuantumCircuit:
+    """Create circuit to extract bit-flip syndrome from a 3-qubit block.
+
+    Uses 2 ancilla qubits to measure parity and identify which qubit (if any) flipped.
+    Syndrome mapping: 01 → qubit 0, 10 → qubit 1, 11 → qubit 2, 00 → no error.
 
 from ._registry import register_benchmark
 
@@ -118,13 +174,13 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
 
     Encoding:
         1. Phase-flip encoding: The logical qubit is encoded across three blocks using
-           |0> → |+++> and |1> → |---> on qubits 0, 3, and 6.
+           ``|0>`` → ``|+++>`` and ``|1>`` → ``|--->`` on qubits 0, 3, and 6.
         2. Bit-flip encoding: Each of the three qubits is then encoded using the
-           3-qubit repetition code (|0> → |000>, |1> → |111>), giving three blocks
+           3-qubit repetition code (``|0>`` → ``|000>``, ``|1>`` → ``|111>``), giving three blocks
            of three qubits each (0-2, 3-5, 6-8).
         3. So the overall encoding is
-           - |0> -> (|000> + |111>) ⊗ (|000> + |111>) ⊗ (|000> + |111>)
-           - |1> -> (|000> - |111>) ⊗ (|000> - |111>) ⊗ (|000> - |111>)
+           - ``|0>`` -> (``|000>`` + ``|111>``) ⊗ (``|000>`` + ``|111>``) ⊗ (``|000>`` + ``|111>``)
+           - ``|1>`` -> (``|000>`` - ``|111>``) ⊗ (``|000>`` - ``|111>``) ⊗ (``|000>`` - ``|111>``)
 
     Syndrome Extraction:
         - Bit-flip syndrome: For each block, 2 ancilla qubits measure the parity of
@@ -151,13 +207,13 @@ def create_circuit(num_qubits: int) -> QuantumCircuit:
             - 1 logical qubit measurement bit (m)
 
     Arguments:
-        num_qubits: number of qubits of the returned quantum circuit (must be divisible by 17)
+        num_qubits: number of qubits of the returned quantum circuit (must be a positive multiple of 17)
 
     Returns:
         QuantumCircuit: a quantum circuit implementing Shor's 9 Qubit Code
     """
-    if num_qubits % 17:
-        msg = "num_qubits must be divisible by 17."
+    if num_qubits < 17 or num_qubits % 17:
+        msg = "num_qubits must be a positive multiple of 17."
         raise ValueError(msg)
 
     num_logical_qubits = num_qubits // 17
